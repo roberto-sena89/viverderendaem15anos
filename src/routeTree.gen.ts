@@ -9,8 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RebalanceamentoRouteImport } from './routes/rebalanceamento'
+import { Route as PlanejadorRouteImport } from './routes/planejador'
+import { Route as DividendosRouteImport } from './routes/dividendos'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CarteiraRouteImport } from './routes/carteira'
+import { Route as AportesRouteImport } from './routes/aportes'
 import { Route as IndexRouteImport } from './routes/index'
 
+const RebalanceamentoRoute = RebalanceamentoRouteImport.update({
+  id: '/rebalanceamento',
+  path: '/rebalanceamento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanejadorRoute = PlanejadorRouteImport.update({
+  id: '/planejador',
+  path: '/planejador',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DividendosRoute = DividendosRouteImport.update({
+  id: '/dividendos',
+  path: '/dividendos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarteiraRoute = CarteiraRouteImport.update({
+  id: '/carteira',
+  path: '/carteira',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AportesRoute = AportesRouteImport.update({
+  id: '/aportes',
+  path: '/aportes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +55,116 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aportes': typeof AportesRoute
+  '/carteira': typeof CarteiraRoute
+  '/dashboard': typeof DashboardRoute
+  '/dividendos': typeof DividendosRoute
+  '/planejador': typeof PlanejadorRoute
+  '/rebalanceamento': typeof RebalanceamentoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aportes': typeof AportesRoute
+  '/carteira': typeof CarteiraRoute
+  '/dashboard': typeof DashboardRoute
+  '/dividendos': typeof DividendosRoute
+  '/planejador': typeof PlanejadorRoute
+  '/rebalanceamento': typeof RebalanceamentoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aportes': typeof AportesRoute
+  '/carteira': typeof CarteiraRoute
+  '/dashboard': typeof DashboardRoute
+  '/dividendos': typeof DividendosRoute
+  '/planejador': typeof PlanejadorRoute
+  '/rebalanceamento': typeof RebalanceamentoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/aportes'
+    | '/carteira'
+    | '/dashboard'
+    | '/dividendos'
+    | '/planejador'
+    | '/rebalanceamento'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/aportes'
+    | '/carteira'
+    | '/dashboard'
+    | '/dividendos'
+    | '/planejador'
+    | '/rebalanceamento'
+  id:
+    | '__root__'
+    | '/'
+    | '/aportes'
+    | '/carteira'
+    | '/dashboard'
+    | '/dividendos'
+    | '/planejador'
+    | '/rebalanceamento'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AportesRoute: typeof AportesRoute
+  CarteiraRoute: typeof CarteiraRoute
+  DashboardRoute: typeof DashboardRoute
+  DividendosRoute: typeof DividendosRoute
+  PlanejadorRoute: typeof PlanejadorRoute
+  RebalanceamentoRoute: typeof RebalanceamentoRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/rebalanceamento': {
+      id: '/rebalanceamento'
+      path: '/rebalanceamento'
+      fullPath: '/rebalanceamento'
+      preLoaderRoute: typeof RebalanceamentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planejador': {
+      id: '/planejador'
+      path: '/planejador'
+      fullPath: '/planejador'
+      preLoaderRoute: typeof PlanejadorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dividendos': {
+      id: '/dividendos'
+      path: '/dividendos'
+      fullPath: '/dividendos'
+      preLoaderRoute: typeof DividendosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carteira': {
+      id: '/carteira'
+      path: '/carteira'
+      fullPath: '/carteira'
+      preLoaderRoute: typeof CarteiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aportes': {
+      id: '/aportes'
+      path: '/aportes'
+      fullPath: '/aportes'
+      preLoaderRoute: typeof AportesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +177,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AportesRoute: AportesRoute,
+  CarteiraRoute: CarteiraRoute,
+  DashboardRoute: DashboardRoute,
+  DividendosRoute: DividendosRoute,
+  PlanejadorRoute: PlanejadorRoute,
+  RebalanceamentoRoute: RebalanceamentoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
