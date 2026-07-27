@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RebalanceamentoRouteImport } from './routes/rebalanceamento'
 import { Route as PlanejadorRouteImport } from './routes/planejador'
+import { Route as MetasRouteImport } from './routes/metas'
+import { Route as EstatisticasRouteImport } from './routes/estatisticas'
 import { Route as DividendosRouteImport } from './routes/dividendos'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CarteiraRouteImport } from './routes/carteira'
@@ -25,6 +27,16 @@ const RebalanceamentoRoute = RebalanceamentoRouteImport.update({
 const PlanejadorRoute = PlanejadorRouteImport.update({
   id: '/planejador',
   path: '/planejador',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MetasRoute = MetasRouteImport.update({
+  id: '/metas',
+  path: '/metas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstatisticasRoute = EstatisticasRouteImport.update({
+  id: '/estatisticas',
+  path: '/estatisticas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DividendosRoute = DividendosRouteImport.update({
@@ -59,6 +71,8 @@ export interface FileRoutesByFullPath {
   '/carteira': typeof CarteiraRoute
   '/dashboard': typeof DashboardRoute
   '/dividendos': typeof DividendosRoute
+  '/estatisticas': typeof EstatisticasRoute
+  '/metas': typeof MetasRoute
   '/planejador': typeof PlanejadorRoute
   '/rebalanceamento': typeof RebalanceamentoRoute
 }
@@ -68,6 +82,8 @@ export interface FileRoutesByTo {
   '/carteira': typeof CarteiraRoute
   '/dashboard': typeof DashboardRoute
   '/dividendos': typeof DividendosRoute
+  '/estatisticas': typeof EstatisticasRoute
+  '/metas': typeof MetasRoute
   '/planejador': typeof PlanejadorRoute
   '/rebalanceamento': typeof RebalanceamentoRoute
 }
@@ -78,6 +94,8 @@ export interface FileRoutesById {
   '/carteira': typeof CarteiraRoute
   '/dashboard': typeof DashboardRoute
   '/dividendos': typeof DividendosRoute
+  '/estatisticas': typeof EstatisticasRoute
+  '/metas': typeof MetasRoute
   '/planejador': typeof PlanejadorRoute
   '/rebalanceamento': typeof RebalanceamentoRoute
 }
@@ -89,6 +107,8 @@ export interface FileRouteTypes {
     | '/carteira'
     | '/dashboard'
     | '/dividendos'
+    | '/estatisticas'
+    | '/metas'
     | '/planejador'
     | '/rebalanceamento'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +118,8 @@ export interface FileRouteTypes {
     | '/carteira'
     | '/dashboard'
     | '/dividendos'
+    | '/estatisticas'
+    | '/metas'
     | '/planejador'
     | '/rebalanceamento'
   id:
@@ -107,6 +129,8 @@ export interface FileRouteTypes {
     | '/carteira'
     | '/dashboard'
     | '/dividendos'
+    | '/estatisticas'
+    | '/metas'
     | '/planejador'
     | '/rebalanceamento'
   fileRoutesById: FileRoutesById
@@ -117,6 +141,8 @@ export interface RootRouteChildren {
   CarteiraRoute: typeof CarteiraRoute
   DashboardRoute: typeof DashboardRoute
   DividendosRoute: typeof DividendosRoute
+  EstatisticasRoute: typeof EstatisticasRoute
+  MetasRoute: typeof MetasRoute
   PlanejadorRoute: typeof PlanejadorRoute
   RebalanceamentoRoute: typeof RebalanceamentoRoute
 }
@@ -135,6 +161,20 @@ declare module '@tanstack/react-router' {
       path: '/planejador'
       fullPath: '/planejador'
       preLoaderRoute: typeof PlanejadorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/metas': {
+      id: '/metas'
+      path: '/metas'
+      fullPath: '/metas'
+      preLoaderRoute: typeof MetasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estatisticas': {
+      id: '/estatisticas'
+      path: '/estatisticas'
+      fullPath: '/estatisticas'
+      preLoaderRoute: typeof EstatisticasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dividendos': {
@@ -181,6 +221,8 @@ const rootRouteChildren: RootRouteChildren = {
   CarteiraRoute: CarteiraRoute,
   DashboardRoute: DashboardRoute,
   DividendosRoute: DividendosRoute,
+  EstatisticasRoute: EstatisticasRoute,
+  MetasRoute: MetasRoute,
   PlanejadorRoute: PlanejadorRoute,
   RebalanceamentoRoute: RebalanceamentoRoute,
 }
