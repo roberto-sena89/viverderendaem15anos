@@ -8,7 +8,6 @@ import {
   LineChart,
   Scale,
   Target,
-  Sparkles,
   TrendingUp,
   CandlestickChart,
 
