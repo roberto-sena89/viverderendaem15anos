@@ -45,6 +45,8 @@ function valorGrande(v: number) {
   return `R$ ${v.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`;
 }
 
+const VISIVEIS = 5;
+
 function ListaRanking({
   titulo,
   icone: Icone,
@@ -58,6 +60,9 @@ function ListaRanking({
   valor: (i: ItemRanking) => string;
   carregando: boolean;
 }) {
+  const [completo, setCompleto] = useState(false);
+  const visiveis = completo ? itens : itens.slice(0, VISIVEIS);
+
   return (
     <Panel className="overflow-hidden" bodyClassName="p-0">
       <div className="flex flex-col items-center gap-2 border-b border-border bg-muted/30 px-4 py-5">
