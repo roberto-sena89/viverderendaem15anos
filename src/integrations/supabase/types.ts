@@ -14,6 +14,195 @@ export type Database = {
   }
   public: {
     Tables: {
+      aportes: {
+        Row: {
+          categoria: string
+          corretora: string
+          created_at: string
+          data: string
+          id: string
+          observacoes: string | null
+          preco: number
+          quantidade: number
+          taxas: number
+          ticker: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categoria: string
+          corretora?: string
+          created_at?: string
+          data?: string
+          id?: string
+          observacoes?: string | null
+          preco?: number
+          quantidade?: number
+          taxas?: number
+          ticker: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          categoria?: string
+          corretora?: string
+          created_at?: string
+          data?: string
+          id?: string
+          observacoes?: string | null
+          preco?: number
+          quantidade?: number
+          taxas?: number
+          ticker?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ativos: {
+        Row: {
+          categoria: string
+          created_at: string
+          dy: number
+          id: string
+          nome: string
+          preco_atual: number
+          preco_medio: number
+          quantidade: number
+          ticker: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categoria: string
+          created_at?: string
+          dy?: number
+          id?: string
+          nome: string
+          preco_atual?: number
+          preco_medio?: number
+          quantidade?: number
+          ticker: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          dy?: number
+          id?: string
+          nome?: string
+          preco_atual?: number
+          preco_medio?: number
+          quantidade?: number
+          ticker?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dividendos: {
+        Row: {
+          created_at: string
+          data: string
+          id: string
+          ticker: string
+          tipo: string
+          updated_at: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          id?: string
+          ticker: string
+          tipo?: string
+          updated_at?: string
+          user_id?: string
+          valor?: number
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          id?: string
+          ticker?: string
+          tipo?: string
+          updated_at?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: []
+      }
+      metas: {
+        Row: {
+          alvo: number
+          created_at: string
+          id: string
+          nome: string
+          ordem: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alvo?: number
+          created_at?: string
+          id?: string
+          nome: string
+          ordem?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          alvo?: number
+          created_at?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      plano_config: {
+        Row: {
+          aporte_mensal: number
+          aumento_anual: number
+          created_at: string
+          idade_aposentadoria: number
+          idade_atual: number
+          inflacao_anual: number
+          rentabilidade_anual: number
+          taxa_retirada: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          aporte_mensal?: number
+          aumento_anual?: number
+          created_at?: string
+          idade_aposentadoria?: number
+          idade_atual?: number
+          inflacao_anual?: number
+          rentabilidade_anual?: number
+          taxa_retirada?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          aporte_mensal?: number
+          aumento_anual?: number
+          created_at?: string
+          idade_aposentadoria?: number
+          idade_atual?: number
+          inflacao_anual?: number
+          rentabilidade_anual?: number
+          taxa_retirada?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
