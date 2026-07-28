@@ -623,7 +623,7 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
     itens
       .filter((a) => typeof a[chave] === "number" && (a[chave] as number) > 0)
       .sort((a, b) => (b[chave] as number) - (a[chave] as number))
-      .slice(0, 8);
+      .slice(0, 50);
 
   return {
     tipo,
