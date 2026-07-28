@@ -404,6 +404,90 @@ function OpcaoAtivo({ rotulo, ativo, onClick }: { rotulo: string; ativo: boolean
   );
 }
 
+function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; carteira: Ativo[] }) {
+  const [periodo, setPeriodo] = useState("recebidos");
+  const [tipoAtivo, setTipoAtivo] = useState("todos");
+  const [ativoSel, setAtivoSel] = useState("todos");
+
+  const categoriaPorTicker = new Map(carteira.map((a) => [a.ticker, a.categoria as string]));
+
+  const filtrados = proventos.filter((d) => {
+    if (tipoAtivo !== "todos" && categoriaPorTicker.get(d.ticker) !== tipoAtivo) return false;
+    if (ativoSel !== "todos" && d.ticker !== ativoSel) return false;
+    return dentroDoPeriodo(d.data, periodo);
+  });
+
+  const total = filtrados.reduce((s, d) => s + d.valor, 0);
+  const linhas = Object.entries(
+    filtrados.reduce<Record<string, number>>((acc, d) => {
+      const mes = d.data.slice(0, 7);
+      acc[mes] = (acc[mes] ?? 0) + d.valor;
+      return acc;
+    }, {}),
+  ).sort((a, b) => b[0].localeCompare(a[0]));
+
+  const opcoesTipo = [
+    { valor: "todos", rotulo: "Tipo de ativo" },
+    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
+  ];
+
+  return (
+    <div className="surface-card">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
+        <p className="panel-title">Histórico mensal</p>
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="flex h-9 items-center gap-2 rounded-md bg-muted px-3 text-xs">
+            <span className="text-muted-foreground">Total</span>
+            <span className="font-semibold tabular-nums text-primary">{brl(total, 2)}</span>
+          </div>
+          <FiltroPeriodo
+            valor={periodo}
+            onChange={setPeriodo}
+            anos={Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) => b.localeCompare(a))}
+          />
+          <SeletorFiltro
+            valor={tipoAtivo}
+            onChange={setTipoAtivo}
+            icone={CircleDollarSign}
+            opcoes={opcoesTipo}
+            rotuloAcessivel="Tipo de ativo"
+          />
+          <FiltroAtivos
+            valor={ativoSel}
+            onChange={setAtivoSel}
+            ativos={Array.from(new Set(proventos.map((d) => d.ticker))).sort()}
+          />
+        </div>
+      </div>
+      {linhas.length ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Mês</TableHead>
+              <TableHead className="text-right">Valor</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {linhas.map(([mes, valor]) => (
+              <TableRow key={mes}>
+                <TableCell className="font-medium tabular-nums">
+                  {new Date(`${mes}-01T12:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">{brl(valor, 2)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-1 py-16 text-center">
+          <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
+          <p className="text-sm text-muted-foreground">Ainda não há dados disponíveis para exibição.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 const ESCOPOS_TOTAL = [
   { valor: "mes", rotulo: "Total do mês" },
