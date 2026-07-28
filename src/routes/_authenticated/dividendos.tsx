@@ -316,6 +316,14 @@ function PainelProventos({
   const media = total12m / 12;
   const progresso = Math.min(100, (media / META_MENSAL) * 100);
 
+  const hoje = new Date();
+  const chaveMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
+  const totalMes = filtrados.filter((d) => d.data.startsWith(chaveMes)).reduce((s, d) => s + d.valor, 0);
+  const totalAno = filtrados
+    .filter((d) => d.data.startsWith(String(hoje.getFullYear())))
+    .reduce((s, d) => s + d.valor, 0);
+  const totalEscopo = escopoTotal === "mes" ? totalMes : escopoTotal === "ano" ? totalAno : total12m;
+
   const opcoesTipo = [
     { valor: "todos", rotulo: "Tipo de ativo" },
     ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
