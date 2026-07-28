@@ -182,7 +182,7 @@ function AuthPage() {
         <p className="text-xs opacity-70">Sessão protegida por token JWT.</p>
       </div>
 
-      <div className="flex items-center justify-center px-5 py-12">
+      <main className="flex items-center justify-center px-5 py-12">
         <div className="w-full max-w-sm">
           <h1 className="font-display text-2xl font-semibold">Acesse sua conta</h1>
           <p className="mt-1 text-sm text-muted-foreground">
