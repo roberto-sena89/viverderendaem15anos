@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { RebalanceamentoSugerido } from "@/components/rebalanceamento-sugerido";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -41,6 +42,9 @@ function Rebalanceamento() {
   return (
     <AppShell title="Análise" description="Estratégia por classes de ativos">
       <AbasCarteira />
+
+      <RebalanceamentoSugerido carteira={carteira} />
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {linhas.map((l) => (
           <div key={l.classe} className="surface-card p-5">
