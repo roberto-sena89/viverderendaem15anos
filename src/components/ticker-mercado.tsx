@@ -22,7 +22,7 @@ export function TickerMercado() {
   if (itens.length === 0) return null;
 
   return (
-    <div className="sticky top-0 z-30 border-b border-border bg-sidebar">
+    <div className="border-b border-border bg-sidebar">
       <div className="flex items-center gap-6 overflow-x-auto px-5 py-1.5 lg:px-8">
         {itens.map((i) => (
           <div key={i.simbolo} className="flex shrink-0 items-center gap-2 text-[0.7rem] tabular-nums">
