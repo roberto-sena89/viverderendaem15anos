@@ -21,6 +21,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
@@ -236,6 +237,7 @@ function Dashboard() {
   if (!isLoading && ativos.length === 0) {
     return (
       <AppShell title="Resumo" description="Visão geral do seu patrimônio">
+      <AbasCarteira />
         <div className="surface-card grid place-items-center gap-3 p-16 text-center">
           <Wallet className="size-8 text-muted-foreground" />
           <p className="font-display text-lg font-semibold">Sua carteira está vazia</p>
@@ -258,6 +260,7 @@ function Dashboard() {
 
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
+      <AbasCarteira />
       <AvisoSincronizacao />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

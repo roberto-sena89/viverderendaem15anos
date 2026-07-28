@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -39,6 +40,7 @@ function Rebalanceamento() {
 
   return (
     <AppShell title="Rebalanceamento" description="Estratégia por classes de ativos">
+      <AbasCarteira />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {linhas.map((l) => (
           <div key={l.classe} className="surface-card p-5">

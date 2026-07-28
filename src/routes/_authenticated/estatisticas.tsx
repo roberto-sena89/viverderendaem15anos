@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
 import { useAportes, useAtivos, useDividendos } from "@/lib/data";
@@ -39,6 +40,7 @@ function Estatisticas() {
 
   return (
     <AppShell title="Estatísticas" description="Performance detalhada da carteira">
+      <AbasCarteira />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="CAGR (12m)" value={pct(cagr)} tone={cagr >= 0 ? "positive" : "negative"} />
         <StatCard label="Rentabilidade acumulada" value={pct(rentabilidade)} tone={rentabilidade >= 0 ? "positive" : "negative"} />
