@@ -166,31 +166,32 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden border-4 border-primary p-12 text-[oklch(0.98_0_0)] lg:flex">
+      <div className="relative hidden flex-col justify-between overflow-hidden p-12 text-[oklch(0.98_0_0)] lg:flex">
         <img
           src={investidorImg}
           alt="Investidor acompanhando gráficos de ações no computador"
-          width={1024}
-          height={1280}
+          width={1152}
+          height={1440}
           className="absolute inset-0 size-full object-cover"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/20" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/55 to-black/30" />
         <Link to="/" className="relative flex items-center gap-2">
           <span className="grid size-9 place-items-center rounded-xl bg-white/15">
             <Sparkles className="size-4" />
           </span>
-          <span className="font-display font-semibold">Investidor em 15 Anos</span>
+          <span className="font-display font-semibold tracking-tight">Investidor em 15 Anos</span>
         </Link>
-        <div className="relative max-w-sm">
-          <h2 className="font-display text-3xl leading-tight font-semibold">
+        <div className="relative max-w-md">
+          <h2 className="font-display text-4xl leading-[1.1] font-semibold tracking-tight text-balance [text-shadow:0_2px_16px_rgb(0_0_0/0.6)]">
             Sua independência financeira em um só painel.
           </h2>
-          <p className="mt-4 text-sm opacity-90">
+          <p className="mt-5 text-base leading-relaxed text-[oklch(0.98_0_0)]/85">
             Carteira, aportes, dividendos, rebalanceamento e metas — com projeções de longo prazo.
           </p>
         </div>
-        <p className="relative text-xs opacity-80">Sessão protegida por token JWT.</p>
+        <p className="relative text-xs text-[oklch(0.98_0_0)]/70">Sessão protegida por token JWT.</p>
       </div>
+
 
 
       <main className="flex items-center justify-center px-5 py-12">
