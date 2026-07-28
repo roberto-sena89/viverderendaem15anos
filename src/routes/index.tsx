@@ -30,7 +30,9 @@ export const Route = createFileRoute("/")({
         content:
           "Patrimônio, dividendos, rebalanceamento e planejador da independência financeira em uma plataforma premium.",
       },
+      { property: "og:url", content: "https://investidorsagaz.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://investidorsagaz.lovable.app/" }],
   }),
   component: Landing,
 });
