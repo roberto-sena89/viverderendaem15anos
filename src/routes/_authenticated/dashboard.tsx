@@ -19,6 +19,13 @@ import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAportes, useAtivos, useDividendos } from "@/lib/data";
 import type { Ativo } from "@/lib/portfolio";
 import {
