@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Coins, LayoutGrid, LineChart, PiggyBank, Scale, Wallet } from "lucide-react";
+import { Coins, LayoutDashboard, PiggyBank, Scale, TrendingUp, Wallet } from "lucide-react";
 import { ABAS_CARTEIRA, secaoPorRota } from "@/lib/navegacao";
 
-const ICONES: Record<string, typeof LayoutGrid> = {
-  "/dashboard": LayoutGrid,
+const ICONES: Record<string, typeof LayoutDashboard> = {
+  "/dashboard": LayoutDashboard,
   "/carteira": Wallet,
   "/dividendos": Coins,
   "/aportes": PiggyBank,
-  "/estatisticas": LineChart,
+  "/estatisticas": TrendingUp,
   "/rebalanceamento": Scale,
 };
 
