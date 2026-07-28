@@ -10,6 +10,7 @@ import {
   Target,
   Sparkles,
   TrendingUp,
+  Bot,
   LogOut,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
@@ -27,6 +28,7 @@ const nav = [
   { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
   { to: "/metas", label: "Metas", icon: Target },
   { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
+  { to: "/chat", label: "Técnico IA", icon: Bot },
 ] as const;
 
 export function AppShell({

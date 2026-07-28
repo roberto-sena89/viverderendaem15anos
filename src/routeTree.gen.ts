@@ -14,12 +14,14 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
 import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
 import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
 import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authenticated/estatisticas'
 import { Route as AuthenticatedDividendosRouteImport } from './routes/_authenticated/dividendos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
 
@@ -45,6 +47,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRebalanceamentoRoute =
@@ -79,6 +86,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
   id: '/carteira',
   path: '/carteira',
@@ -97,12 +109,14 @@ export interface FileRoutesByFullPath {
   '/verificar-email': typeof VerificarEmailRoute
   '/aportes': typeof AuthenticatedAportesRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/metas': typeof AuthenticatedMetasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -111,12 +125,14 @@ export interface FileRoutesByTo {
   '/verificar-email': typeof VerificarEmailRoute
   '/aportes': typeof AuthenticatedAportesRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/metas': typeof AuthenticatedMetasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -127,12 +143,14 @@ export interface FileRoutesById {
   '/verificar-email': typeof VerificarEmailRoute
   '/_authenticated/aportes': typeof AuthenticatedAportesRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
+  '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dividendos': typeof AuthenticatedDividendosRoute
   '/_authenticated/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/_authenticated/metas': typeof AuthenticatedMetasRoute
   '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -143,12 +161,14 @@ export interface FileRouteTypes {
     | '/verificar-email'
     | '/aportes'
     | '/carteira'
+    | '/chat'
     | '/dashboard'
     | '/dividendos'
     | '/estatisticas'
     | '/metas'
     | '/planejador'
     | '/rebalanceamento'
+    | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -157,12 +177,14 @@ export interface FileRouteTypes {
     | '/verificar-email'
     | '/aportes'
     | '/carteira'
+    | '/chat'
     | '/dashboard'
     | '/dividendos'
     | '/estatisticas'
     | '/metas'
     | '/planejador'
     | '/rebalanceamento'
+    | '/api/chat'
   id:
     | '__root__'
     | '/'
@@ -172,12 +194,14 @@ export interface FileRouteTypes {
     | '/verificar-email'
     | '/_authenticated/aportes'
     | '/_authenticated/carteira'
+    | '/_authenticated/chat'
     | '/_authenticated/dashboard'
     | '/_authenticated/dividendos'
     | '/_authenticated/estatisticas'
     | '/_authenticated/metas'
     | '/_authenticated/planejador'
     | '/_authenticated/rebalanceamento'
+    | '/api/chat'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -186,6 +210,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerificarEmailRoute: typeof VerificarEmailRoute
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -223,6 +248,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/rebalanceamento': {
@@ -267,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/carteira': {
       id: '/_authenticated/carteira'
       path: '/carteira'
@@ -287,6 +326,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAportesRoute: typeof AuthenticatedAportesRoute
   AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
+  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDividendosRoute: typeof AuthenticatedDividendosRoute
   AuthenticatedEstatisticasRoute: typeof AuthenticatedEstatisticasRoute
@@ -298,6 +338,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAportesRoute: AuthenticatedAportesRoute,
   AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
+  AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDividendosRoute: AuthenticatedDividendosRoute,
   AuthenticatedEstatisticasRoute: AuthenticatedEstatisticasRoute,
@@ -315,6 +356,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerificarEmailRoute: VerificarEmailRoute,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
