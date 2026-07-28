@@ -140,6 +140,9 @@ function DividendosPage() {
 
       <HistoricoMensal proventos={proventos} carteira={carteira} />
 
+      <MeusProventos proventos={proventos} carteira={carteira} />
+
+
       <div className="surface-card p-6">
         <p className="panel-title">Calendário de proventos (12 meses)</p>
         <div className="mt-4 h-72">
