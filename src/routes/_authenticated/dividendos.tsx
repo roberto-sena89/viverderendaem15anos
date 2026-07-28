@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Calendar, Check, ChevronDown, CircleDollarSign, Plus, Search, Trash2 } from "lucide-react";
+import { Calendar, Check, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
@@ -245,15 +245,41 @@ const ANO_ATUAL = new Date().getFullYear();
 
 const FILTROS_RAPIDOS = [
   { valor: "ano-atual", rotulo: "Ano atual", chip: String(ANO_ATUAL) },
+  { valor: "30d", rotulo: "Últimos 30 dias" },
   { valor: "12m", rotulo: "Últimos 12 meses" },
   { valor: "5anos", rotulo: "Últimos 5 anos" },
+  { valor: "mes-atual", rotulo: "Mês atual" },
+  { valor: "proximo-mes", rotulo: "Próximo mês" },
   { valor: "futuros", rotulo: "Futuros" },
   { valor: "recebidos", rotulo: "Recebidos" },
   { valor: "todos", rotulo: "Todos", chip: "Recebidos e Futuros" },
 ];
 
+const MESES = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
+
+function chaveMes(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 function rotuloPeriodo(valor: string) {
   if (valor.startsWith("ano:")) return valor.slice(4);
+  if (valor.startsWith("mes:")) {
+    const [ano, mes] = valor.slice(4).split("-");
+    return `${MESES[Number(mes) - 1]} ${ano}`;
+  }
   const f = FILTROS_RAPIDOS.find((o) => o.valor === valor);
   return f ? (f.valor === "ano-atual" ? `Ano ${ANO_ATUAL}` : f.rotulo) : "Período";
 }
@@ -262,9 +288,15 @@ function dentroDoPeriodo(dataISO: string, valor: string) {
   const data = new Date(`${dataISO}T12:00`);
   const hoje = new Date();
   if (valor.startsWith("ano:")) return dataISO.startsWith(valor.slice(4));
+  if (valor.startsWith("mes:")) return dataISO.startsWith(valor.slice(4));
   switch (valor) {
     case "ano-atual":
       return dataISO.startsWith(String(ANO_ATUAL));
+    case "30d": {
+      const limite = new Date();
+      limite.setDate(limite.getDate() - 30);
+      return data >= limite && data <= hoje;
+    }
     case "12m": {
       const limite = new Date();
       limite.setMonth(limite.getMonth() - 12);
@@ -275,6 +307,12 @@ function dentroDoPeriodo(dataISO: string, valor: string) {
       limite.setFullYear(limite.getFullYear() - 5);
       return data >= limite && data <= hoje;
     }
+    case "mes-atual":
+      return dataISO.startsWith(chaveMes(hoje));
+    case "proximo-mes": {
+      const prox = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1);
+      return dataISO.startsWith(chaveMes(prox));
+    }
     case "futuros":
       return data > hoje;
     case "recebidos":
@@ -284,15 +322,21 @@ function dentroDoPeriodo(dataISO: string, valor: string) {
   }
 }
 
+
 function FiltroPeriodo({
   valor,
   onChange,
   anos,
+  mensal = false,
 }: {
   valor: string;
   onChange: (v: string) => void;
   anos: string[];
+  mensal?: boolean;
 }) {
+  const anoSelecionado = valor.startsWith("mes:") ? Number(valor.slice(4, 8)) : ANO_ATUAL;
+  const [anoNav, setAnoNav] = useState(anoSelecionado);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -302,7 +346,7 @@ function FiltroPeriodo({
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-72 p-0">
+      <PopoverContent align="end" className="max-h-[28rem] w-72 overflow-y-auto p-0">
         <div className="p-4">
           <p className="font-display text-sm font-semibold">Período</p>
           <p className="mt-3 text-xs text-muted-foreground">Filtros rápidos</p>
@@ -322,6 +366,52 @@ function FiltroPeriodo({
             ))}
           </RadioGroup>
         </div>
+        {mensal ? (
+          <div className="border-t border-border p-4">
+            <p className="text-xs text-muted-foreground">Filtro mensal</p>
+            <div className="mt-2 flex items-center justify-between rounded-md bg-muted px-2 py-1.5">
+              <button
+                type="button"
+                aria-label="Ano anterior"
+                onClick={() => setAnoNav((a) => a - 1)}
+                className="rounded p-1 text-muted-foreground hover:bg-background"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+              <span className="text-sm font-medium tabular-nums">{anoNav}</span>
+              <button
+                type="button"
+                aria-label="Próximo ano"
+                onClick={() => setAnoNav((a) => a + 1)}
+                className="rounded p-1 text-muted-foreground hover:bg-background"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+            </div>
+            <div className="mt-2 flex flex-col gap-2">
+              {MESES.map((nome, i) => {
+                const chave = `mes:${anoNav}-${String(i + 1).padStart(2, "0")}`;
+                return (
+                  <button
+                    key={nome}
+                    type="button"
+                    onClick={() => onChange(chave)}
+                    className="flex items-center gap-2 text-left text-sm"
+                  >
+                    <span
+                      className={`flex size-4 shrink-0 items-center justify-center rounded-full border ${
+                        valor === chave ? "border-primary" : "border-border"
+                      }`}
+                    >
+                      {valor === chave ? <span className="size-2 rounded-full bg-primary" /> : null}
+                    </span>
+                    {nome}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
         {anos.length ? (
           <div className="border-t border-border p-4">
             <p className="text-xs text-muted-foreground">Filtro anual</p>
@@ -347,6 +437,7 @@ function FiltroPeriodo({
     </Popover>
   );
 }
+
 
 function FiltroAtivos({
   valor,
@@ -493,8 +584,7 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
 
 function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; carteira: Ativo[] }) {
   const anos = Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) => b.localeCompare(a));
-  const anoAtual = String(new Date().getFullYear());
-  const [ano, setAno] = useState(anos.includes(anoAtual) ? anoAtual : (anos[0] ?? anoAtual));
+  const [periodo, setPeriodo] = useState("ano-atual");
   const [tipoAtivo, setTipoAtivo] = useState("todos");
   const [ativoSel, setAtivoSel] = useState("todos");
 
@@ -502,7 +592,7 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
 
   const filtrados = proventos
     .filter((d) => {
-      if (d.data.slice(0, 4) !== ano) return false;
+      if (!dentroDoPeriodo(d.data, periodo)) return false;
       if (tipoAtivo !== "todos" && categoriaPorTicker.get(d.ticker) !== tipoAtivo) return false;
       if (ativoSel !== "todos" && d.ticker !== ativoSel) return false;
       return true;
@@ -515,7 +605,6 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
     { valor: "todos", rotulo: "Tipo de ativo" },
     ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
   ];
-  const opcoesAno = (anos.includes(anoAtual) ? anos : [anoAtual, ...anos]).map((a) => ({ valor: a, rotulo: a }));
 
   return (
     <div className="surface-card">
@@ -526,13 +615,8 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
             <span className="text-muted-foreground">Total</span>
             <span className="font-semibold tabular-nums text-primary">{brl(total, 2)}</span>
           </div>
-          <SeletorFiltro
-            valor={ano}
-            onChange={setAno}
-            icone={Calendar}
-            opcoes={opcoesAno}
-            rotuloAcessivel="Ano"
-          />
+          <FiltroPeriodo valor={periodo} onChange={setPeriodo} anos={anos} mensal />
+
           <SeletorFiltro
             valor={tipoAtivo}
             onChange={setTipoAtivo}
