@@ -24,9 +24,9 @@ import { brl, categorias, type Categoria } from "@/lib/portfolio";
 export const Route = createFileRoute("/_authenticated/aportes")({
   head: () => ({
     meta: [
-      { title: "Aportes · Investidor em 15 Anos" },
+      { title: "Patrimônio · Investidor em 15 Anos" },
       { name: "description", content: "Registre e acompanhe todos os seus aportes por data, corretora, ativo, quantidade e taxas." },
-      { property: "og:title", content: "Aportes · Investidor em 15 Anos" },
+      { property: "og:title", content: "Patrimônio · Investidor em 15 Anos" },
       { property: "og:description", content: "Histórico completo de aportes da sua carteira de investimentos." },
     ],
   }),
@@ -71,7 +71,7 @@ function AportesPage() {
   }
 
   return (
-    <AppShell title="Aportes" description={`Último mês registrado: ${brl(totalMes)}`}>
+    <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>

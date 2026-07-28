@@ -28,9 +28,9 @@ import { brl, dividendos12m, dividendosMensais, pct, resumoCarteira, valorInvest
 export const Route = createFileRoute("/_authenticated/dividendos")({
   head: () => ({
     meta: [
-      { title: "Dividendos · Investidor em 15 Anos" },
+      { title: "Proventos · Investidor em 15 Anos" },
       { name: "description", content: "Dividendos mensais e anuais, yield on cost, dividend yield e histórico de proventos." },
-      { property: "og:title", content: "Dividendos · Investidor em 15 Anos" },
+      { property: "og:title", content: "Proventos · Investidor em 15 Anos" },
       { property: "og:description", content: "Acompanhe sua renda passiva mês a mês e o yield on cost da carteira." },
     ],
   }),
@@ -82,7 +82,7 @@ function DividendosPage() {
   }
 
   return (
-    <AppShell title="Dividendos" description="Sua renda passiva em construção">
+    <AppShell title="Proventos" description="Sua renda passiva em construção">
       <AbasCarteira />
 
       <PainelProventos proventos={proventos} carteira={carteira} totalCarteira={resumo.totalAtual} />

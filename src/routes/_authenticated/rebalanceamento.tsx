@@ -11,9 +11,9 @@ import { alocacaoIdeal, brl, classeDoAtivo, pct, resumoCarteira, valorAtual } fr
 export const Route = createFileRoute("/_authenticated/rebalanceamento")({
   head: () => ({
     meta: [
-      { title: "Rebalanceamento · Investidor em 15 Anos" },
+      { title: "Análise · Investidor em 15 Anos" },
       { name: "description", content: "Compare a alocação atual com a estratégia ideal e veja quanto aportar em cada classe de ativo." },
-      { property: "og:title", content: "Rebalanceamento · Investidor em 15 Anos" },
+      { property: "og:title", content: "Análise · Investidor em 15 Anos" },
       { property: "og:description", content: "Semáforo de alocação e valores exatos para rebalancear sua carteira." },
     ],
   }),
@@ -39,7 +39,7 @@ function Rebalanceamento() {
   });
 
   return (
-    <AppShell title="Rebalanceamento" description="Estratégia por classes de ativos">
+    <AppShell title="Análise" description="Estratégia por classes de ativos">
       <AbasCarteira />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {linhas.map((l) => (

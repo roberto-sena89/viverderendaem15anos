@@ -9,9 +9,9 @@ import { brl, dividendos12m, evolucaoPatrimonio, pct, resumoCarteira } from "@/l
 export const Route = createFileRoute("/_authenticated/estatisticas")({
   head: () => ({
     meta: [
-      { title: "Estatísticas · Investidor em 15 Anos" },
+      { title: "Rentabilidade · Investidor em 15 Anos" },
       { name: "description", content: "CAGR, drawdown, rentabilidade real, dividendos e evolução do patrimônio da sua carteira." },
-      { property: "og:title", content: "Estatísticas · Investidor em 15 Anos" },
+      { property: "og:title", content: "Rentabilidade · Investidor em 15 Anos" },
       { property: "og:description", content: "Indicadores avançados de performance da carteira de investimentos." },
     ],
   }),
@@ -39,7 +39,7 @@ function Estatisticas() {
   }
 
   return (
-    <AppShell title="Estatísticas" description="Performance detalhada da carteira">
+    <AppShell title="Rentabilidade" description="Performance detalhada da carteira">
       <AbasCarteira />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="CAGR (12m)" value={pct(cagr)} tone={cagr >= 0 ? "positive" : "negative"} />
