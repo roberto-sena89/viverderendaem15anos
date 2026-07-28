@@ -122,7 +122,7 @@ function Dashboard() {
       </div>
 
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Proventos recebidos" value={brl(proventos.reduce((s, d) => s + d.valor, 0))} />
         <StatCard label="Aportes 12m" value={brl(evolucao.reduce((s, m) => s + m.aportes, 0))} />
         <StatCard label="Renda passiva mensal" value={brl(recebidos12m / 12)} />
