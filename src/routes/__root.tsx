@@ -117,21 +117,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@graph": [
             {
               "@type": "Organization",
-              "@id": "https://investidorsagaz.lovable.app/#organization",
+              "@id": "https://viverderendaem15.lovable.app/#organization",
               name: "Investidor em 15 Anos",
-              url: "https://investidorsagaz.lovable.app/",
+              url: "https://viverderendaem15.lovable.app/",
               description:
                 "Plataforma de controle de investimentos e planejamento financeiro: carteira consolidada, dividendos, rebalanceamento e projeção da independência financeira.",
             },
             {
               "@type": "WebSite",
-              "@id": "https://investidorsagaz.lovable.app/#website",
+              "@id": "https://viverderendaem15.lovable.app/#website",
               name: "Investidor em 15 Anos",
-              url: "https://investidorsagaz.lovable.app/",
+              url: "https://viverderendaem15.lovable.app/",
               inLanguage: "pt-BR",
               description:
                 "Controle de carteira, aportes e dividendos, simulador de aposentadoria e planejador da independência financeira com dados de mercado em tempo real.",
-              publisher: { "@id": "https://investidorsagaz.lovable.app/#organization" },
+              publisher: { "@id": "https://viverderendaem15.lovable.app/#organization" },
             },
           ],
         }),
