@@ -94,8 +94,11 @@ export function AppShell({
     navigate({ to: "/auth", replace: true, search: { redirect: undefined } });
   }
 
-  const grupoAtual =
-    grupos.find((g) => g.itens.some((i) => i.to === pathname))?.titulo ?? "Investidor em 15 anos";
+  const secaoAtual = secaoPorRota(pathname);
+  const grupoAtual = secaoAtual?.grupo ?? "Investidor em 15 anos";
+  // O h1 sempre reflete o rótulo da aba selecionada.
+  const tituloPagina = secaoAtual?.rotulo ?? title;
+
 
   const initials = (user?.name ?? "IN")
 
