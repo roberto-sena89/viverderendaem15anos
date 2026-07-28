@@ -544,7 +544,7 @@ function proventos12m(dividendos: Array<{ rate?: number | null; paymentDate?: st
 
 export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<RankingsB3> {
   const lista = await getJson<BrapiLista>(
-    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=80`,
+    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=250`,
     15000,
   );
 
