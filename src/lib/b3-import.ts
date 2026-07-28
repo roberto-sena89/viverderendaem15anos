@@ -158,13 +158,27 @@ function detectarLayout(cabecalhos: string[]): { layout: LayoutB3; rotulo: strin
   const set = cabecalhos.map(semAcento);
   const tem = (t: string) => set.some((c) => c.includes(t));
   if (tem("data do negocio") || (tem("codigo de negociacao") && tem("preco") && tem("quantidade") && !tem("entrada/saida")))
-    return { layout: "negociacao", rotulo: "Extrato de Negociação" };
+    return { layout: "negociacao", rotulo: "Extrato de Negociação (B3)" };
   if (tem("entrada/saida") || tem("movimentacao"))
-    return { layout: "movimentacao", rotulo: "Extrato de Movimentação" };
+    return { layout: "movimentacao", rotulo: "Extrato de Movimentação (B3)" };
   if (tem("preco de fechamento") || tem("valor atualizado") || (tem("produto") && !tem("data")))
     return { layout: "posicao", rotulo: "Relatório de Posição" };
+  if (
+    (tem("papel") || tem("titulo") || tem("especificacao")) &&
+    (tem("preco/ajuste") || tem("tipo negocio") || tem("data pregao") || tem("corretagem") || tem("valor liquido"))
+  )
+    return { layout: "corretora", rotulo: "Relatório de corretora (nota/negócios)" };
   return { layout: "desconhecido", rotulo: "Layout não identificado" };
 }
+
+/** Identifica a origem do arquivo pelo nome e pelo conteúdo das colunas/instituição. */
+function detectarOrigem(nomeArquivo: string, textoAmostra: string): { origem: OrigemArquivo; rotulo: string } {
+  const alvo = semAcento(`${nomeArquivo} ${textoAmostra}`);
+  if (alvo.includes("agora") || alvo.includes("bradesco")) return { origem: "agora", rotulo: "Ágora Investimentos" };
+  if (alvo.includes("b3") || alvo.includes("investidor")) return { origem: "b3", rotulo: "B3 — Área do Investidor" };
+  return { origem: "generico", rotulo: "Origem não identificada" };
+}
+
 
 export function numeroBR(valor: string): number {
   if (!valor) return 0;
