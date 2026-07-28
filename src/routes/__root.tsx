@@ -109,6 +109,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://investidorsagaz.lovable.app/#organization",
+              name: "Investidor em 15 Anos",
+              url: "https://investidorsagaz.lovable.app/",
+              description:
+                "Plataforma de controle de investimentos e planejamento financeiro: carteira consolidada, dividendos, rebalanceamento e projeção da independência financeira.",
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://investidorsagaz.lovable.app/#website",
+              name: "Investidor em 15 Anos",
+              url: "https://investidorsagaz.lovable.app/",
+              inLanguage: "pt-BR",
+              description:
+                "Controle de carteira, aportes e dividendos, simulador de aposentadoria e planejador da independência financeira com dados de mercado em tempo real.",
+              publisher: { "@id": "https://investidorsagaz.lovable.app/#organization" },
+            },
+          ],
+        }),
+      },
+    ],
   }),
 
   shellComponent: RootShell,
