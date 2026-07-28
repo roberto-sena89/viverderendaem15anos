@@ -21,7 +21,9 @@ export const Route = createFileRoute("/_authenticated/planejador")({
       { name: "description", content: "Projete seu patrimônio ano a ano, estime sua renda passiva e descubra a data da sua independência financeira." },
       { property: "og:title", content: "Planejador da Independência Financeira" },
       { property: "og:description", content: "Cenários otimista, base e conservador com inflação, aportes crescentes e taxa de retirada." },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/planejador" }],
   }),
   component: Planejador,
 });

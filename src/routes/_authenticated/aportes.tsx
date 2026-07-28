@@ -17,7 +17,9 @@ export const Route = createFileRoute("/_authenticated/aportes")({
       { name: "description", content: "Registre e acompanhe todos os seus aportes por data, corretora, ativo, quantidade e taxas." },
       { property: "og:title", content: "Patrimônio · Investidor em 15 Anos" },
       { property: "og:description", content: "Histórico completo de aportes da sua carteira de investimentos." },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/aportes" }],
   }),
   component: AportesPage,
 });

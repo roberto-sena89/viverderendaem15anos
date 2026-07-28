@@ -22,7 +22,9 @@ export const Route = createFileRoute("/_authenticated/carteira")({
       { name: "description", content: "Tabela completa da carteira com preço médio, lucro, rentabilidade, dividend yield e participação." },
       { property: "og:title", content: "Carteira · Investidor em 15 Anos" },
       { property: "og:description", content: "Todos os seus ativos consolidados por categoria em uma única tabela." },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/carteira" }],
   }),
   component: CarteiraPage,
 });

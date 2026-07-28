@@ -32,7 +32,9 @@ export const Route = createFileRoute("/_authenticated/dividendos")({
       { name: "description", content: "Dividendos mensais e anuais, yield on cost, dividend yield e histórico de proventos." },
       { property: "og:title", content: "Proventos · Investidor em 15 Anos" },
       { property: "og:description", content: "Acompanhe sua renda passiva mês a mês e o yield on cost da carteira." },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/dividendos" }],
   }),
   component: DividendosPage,
 });

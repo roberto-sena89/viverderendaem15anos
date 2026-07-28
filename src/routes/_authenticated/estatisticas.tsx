@@ -22,7 +22,9 @@ export const Route = createFileRoute("/_authenticated/estatisticas")({
       { name: "description", content: "CAGR, drawdown, rentabilidade real, dividendos e evolução do patrimônio da sua carteira." },
       { property: "og:title", content: "Rentabilidade · Investidor em 15 Anos" },
       { property: "og:description", content: "Indicadores avançados de performance da carteira de investimentos." },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/estatisticas" }],
   }),
   component: Estatisticas,
 });

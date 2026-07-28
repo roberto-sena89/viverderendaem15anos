@@ -25,7 +25,9 @@ export const Route = createFileRoute("/_authenticated/metas")({
       { name: "description", content: "Da reserva de emergência aos 3 milhões: acompanhe o progresso de cada meta patrimonial." },
       { property: "og:title", content: "Metas · Investidor em 15 Anos" },
       { property: "og:description", content: "Timeline de objetivos patrimoniais com barras de progresso e prazo estimado." },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/metas" }],
   }),
   component: MetasPage,
 });

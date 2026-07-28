@@ -45,7 +45,9 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { name: "description", content: "Patrimônio, rentabilidade, dividendos e evolução da carteira em tempo real." },
       { property: "og:title", content: "Resumo · Investidor em 15 Anos" },
       { property: "og:description", content: "Acompanhe patrimônio, rentabilidade e dividendos da sua carteira." },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/dashboard" }],
   }),
   component: Dashboard,
 });

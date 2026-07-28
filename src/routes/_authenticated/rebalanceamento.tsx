@@ -16,7 +16,9 @@ export const Route = createFileRoute("/_authenticated/rebalanceamento")({
       { name: "description", content: "Compare a alocação atual com a estratégia ideal e veja quanto aportar em cada classe de ativo." },
       { property: "og:title", content: "Análise · Investidor em 15 Anos" },
       { property: "og:description", content: "Semáforo de alocação e valores exatos para rebalancear sua carteira." },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/rebalanceamento" }],
   }),
   component: Rebalanceamento,
 });

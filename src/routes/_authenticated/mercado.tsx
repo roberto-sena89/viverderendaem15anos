@@ -54,7 +54,9 @@ export const Route = createFileRoute("/_authenticated/mercado")({
         property: "og:description",
         content: "Cotações ao vivo da B3, histórico de 10 anos e importação automática da sua carteira.",
       },
+      { name: "robots", content: "noindex, follow" },
     ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/mercado" }],
   }),
   component: MercadoPage,
 });
