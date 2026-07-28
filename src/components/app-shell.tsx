@@ -36,8 +36,8 @@ const grupos = [
   {
     titulo: "Análise",
     itens: [
-      { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
-      { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
+      { to: "/estatisticas", label: "Rentabilidade", icon: TrendingUp },
+      { to: "/rebalanceamento", label: "Análise", icon: Scale },
       { to: "/rankings", label: "Ranking de Ativos", icon: Trophy },
       { to: "/mercado", label: "Mercado & B3", icon: CandlestickChart },
     ],
