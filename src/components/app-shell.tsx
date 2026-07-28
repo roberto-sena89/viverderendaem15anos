@@ -39,6 +39,42 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState<{
+    name: string;
+    email: string;
+    avatar?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!active || !data.user) return;
+      const meta = data.user.user_metadata ?? {};
+      setUser({
+        name: (meta.full_name as string) || (meta.name as string) || "Investidor",
+        email: data.user.email ?? "",
+        avatar: meta.avatar_url as string | undefined,
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
+  const initials = (user?.name ?? "IN")
+    .split(" ")
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? "")
+    .join("");
 
   return (
     <div className="min-h-screen bg-background lg:flex">
