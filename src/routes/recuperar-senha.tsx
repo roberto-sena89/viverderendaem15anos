@@ -80,40 +80,67 @@ function RecuperarSenhaPage() {
           <ArrowLeft className="size-4" /> Voltar ao login
         </Link>
 
-        <h1 className="font-display mt-6 text-2xl font-semibold">Esqueci minha senha</h1>
+        <h1 className="font-display mt-6 text-2xl font-semibold">
+          {enviado ? "E-mail enviado" : "Esqueci minha senha"}
+        </h1>
 
         {enviado ? (
-          <div className="mt-4 space-y-4">
+          <div className="mt-4 space-y-5">
             <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
-              <MailCheck className="mt-0.5 size-5 text-primary" />
+              <MailCheck className="mt-0.5 size-5 shrink-0 text-primary" />
               <p className="text-sm text-muted-foreground">
-                Enviamos um link de redefinição para <strong className="text-foreground">{email}</strong>.
-                O link expira em pouco tempo — confira também a pasta de spam.
+                Enviamos um link de redefinição para{" "}
+                <strong className="text-foreground">{email}</strong>.
               </p>
             </div>
-            <Button
-              variant="outline"
-              className="w-full"
-              disabled={loading || espera > 0}
-              onClick={() => enviarEmail(email)}
-            >
-              {loading ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : espera > 0 ? (
-                `Reenviar em ${espera}s`
-              ) : (
-                "Reenviar e-mail"
-              )}
-            </Button>
-            <button
-              type="button"
-              className="w-full text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-              onClick={() => setEnviado(false)}
-            >
-              Usar outro e-mail
-            </button>
+
+            <div>
+              <p className="text-sm font-medium">Próximos passos</p>
+              <ol className="mt-3 space-y-3 text-sm text-muted-foreground">
+                {[
+                  "Abra o e-mail que acabamos de enviar (verifique também spam e promoções).",
+                  "Clique no botão “Redefinir senha” — o link é válido por tempo limitado.",
+                  "Crie uma nova senha com pelo menos 6 caracteres e entre na sua conta.",
+                ].map((passo, i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                      {i + 1}
+                    </span>
+                    <span className="pt-0.5">{passo}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                variant="outline"
+                className="w-full"
+                disabled={loading || espera > 0}
+                onClick={() => enviarEmail(email)}
+              >
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : espera > 0 ? (
+                  `Reenviar em ${espera}s`
+                ) : (
+                  "Reenviar e-mail"
+                )}
+              </Button>
+              <Button asChild className="w-full">
+                <Link to="/auth">Voltar ao login</Link>
+              </Button>
+              <button
+                type="button"
+                className="w-full text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                onClick={() => setEnviado(false)}
+              >
+                Usar outro e-mail
+              </button>
+            </div>
           </div>
         ) : (
+
 
           <>
             <p className="mt-1 text-sm text-muted-foreground">
