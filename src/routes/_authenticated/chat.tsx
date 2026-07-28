@@ -49,11 +49,12 @@ export const Route = createFileRoute("/_authenticated/chat")({
 });
 
 const SUGESTOES = [
+  "Como PETR4 se comportou nos últimos 10 anos?",
+  "Qual a projeção da Selic para os próximos anos?",
+  "Compare BOVA11 com IVVB11 em retorno e risco",
   "Analise a diversificação da minha carteira",
-  "Quanto preciso aportar por mês para viver de renda?",
-  "Meus FIIs estão com dividend yield saudável?",
-  "O que devo comprar no próximo aporte?",
 ];
+
 
 function ChatPage() {
   const queryClient = useQueryClient();
