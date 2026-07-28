@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-// TODO: replace with your project URL once a project name or custom domain is set.
-const BASE_URL = "";
+const BASE_URL = "https://investidorsagaz.lovable.app";
 
 interface SitemapEntry {
   path: string;
@@ -14,16 +13,13 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        // Only public, indexable routes. Pages under /_authenticated
+        // (dashboard, carteira, aportes, dividendos, planejador,
+        // rebalanceamento, metas, estatisticas, mercado, chat) redirect to
+        // /auth for crawlers, and /verificar-email and /api/* are not content.
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/dashboard", changefreq: "daily", priority: "0.9" },
-          { path: "/carteira", changefreq: "daily", priority: "0.8" },
-          { path: "/aportes", changefreq: "weekly", priority: "0.7" },
-          { path: "/dividendos", changefreq: "weekly", priority: "0.7" },
-          { path: "/planejador", changefreq: "monthly", priority: "0.8" },
-          { path: "/rebalanceamento", changefreq: "weekly", priority: "0.7" },
-          { path: "/metas", changefreq: "monthly", priority: "0.6" },
-          { path: "/estatisticas", changefreq: "weekly", priority: "0.6" },
+          { path: "/auth", changefreq: "monthly", priority: "0.5" },
         ];
 
         const urls = entries.map((e) =>
