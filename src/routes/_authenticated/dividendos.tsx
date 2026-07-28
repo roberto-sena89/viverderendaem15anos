@@ -290,6 +290,7 @@ function PainelProventos({
   const [periodo, setPeriodo] = useState("12");
   const [tipoAtivo, setTipoAtivo] = useState("todos");
   const [ativoSel, setAtivoSel] = useState("todos");
+  const [escopoTotal, setEscopoTotal] = useState("12m");
 
   const categoriaPorTicker = new Map(carteira.map((a) => [a.ticker, a.categoria as string]));
 
