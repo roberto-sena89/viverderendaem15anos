@@ -28,7 +28,9 @@ const nav = [
   { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
   { to: "/metas", label: "Metas", icon: Target },
   { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
+  { to: "/mercado", label: "Conectar B3", icon: CandlestickChart },
   { to: "/chat", label: "Técnico IA", icon: Bot },
+
 ] as const;
 
 export function AppShell({
