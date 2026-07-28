@@ -135,7 +135,7 @@ function AuthPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
-    navigate({ to: destination, replace: true });
+    goTo(destination);
   }
 
   async function handleSignUp(e: React.FormEvent) {
@@ -155,7 +155,7 @@ function AuthPage() {
       return;
     }
     if (data.session?.user.email_confirmed_at) {
-      navigate({ to: destination, replace: true });
+      goTo(destination);
       return;
     }
     toast.success("Conta criada! Confirme seu e-mail para acessar.");
