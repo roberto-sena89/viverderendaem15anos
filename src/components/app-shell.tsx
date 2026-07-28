@@ -10,6 +10,7 @@ import {
   Target,
   TrendingUp,
   CandlestickChart,
+  Trophy,
 
   Bot,
   LogOut,
@@ -37,6 +38,7 @@ const grupos = [
     itens: [
       { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
       { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
+      { to: "/rankings", label: "Ranking de Ativos", icon: Trophy },
       { to: "/mercado", label: "Mercado & B3", icon: CandlestickChart },
     ],
   },

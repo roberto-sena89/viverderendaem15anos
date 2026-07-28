@@ -464,3 +464,172 @@ export async function buscarFita(
     .filter((r) => r.preco !== null)
     .sort((a, b) => (ordem.get(a.simbolo) ?? 0) - (ordem.get(b.simbolo) ?? 0));
 }
+
+/* ------------------------------------------------------------------
+ * Rankings de ativos da B3 (brapi.dev): maiores dividend yield,
+ * maiores valor de mercado e maiores receitas.
+ * ------------------------------------------------------------------ */
+
+export type TipoRanking = "acoes" | "fiis" | "bdrs";
+
+export type ItemRanking = {
+  ticker: string;
+  nome: string;
+  logo: string | null;
+  preco: number | null;
+  variacaoPercent: number | null;
+  dy: number | null;
+  valorMercado: number | null;
+  receita: number | null;
+};
+
+export type RankingsB3 = {
+  tipo: TipoRanking;
+  dividendYield: ItemRanking[];
+  valorMercado: ItemRanking[];
+  receitas: ItemRanking[];
+  atualizadoEm: string;
+};
+
+type BrapiLista = {
+  stocks?: Array<{
+    stock: string;
+    name?: string;
+    close?: number | null;
+    change?: number | null;
+    market_cap?: number | null;
+    logo?: string | null;
+  }>;
+};
+
+type BrapiDetalhe = {
+  results?: Array<{
+    symbol: string;
+    longName?: string | null;
+    shortName?: string | null;
+    logourl?: string | null;
+    regularMarketPrice?: number | null;
+    regularMarketChangePercent?: number | null;
+    marketCap?: number | null;
+    financialData?: { totalRevenue?: number | null } | null;
+    dividendsData?: { cashDividends?: Array<{ rate?: number | null; paymentDate?: string | null }> } | null;
+  }>;
+};
+
+type Fundamento = {
+  nome: string | null;
+  preco: number | null;
+  variacaoPercent: number | null;
+  dy: number | null;
+  valorMercado: number | null;
+  receita: number | null;
+};
+
+const fundamentos = new Map<string, { expira: number; valor: Fundamento }>();
+const TTL_FUNDAMENTOS_MS = 24 * 60 * 60 * 1000;
+const LOTES_POR_CHAMADA = 4;
+
+const TIPO_BRAPI: Record<TipoRanking, string> = { acoes: "stock", fiis: "fund", bdrs: "bdr" };
+
+/** Soma dos proventos pagos nos últimos 12 meses. */
+function proventos12m(dividendos: Array<{ rate?: number | null; paymentDate?: string | null }>): number {
+  const limite = Date.now() - 365 * 24 * 60 * 60 * 1000;
+  const agora = Date.now();
+  return dividendos.reduce((soma, d) => {
+    const t = d.paymentDate ? Date.parse(d.paymentDate) : NaN;
+    if (!Number.isFinite(t) || t < limite || t > agora) return soma;
+    return soma + (Number(d.rate) || 0);
+  }, 0);
+}
+
+export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<RankingsB3> {
+  const lista = await getJson<BrapiLista>(
+    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=80`,
+    15000,
+  );
+
+  // remove fracionários (final F) e mantém apenas o papel mais líquido por empresa
+  const porEmpresa = new Map<string, ItemRanking>();
+  for (const s of lista.stocks ?? []) {
+    const ticker = s.stock.toUpperCase();
+    if (ticker.endsWith("F")) continue;
+    const empresa = ticker.replace(/\d+$/, "");
+    const cap = Number(s.market_cap) || 0;
+    const atual = porEmpresa.get(empresa);
+    if (atual && (atual.valorMercado ?? 0) >= cap) continue;
+    porEmpresa.set(empresa, {
+      ticker,
+      nome: s.name || ticker,
+      logo: s.logo ?? null,
+      preco: s.close ?? null,
+      variacaoPercent: s.change ?? null,
+      dy: null,
+      valorMercado: cap || null,
+      receita: null,
+    });
+  }
+
+  const base = [...porEmpresa.values()]
+    .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
+    .slice(0, 24);
+
+  // A fonte gratuita limita as consultas de fundamentos; preenchemos aos poucos
+  // e guardamos por 24h, de modo que o ranking se completa entre as visitas.
+  const pendentes = base.filter((a) => !fundamentos.has(a.ticker) || fundamentos.get(a.ticker)!.expira < Date.now());
+  for (let i = 0; i < pendentes.length && i < LOTES_POR_CHAMADA * 3; i += 3) {
+    const lote = pendentes.slice(i, i + 3);
+    try {
+      const det = await getJson<BrapiDetalhe>(
+        `https://brapi.dev/api/quote/${lote.map((a) => a.ticker).join(",")}?modules=financialData&dividends=true`,
+        15000,
+      );
+      if (!det.results?.length) break;
+      for (const r of det.results) {
+        const preco = r.regularMarketPrice ?? null;
+        const proventos = proventos12m(r.dividendsData?.cashDividends ?? []);
+        fundamentos.set(r.symbol.toUpperCase(), {
+          expira: Date.now() + TTL_FUNDAMENTOS_MS,
+          valor: {
+            nome: r.longName || r.shortName || null,
+            preco,
+            variacaoPercent: r.regularMarketChangePercent ?? null,
+            dy: preco && preco > 0 && proventos > 0 ? (proventos / preco) * 100 : null,
+            valorMercado: r.marketCap ?? null,
+            receita: r.financialData?.totalRevenue ?? null,
+          },
+        });
+      }
+    } catch {
+      break; // provável limite da fonte: usa o que já está em cache
+    }
+    await dormir(200);
+  }
+
+  const itens = base.map((a) => {
+    const f = fundamentos.get(a.ticker)?.valor;
+    if (!f) return a;
+    return {
+      ...a,
+      nome: f.nome ?? a.nome,
+      preco: f.preco ?? a.preco,
+      variacaoPercent: f.variacaoPercent ?? a.variacaoPercent,
+      dy: f.dy,
+      valorMercado: f.valorMercado ?? a.valorMercado,
+      receita: f.receita,
+    };
+  });
+
+  const topo = (chave: "dy" | "valorMercado" | "receita") =>
+    itens
+      .filter((a) => typeof a[chave] === "number" && (a[chave] as number) > 0)
+      .sort((a, b) => (b[chave] as number) - (a[chave] as number))
+      .slice(0, 8);
+
+  return {
+    tipo,
+    dividendYield: topo("dy"),
+    valorMercado: topo("valorMercado"),
+    receitas: topo("receita"),
+    atualizadoEm: new Date().toISOString(),
+  };
+}

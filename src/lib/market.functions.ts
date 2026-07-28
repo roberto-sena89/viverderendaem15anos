@@ -52,6 +52,17 @@ export const fitaMercado = createServerFn({ method: "GET" }).handler(
   },
 );
 
+export const rankingsAtivos = createServerFn({ method: "GET" })
+  .inputValidator((d: { tipo?: "acoes" | "fiis" | "bdrs" }) => ({
+    tipo: (d?.tipo ?? "acoes") as "acoes" | "fiis" | "bdrs",
+  }))
+  .handler(async ({ data }) => {
+    const mercado = await import("@/lib/market.server");
+    return mercado.buscarRankingsB3(data.tipo);
+  });
+
+
+
 
 
 export const painelB3 = createServerFn({ method: "GET" }).handler(async (): Promise<PainelB3> => {
