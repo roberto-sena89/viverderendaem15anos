@@ -82,7 +82,9 @@ function ListaRanking({
         </p>
       ) : (
         <>
-          <ul className="divide-y divide-border">
+          <ul
+            className={`divide-y divide-border ${completo ? "max-h-[32rem] overflow-y-auto" : ""}`}
+          >
             {visiveis.map((item, idx) => (
               <li key={item.ticker}>
                 <Link
