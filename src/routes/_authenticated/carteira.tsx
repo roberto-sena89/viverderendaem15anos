@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { DeltaChip, TickerMark } from "@/components/panel";
+import { ResumoKpis } from "@/components/resumo-kpis";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -68,6 +69,7 @@ function CarteiraPage() {
   return (
     <AppShell title="Carteira" description={`${carteira.length} ativos · ${brl(totalAtual)}`}>
       <AbasCarteira />
+      <ResumoKpis />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2">
           {filtros.map((f) => (
