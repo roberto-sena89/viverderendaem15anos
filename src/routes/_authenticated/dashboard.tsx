@@ -1,14 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  BarChart3,
-  ChevronDown,
-  Coins,
-  Landmark,
-  PiggyBank,
-  TrendingUp,
-  Wallet,
-} from "lucide-react";
+import { BarChart3, ChevronDown, Landmark, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -25,13 +17,13 @@ import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
+import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
 import { useAportes, useAtivos, useDividendos } from "@/lib/data";
 import type { Ativo } from "@/lib/portfolio";
 import {
   brl,
   categorias,
-  dividendos12m,
   evolucaoPatrimonio,
   pct,
   resumoCarteira,
@@ -68,47 +60,6 @@ const tooltipStyle = {
   fontSize: "12px",
 };
 
-/** Bloco compacto de indicador dentro dos cartões-resumo (padrão Investidor 10). */
-function Indicador({
-  rotulo,
-  valor,
-  tom = "default",
-}: {
-  rotulo: string;
-  valor: string;
-  tom?: "default" | "positive" | "negative";
-}) {
-  const cor =
-    tom === "positive" ? "text-success" : tom === "negative" ? "text-destructive" : "text-foreground";
-  return (
-    <div className="min-w-0">
-      <p className="truncate text-[0.68rem] text-muted-foreground">{rotulo}</p>
-      <p className={`num truncate text-sm font-semibold ${cor}`}>{valor}</p>
-    </div>
-  );
-}
-
-function CartaoResumo({
-  titulo,
-  icone: Icone,
-  children,
-}: {
-  titulo: string;
-  icone: typeof Wallet;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="panel p-4">
-      <div className="flex items-center gap-2">
-        <Icone className="size-4 shrink-0 text-muted-foreground/70" />
-        <p className="truncate text-[0.7rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
-          {titulo}
-        </p>
-      </div>
-      <div className="mt-3">{children}</div>
-    </div>
-  );
-}
 
 /** Linha de categoria expansível com os ativos daquele grupo. */
 function GrupoCategoria({
@@ -210,11 +161,10 @@ function Dashboard() {
   const { data: ativos = [], isLoading } = useAtivos();
   const { data: aportes = [] } = useAportes();
   const { data: proventos = [] } = useDividendos();
+  void proventos;
 
   const resumo = resumoCarteira(ativos);
   const evolucao = evolucaoPatrimonio(aportes, resumo.totalAtual);
-  const recebidos12m = dividendos12m(proventos);
-  const totalProventos = proventos.reduce((s, d) => s + d.valor, 0);
 
   // barra empilhada: valor aplicado + ganho de capital, como no gráfico do Investidor 10
   const aplicadoFinal = Math.max(resumo.totalInvestido, 1);
@@ -263,71 +213,7 @@ function Dashboard() {
       <AbasCarteira />
       <AvisoSincronizacao />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <CartaoResumo titulo="Patrimônio total" icone={Wallet}>
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="num font-display text-[1.6rem] leading-none font-bold">{brl(resumo.totalAtual, 2)}</p>
-            <DeltaChip value={resumo.rentabilidade} />
-          </div>
-          <div className="mt-3">
-            <Indicador rotulo="Valor investido" valor={brl(resumo.totalInvestido, 2)} />
-          </div>
-        </CartaoResumo>
-
-        <CartaoResumo titulo="Lucro total" icone={PiggyBank}>
-          <p
-            className={`num font-display text-[1.6rem] leading-none font-bold ${
-              resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
-            }`}
-          >
-            {brl(resumo.lucroTotal, 2)}
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Indicador
-              rotulo="Ganho de capital"
-              valor={brl(resumo.lucroTotal, 2)}
-              tom={resumo.lucroTotal >= 0 ? "positive" : "negative"}
-            />
-            <Indicador rotulo="Dividendos recebidos" valor={brl(totalProventos, 2)} />
-          </div>
-        </CartaoResumo>
-
-        <CartaoResumo titulo="Proventos recebidos (12M)" icone={Coins}>
-          <p className="num font-display text-[1.6rem] leading-none font-bold">{brl(recebidos12m, 2)}</p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Indicador rotulo="Total" valor={brl(totalProventos, 2)} />
-            <Indicador rotulo="Média mensal" valor={brl(recebidos12m / 12, 2)} />
-          </div>
-        </CartaoResumo>
-
-        <CartaoResumo titulo="Rentabilidade" icone={TrendingUp}>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-[0.68rem] text-muted-foreground">12 meses</p>
-              <p
-                className={`num font-display text-xl font-bold ${
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
-                }`}
-              >
-                {pct(resumo.rentabilidade, 2)}
-              </p>
-            </div>
-            <div className="border-l border-border pl-3">
-              <p className="text-[0.68rem] text-muted-foreground">Total</p>
-              <p
-                className={`num font-display text-xl font-bold ${
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
-                }`}
-              >
-                {pct(resumo.rentabilidade, 2)}
-              </p>
-            </div>
-          </div>
-          <p className="mt-3 text-[0.68rem] text-muted-foreground">
-            DY da carteira: {pct(resumo.dyCarteira, 2)}
-          </p>
-        </CartaoResumo>
-      </div>
+      <ResumoKpis />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel title="Evolução do patrimônio" hint="12 meses">
