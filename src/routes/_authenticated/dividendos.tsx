@@ -140,6 +140,9 @@ function DividendosPage() {
 
       <HistoricoMensal proventos={proventos} carteira={carteira} />
 
+      <MeusProventos proventos={proventos} carteira={carteira} />
+
+
       <div className="surface-card p-6">
         <p className="panel-title">Calendário de proventos (12 meses)</p>
         <div className="mt-4 h-72">
@@ -487,6 +490,94 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
     </div>
   );
 }
+
+function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; carteira: Ativo[] }) {
+  const anos = Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) => b.localeCompare(a));
+  const anoAtual = String(new Date().getFullYear());
+  const [ano, setAno] = useState(anos.includes(anoAtual) ? anoAtual : (anos[0] ?? anoAtual));
+  const [tipoAtivo, setTipoAtivo] = useState("todos");
+  const [ativoSel, setAtivoSel] = useState("todos");
+
+  const categoriaPorTicker = new Map(carteira.map((a) => [a.ticker, a.categoria as string]));
+
+  const filtrados = proventos
+    .filter((d) => {
+      if (d.data.slice(0, 4) !== ano) return false;
+      if (tipoAtivo !== "todos" && categoriaPorTicker.get(d.ticker) !== tipoAtivo) return false;
+      if (ativoSel !== "todos" && d.ticker !== ativoSel) return false;
+      return true;
+    })
+    .sort((a, b) => b.data.localeCompare(a.data));
+
+  const total = filtrados.reduce((s, d) => s + d.valor, 0);
+
+  const opcoesTipo = [
+    { valor: "todos", rotulo: "Tipo de ativo" },
+    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
+  ];
+  const opcoesAno = (anos.includes(anoAtual) ? anos : [anoAtual, ...anos]).map((a) => ({ valor: a, rotulo: a }));
+
+  return (
+    <div className="surface-card">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
+        <p className="panel-title">Meus proventos</p>
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="flex h-9 items-center gap-2 rounded-md bg-muted px-3 text-xs">
+            <span className="text-muted-foreground">Total</span>
+            <span className="font-semibold tabular-nums text-primary">{brl(total, 2)}</span>
+          </div>
+          <SeletorFiltro
+            valor={ano}
+            onChange={setAno}
+            icone={Calendar}
+            opcoes={opcoesAno}
+            rotuloAcessivel="Ano"
+          />
+          <SeletorFiltro
+            valor={tipoAtivo}
+            onChange={setTipoAtivo}
+            icone={CircleDollarSign}
+            opcoes={opcoesTipo}
+            rotuloAcessivel="Tipo de ativo"
+          />
+          <FiltroAtivos
+            valor={ativoSel}
+            onChange={setAtivoSel}
+            ativos={Array.from(new Set(proventos.map((d) => d.ticker))).sort()}
+          />
+        </div>
+      </div>
+      {filtrados.length ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Data</TableHead>
+              <TableHead>Ativo</TableHead>
+              <TableHead className="text-right">Valor</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtrados.map((d) => (
+              <TableRow key={d.id}>
+                <TableCell className="tabular-nums">
+                  {new Date(`${d.data}T12:00`).toLocaleDateString("pt-BR")}
+                </TableCell>
+                <TableCell className="font-medium">{d.ticker}</TableCell>
+                <TableCell className="text-right tabular-nums">{brl(d.valor, 2)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-1 py-16 text-center">
+          <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
+          <p className="text-sm text-muted-foreground">Ainda não há dados disponíveis para exibição.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 
 const ESCOPOS_TOTAL = [
