@@ -23,36 +23,31 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
-const grupos = [
-  {
-    titulo: "Carteira",
-    itens: [
-      { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
-      { to: "/carteira", label: "Carteira", icon: Wallet },
-      { to: "/aportes", label: "Patrimônio", icon: PlusCircle },
-      { to: "/dividendos", label: "Proventos", icon: Coins },
-    ],
-  },
-  {
-    titulo: "Análise",
-    itens: [
-      { to: "/estatisticas", label: "Rentabilidade", icon: TrendingUp },
-      { to: "/rebalanceamento", label: "Análise", icon: Scale },
-      { to: "/rankings", label: "Ranking de Ativos", icon: Trophy },
-      { to: "/mercado", label: "Mercado & B3", icon: CandlestickChart },
-    ],
-  },
-  {
-    titulo: "Planejamento",
-    itens: [
-      { to: "/planejador", label: "Planejador FI", icon: LineChart },
-      { to: "/metas", label: "Metas", icon: Target },
-      { to: "/chat", label: "Técnico IA", icon: Bot },
-    ],
-  },
-];
+const ICONES: Record<string, typeof LayoutDashboard> = {
+  "/dashboard": LayoutDashboard,
+  "/carteira": Wallet,
+  "/aportes": PlusCircle,
+  "/dividendos": Coins,
+  "/estatisticas": TrendingUp,
+  "/rebalanceamento": Scale,
+  "/rankings": Trophy,
+  "/mercado": CandlestickChart,
+  "/planejador": LineChart,
+  "/metas": Target,
+  "/chat": Bot,
+};
+
+const grupos = ["Carteira", "Análise", "Planejamento"].map((titulo) => ({
+  titulo,
+  itens: SECOES.filter((s) => s.grupo === titulo).map((s) => ({
+    to: s.to,
+    label: s.rotulo,
+    icon: ICONES[s.to] ?? LayoutDashboard,
+  })),
+}));
 
 const nav = grupos.flatMap((g) => g.itens);
+
 
 
 
