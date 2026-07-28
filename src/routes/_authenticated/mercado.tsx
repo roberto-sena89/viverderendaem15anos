@@ -33,6 +33,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cotacaoAtivo, historicoAtivo, painelB3, sincronizarPrecos } from "@/lib/market.functions";
 import { lerArquivoB3, type DiagnosticoB3, type ResultadoB3 } from "@/lib/b3-import";
 import { useImportarB3 } from "@/lib/data";
+import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
+
 import { brl, pct } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/mercado")({
