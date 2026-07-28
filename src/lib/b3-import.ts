@@ -342,6 +342,24 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
       detalhe: `${abas.length} aba(s) lida(s): ${abas.map((a) => a.nome).join(", ")}.`,
     });
   }
+  diagnosticos.push(
+    origem === "generico"
+      ? {
+          severidade: "aviso",
+          titulo: "Origem do arquivo não identificada",
+          detalhe:
+            "Não reconhecemos se o arquivo veio da B3 ou da Ágora. As colunas foram mapeadas automaticamente — confira a prévia antes de importar.",
+        }
+      : {
+          severidade: "info",
+          titulo: `Origem detectada: ${origemRotulo}`,
+          detalhe:
+            origem === "agora"
+              ? "Vamos registrar os aportes com a corretora Ágora Investimentos e considerar corretagem/emolumentos como taxas."
+              : "Arquivo reconhecido como exportação da Área do Investidor da B3.",
+        },
+  );
+
   if (layout === "posicao") {
     diagnosticos.push({
       severidade: "aviso",
