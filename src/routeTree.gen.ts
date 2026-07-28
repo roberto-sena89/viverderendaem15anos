@@ -13,6 +13,7 @@ import { Route as VerificarEmailRouteImport } from './routes/verificar-email'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
+import { Route as CalculadoraJurosCompostosRouteImport } from './routes/calculadora-juros-compostos'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -54,6 +55,12 @@ const GuiaLiberdadeFinanceiraRoute = GuiaLiberdadeFinanceiraRouteImport.update({
   path: '/guia-liberdade-financeira',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalculadoraJurosCompostosRoute =
+  CalculadoraJurosCompostosRouteImport.update({
+    id: '/calculadora-juros-compostos',
+    path: '/calculadora-juros-compostos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -163,6 +170,7 @@ const ApiPublicHooksAtualizarPrecosRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -188,6 +196,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -215,6 +224,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
     | '/sitemap.xml'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
     | '/sitemap.xml'
@@ -293,6 +305,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
     | '/sitemap.xml'
@@ -320,6 +333,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CalculadoraJurosCompostosRoute: typeof CalculadoraJurosCompostosRoute
   GuiaLiberdadeFinanceiraRoute: typeof GuiaLiberdadeFinanceiraRoute
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -360,6 +374,13 @@ declare module '@tanstack/react-router' {
       path: '/guia-liberdade-financeira'
       fullPath: '/guia-liberdade-financeira'
       preLoaderRoute: typeof GuiaLiberdadeFinanceiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calculadora-juros-compostos': {
+      id: '/calculadora-juros-compostos'
+      path: '/calculadora-juros-compostos'
+      fullPath: '/calculadora-juros-compostos'
+      preLoaderRoute: typeof CalculadoraJurosCompostosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -540,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CalculadoraJurosCompostosRoute: CalculadoraJurosCompostosRoute,
   GuiaLiberdadeFinanceiraRoute: GuiaLiberdadeFinanceiraRoute,
   McpRoute: McpRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
