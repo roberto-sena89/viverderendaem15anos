@@ -3,7 +3,9 @@ import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { alocacaoIdeal, brl, carteira, classeDoAtivo, pct, totalAtual, valorAtual } from "@/lib/portfolio";
+import { useAtivos } from "@/lib/data";
+import { alocacaoIdeal, brl, classeDoAtivo, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
+
 
 export const Route = createFileRoute("/_authenticated/rebalanceamento")({
   head: () => ({
