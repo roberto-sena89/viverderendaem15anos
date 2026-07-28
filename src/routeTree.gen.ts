@@ -25,6 +25,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
+import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
 
 const VerificarEmailRoute = VerificarEmailRouteImport.update({
   id: '/verificar-email',
@@ -107,6 +108,12 @@ const AuthenticatedAportesRoute = AuthenticatedAportesRouteImport.update({
   path: '/aportes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicHooksAtualizarPrecosRoute =
+  ApiPublicHooksAtualizarPrecosRouteImport.update({
+    id: '/api/public/hooks/atualizar-precos',
+    path: '/api/public/hooks/atualizar-precos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -141,6 +149,7 @@ export interface FileRoutesByTo {
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -160,6 +169,7 @@ export interface FileRoutesById {
   '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/planejador'
     | '/rebalanceamento'
     | '/api/chat'
+    | '/api/public/hooks/atualizar-precos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/planejador'
     | '/rebalanceamento'
     | '/api/chat'
+    | '/api/public/hooks/atualizar-precos'
   id:
     | '__root__'
     | '/'
@@ -214,6 +226,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planejador'
     | '/_authenticated/rebalanceamento'
     | '/api/chat'
+    | '/api/public/hooks/atualizar-precos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,6 +236,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerificarEmailRoute: typeof VerificarEmailRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -339,6 +353,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAportesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/atualizar-precos': {
+      id: '/api/public/hooks/atualizar-precos'
+      path: '/api/public/hooks/atualizar-precos'
+      fullPath: '/api/public/hooks/atualizar-precos'
+      preLoaderRoute: typeof ApiPublicHooksAtualizarPrecosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -378,6 +399,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerificarEmailRoute: VerificarEmailRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
