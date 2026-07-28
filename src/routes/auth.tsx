@@ -166,7 +166,7 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden p-12 text-[oklch(0.98_0_0)] lg:flex">
+      <div className="relative hidden flex-col justify-end overflow-hidden p-12 text-[oklch(0.98_0_0)] lg:flex">
         <img
           src={investidorImg}
           alt="Investidor acompanhando gráficos de ações no computador"
@@ -175,7 +175,6 @@ function AuthPage() {
           className="absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/55 to-black/30" />
-        <div />
         <div className="relative max-w-md">
           <h2 className="font-display text-4xl leading-[1.1] font-semibold tracking-tight text-balance [text-shadow:0_2px_16px_rgb(0_0_0/0.6)]">
             Sua independência financeira em um só painel.
@@ -184,9 +183,8 @@ function AuthPage() {
             Carteira, aportes, dividendos, rebalanceamento e metas — com projeções de longo prazo.
           </p>
         </div>
-        <div />
-
       </div>
+
 
 
 
