@@ -185,7 +185,7 @@ function FiltroSelect({
 }) {
   return (
     <Select value={valor} onValueChange={onChange}>
-      <SelectTrigger aria-label={rotuloAcessivel} className="h-9 min-w-[9.5rem] gap-2 text-xs">
+      <SelectTrigger aria-label={rotuloAcessivel} className="h-9 w-[9.5rem] gap-2 text-xs">
         <Icone className="size-3.5 shrink-0 text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>
@@ -276,7 +276,7 @@ function Dashboard() {
         <Panel
           title="Evolução do Patrimônio"
           action={
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2">
               <FiltroSelect
                 valor={periodo}
                 onChange={setPeriodo}
