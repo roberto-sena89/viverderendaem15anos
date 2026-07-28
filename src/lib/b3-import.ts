@@ -450,14 +450,15 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
         chavesVistas.add(chave);
         aportes.push({
           data,
-          corretora: instituicao,
+          corretora: origem === "agora" ? instituicao || "Ágora Investimentos" : instituicao,
           ticker,
           categoria: categoriaDoTicker(ticker, valorDe(linha, "mercado")),
           quantidade,
           preco,
-          taxas: 0,
-          observacoes: "Importado da B3",
+          taxas: numeroBR(valorDe(linha, "taxas")),
+          observacoes: origem === "agora" ? "Importado da Ágora" : "Importado da B3",
         });
+
       } else {
         linhasSemValor.push(nLinha);
         ignoradas++;
