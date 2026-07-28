@@ -228,16 +228,25 @@ function SliderField({
   max?: number;
   suffix?: string;
 }) {
+  const id = useId();
   return (
     <div className="grid gap-2">
       <div className="flex items-center justify-between">
-        <Label>{label}</Label>
+        <Label htmlFor={id}>{label}</Label>
         <span className="text-xs font-medium text-primary">
           {value.toLocaleString("pt-BR")}
           {suffix}
         </span>
       </div>
-      <Slider value={[value]} min={min} max={max} step={0.5} onValueChange={([v]) => onChange(v)} />
+      <Slider
+        id={id}
+        aria-label={label}
+        value={[value]}
+        min={min}
+        max={max}
+        step={0.5}
+        onValueChange={([v]) => onChange(v)}
+      />
     </div>
   );
 }
