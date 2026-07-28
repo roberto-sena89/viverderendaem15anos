@@ -288,6 +288,9 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
       ignoradas: 0,
       layout: "desconhecido",
       layoutRotulo: "Layout não identificado",
+      origem: "generico",
+      origemRotulo: "Origem não identificada",
+
       abas: [],
       totalLinhas: 0,
       mapeamento: [],
