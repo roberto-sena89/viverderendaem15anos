@@ -166,7 +166,7 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden border-4 border-primary p-12 text-primary-foreground lg:flex">
+      <div className="relative hidden flex-col justify-between overflow-hidden border-4 border-primary p-12 text-[oklch(0.98_0_0)] lg:flex">
         <img
           src={investidorImg}
           alt="Investidor acompanhando gráficos de ações no computador"
@@ -174,7 +174,7 @@ function AuthPage() {
           height={1280}
           className="absolute inset-0 size-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-brand opacity-70" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/20" />
         <Link to="/" className="relative flex items-center gap-2">
           <span className="grid size-9 place-items-center rounded-xl bg-white/15">
             <Sparkles className="size-4" />
