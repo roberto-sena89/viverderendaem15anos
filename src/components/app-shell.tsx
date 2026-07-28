@@ -175,11 +175,15 @@ export function AppShell({
         <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
           <div className="flex items-center justify-between gap-4 px-5 py-4 lg:px-8">
             <div className="min-w-0">
-              <h1 className="truncate font-display text-lg font-semibold sm:text-xl">{title}</h1>
+              <p className="text-[0.62rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">
+                {grupoAtual}
+              </p>
+              <h1 className="truncate font-display text-lg font-bold sm:text-xl">{title}</h1>
               {description ? (
                 <p className="truncate text-sm text-muted-foreground">{description}</p>
               ) : null}
             </div>
+
             <div className="flex items-center gap-1">
               <ThemeToggle />
               <Button
