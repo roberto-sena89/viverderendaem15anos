@@ -510,6 +510,9 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
     ignoradas,
     layout,
     layoutRotulo: rotulo,
+    origem,
+    origemRotulo,
+
     abas: abas.map((a) => a.nome),
     totalLinhas,
     mapeamento,
