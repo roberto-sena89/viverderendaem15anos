@@ -601,7 +601,6 @@ async function indicadoresAcoes(): Promise<Map<string, IndicadorPapel>> {
   for (const c of linhasTabela(html)) {
     const ticker = c[0]?.toUpperCase();
     if (!ticker) continue;
-    const cotacao = numeroBR(c[1] ?? "");
     const psr = numeroBR(c[4] ?? "");
     const dy = numeroBR(c[5] ?? "");
     const liquidez = numeroBR(c[18] ?? "") ?? 0;
@@ -612,7 +611,6 @@ async function indicadoresAcoes(): Promise<Map<string, IndicadorPapel>> {
       receita: null,
       liquidez,
     });
-    void cotacao;
   }
   return mapa;
 }
