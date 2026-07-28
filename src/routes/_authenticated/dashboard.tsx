@@ -133,7 +133,7 @@ function Dashboard() {
         <div className="surface-card p-6">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
-              <p className="text-sm font-medium">Próxima meta financeira</p>
+              <p className="panel-title">Próxima meta financeira</p>
               <p className="text-xs text-muted-foreground">
                 {brl(resumo.totalAtual)} de {brl(metaFinanceira)}
               </p>
@@ -146,7 +146,7 @@ function Dashboard() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="surface-card p-6 lg:col-span-2">
-          <p className="text-sm font-medium">Evolução patrimonial (12 meses)</p>
+          <p className="panel-title">Evolução patrimonial (12 meses)</p>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={evolucao}>
@@ -173,7 +173,7 @@ function Dashboard() {
         </div>
 
         <div className="surface-card p-6">
-          <p className="text-sm font-medium">Composição da carteira</p>
+          <p className="panel-title">Composição da carteira</p>
           <div className="mt-2 h-52">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -204,7 +204,7 @@ function Dashboard() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="surface-card p-6">
-          <p className="text-sm font-medium">Dividendos por mês</p>
+          <p className="panel-title">Dividendos por mês</p>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={proventosMes}>
@@ -219,7 +219,7 @@ function Dashboard() {
         </div>
 
         <div className="surface-card p-6">
-          <p className="text-sm font-medium">Aportes mensais</p>
+          <p className="panel-title">Aportes mensais</p>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={evolucao}>

@@ -105,7 +105,7 @@ function Planejador() {
           <div className="surface-card p-6">
             <div className="flex flex-wrap items-end justify-between gap-2">
               <div>
-                <p className="text-sm font-medium">Meta de independência</p>
+                <p className="panel-title">Meta de independência</p>
                 <p className="text-xs text-muted-foreground">
                   Necessário {brl(patrimonioNecessario)} para {brl(objetivoRenda)}/mês a {pct(input.taxaRetirada)} ao ano
                 </p>
@@ -125,7 +125,7 @@ function Planejador() {
           </div>
 
           <div className="surface-card p-6">
-            <p className="text-sm font-medium">Cenários de evolução</p>
+            <p className="panel-title">Cenários de evolução</p>
             <div className="mt-4 h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>

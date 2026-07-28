@@ -130,7 +130,7 @@ function DividendosPage() {
       </div>
 
       <div className="surface-card p-6">
-        <p className="text-sm font-medium">Calendário de proventos (12 meses)</p>
+        <p className="panel-title">Calendário de proventos (12 meses)</p>
         <div className="mt-4 h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={grafico}>
