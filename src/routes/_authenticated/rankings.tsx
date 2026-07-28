@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BarChart3, ChevronRight, CircleDollarSign, Landmark, RefreshCw } from "lucide-react";
+import { BarChart3, ChevronLeft, ChevronRight, CircleDollarSign, Landmark, RefreshCw } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Panel, TickerMark } from "@/components/panel";
 import { Button } from "@/components/ui/button";
