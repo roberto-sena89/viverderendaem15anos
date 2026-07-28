@@ -14,9 +14,12 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         // Only public, indexable routes. Pages under /_authenticated
-        // (dashboard, carteira, aportes, dividendos, planejador,
+        // (dashboard, carteira, aportes, dividendos, planejador, rankings,
         // rebalanceamento, metas, estatisticas, mercado, chat) redirect to
-        // /auth for crawlers, and /verificar-email and /api/* are not content.
+        // /auth for crawlers; /verificar-email, /mcp, /.mcp/*, /.well-known/*
+        // and /api/* are endpoints or transient states, not content.
+        // These are excluded here and disallowed in public/robots.txt.
+
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/calculadora-juros-compostos", changefreq: "monthly", priority: "0.9" },
