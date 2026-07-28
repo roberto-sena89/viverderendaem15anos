@@ -15,18 +15,21 @@ const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const cache = new Map<string, { expira: number; valor: unknown }>();
 const TTL_MS = 5 * 60 * 1000;
 
-async function buscar(url: string, timeoutMs: number): Promise<Response> {
+async function buscar(url: string, timeoutMs: number, comUA = false): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     return await fetch(url, {
-      headers: { "User-Agent": UA, Accept: "application/json" },
+      // O Yahoo rejeita (429) requisições com User-Agent de navegador vindas de
+      // servidores; por padrão enviamos apenas Accept e só usamos o UA no retry.
+      headers: comUA ? { "User-Agent": UA, Accept: "application/json" } : { Accept: "application/json" },
       signal: controller.signal,
     });
   } finally {
     clearTimeout(timer);
   }
 }
+
 
 async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
   const emCache = cache.get(url);
