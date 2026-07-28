@@ -18,6 +18,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
+import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
 import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
 import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
 import { Route as AuthenticatedMercadoRouteImport } from './routes/_authenticated/mercado'
@@ -78,6 +79,11 @@ const AuthenticatedRebalanceamentoRoute =
     path: '/rebalanceamento',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRankingsRoute = AuthenticatedRankingsRouteImport.update({
+  id: '/rankings',
+  path: '/rankings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlanejadorRoute = AuthenticatedPlanejadorRouteImport.update({
   id: '/planejador',
   path: '/planejador',
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/mercado': typeof AuthenticatedMercadoRoute
   '/metas': typeof AuthenticatedMetasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
+  '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/mercado': typeof AuthenticatedMercadoRoute
   '/metas': typeof AuthenticatedMetasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
+  '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/_authenticated/mercado': typeof AuthenticatedMercadoRoute
   '/_authenticated/metas': typeof AuthenticatedMetasRoute
   '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
+  '/_authenticated/rankings': typeof AuthenticatedRankingsRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -248,6 +257,7 @@ export interface FileRouteTypes {
     | '/mercado'
     | '/metas'
     | '/planejador'
+    | '/rankings'
     | '/rebalanceamento'
     | '/api/chat'
     | '/.lovable/oauth/consent'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/mercado'
     | '/metas'
     | '/planejador'
+    | '/rankings'
     | '/rebalanceamento'
     | '/api/chat'
     | '/.lovable/oauth/consent'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mercado'
     | '/_authenticated/metas'
     | '/_authenticated/planejador'
+    | '/_authenticated/rankings'
     | '/_authenticated/rebalanceamento'
     | '/api/chat'
     | '/.lovable/oauth/consent'
@@ -383,6 +395,13 @@ declare module '@tanstack/react-router' {
       path: '/rebalanceamento'
       fullPath: '/rebalanceamento'
       preLoaderRoute: typeof AuthenticatedRebalanceamentoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rankings': {
+      id: '/_authenticated/rankings'
+      path: '/rankings'
+      fullPath: '/rankings'
+      preLoaderRoute: typeof AuthenticatedRankingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/planejador': {
@@ -496,6 +515,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMercadoRoute: typeof AuthenticatedMercadoRoute
   AuthenticatedMetasRoute: typeof AuthenticatedMetasRoute
   AuthenticatedPlanejadorRoute: typeof AuthenticatedPlanejadorRoute
+  AuthenticatedRankingsRoute: typeof AuthenticatedRankingsRoute
   AuthenticatedRebalanceamentoRoute: typeof AuthenticatedRebalanceamentoRoute
 }
 
@@ -509,6 +529,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMercadoRoute: AuthenticatedMercadoRoute,
   AuthenticatedMetasRoute: AuthenticatedMetasRoute,
   AuthenticatedPlanejadorRoute: AuthenticatedPlanejadorRoute,
+  AuthenticatedRankingsRoute: AuthenticatedRankingsRoute,
   AuthenticatedRebalanceamentoRoute: AuthenticatedRebalanceamentoRoute,
 }
 
