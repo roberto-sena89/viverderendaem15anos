@@ -14,7 +14,7 @@ import {
   valorInvestido,
 } from "@/lib/portfolio";
 
-export const Route = createFileRoute("/dividendos")({
+export const Route = createFileRoute("/_authenticated/dividendos")({
   head: () => ({
     meta: [
       { title: "Dividendos · Investidor em 15 Anos" },

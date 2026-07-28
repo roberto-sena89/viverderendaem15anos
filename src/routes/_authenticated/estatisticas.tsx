@@ -12,7 +12,7 @@ import {
   totalAtual,
 } from "@/lib/portfolio";
 
-export const Route = createFileRoute("/estatisticas")({
+export const Route = createFileRoute("/_authenticated/estatisticas")({
   head: () => ({
     meta: [
       { title: "Estatísticas · Investidor em 15 Anos" },

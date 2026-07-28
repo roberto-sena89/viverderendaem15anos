@@ -11,7 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { brl, pct, projetar, totalAtual, type ProjecaoInput } from "@/lib/portfolio";
 
-export const Route = createFileRoute("/planejador")({
+export const Route = createFileRoute("/_authenticated/planejador")({
   head: () => ({
     meta: [
       { title: "Planejador da Independência Financeira · Investidor em 15 Anos" },
