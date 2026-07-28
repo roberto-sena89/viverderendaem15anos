@@ -1,18 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
-  brl,
-  carteira,
-  dividendos12m,
-  dividendosMensais,
-  dyCarteira,
-  pct,
-  valorAtual,
-  valorInvestido,
-} from "@/lib/portfolio";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAtivos, useCriarDividendo, useDividendos, useExcluir } from "@/lib/data";
+import { brl, dividendos12m, dividendosMensais, pct, resumoCarteira, valorInvestido } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/dividendos")({
   head: () => ({
@@ -26,25 +32,108 @@ export const Route = createFileRoute("/_authenticated/dividendos")({
   component: DividendosPage,
 });
 
+const tipos = ["Dividendo", "JCP", "Rendimento"];
+
 function DividendosPage() {
-  const pagadores = carteira.filter((a) => a.dy > 0);
-  const investidoPagadores = pagadores.reduce((s, a) => s + valorInvestido(a), 0);
-  const yieldOnCost = (dividendos12m / investidoPagadores) * 100;
+  const [open, setOpen] = useState(false);
+  const { data: proventos = [], isLoading } = useDividendos();
+  const { data: carteira = [] } = useAtivos();
+  const criar = useCriarDividendo();
+  const excluir = useExcluir("dividendos");
+
+  const resumo = resumoCarteira(carteira);
+  const recebidos12m = dividendos12m(proventos);
+  const grafico = dividendosMensais(proventos);
+  const investidoTotal = carteira.reduce((s, a) => s + valorInvestido(a), 0);
+  const yieldOnCost = investidoTotal > 0 ? (recebidos12m / investidoTotal) * 100 : 0;
+
+  const porAtivo = Object.entries(
+    proventos.reduce<Record<string, number>>((acc, d) => {
+      acc[d.ticker] = (acc[d.ticker] ?? 0) + d.valor;
+      return acc;
+    }, {}),
+  ).sort((a, b) => b[1] - a[1]);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const novo = {
+      data: String(form.get("data")),
+      ticker: String(form.get("ticker")).toUpperCase(),
+      tipo: String(form.get("tipo")),
+      valor: Number(form.get("valor")),
+    };
+    if (!novo.data || !novo.ticker || !novo.valor) {
+      toast.error("Preencha data, ativo e valor.");
+      return;
+    }
+    try {
+      await criar.mutateAsync(novo);
+      setOpen(false);
+      toast.success("Provento registrado.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível salvar.");
+    }
+  }
 
   return (
     <AppShell title="Dividendos" description="Sua renda passiva em construção">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Dividendos 12m" value={brl(dividendos12m)} />
-        <StatCard label="Média mensal" value={brl(dividendos12m / 12)} />
-        <StatCard label="Dividend yield" value={pct(dyCarteira)} tone="positive" />
+        <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
+        <StatCard label="Média mensal" value={brl(recebidos12m / 12)} />
+        <StatCard label="DY estimado da carteira" value={pct(resumo.dyCarteira)} tone="positive" />
         <StatCard label="Yield on cost" value={pct(yieldOnCost)} tone="positive" />
+      </div>
+
+      <div className="flex justify-end">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="size-4" /> Novo provento
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Novo provento</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="data">Data</Label>
+                <Input id="data" name="data" type="date" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="ticker">Ativo</Label>
+                <Input id="ticker" name="ticker" placeholder="HGLG11" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="tipo">Tipo</Label>
+                <select id="tipo" name="tipo" className="h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                  {tipos.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="valor">Valor (R$)</Label>
+                <Input id="valor" name="valor" type="number" step="any" min="0" required />
+              </div>
+              <DialogFooter className="sm:col-span-2">
+                <Button type="submit" disabled={criar.isPending}>
+                  Salvar provento
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="surface-card p-6">
         <p className="text-sm font-medium">Calendário de proventos (12 meses)</p>
         <div className="mt-4 h-72">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={dividendosMensais}>
+            <BarChart data={grafico}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
               <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
@@ -64,32 +153,73 @@ function DividendosPage() {
         </div>
       </div>
 
-      <div className="surface-card overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Ativo</TableHead>
-              <TableHead className="text-right">DY</TableHead>
-              <TableHead className="text-right">Proventos 12m</TableHead>
-              <TableHead className="text-right">Média mensal</TableHead>
-              <TableHead className="text-right">Yield on cost</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pagadores.map((a) => {
-              const prov = (valorAtual(a) * a.dy) / 100;
-              return (
-                <TableRow key={a.ticker}>
-                  <TableCell className="font-medium">{a.ticker}</TableCell>
-                  <TableCell className="text-right">{pct(a.dy)}</TableCell>
-                  <TableCell className="text-right">{brl(prov)}</TableCell>
-                  <TableCell className="text-right">{brl(prov / 12)}</TableCell>
-                  <TableCell className="text-right text-success">{pct((prov / valorInvestido(a)) * 100)}</TableCell>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="surface-card overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Ativo</TableHead>
+                <TableHead className="text-right">Total recebido</TableHead>
+                <TableHead className="text-right">Média mensal</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {porAtivo.map(([ticker, total]) => (
+                <TableRow key={ticker}>
+                  <TableCell className="font-medium">{ticker}</TableCell>
+                  <TableCell className="text-right">{brl(total)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">{brl(total / 12)}</TableCell>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+              ))}
+              {!isLoading && porAtivo.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="py-12 text-center text-sm text-muted-foreground">
+                    Nenhum provento registrado ainda.
+                  </TableCell>
+                </TableRow>
+              ) : null}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="surface-card overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Data</TableHead>
+                <TableHead>Ativo</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead className="text-right">Valor</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {proventos.map((d) => (
+                <TableRow key={d.id}>
+                  <TableCell>{new Date(`${d.data}T12:00`).toLocaleDateString("pt-BR")}</TableCell>
+                  <TableCell className="font-medium">{d.ticker}</TableCell>
+                  <TableCell className="text-muted-foreground">{d.tipo}</TableCell>
+                  <TableCell className="text-right">{brl(d.valor, 2)}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      aria-label="Excluir provento"
+                      onClick={() =>
+                        excluir.mutate(d.id, {
+                          onSuccess: () => toast.success("Provento excluído."),
+                          onError: () => toast.error("Não foi possível excluir."),
+                        })
+                      }
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </AppShell>
   );
