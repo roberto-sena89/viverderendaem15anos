@@ -53,6 +53,11 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // `destination` pode conter query string (ex.: consentimento OAuth), então navegamos por href.
+  function goTo(dest: string) {
+    navigate({ href: dest, replace: true });
+  }
+
   useEffect(() => {
     let active = true;
     supabase.auth.getSession().then(({ data }) => {
@@ -65,7 +70,7 @@ function AuthPage() {
         });
         return;
       }
-      navigate({ to: destination, replace: true });
+      goTo(destination);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
@@ -79,7 +84,7 @@ function AuthPage() {
         }
         const saved = sessionStorage.getItem(REDIRECT_KEY);
         sessionStorage.removeItem(REDIRECT_KEY);
-        navigate({ to: safePath(saved ?? destination), replace: true });
+        goTo(safePath(saved ?? destination));
       }
     });
     return () => {
@@ -93,7 +98,7 @@ function AuthPage() {
     try {
       sessionStorage.setItem(REDIRECT_KEY, destination);
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: `${window.location.origin}/auth?redirect=${encodeURIComponent(destination)}`,
       });
       if (result.error) {
         toast.error("Não foi possível entrar com o Google.");
@@ -101,12 +106,13 @@ function AuthPage() {
         return;
       }
       if (result.redirected) return;
-      navigate({ to: destination, replace: true });
+      goTo(destination);
     } catch {
       toast.error("Não foi possível entrar com o Google.");
       setLoading(false);
     }
   }
+
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
@@ -129,7 +135,7 @@ function AuthPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
-    navigate({ to: destination, replace: true });
+    goTo(destination);
   }
 
   async function handleSignUp(e: React.FormEvent) {
@@ -149,7 +155,7 @@ function AuthPage() {
       return;
     }
     if (data.session?.user.email_confirmed_at) {
-      navigate({ to: destination, replace: true });
+      goTo(destination);
       return;
     }
     toast.success("Conta criada! Confirme seu e-mail para acessar.");
