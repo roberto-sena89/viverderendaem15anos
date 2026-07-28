@@ -276,7 +276,7 @@ function Dashboard() {
         <Panel
           title="Evolução do Patrimônio"
           action={
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2">
               <FiltroSelect
                 valor={periodo}
                 onChange={setPeriodo}
