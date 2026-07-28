@@ -324,7 +324,11 @@ function Diagnosticos({ itens }: { itens: DiagnosticoB3[] }) {
     aviso: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
     info: "border-border bg-muted/40 text-muted-foreground",
   };
-  const Icone = { erro: XCircle, aviso: AlertTriangle, info: CheckCircle2 };
+  const Icone: Record<DiagnosticoB3["severidade"], typeof XCircle> = {
+    erro: XCircle,
+    aviso: AlertTriangle,
+    info: CheckCircle2,
+  };
   return (
     <div className="space-y-2">
       {itens.map((d, i) => {
