@@ -512,12 +512,10 @@ function PainelProventos({
               opcoes={opcoesTipo}
               rotuloAcessivel="Tipo de ativo"
             />
-            <SeletorFiltro
+            <FiltroAtivos
               valor={ativoSel}
               onChange={setAtivoSel}
-              icone={CircleDollarSign}
-              opcoes={opcoesAtivos}
-              rotuloAcessivel="Ativo"
+              ativos={Array.from(new Set(proventos.map((d) => d.ticker))).sort()}
             />
           </div>
         </div>
