@@ -422,14 +422,42 @@ function ImportarB3() {
       {previa ? (
         <Card>
           <CardHeader>
-            <CardTitle>Prévia de {arquivo}</CardTitle>
+            <div className="flex flex-wrap items-center gap-2">
+              <CardTitle>Prévia de {arquivo}</CardTitle>
+              <Badge variant={previa.layout === "desconhecido" ? "destructive" : "secondary"}>{previa.layoutRotulo}</Badge>
+            </div>
             <CardDescription>
-              {previa.aportes.length} compras · {previa.dividendos.length} proventos · {previa.vendas} vendas ignoradas ·{" "}
-              {previa.ignoradas} linhas não reconhecidas
+              {previa.totalLinhas} linhas lidas · {previa.aportes.length} compras · {previa.dividendos.length} proventos ·{" "}
+              {previa.vendas} vendas ignoradas · {previa.ignoradas} não reconhecidas
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <Diagnosticos itens={previa.diagnosticos} />
+
+            <div>
+              <p className="mb-2 text-sm font-medium">Mapeamento automático de colunas</p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {previa.mapeamento.map((m) => (
+                  <div
+                    key={m.campo}
+                    className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2 text-sm"
+                  >
+                    <span className="text-muted-foreground">
+                      {ROTULO_CAMPO[m.campo] ?? m.campo}
+                      {m.obrigatorio ? " *" : ""}
+                    </span>
+                    {m.coluna ? (
+                      <span className="font-medium">{m.coluna}</span>
+                    ) : (
+                      <span className={m.obrigatorio ? "text-destructive" : "text-muted-foreground"}>não encontrada</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="max-h-80 overflow-auto rounded-xl border border-border">
+
               <Table>
                 <TableHeader>
                   <TableRow>
