@@ -440,7 +440,8 @@ function ImportarB3() {
             <div className="flex flex-wrap items-center gap-2">
               <CardTitle>Prévia de {arquivo}</CardTitle>
               <Badge variant={previa.layout === "desconhecido" ? "destructive" : "secondary"}>{previa.layoutRotulo}</Badge>
-            </div>
+              <Badge variant={previa.origem === "generico" ? "outline" : "secondary"}>{previa.origemRotulo}</Badge>
+
             <CardDescription>
               {previa.totalLinhas} linhas lidas · {previa.aportes.length} compras · {previa.dividendos.length} proventos ·{" "}
               {previa.vendas} vendas ignoradas · {previa.ignoradas} não reconhecidas
