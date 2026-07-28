@@ -505,12 +505,10 @@ function PainelProventos({
             ))}
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2">
-            <SeletorFiltro
+            <FiltroPeriodo
               valor={periodo}
               onChange={setPeriodo}
-              icone={Calendar}
-              opcoes={PERIODOS_PROVENTOS}
-              rotuloAcessivel="Período dos proventos"
+              anos={Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) => b.localeCompare(a))}
             />
             <SeletorFiltro
               valor={tipoAtivo}
