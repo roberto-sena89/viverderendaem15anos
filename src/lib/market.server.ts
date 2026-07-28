@@ -44,7 +44,7 @@ async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
       const alvo = url.replace(host, h);
       let res: Response;
       try {
-        res = await buscar(alvo, timeoutMs);
+        res = await buscar(alvo, timeoutMs, tentativa === 2);
       } catch {
         continue;
       }
