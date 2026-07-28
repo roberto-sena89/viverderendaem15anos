@@ -73,69 +73,6 @@ function AportesPage() {
   return (
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
-      <div className="flex justify-end">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="size-4" /> Novo aporte
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Novo aporte</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
-                <Label htmlFor="data">Data</Label>
-                <Input id="data" name="data" type="date" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="corretora">Corretora</Label>
-                <Input id="corretora" name="corretora" placeholder="BTG Pactual" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="ticker">Ativo</Label>
-                <Input id="ticker" name="ticker" placeholder="BOVA11" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="categoria">Categoria</Label>
-                <select
-                  id="categoria"
-                  name="categoria"
-                  className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
-                >
-                  {categorias.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="quantidade">Quantidade</Label>
-                <Input id="quantidade" name="quantidade" type="number" step="any" min="0" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="preco">Preço</Label>
-                <Input id="preco" name="preco" type="number" step="any" min="0" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="taxas">Taxas</Label>
-                <Input id="taxas" name="taxas" type="number" step="any" min="0" defaultValue={0} />
-              </div>
-              <div className="grid gap-2 sm:col-span-2">
-                <Label htmlFor="observacoes">Observações</Label>
-                <Textarea id="observacoes" name="observacoes" rows={2} />
-              </div>
-              <DialogFooter className="sm:col-span-2">
-                <Button type="submit" disabled={criar.isPending}>
-                  Salvar aporte
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
 
       <div className="surface-card overflow-x-auto">
         <Table>
