@@ -15,6 +15,8 @@ import {
   YAxis,
 } from "recharts";
 import { AppShell } from "@/components/app-shell";
+import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
+
 import { StatCard } from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
