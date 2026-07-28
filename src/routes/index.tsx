@@ -136,7 +136,7 @@ function Landing() {
         </div>
       </header>
 
-      <main>
+      <main id="conteudo">
         {/* Hero de busca, no padrão de portais de mercado */}
         <section className="relative isolate overflow-hidden border-b border-border">
           <img
