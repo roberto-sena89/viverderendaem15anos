@@ -11,7 +11,17 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ArrowDownRight, ArrowUpRight, FileSpreadsheet, RefreshCw, Search, Upload } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  CheckCircle2,
+  FileSpreadsheet,
+  RefreshCw,
+  Search,
+  Upload,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
