@@ -1,8 +1,17 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Calendar } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAportes, useAtivos, useDividendos } from "@/lib/data";
 import { brl, dividendos12m, evolucaoPatrimonio, pct, resumoCarteira } from "@/lib/portfolio";
 
@@ -18,13 +27,31 @@ export const Route = createFileRoute("/_authenticated/estatisticas")({
   component: Estatisticas,
 });
 
+const anoAtual = new Date().getFullYear();
+
+const PERIODOS = [
+  { valor: "inicio", rotulo: "Desde o início" },
+  { valor: "ano", rotulo: `Ano atual (${anoAtual})` },
+  { valor: "12", rotulo: "12 Meses" },
+  { valor: "24", rotulo: "2 Anos" },
+  { valor: "60", rotulo: "5 Anos" },
+  { valor: "120", rotulo: "10 Anos" },
+];
+
 function Estatisticas() {
+  const [periodo, setPeriodo] = useState("inicio");
   const { data: carteira = [] } = useAtivos();
   const { data: aportes = [] } = useAportes();
   const { data: proventos = [] } = useDividendos();
 
   const { totalAtual, lucroTotal, rentabilidade } = resumoCarteira(carteira);
-  const evolucao = evolucaoPatrimonio(aportes, totalAtual);
+  const evolucaoCompleta = evolucaoPatrimonio(aportes, totalAtual);
+  const evolucao =
+    periodo === "inicio"
+      ? evolucaoCompleta
+      : periodo === "ano"
+        ? evolucaoCompleta.filter((m) => m.chave.startsWith(String(anoAtual)))
+        : evolucaoCompleta.slice(-Number(periodo));
 
   const inicio = evolucao[0]?.patrimonio ?? 0;
   const cagr = inicio > 0 ? (totalAtual / inicio - 1) * 100 : 0;
@@ -53,6 +80,22 @@ function Estatisticas() {
         <StatCard label="Dividendos 12m" value={brl(dividendos12m(proventos))} />
         <StatCard label="Patrimônio" value={brl(totalAtual)} />
         <StatCard label="Aportes (12m)" value={brl(evolucao.reduce((s, m) => s + m.aportes, 0))} />
+      </div>
+
+      <div className="flex justify-end">
+        <Select value={periodo} onValueChange={setPeriodo}>
+          <SelectTrigger aria-label="Período do gráfico" className="h-9 w-[11rem] gap-2 text-xs">
+            <Calendar className="size-3.5 shrink-0 text-muted-foreground" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PERIODOS.map((o) => (
+              <SelectItem key={o.valor} value={o.valor} className="text-xs">
+                {o.rotulo}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="surface-card p-6">
