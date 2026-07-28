@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BarChart3, ChevronDown, Landmark, Wallet } from "lucide-react";
+import { BarChart3, Calendar, ChevronDown, CircleDollarSign, Landmark, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -19,6 +19,13 @@ import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAportes, useAtivos, useDividendos } from "@/lib/data";
 import type { Ativo } from "@/lib/portfolio";
 import {
@@ -157,124 +164,215 @@ function GrupoCategoria({
   );
 }
 
+const PERIODOS = [
+  { valor: "3", rotulo: "3 Meses" },
+  { valor: "6", rotulo: "6 Meses" },
+  { valor: "12", rotulo: "12 Meses" },
+];
+
+function FiltroSelect({
+  valor,
+  onChange,
+  icone: Icone,
+  opcoes,
+  rotuloAcessivel,
+}: {
+  valor: string;
+  onChange: (v: string) => void;
+  icone: typeof Calendar;
+  opcoes: { valor: string; rotulo: string }[];
+  rotuloAcessivel: string;
+}) {
+  return (
+    <Select value={valor} onValueChange={onChange}>
+      <SelectTrigger aria-label={rotuloAcessivel} className="h-9 min-w-[9.5rem] gap-2 text-xs">
+        <Icone className="size-3.5 shrink-0 text-muted-foreground" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {opcoes.map((o) => (
+          <SelectItem key={o.valor} value={o.valor} className="text-xs">
+            {o.rotulo}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function Dashboard() {
   const { data: ativos = [], isLoading } = useAtivos();
   const { data: aportes = [] } = useAportes();
   const { data: proventos = [] } = useDividendos();
   void proventos;
 
+  const [periodo, setPeriodo] = useState("12");
+  const [tipoEvolucao, setTipoEvolucao] = useState("todos");
+  const [tipoComposicao, setTipoComposicao] = useState("todos");
+
+  const opcoesTipo = [
+    { valor: "todos", rotulo: "Todos os tipos" },
+    ...categorias.map((c) => ({ valor: c, rotulo: c })),
+  ];
+
+  const ativosEvolucao = tipoEvolucao === "todos" ? ativos : ativos.filter((a) => a.categoria === tipoEvolucao);
   const resumo = resumoCarteira(ativos);
-  const evolucao = evolucaoPatrimonio(aportes, resumo.totalAtual);
+  const resumoEvolucao = resumoCarteira(ativosEvolucao);
+  const evolucao = evolucaoPatrimonio(aportes, resumoEvolucao.totalAtual);
 
   // barra empilhada: valor aplicado + ganho de capital, como no gráfico do Investidor 10
-  const aplicadoFinal = Math.max(resumo.totalInvestido, 1);
-  const dadosEvolucao = evolucao.map((m) => {
-    const aplicado = Math.min(m.patrimonio, resumo.totalInvestido || m.patrimonio);
+  const aplicadoFinal = Math.max(resumoEvolucao.totalInvestido, 1);
+  const dadosEvolucao = evolucao.slice(-Number(periodo)).map((m) => {
+    const aplicado = Math.min(m.patrimonio, resumoEvolucao.totalInvestido || m.patrimonio);
     return {
       mes: m.mes,
       aplicado: Math.round(aplicado),
-      ganho: Math.round(resumo.lucroTotal * (aplicado / aplicadoFinal)),
+      ganho: Math.round(resumoEvolucao.lucroTotal * (aplicado / aplicadoFinal)),
     };
   });
 
+  const ativosComposicao =
+    tipoComposicao === "todos" ? ativos : ativos.filter((a) => a.categoria === tipoComposicao);
+  const totalComposicao = ativosComposicao.reduce((s, a) => s + valorAtual(a), 0);
   const porCategoria = categorias
     .map((c) => ({
       name: c,
-      value: ativos.filter((a) => a.categoria === c).reduce((s, a) => s + valorAtual(a), 0),
+      value: ativosComposicao.filter((a) => a.categoria === c).reduce((s, a) => s + valorAtual(a), 0),
     }))
     .filter((c) => c.value > 0);
 
-  if (!isLoading && ativos.length === 0) {
-    return (
-      <AppShell title="Resumo" description="Visão geral do seu patrimônio">
-      <AbasCarteira />
-        <div className="surface-card grid place-items-center gap-3 p-16 text-center">
-          <Wallet className="size-8 text-muted-foreground" />
-          <p className="font-display text-lg font-semibold">Sua carteira está vazia</p>
-          <p className="max-w-sm text-sm text-muted-foreground">
-            Registre seu primeiro aporte ou cadastre um ativo para começar a acompanhar patrimônio,
-            rentabilidade e dividendos.
-          </p>
-          <div className="mt-2 flex gap-2">
-            <Button asChild>
-              <Link to="/aportes">Registrar aporte</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/carteira">Cadastrar ativo</Link>
-            </Button>
-          </div>
-        </div>
-      </AppShell>
-    );
-  }
+  const carteiraVazia = !isLoading && ativos.length === 0;
 
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
       <AbasCarteira />
       <AvisoSincronizacao />
 
+      {carteiraVazia ? (
+        <div className="surface-card flex flex-wrap items-center justify-between gap-3 p-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <Wallet className="size-5 shrink-0 text-muted-foreground" />
+            <div className="min-w-0">
+              <p className="font-display text-sm font-semibold">Sua carteira está vazia</p>
+              <p className="text-xs text-muted-foreground">
+                Registre seu primeiro aporte ou cadastre um ativo para preencher os gráficos abaixo.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button asChild size="sm">
+              <Link to="/aportes">Registrar aporte</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link to="/carteira">Cadastrar ativo</Link>
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
       <ResumoKpis />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Panel title="Evolução do patrimônio" hint="12 meses">
-          <div className="mb-2 flex items-center justify-center gap-5 text-xs text-muted-foreground">
+        <Panel
+          title="Evolução do Patrimônio"
+          action={
+            <div className="flex flex-wrap items-center gap-2">
+              <FiltroSelect
+                valor={periodo}
+                onChange={setPeriodo}
+                icone={Calendar}
+                opcoes={PERIODOS}
+                rotuloAcessivel="Período do gráfico de evolução"
+              />
+              <FiltroSelect
+                valor={tipoEvolucao}
+                onChange={setTipoEvolucao}
+                icone={CircleDollarSign}
+                opcoes={opcoesTipo}
+                rotuloAcessivel="Tipo de ativo na evolução"
+              />
+            </div>
+          }
+        >
+          <div className="mb-3 flex items-center justify-center gap-5 text-xs text-muted-foreground">
             <span className="flex items-center gap-2">
-              <span className="size-2.5 rounded-full" style={{ backgroundColor: "var(--color-chart-1)" }} />
+              <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: "var(--color-chart-1)" }} />
               Valor aplicado
             </span>
             <span className="flex items-center gap-2">
-              <span className="size-2.5 rounded-full" style={{ backgroundColor: "var(--color-chart-2)" }} />
-              Ganho de capital
+              <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: "var(--color-chart-2)" }} />
+              Ganho de Capital
             </span>
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dadosEvolucao}>
+              <BarChart data={dadosEvolucao} margin={{ left: 12, right: 8, top: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                 <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
                 <YAxis
-                  tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
+                  tickFormatter={(v: number) => brl(v, 2)}
                   tickLine={false}
                   axisLine={false}
-                  fontSize={12}
+                  width={92}
+                  fontSize={11}
                   stroke="var(--color-muted-foreground)"
                 />
                 <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} cursor={{ fill: "var(--color-muted)" }} />
                 <Bar dataKey="aplicado" stackId="p" fill="var(--color-chart-1)" name="Valor aplicado" />
-                <Bar dataKey="ganho" stackId="p" fill="var(--color-chart-2)" name="Ganho de capital" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="ganho" stackId="p" fill="var(--color-chart-2)" name="Ganho de Capital" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </Panel>
 
-        <Panel title="Ativos na carteira">
-          <div className="h-52">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={porCategoria} dataKey="value" nameKey="name" innerRadius={54} outerRadius={82} paddingAngle={2} stroke="none">
-                  {porCategoria.map((_, i) => (
-                    <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <ul className="mt-3 space-y-2 text-xs">
-            {porCategoria.map((c, i) => (
-              <li key={c.name} className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-muted-foreground">
-                  <span className="size-2.5 rounded-full" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
-                  {c.name}
-                </span>
-                <span className="num font-medium">
-                  {pct(resumo.totalAtual > 0 ? (c.value / resumo.totalAtual) * 100 : 0)}
-                </span>
-              </li>
-            ))}
-          </ul>
+        <Panel
+          title="Ativos na Carteira"
+          action={
+            <FiltroSelect
+              valor={tipoComposicao}
+              onChange={setTipoComposicao}
+              icone={CircleDollarSign}
+              opcoes={opcoesTipo}
+              rotuloAcessivel="Tipo de ativo na composição"
+            />
+          }
+        >
+          {porCategoria.length === 0 ? (
+            <p className="grid h-52 place-items-center text-center text-sm text-muted-foreground">
+              Sem ativos para exibir neste filtro.
+            </p>
+          ) : (
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="h-52 min-w-[12rem] flex-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={porCategoria} dataKey="value" nameKey="name" innerRadius={54} outerRadius={82} paddingAngle={2} stroke="none">
+                      {porCategoria.map((_, i) => (
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <ul className="space-y-2 text-xs">
+                {porCategoria.map((c, i) => (
+                  <li key={c.name} className="flex items-center gap-3">
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
+                      {c.name}
+                    </span>
+                    <span className="num ml-auto font-medium">
+                      {pct(totalComposicao > 0 ? (c.value / totalComposicao) * 100 : 0)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </Panel>
       </div>
+
 
       <div className="space-y-3">
         <h2 className="font-display text-lg font-bold">
