@@ -33,7 +33,10 @@ export interface DiagnosticoB3 {
   linhas?: number[];
 }
 
-export type LayoutB3 = "negociacao" | "movimentacao" | "posicao" | "desconhecido";
+export type LayoutB3 = "negociacao" | "movimentacao" | "posicao" | "corretora" | "desconhecido";
+
+export type OrigemArquivo = "b3" | "agora" | "generico";
+
 
 export interface MapeamentoCampo {
   campo: string;
