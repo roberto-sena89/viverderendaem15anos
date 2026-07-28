@@ -27,7 +27,7 @@ const grupos = [
   {
     titulo: "Carteira",
     itens: [
-      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
       { to: "/carteira", label: "Carteira", icon: Wallet },
       { to: "/aportes", label: "Aportes", icon: PlusCircle },
       { to: "/dividendos", label: "Dividendos", icon: Coins },
