@@ -432,10 +432,6 @@ function PainelProventos({
     { valor: "todos", rotulo: "Tipo de ativo" },
     ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
   ];
-  const opcoesAtivos = [
-    { valor: "todos", rotulo: "Ativos" },
-    ...Array.from(new Set(proventos.map((d) => d.ticker))).map((t) => ({ valor: t, rotulo: t })),
-  ];
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
