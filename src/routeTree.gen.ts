@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerificarEmailRouteImport } from './routes/verificar-email'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -45,6 +46,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiaLiberdadeFinanceiraRoute = GuiaLiberdadeFinanceiraRouteImport.update({
+  id: '/guia-liberdade-financeira',
+  path: '/guia-liberdade-financeira',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -151,6 +157,7 @@ const ApiPublicHooksAtualizarPrecosRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verificar-email': typeof VerificarEmailRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verificar-email': typeof VerificarEmailRoute
@@ -199,6 +207,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verificar-email': typeof VerificarEmailRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/guia-liberdade-financeira'
     | '/mcp'
     | '/sitemap.xml'
     | '/verificar-email'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/guia-liberdade-financeira'
     | '/mcp'
     | '/sitemap.xml'
     | '/verificar-email'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/guia-liberdade-financeira'
     | '/mcp'
     | '/sitemap.xml'
     | '/verificar-email'
@@ -296,6 +308,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  GuiaLiberdadeFinanceiraRoute: typeof GuiaLiberdadeFinanceiraRoute
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerificarEmailRoute: typeof VerificarEmailRoute
@@ -328,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia-liberdade-financeira': {
+      id: '/guia-liberdade-financeira'
+      path: '/guia-liberdade-financeira'
+      fullPath: '/guia-liberdade-financeira'
+      preLoaderRoute: typeof GuiaLiberdadeFinanceiraRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -499,6 +519,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  GuiaLiberdadeFinanceiraRoute: GuiaLiberdadeFinanceiraRoute,
   McpRoute: McpRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerificarEmailRoute: VerificarEmailRoute,
