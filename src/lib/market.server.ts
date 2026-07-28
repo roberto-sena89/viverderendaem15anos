@@ -527,7 +527,7 @@ type Fundamento = {
 
 const fundamentos = new Map<string, { expira: number; valor: Fundamento }>();
 const TTL_FUNDAMENTOS_MS = 24 * 60 * 60 * 1000;
-const LOTES_POR_CHAMADA = 4;
+const LOTES_POR_CHAMADA = 10;
 
 const TIPO_BRAPI: Record<TipoRanking, string> = { acoes: "stock", fiis: "fund", bdrs: "bdr" };
 
