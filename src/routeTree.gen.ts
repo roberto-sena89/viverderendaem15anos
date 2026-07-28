@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
 import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
 import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
@@ -45,6 +46,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRebalanceamentoRoute =
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/metas': typeof AuthenticatedMetasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/metas': typeof AuthenticatedMetasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/_authenticated/metas': typeof AuthenticatedMetasRoute
   '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/api/chat': typeof ApiChatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/metas'
     | '/planejador'
     | '/rebalanceamento'
+    | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/metas'
     | '/planejador'
     | '/rebalanceamento'
+    | '/api/chat'
   id:
     | '__root__'
     | '/'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/_authenticated/metas'
     | '/_authenticated/planejador'
     | '/_authenticated/rebalanceamento'
+    | '/api/chat'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -186,6 +198,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerificarEmailRoute: typeof VerificarEmailRoute
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/rebalanceamento': {
@@ -315,6 +335,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerificarEmailRoute: VerificarEmailRoute,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
