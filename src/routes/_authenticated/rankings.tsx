@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BarChart3, ChevronRight, CircleDollarSign, Landmark, RefreshCw } from "lucide-react";
+import { BarChart3, ChevronLeft, ChevronRight, CircleDollarSign, Landmark, RefreshCw } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Panel, TickerMark } from "@/components/panel";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,7 @@ function valorGrande(v: number) {
 }
 
 const VISIVEIS = 5;
+const POR_PAGINA = 10;
 
 function ListaRanking({
   titulo,
@@ -61,7 +62,14 @@ function ListaRanking({
   carregando: boolean;
 }) {
   const [completo, setCompleto] = useState(false);
-  const visiveis = completo ? itens : itens.slice(0, VISIVEIS);
+  const [pagina, setPagina] = useState(1);
+  const totalPaginas = Math.max(1, Math.ceil(itens.length / POR_PAGINA));
+  const paginaAtual = Math.min(pagina, totalPaginas);
+  const inicio = completo ? (paginaAtual - 1) * POR_PAGINA : 0;
+  const visiveis = completo
+    ? itens.slice(inicio, inicio + POR_PAGINA)
+    : itens.slice(0, VISIVEIS);
+
 
   return (
     <Panel className="overflow-hidden" bodyClassName="p-0">
@@ -82,9 +90,7 @@ function ListaRanking({
         </p>
       ) : (
         <>
-          <ul
-            className={`divide-y divide-border ${completo ? "max-h-[32rem] overflow-y-auto" : ""}`}
-          >
+          <ul className="divide-y divide-border">
             {visiveis.map((item, idx) => (
               <li key={item.ticker}>
                 <Link
@@ -94,10 +100,10 @@ function ListaRanking({
                 >
                   <span
                     className={`num w-6 shrink-0 text-xs font-bold ${
-                      idx < 3 ? "text-primary" : "text-muted-foreground/60"
+                      inicio + idx < 3 ? "text-primary" : "text-muted-foreground/60"
                     }`}
                   >
-                    #{idx + 1}
+                    #{inicio + idx + 1}
                   </span>
                   {item.logo ? (
                     <img
@@ -120,11 +126,60 @@ function ListaRanking({
             ))}
           </ul>
 
-          <div className="border-t border-border p-4">
+          <div className="space-y-3 border-t border-border p-4">
+            {completo && totalPaginas > 1 ? (
+              <nav
+                className="flex items-center justify-between gap-2"
+                aria-label={`Paginação — ${titulo}`}
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setPagina(Math.max(1, paginaAtual - 1))}
+                  disabled={paginaAtual === 1}
+                  aria-label="Página anterior"
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPaginas }).map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setPagina(i + 1)}
+                      aria-current={paginaAtual === i + 1 ? "page" : undefined}
+                      aria-label={`Página ${i + 1}`}
+                      className={`num size-7 rounded-full text-xs font-semibold tabular-nums transition-colors ${
+                        paginaAtual === i + 1
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setPagina(Math.min(totalPaginas, paginaAtual + 1))}
+                  disabled={paginaAtual === totalPaginas}
+                  aria-label="Próxima página"
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+              </nav>
+            ) : null}
+
             <Button
               variant="outline"
               className="w-full rounded-full"
-              onClick={() => setCompleto((v) => !v)}
+              onClick={() => {
+                setCompleto((v) => !v);
+                setPagina(1);
+              }}
               aria-expanded={completo}
               aria-label={`${completo ? "Ver menos" : "Ver ranking completo"} — ${titulo}`}
               disabled={itens.length <= VISIVEIS}
@@ -132,6 +187,7 @@ function ListaRanking({
               {completo ? "Ver menos" : `Ver Rankings (${itens.length})`}
             </Button>
           </div>
+
         </>
       )}
     </Panel>
