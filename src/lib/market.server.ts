@@ -542,18 +542,114 @@ function proventos12m(dividendos: Array<{ rate?: number | null; paymentDate?: st
   }, 0);
 }
 
+/* ------------------------------------------------------------------
+ * Indicadores agregados (Fundamentus): uma única consulta devolve DY,
+ * PSR/FFO e liquidez de praticamente todos os papéis da B3, o que permite
+ * montar rankings completos sem esbarrar no limite das APIs de cotação.
+ * ------------------------------------------------------------------ */
+
+const cacheTexto = new Map<string, { expira: number; valor: string }>();
+const TTL_TABELA_MS = 6 * 60 * 60 * 1000;
+
+async function getTexto(url: string, timeoutMs = 20000): Promise<string> {
+  const emCache = cacheTexto.get(url);
+  if (emCache && emCache.expira > Date.now()) return emCache.valor;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml" },
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`Fonte respondeu ${res.status} em ${new URL(url).host}`);
+    const texto = new TextDecoder("iso-8859-1").decode(await res.arrayBuffer());
+    cacheTexto.set(url, { valor: texto, expira: Date.now() + TTL_TABELA_MS });
+    return texto;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Converte números no formato pt-BR ("1.234,56" ou "7,33%") em number. */
+function numeroBR(texto: string): number | null {
+  const limpo = texto.replace(/[.%\s]/g, "").replace(",", ".");
+  const n = Number(limpo);
+  return Number.isFinite(n) ? n : null;
+}
+
+function linhasTabela(html: string): string[][] {
+  const corpo = html.split("<tbody>")[1];
+  if (!corpo) return [];
+  return corpo
+    .split(/<tr[^>]*>/)
+    .slice(1)
+    .map((linha) =>
+      [...linha.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map((m) =>
+        m[1].replace(/<[^>]+>/g, "").trim(),
+      ),
+    )
+    .filter((c) => c.length > 3);
+}
+
+type IndicadorPapel = { dy: number | null; psr?: number | null; receita: number | null; liquidez: number };
+
+/** Ações: DY e receita 12m (valor de mercado ÷ PSR) de toda a bolsa. */
+async function indicadoresAcoes(): Promise<Map<string, IndicadorPapel>> {
+  const html = await getTexto("https://www.fundamentus.com.br/resultado.php");
+  const mapa = new Map<string, IndicadorPapel>();
+  for (const c of linhasTabela(html)) {
+    const ticker = c[0]?.toUpperCase();
+    if (!ticker) continue;
+    const psr = numeroBR(c[4] ?? "");
+    const dy = numeroBR(c[5] ?? "");
+    const liquidez = numeroBR(c[18] ?? "") ?? 0;
+    // PSR = valor de mercado / receita 12m → receita = valor de mercado / PSR
+    mapa.set(ticker, {
+      dy: dy && dy > 0 ? dy : null,
+      psr: psr && psr > 0 ? psr : null,
+      receita: null,
+      liquidez,
+    });
+  }
+  return mapa;
+}
+
+/** FIIs: DY, valor de mercado e receita operacional aproximada (FFO). */
+async function indicadoresFiis(): Promise<Map<string, IndicadorPapel & { valorMercado: number | null }>> {
+  const html = await getTexto("https://www.fundamentus.com.br/fii_resultado.php");
+  const mapa = new Map<string, IndicadorPapel & { valorMercado: number | null }>();
+  for (const c of linhasTabela(html)) {
+    const ticker = c[0]?.toUpperCase();
+    if (!ticker) continue;
+    const ffoYield = numeroBR(c[3] ?? "");
+    const dy = numeroBR(c[4] ?? "");
+    const valorMercado = numeroBR(c[6] ?? "");
+    const liquidez = numeroBR(c[7] ?? "") ?? 0;
+    mapa.set(ticker, {
+      dy: dy && dy > 0 ? dy : null,
+      valorMercado: valorMercado && valorMercado > 0 ? valorMercado : null,
+      receita: ffoYield && valorMercado ? (ffoYield / 100) * valorMercado : null,
+      liquidez,
+    });
+  }
+  return mapa;
+}
+
+const TOPO = 50;
+
 export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<RankingsB3> {
   const lista = await getJson<BrapiLista>(
-    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=250`,
-    15000,
+    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=500`,
+    20000,
   );
 
   // remove fracionários (final F) e mantém apenas o papel mais líquido por empresa
   const porEmpresa = new Map<string, ItemRanking>();
   for (const s of lista.stocks ?? []) {
     const ticker = s.stock.toUpperCase();
-    if (ticker.endsWith("F")) continue;
-    const empresa = ticker.replace(/\d+$/, "");
+    if (ticker.endsWith("F") && tipo !== "fiis") continue;
+    const empresa = tipo === "fiis" ? ticker : ticker.replace(/\d+$/, "");
     const cap = Number(s.market_cap) || 0;
     const atual = porEmpresa.get(empresa);
     if (atual && (atual.valorMercado ?? 0) >= cap) continue;
@@ -569,61 +665,110 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
     });
   }
 
-  const base = [...porEmpresa.values()]
-    .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
-    .slice(0, 80);
+  let itens = [...porEmpresa.values()];
 
-  // A fonte gratuita limita as consultas de fundamentos; preenchemos aos poucos
-  // e guardamos por 24h, de modo que o ranking se completa entre as visitas.
-  const pendentes = base.filter((a) => !fundamentos.has(a.ticker) || fundamentos.get(a.ticker)!.expira < Date.now());
-  for (let i = 0; i < pendentes.length && i < LOTES_POR_CHAMADA * 3; i += 3) {
-    const lote = pendentes.slice(i, i + 3);
+  if (tipo === "acoes") {
     try {
-      const det = await getJson<BrapiDetalhe>(
-        `https://brapi.dev/api/quote/${lote.map((a) => a.ticker).join(",")}?modules=financialData&dividends=true`,
-        15000,
-      );
-      if (!det.results?.length) break;
-      for (const r of det.results) {
-        const preco = r.regularMarketPrice ?? null;
-        const proventos = proventos12m(r.dividendsData?.cashDividends ?? []);
-        fundamentos.set(r.symbol.toUpperCase(), {
-          expira: Date.now() + TTL_FUNDAMENTOS_MS,
-          valor: {
-            nome: r.longName || r.shortName || null,
-            preco,
-            variacaoPercent: r.regularMarketChangePercent ?? null,
-            dy: preco && preco > 0 && proventos > 0 ? (proventos / preco) * 100 : null,
-            valorMercado: r.marketCap ?? null,
-            receita: r.financialData?.totalRevenue ?? null,
-          },
+      const ind = await indicadoresAcoes();
+      itens = itens.map((a) => {
+        const f = ind.get(a.ticker);
+        if (!f) return a;
+        return {
+          ...a,
+          dy: f.dy,
+          receita: a.valorMercado && f.psr ? a.valorMercado / f.psr : null,
+        };
+      });
+    } catch {
+      // fonte de indicadores indisponível: mantém apenas valor de mercado
+    }
+  } else if (tipo === "fiis") {
+    try {
+      const ind = await indicadoresFiis();
+      itens = itens.map((a) => {
+        const f = ind.get(a.ticker);
+        if (!f) return a;
+        return {
+          ...a,
+          dy: f.dy,
+          valorMercado: a.valorMercado ?? f.valorMercado,
+          receita: f.receita,
+        };
+      });
+      // completa com FIIs que não vieram na lista de cotações
+      const conhecidos = new Set(itens.map((a) => a.ticker));
+      for (const [ticker, f] of ind) {
+        if (conhecidos.has(ticker)) continue;
+        itens.push({
+          ticker,
+          nome: ticker,
+          logo: null,
+          preco: null,
+          variacaoPercent: null,
+          dy: f.dy,
+          valorMercado: f.valorMercado,
+          receita: f.receita,
         });
       }
     } catch {
-      break; // provável limite da fonte: usa o que já está em cache
+      // fonte de indicadores indisponível
     }
-    await dormir(200);
+  } else {
+    // BDRs não têm tabela agregada: preenche fundamentos aos poucos (cache 24h)
+    const base = itens
+      .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
+      .slice(0, 80);
+    const pendentes = base.filter(
+      (a) => !fundamentos.has(a.ticker) || fundamentos.get(a.ticker)!.expira < Date.now(),
+    );
+    for (let i = 0; i < pendentes.length && i < LOTES_POR_CHAMADA * 3; i += 3) {
+      const lote = pendentes.slice(i, i + 3);
+      try {
+        const det = await getJson<BrapiDetalhe>(
+          `https://brapi.dev/api/quote/${lote.map((a) => a.ticker).join(",")}?modules=financialData&dividends=true`,
+          15000,
+        );
+        if (!det.results?.length) break;
+        for (const r of det.results) {
+          const preco = r.regularMarketPrice ?? null;
+          const proventos = proventos12m(r.dividendsData?.cashDividends ?? []);
+          fundamentos.set(r.symbol.toUpperCase(), {
+            expira: Date.now() + TTL_FUNDAMENTOS_MS,
+            valor: {
+              nome: r.longName || r.shortName || null,
+              preco,
+              variacaoPercent: r.regularMarketChangePercent ?? null,
+              dy: preco && preco > 0 && proventos > 0 ? (proventos / preco) * 100 : null,
+              valorMercado: r.marketCap ?? null,
+              receita: r.financialData?.totalRevenue ?? null,
+            },
+          });
+        }
+      } catch {
+        break; // provável limite da fonte: usa o que já está em cache
+      }
+      await dormir(200);
+    }
+    itens = base.map((a) => {
+      const f = fundamentos.get(a.ticker)?.valor;
+      if (!f) return a;
+      return {
+        ...a,
+        nome: f.nome ?? a.nome,
+        preco: f.preco ?? a.preco,
+        variacaoPercent: f.variacaoPercent ?? a.variacaoPercent,
+        dy: f.dy,
+        valorMercado: f.valorMercado ?? a.valorMercado,
+        receita: f.receita,
+      };
+    });
   }
-
-  const itens = base.map((a) => {
-    const f = fundamentos.get(a.ticker)?.valor;
-    if (!f) return a;
-    return {
-      ...a,
-      nome: f.nome ?? a.nome,
-      preco: f.preco ?? a.preco,
-      variacaoPercent: f.variacaoPercent ?? a.variacaoPercent,
-      dy: f.dy,
-      valorMercado: f.valorMercado ?? a.valorMercado,
-      receita: f.receita,
-    };
-  });
 
   const topo = (chave: "dy" | "valorMercado" | "receita") =>
     itens
       .filter((a) => typeof a[chave] === "number" && (a[chave] as number) > 0)
       .sort((a, b) => (b[chave] as number) - (a[chave] as number))
-      .slice(0, 50);
+      .slice(0, TOPO);
 
   return {
     tipo,
