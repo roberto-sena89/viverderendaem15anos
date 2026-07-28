@@ -10,6 +10,8 @@ import {
   Target,
   Sparkles,
   TrendingUp,
+  CandlestickChart,
+
   Bot,
   LogOut,
 } from "lucide-react";
