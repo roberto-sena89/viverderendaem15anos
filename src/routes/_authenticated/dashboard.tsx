@@ -68,47 +68,8 @@ const tooltipStyle = {
   fontSize: "12px",
 };
 
-/** Bloco compacto de indicador dentro dos cartões-resumo (padrão Investidor 10). */
-function Indicador({
-  rotulo,
-  valor,
-  tom = "default",
-}: {
-  rotulo: string;
-  valor: string;
-  tom?: "default" | "positive" | "negative";
-}) {
-  const cor =
-    tom === "positive" ? "text-success" : tom === "negative" ? "text-destructive" : "text-foreground";
-  return (
-    <div className="min-w-0">
-      <p className="truncate text-[0.68rem] text-muted-foreground">{rotulo}</p>
-      <p className={`num truncate text-sm font-semibold ${cor}`}>{valor}</p>
-    </div>
-  );
-}
 
-function CartaoResumo({
-  titulo,
-  icone: Icone,
-  children,
-}: {
-  titulo: string;
-  icone: typeof Wallet;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="panel p-4">
-      <div className="flex items-center gap-2">
-        <Icone className="size-4 shrink-0 text-muted-foreground/70" />
-        <p className="truncate text-[0.7rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
-          {titulo}
-        </p>
-      </div>
-      <div className="mt-3">{children}</div>
-    </div>
-  );
-}
+
 
 /** Linha de categoria expansível com os ativos daquele grupo. */
 function GrupoCategoria({
