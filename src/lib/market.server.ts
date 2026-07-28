@@ -542,6 +542,97 @@ function proventos12m(dividendos: Array<{ rate?: number | null; paymentDate?: st
   }, 0);
 }
 
+/* ------------------------------------------------------------------
+ * Indicadores agregados (Fundamentus): uma única consulta devolve DY,
+ * PSR/FFO e liquidez de praticamente todos os papéis da B3, o que permite
+ * montar rankings completos sem esbarrar no limite das APIs de cotação.
+ * ------------------------------------------------------------------ */
+
+const cacheTexto = new Map<string, { expira: number; valor: string }>();
+const TTL_TABELA_MS = 6 * 60 * 60 * 1000;
+
+async function getTexto(url: string, timeoutMs = 20000): Promise<string> {
+  const emCache = cacheTexto.get(url);
+  if (emCache && emCache.expira > Date.now()) return emCache.valor;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml" },
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`Fonte respondeu ${res.status} em ${new URL(url).host}`);
+    const texto = new TextDecoder("iso-8859-1").decode(await res.arrayBuffer());
+    cacheTexto.set(url, { valor: texto, expira: Date.now() + TTL_TABELA_MS });
+    return texto;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Converte números no formato pt-BR ("1.234,56" ou "7,33%") em number. */
+function numeroBR(texto: string): number | null {
+  const limpo = texto.replace(/[.%\s]/g, "").replace(",", ".");
+  const n = Number(limpo);
+  return Number.isFinite(n) ? n : null;
+}
+
+function linhasTabela(html: string): string[][] {
+  const corpo = html.split("<tbody>")[1];
+  if (!corpo) return [];
+  return corpo
+    .split(/<tr[^>]*>/)
+    .slice(1)
+    .map((linha) =>
+      [...linha.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map((m) =>
+        m[1].replace(/<[^>]+>/g, "").trim(),
+      ),
+    )
+    .filter((c) => c.length > 3);
+}
+
+type IndicadorPapel = { dy: number | null; receita: number | null; liquidez: number };
+
+/** Ações: DY e receita 12m (valor de mercado ÷ PSR) de toda a bolsa. */
+async function indicadoresAcoes(): Promise<Map<string, IndicadorPapel>> {
+  const html = await getTexto("https://www.fundamentus.com.br/resultado.php");
+  const mapa = new Map<string, IndicadorPapel>();
+  for (const c of linhasTabela(html)) {
+    const ticker = c[0]?.toUpperCase();
+    if (!ticker) continue;
+    const cotacao = numeroBR(c[1] ?? "");
+    const psr = numeroBR(c[4] ?? "");
+    const dy = numeroBR(c[5] ?? "");
+    const liquidez = numeroBR(c[18] ?? "") ?? 0;
+    // PSR = preço / receita por ação → receita por ação = cotação / PSR
+    const receitaPorAcao = cotacao && psr && psr > 0 ? cotacao / psr : null;
+    mapa.set(ticker, { dy: dy && dy > 0 ? dy : null, receita: receitaPorAcao, liquidez });
+  }
+  return mapa;
+}
+
+/** FIIs: DY, valor de mercado e receita operacional aproximada (FFO). */
+async function indicadoresFiis(): Promise<Map<string, IndicadorPapel & { valorMercado: number | null }>> {
+  const html = await getTexto("https://www.fundamentus.com.br/fii_resultado.php");
+  const mapa = new Map<string, IndicadorPapel & { valorMercado: number | null }>();
+  for (const c of linhasTabela(html)) {
+    const ticker = c[0]?.toUpperCase();
+    if (!ticker) continue;
+    const ffoYield = numeroBR(c[3] ?? "");
+    const dy = numeroBR(c[4] ?? "");
+    const valorMercado = numeroBR(c[6] ?? "");
+    const liquidez = numeroBR(c[7] ?? "") ?? 0;
+    mapa.set(ticker, {
+      dy: dy && dy > 0 ? dy : null,
+      valorMercado: valorMercado && valorMercado > 0 ? valorMercado : null,
+      receita: ffoYield && valorMercado ? (ffoYield / 100) * valorMercado : null,
+      liquidez,
+    });
+  }
+  return mapa;
+}
+
 export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<RankingsB3> {
   const lista = await getJson<BrapiLista>(
     `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=250`,
