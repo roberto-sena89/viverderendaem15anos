@@ -103,36 +103,49 @@ export function AppShell({
   return (
     <div className="min-h-screen bg-background lg:flex">
       <aside className="sticky top-0 z-30 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
-        <Link to="/" className="mb-8 flex items-center gap-2 px-2">
-          <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-            <Sparkles className="size-4" />
+        <Link to="/" className="mb-7 flex items-center gap-2.5 px-2">
+          <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand font-display text-[0.7rem] font-bold text-primary-foreground">
+            I15
           </span>
-          <span className="font-display text-sm leading-tight font-semibold text-sidebar-foreground">
+          <span className="font-display text-sm leading-tight font-bold text-sidebar-foreground">
             Investidor
             <br />
-            <span className="text-muted-foreground">em 15 Anos</span>
+            <span className="text-[0.65rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+              em 15 anos
+            </span>
           </span>
         </Link>
 
-        <nav className="flex flex-1 flex-col gap-1">
-          {nav.map(({ to, label, icon: Icon }) => {
-            const active = pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                  active
-                    ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                    : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-                }`}
-              >
-                <Icon className="size-4" />
-                {label}
-              </Link>
-            );
-          })}
+        <nav className="flex flex-1 flex-col gap-5 overflow-y-auto">
+          {grupos.map((grupo) => (
+            <div key={grupo.titulo} className="space-y-1">
+              <p className="px-3 pb-1 text-[0.62rem] font-bold tracking-[0.12em] text-muted-foreground/70 uppercase">
+                {grupo.titulo}
+              </p>
+              {grupo.itens.map(({ to, label, icon: Icon }) => {
+                const active = pathname === to;
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={`relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      active
+                        ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
+                        : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    }`}
+                  >
+                    {active ? (
+                      <span className="absolute top-1.5 bottom-1.5 -left-px w-[3px] rounded-full bg-gradient-brand" />
+                    ) : null}
+                    <Icon className={`size-4 shrink-0 ${active ? "text-primary" : ""}`} />
+                    <span className="truncate">{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
+
 
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-sidebar-border p-3">
           <Avatar className="size-9">
