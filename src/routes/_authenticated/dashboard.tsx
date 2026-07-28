@@ -290,7 +290,7 @@ function Dashboard() {
         <Panel
           title="Evolução do Patrimônio"
           action={
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <FiltroSelect
                 valor={periodo}
                 onChange={setPeriodo}
@@ -298,6 +298,25 @@ function Dashboard() {
                 opcoes={PERIODOS}
                 rotuloAcessivel="Período do gráfico de evolução"
               />
+              {periodo === "custom" ? (
+                <div className="flex items-center gap-1">
+                  <input
+                    type="month"
+                    aria-label="Mês inicial"
+                    value={inicioCustom}
+                    onChange={(e) => setInicioCustom(e.target.value)}
+                    className="h-9 rounded-md border border-input bg-background px-2 text-xs"
+                  />
+                  <span className="text-xs text-muted-foreground">até</span>
+                  <input
+                    type="month"
+                    aria-label="Mês final"
+                    value={fimCustom}
+                    onChange={(e) => setFimCustom(e.target.value)}
+                    className="h-9 rounded-md border border-input bg-background px-2 text-xs"
+                  />
+                </div>
+              ) : null}
               <FiltroSelect
                 valor={tipoEvolucao}
                 onChange={setTipoEvolucao}
