@@ -46,6 +46,7 @@ function valorGrande(v: number) {
 }
 
 const VISIVEIS = 5;
+const POR_PAGINA = 10;
 
 function ListaRanking({
   titulo,
@@ -61,7 +62,14 @@ function ListaRanking({
   carregando: boolean;
 }) {
   const [completo, setCompleto] = useState(false);
-  const visiveis = completo ? itens : itens.slice(0, VISIVEIS);
+  const [pagina, setPagina] = useState(1);
+  const totalPaginas = Math.max(1, Math.ceil(itens.length / POR_PAGINA));
+  const paginaAtual = Math.min(pagina, totalPaginas);
+  const inicio = completo ? (paginaAtual - 1) * POR_PAGINA : 0;
+  const visiveis = completo
+    ? itens.slice(inicio, inicio + POR_PAGINA)
+    : itens.slice(0, VISIVEIS);
+
 
   return (
     <Panel className="overflow-hidden" bodyClassName="p-0">
