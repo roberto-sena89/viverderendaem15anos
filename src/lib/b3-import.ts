@@ -51,6 +51,9 @@ export interface ResultadoB3 {
   ignoradas: number;
   layout: LayoutB3;
   layoutRotulo: string;
+  origem: OrigemArquivo;
+  origemRotulo: string;
+
   abas: string[];
   totalLinhas: number;
   mapeamento: MapeamentoCampo[];
