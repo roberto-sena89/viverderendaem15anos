@@ -165,9 +165,12 @@ function GrupoCategoria({
 }
 
 const PERIODOS = [
-  { valor: "3", rotulo: "3 Meses" },
-  { valor: "6", rotulo: "6 Meses" },
+  { valor: "inicio", rotulo: "Desde o início" },
   { valor: "12", rotulo: "12 Meses" },
+  { valor: "24", rotulo: "2 Anos" },
+  { valor: "60", rotulo: "5 Anos" },
+  { valor: "120", rotulo: "10 Anos" },
+  { valor: "custom", rotulo: "Data personalizada" },
 ];
 
 function FiltroSelect({
