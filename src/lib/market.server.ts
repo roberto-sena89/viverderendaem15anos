@@ -605,9 +605,14 @@ async function indicadoresAcoes(): Promise<Map<string, IndicadorPapel>> {
     const psr = numeroBR(c[4] ?? "");
     const dy = numeroBR(c[5] ?? "");
     const liquidez = numeroBR(c[18] ?? "") ?? 0;
-    // PSR = preço / receita por ação → receita por ação = cotação / PSR
-    const receitaPorAcao = cotacao && psr && psr > 0 ? cotacao / psr : null;
-    mapa.set(ticker, { dy: dy && dy > 0 ? dy : null, receita: receitaPorAcao, liquidez });
+    // PSR = valor de mercado / receita 12m → receita = valor de mercado / PSR
+    mapa.set(ticker, {
+      dy: dy && dy > 0 ? dy : null,
+      psr: psr && psr > 0 ? psr : null,
+      receita: null,
+      liquidez,
+    });
+    void cotacao;
   }
   return mapa;
 }
