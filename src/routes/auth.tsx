@@ -164,23 +164,32 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-gradient-brand p-12 text-primary-foreground lg:flex">
-        <Link to="/" className="flex items-center gap-2">
+      <div className="relative hidden flex-col justify-between overflow-hidden border-4 border-primary p-12 text-primary-foreground lg:flex">
+        <img
+          src={investidorImg}
+          alt="Investidor acompanhando gráficos de ações no computador"
+          width={1024}
+          height={1280}
+          className="absolute inset-0 size-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-brand opacity-70" />
+        <Link to="/" className="relative flex items-center gap-2">
           <span className="grid size-9 place-items-center rounded-xl bg-white/15">
             <Sparkles className="size-4" />
           </span>
           <span className="font-display font-semibold">Investidor em 15 Anos</span>
         </Link>
-        <div className="max-w-sm">
+        <div className="relative max-w-sm">
           <h2 className="font-display text-3xl leading-tight font-semibold">
             Sua independência financeira em um só painel.
           </h2>
-          <p className="mt-4 text-sm opacity-80">
+          <p className="mt-4 text-sm opacity-90">
             Carteira, aportes, dividendos, rebalanceamento e metas — com projeções de longo prazo.
           </p>
         </div>
-        <p className="text-xs opacity-70">Sessão protegida por token JWT.</p>
+        <p className="relative text-xs opacity-80">Sessão protegida por token JWT.</p>
       </div>
+
 
       <main className="flex items-center justify-center px-5 py-12">
         <div className="w-full max-w-sm">
