@@ -14,9 +14,10 @@ export const SECOES: SecaoNav[] = [
   { to: "/carteira", rotulo: "Carteira", grupo: "Carteira" },
   { to: "/dividendos", rotulo: "Proventos", grupo: "Carteira" },
   { to: "/aportes", rotulo: "Patrimônio", grupo: "Carteira" },
+  { to: "/estatisticas", rotulo: "Rentabilidade", grupo: "Carteira" },
 
-  { to: "/estatisticas", rotulo: "Rentabilidade", grupo: "Análise" },
   { to: "/rebalanceamento", rotulo: "Análise", grupo: "Análise" },
+
   { to: "/rankings", rotulo: "Ranking de Ativos", grupo: "Análise" },
   { to: "/mercado", rotulo: "Mercado & B3", grupo: "Análise" },
   { to: "/planejador", rotulo: "Planejador FI", grupo: "Planejamento" },
