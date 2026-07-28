@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
@@ -78,6 +79,7 @@ function DividendosPage() {
 
   return (
     <AppShell title="Dividendos" description="Sua renda passiva em construção">
+      <AbasCarteira />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
         <StatCard label="Média mensal" value={brl(recebidos12m / 12)} />

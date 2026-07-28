@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { DeltaChip, TickerMark } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
@@ -66,6 +67,7 @@ function CarteiraPage() {
 
   return (
     <AppShell title="Carteira" description={`${carteira.length} ativos · ${brl(totalAtual)}`}>
+      <AbasCarteira />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2">
           {filtros.map((f) => (
