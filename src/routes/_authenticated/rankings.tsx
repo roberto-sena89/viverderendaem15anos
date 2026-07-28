@@ -120,18 +120,18 @@ function ListaRanking({
             ))}
           </ul>
 
-          {itens.length > VISIVEIS ? (
-            <div className="border-t border-border p-4">
-              <Button
-                variant="outline"
-                className="w-full rounded-full"
-                onClick={() => setCompleto((v) => !v)}
-                aria-expanded={completo}
-              >
-                {completo ? "Ver menos" : `Ver Rankings (${itens.length})`}
-              </Button>
-            </div>
-          ) : null}
+          <div className="border-t border-border p-4">
+            <Button
+              variant="outline"
+              className="w-full rounded-full"
+              onClick={() => setCompleto((v) => !v)}
+              aria-expanded={completo}
+              aria-label={`${completo ? "Ver menos" : "Ver ranking completo"} — ${titulo}`}
+              disabled={itens.length <= VISIVEIS}
+            >
+              {completo ? "Ver menos" : `Ver Rankings (${itens.length})`}
+            </Button>
+          </div>
         </>
       )}
     </Panel>
