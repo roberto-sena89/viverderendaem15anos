@@ -93,7 +93,11 @@ export function AppShell({
     navigate({ to: "/auth", replace: true, search: { redirect: undefined } });
   }
 
+  const grupoAtual =
+    grupos.find((g) => g.itens.some((i) => i.to === pathname))?.titulo ?? "Investidor em 15 anos";
+
   const initials = (user?.name ?? "IN")
+
     .split(" ")
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase() ?? "")
