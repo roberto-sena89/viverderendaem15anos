@@ -296,6 +296,46 @@ function Resumo({ rotulo, valor }: { rotulo: string; valor: number | null }) {
   );
 }
 
+const ROTULO_CAMPO: Record<string, string> = {
+  ticker: "Ativo / Código de negociação",
+  data: "Data",
+  movimento: "Tipo de movimentação",
+  quantidade: "Quantidade",
+  preco: "Preço unitário",
+  valor: "Valor da operação",
+  instituicao: "Instituição / Corretora",
+  mercado: "Mercado / Tipo",
+};
+
+function Diagnosticos({ itens }: { itens: DiagnosticoB3[] }) {
+  if (!itens.length) return null;
+  const estilo: Record<string, string> = {
+    erro: "border-destructive/40 bg-destructive/10 text-destructive",
+    aviso: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    info: "border-border bg-muted/40 text-muted-foreground",
+  };
+  const Icone = { erro: XCircle, aviso: AlertTriangle, info: CheckCircle2 };
+  return (
+    <div className="space-y-2">
+      {itens.map((d, i) => {
+        const Icon = Icone[d.severidade];
+        return (
+          <div key={i} className={`flex gap-3 rounded-xl border p-3 text-sm ${estilo[d.severidade]}`}>
+            <Icon className="mt-0.5 size-4 shrink-0" />
+            <div className="space-y-0.5">
+              <p className="font-medium">{d.titulo}</p>
+              <p className="text-xs opacity-90">{d.detalhe}</p>
+              {d.linhas?.length ? (
+                <p className="text-xs opacity-70">Linhas: {d.linhas.join(", ")}{d.linhas.length >= 20 ? "…" : ""}</p>
+              ) : null}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function ImportarB3() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previa, setPrevia] = useState<ResultadoB3 | null>(null);
@@ -305,16 +345,16 @@ function ImportarB3() {
   async function handleArquivo(file: File) {
     try {
       const resultado = await lerArquivoB3(file);
-      if (!resultado.aportes.length && !resultado.dividendos.length) {
-        toast.error("Não encontramos negociações nem proventos nesse arquivo.");
-        return;
-      }
       setArquivo(file.name);
       setPrevia(resultado);
+      if (!resultado.podeImportar) toast.error("Encontramos problemas no arquivo. Veja os detalhes abaixo.");
+      else if (resultado.diagnosticos.some((d) => d.severidade === "aviso"))
+        toast.warning("Arquivo lido com avisos. Revise antes de confirmar.");
     } catch {
       toast.error("Não consegui ler o arquivo. Envie o CSV ou Excel exportado da Área do Investidor da B3.");
     }
   }
+
 
   return (
     <>
