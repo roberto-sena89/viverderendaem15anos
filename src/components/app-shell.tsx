@@ -112,12 +112,26 @@ export function AppShell({
 
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-sidebar-border p-3">
           <Avatar className="size-9">
-            <AvatarFallback className="bg-primary-soft text-xs text-accent-foreground">RT</AvatarFallback>
+            {user?.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
+            <AvatarFallback className="bg-primary-soft text-xs text-accent-foreground">
+              {initials || "IN"}
+            </AvatarFallback>
           </Avatar>
-          <div className="min-w-0 text-xs">
-            <p className="truncate font-medium text-sidebar-foreground">Investidor</p>
-            <p className="truncate text-muted-foreground">Perfil moderado</p>
+          <div className="min-w-0 flex-1 text-xs">
+            <p className="truncate font-medium text-sidebar-foreground">
+              {user?.name ?? "Investidor"}
+            </p>
+            <p className="truncate text-muted-foreground">{user?.email ?? "Perfil moderado"}</p>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Sair da conta"
+            onClick={handleSignOut}
+            className="size-8 shrink-0 text-muted-foreground"
+          >
+            <LogOut className="size-4" />
+          </Button>
         </div>
       </aside>
 
