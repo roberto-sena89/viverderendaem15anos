@@ -19,6 +19,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         // /auth for crawlers, and /verificar-email and /api/* are not content.
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
+          { path: "/guia-liberdade-financeira", changefreq: "monthly", priority: "0.8" },
           { path: "/auth", changefreq: "monthly", priority: "0.5" },
         ];
 
