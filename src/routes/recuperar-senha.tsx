@@ -34,6 +34,22 @@ export const Route = createFileRoute("/recuperar-senha")({
 
 const ESPERA_SEGUNDOS = 60;
 
+function mascararEmail(valor: string) {
+  const [usuario, dominio] = valor.trim().split("@");
+  if (!usuario || !dominio) return valor;
+  const visivel =
+    usuario.length <= 2 ? usuario.slice(0, 1) : usuario.slice(0, 2);
+  const oculto = "•".repeat(Math.max(usuario.length - visivel.length, 2));
+
+  const partes = dominio.split(".");
+  const nome = partes[0] ?? "";
+  const resto = partes.slice(1).join(".");
+  const nomeVisivel = nome.slice(0, 1);
+  const nomeOculto = "•".repeat(Math.max(nome.length - 1, 2));
+
+  return `${visivel}${oculto}@${nomeVisivel}${nomeOculto}${resto ? `.${resto}` : ""}`;
+}
+
 function RecuperarSenhaPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -88,11 +104,17 @@ function RecuperarSenhaPage() {
           <div className="mt-4 space-y-5">
             <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
               <MailCheck className="mt-0.5 size-5 shrink-0 text-primary" />
-              <p className="text-sm text-muted-foreground">
-                Enviamos um link de redefinição para{" "}
-                <strong className="text-foreground">{email}</strong>.
-              </p>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">
+                  Enviamos um link de redefinição para{" "}
+                  <strong className="text-foreground">{mascararEmail(email)}</strong>.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Próximo passo: abra esse e-mail e clique em “Redefinir senha”.
+                </p>
+              </div>
             </div>
+
 
             <div>
               <p className="text-sm font-medium">Próximos passos</p>
