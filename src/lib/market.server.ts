@@ -527,7 +527,7 @@ type Fundamento = {
 
 const fundamentos = new Map<string, { expira: number; valor: Fundamento }>();
 const TTL_FUNDAMENTOS_MS = 24 * 60 * 60 * 1000;
-const LOTES_POR_CHAMADA = 4;
+const LOTES_POR_CHAMADA = 10;
 
 const TIPO_BRAPI: Record<TipoRanking, string> = { acoes: "stock", fiis: "fund", bdrs: "bdr" };
 
@@ -544,7 +544,7 @@ function proventos12m(dividendos: Array<{ rate?: number | null; paymentDate?: st
 
 export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<RankingsB3> {
   const lista = await getJson<BrapiLista>(
-    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=80`,
+    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=250`,
     15000,
   );
 
@@ -571,7 +571,7 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
 
   const base = [...porEmpresa.values()]
     .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
-    .slice(0, 24);
+    .slice(0, 80);
 
   // A fonte gratuita limita as consultas de fundamentos; preenchemos aos poucos
   // e guardamos por 24h, de modo que o ranking se completa entre as visitas.
@@ -623,7 +623,7 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
     itens
       .filter((a) => typeof a[chave] === "number" && (a[chave] as number) > 0)
       .sort((a, b) => (b[chave] as number) - (a[chave] as number))
-      .slice(0, 8);
+      .slice(0, 50);
 
   return {
     tipo,
