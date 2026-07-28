@@ -22,37 +22,34 @@ import { TickerMercado } from "@/components/ticker-mercado";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { SECOES, secaoPorRota } from "@/lib/navegacao";
 
-const grupos = [
-  {
-    titulo: "Carteira",
-    itens: [
-      { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
-      { to: "/carteira", label: "Carteira", icon: Wallet },
-      { to: "/aportes", label: "Patrimônio", icon: PlusCircle },
-      { to: "/dividendos", label: "Proventos", icon: Coins },
-    ],
-  },
-  {
-    titulo: "Análise",
-    itens: [
-      { to: "/estatisticas", label: "Rentabilidade", icon: TrendingUp },
-      { to: "/rebalanceamento", label: "Análise", icon: Scale },
-      { to: "/rankings", label: "Ranking de Ativos", icon: Trophy },
-      { to: "/mercado", label: "Mercado & B3", icon: CandlestickChart },
-    ],
-  },
-  {
-    titulo: "Planejamento",
-    itens: [
-      { to: "/planejador", label: "Planejador FI", icon: LineChart },
-      { to: "/metas", label: "Metas", icon: Target },
-      { to: "/chat", label: "Técnico IA", icon: Bot },
-    ],
-  },
-];
+
+const ICONES: Record<string, typeof LayoutDashboard> = {
+  "/dashboard": LayoutDashboard,
+  "/carteira": Wallet,
+  "/aportes": PlusCircle,
+  "/dividendos": Coins,
+  "/estatisticas": TrendingUp,
+  "/rebalanceamento": Scale,
+  "/rankings": Trophy,
+  "/mercado": CandlestickChart,
+  "/planejador": LineChart,
+  "/metas": Target,
+  "/chat": Bot,
+};
+
+const grupos = ["Carteira", "Análise", "Planejamento"].map((titulo) => ({
+  titulo,
+  itens: SECOES.filter((s) => s.grupo === titulo).map((s) => ({
+    to: s.to,
+    label: s.rotulo,
+    icon: ICONES[s.to] ?? LayoutDashboard,
+  })),
+}));
 
 const nav = grupos.flatMap((g) => g.itens);
+
 
 
 
@@ -97,8 +94,11 @@ export function AppShell({
     navigate({ to: "/auth", replace: true, search: { redirect: undefined } });
   }
 
-  const grupoAtual =
-    grupos.find((g) => g.itens.some((i) => i.to === pathname))?.titulo ?? "Investidor em 15 anos";
+  const secaoAtual = secaoPorRota(pathname);
+  const grupoAtual = secaoAtual?.grupo ?? "Investidor em 15 anos";
+  // O h1 sempre reflete o rótulo da aba selecionada.
+  const tituloPagina = secaoAtual?.rotulo ?? title;
+
 
   const initials = (user?.name ?? "IN")
 
@@ -185,14 +185,29 @@ export function AppShell({
           <div className="flex items-center justify-between gap-4 px-5 py-4 lg:px-8">
 
             <div className="min-w-0">
-              <p className="text-[0.62rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">
-                {grupoAtual}
-              </p>
-              <h1 className="truncate font-display text-lg font-bold sm:text-xl">{title}</h1>
+              <nav aria-label="Trilha de navegação" className="mb-0.5">
+                <ol className="flex items-center gap-1.5 text-[0.62rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">
+                  <li>
+                    <Link to="/" className="transition-colors hover:text-foreground">
+                      Início
+                    </Link>
+                  </li>
+                  <li aria-hidden="true">/</li>
+                  <li>{grupoAtual}</li>
+                  {secaoAtual ? (
+                    <>
+                      <li aria-hidden="true">/</li>
+                      <li className="text-foreground">{secaoAtual.rotulo}</li>
+                    </>
+                  ) : null}
+                </ol>
+              </nav>
+              <h1 className="truncate font-display text-lg font-bold sm:text-xl">{tituloPagina}</h1>
               {description ? (
                 <p className="truncate text-sm text-muted-foreground">{description}</p>
               ) : null}
             </div>
+
 
             <div className="flex items-center gap-1">
               <ThemeToggle />
