@@ -152,6 +152,8 @@ function Landing() {
           </Button>
         </div>
       </section>
+      </main>
+
 
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
         Investidor em 15 Anos · Conteúdo educacional, não é recomendação de investimento.
