@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { GraficoEvolucaoPatrimonio } from "@/components/grafico-evolucao-patrimonio";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -34,6 +35,8 @@ function AportesPage() {
   return (
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
+
+      <GraficoEvolucaoPatrimonio />
 
       <div className="surface-card overflow-x-auto">
         <Table>
