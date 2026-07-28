@@ -104,11 +104,17 @@ function RecuperarSenhaPage() {
           <div className="mt-4 space-y-5">
             <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
               <MailCheck className="mt-0.5 size-5 shrink-0 text-primary" />
-              <p className="text-sm text-muted-foreground">
-                Enviamos um link de redefinição para{" "}
-                <strong className="text-foreground">{email}</strong>.
-              </p>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">
+                  Enviamos um link de redefinição para{" "}
+                  <strong className="text-foreground">{mascararEmail(email)}</strong>.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Próximo passo: abra esse e-mail e clique em “Redefinir senha”.
+                </p>
+              </div>
             </div>
+
 
             <div>
               <p className="text-sm font-medium">Próximos passos</p>
