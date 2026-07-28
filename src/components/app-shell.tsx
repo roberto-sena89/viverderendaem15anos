@@ -21,19 +21,36 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
-const nav = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/carteira", label: "Carteira", icon: Wallet },
-  { to: "/aportes", label: "Aportes", icon: PlusCircle },
-  { to: "/dividendos", label: "Dividendos", icon: Coins },
-  { to: "/planejador", label: "Planejador FI", icon: LineChart },
-  { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
-  { to: "/metas", label: "Metas", icon: Target },
-  { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
-  { to: "/mercado", label: "Conectar B3", icon: CandlestickChart },
-  { to: "/chat", label: "Técnico IA", icon: Bot },
-
+const grupos = [
+  {
+    titulo: "Carteira",
+    itens: [
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/carteira", label: "Carteira", icon: Wallet },
+      { to: "/aportes", label: "Aportes", icon: PlusCircle },
+      { to: "/dividendos", label: "Dividendos", icon: Coins },
+    ],
+  },
+  {
+    titulo: "Análise",
+    itens: [
+      { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
+      { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
+      { to: "/mercado", label: "Mercado & B3", icon: CandlestickChart },
+    ],
+  },
+  {
+    titulo: "Planejamento",
+    itens: [
+      { to: "/planejador", label: "Planejador FI", icon: LineChart },
+      { to: "/metas", label: "Metas", icon: Target },
+      { to: "/chat", label: "Técnico IA", icon: Bot },
+    ],
+  },
 ] as const;
+
+const nav = grupos.flatMap((g) => g.itens);
+
 
 export function AppShell({
   title,
