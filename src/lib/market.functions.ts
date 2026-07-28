@@ -22,6 +22,38 @@ const INDICES_PAINEL: { simbolo: string; rotulo: string }[] = [
   { simbolo: "BRL=X", rotulo: "Dólar" },
 ];
 
+/** Fita de cotações: índices, moedas, ETFs e principais ações da B3. */
+const FITA_MERCADO: { simbolo: string; rotulo: string }[] = [
+  { simbolo: "^BVSP", rotulo: "IBOV" },
+  { simbolo: "IFIX.SA", rotulo: "IFIX" },
+  { simbolo: "SMLL.SA", rotulo: "SMLL" },
+  { simbolo: "BRL=X", rotulo: "USD" },
+  { simbolo: "EURBRL=X", rotulo: "EUR" },
+  { simbolo: "BTC-BRL", rotulo: "BTC" },
+  { simbolo: "BOVA11.SA", rotulo: "BOVA11" },
+  { simbolo: "IVVB11.SA", rotulo: "IVVB11" },
+  { simbolo: "SMAL11.SA", rotulo: "SMAL11" },
+  { simbolo: "HASH11.SA", rotulo: "HASH11" },
+  { simbolo: "PETR4.SA", rotulo: "PETR4" },
+  { simbolo: "VALE3.SA", rotulo: "VALE3" },
+  { simbolo: "ITUB4.SA", rotulo: "ITUB4" },
+  { simbolo: "BBAS3.SA", rotulo: "BBAS3" },
+  { simbolo: "BBDC4.SA", rotulo: "BBDC4" },
+  { simbolo: "ABEV3.SA", rotulo: "ABEV3" },
+  { simbolo: "WEGE3.SA", rotulo: "WEGE3" },
+  { simbolo: "B3SA3.SA", rotulo: "B3SA3" },
+];
+
+export const fitaMercado = createServerFn({ method: "GET" }).handler(
+  async (): Promise<{ itens: CotacaoResumo[]; atualizadoEm: string }> => {
+    const mercado = await import("@/lib/market.server");
+    const itens = await mercado.buscarFita(FITA_MERCADO);
+    return { itens, atualizadoEm: new Date().toISOString() };
+  },
+);
+
+
+
 export const painelB3 = createServerFn({ method: "GET" }).handler(async (): Promise<PainelB3> => {
   const mercado = await import("@/lib/market.server");
 

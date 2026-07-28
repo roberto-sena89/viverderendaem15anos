@@ -15,18 +15,21 @@ const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const cache = new Map<string, { expira: number; valor: unknown }>();
 const TTL_MS = 5 * 60 * 1000;
 
-async function buscar(url: string, timeoutMs: number): Promise<Response> {
+async function buscar(url: string, timeoutMs: number, comUA = false): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     return await fetch(url, {
-      headers: { "User-Agent": UA, Accept: "application/json" },
+      // O Yahoo rejeita (429) requisições com User-Agent de navegador vindas de
+      // servidores; por padrão enviamos apenas Accept e só usamos o UA no retry.
+      headers: comUA ? { "User-Agent": UA, Accept: "application/json" } : { Accept: "application/json" },
       signal: controller.signal,
     });
   } finally {
     clearTimeout(timer);
   }
 }
+
 
 async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
   const emCache = cache.get(url);
@@ -41,7 +44,7 @@ async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
       const alvo = url.replace(host, h);
       let res: Response;
       try {
-        res = await buscar(alvo, timeoutMs);
+        res = await buscar(alvo, timeoutMs, tentativa === 2);
       } catch {
         continue;
       }
@@ -355,4 +358,109 @@ export async function buscarProjecoes(indicador = "Selic") {
     dataDoBoletim: ultimaData ?? null,
     projecoes: linhas,
   };
+}
+
+/* ------------------------------------------------------------------
+ * Fita de cotações — busca resiliente em lote.
+ * Ações/ETFs da B3 usam a brapi (até 3 por chamada, plano gratuito);
+ * índices, câmbio e cripto usam o Yahoo, em série, para evitar 429.
+ * ------------------------------------------------------------------ */
+
+export type ItemFita = {
+  simbolo: string;
+  nome: string;
+  preco: number | null;
+  variacaoPercent: number | null;
+  moeda: string;
+};
+
+type BrapiResposta = {
+  results?: Array<{
+    symbol: string;
+    currency?: string;
+    regularMarketPrice?: number | null;
+    regularMarketChangePercent?: number | null;
+  }>;
+};
+
+async function cotacoesBrapi(tickers: string[]): Promise<Map<string, ItemFita>> {
+  const mapa = new Map<string, ItemFita>();
+  for (let i = 0; i < tickers.length; i += 3) {
+    const lote = tickers.slice(i, i + 3);
+    try {
+      const data = await getJson<BrapiResposta>(
+        `https://brapi.dev/api/quote/${lote.join(",")}`,
+        12000,
+      );
+      for (const r of data.results ?? []) {
+        mapa.set(r.symbol.toUpperCase(), {
+          simbolo: r.symbol,
+          nome: r.symbol,
+          preco: r.regularMarketPrice ?? null,
+          variacaoPercent: r.regularMarketChangePercent ?? null,
+          moeda: r.currency ?? "BRL",
+        });
+      }
+    } catch {
+      /* segue para o próximo lote */
+    }
+    if (i + 3 < tickers.length) await dormir(150);
+  }
+  return mapa;
+}
+
+/** Busca cotações para a fita, combinando brapi (B3) e Yahoo (índices/câmbio/cripto). */
+export async function buscarFita(
+  entradas: { simbolo: string; rotulo: string }[],
+): Promise<ItemFita[]> {
+  const ehB3 = (s: string) => /\.SA$/i.test(s);
+  const b3 = entradas.filter((e) => ehB3(e.simbolo));
+  const outros = entradas.filter((e) => !ehB3(e.simbolo));
+
+  const mapaB3 = await cotacoesBrapi(b3.map((e) => e.simbolo.replace(/\.SA$/i, "").toUpperCase()));
+
+  const resultados: ItemFita[] = [];
+
+  for (const e of b3) {
+    const chave = e.simbolo.replace(/\.SA$/i, "").toUpperCase();
+    const achado = mapaB3.get(chave);
+    if (achado) {
+      resultados.push({ ...achado, simbolo: e.simbolo, nome: e.rotulo });
+      continue;
+    }
+    try {
+      const c = await buscarCotacao(e.simbolo);
+      resultados.push({
+        simbolo: e.simbolo,
+        nome: e.rotulo,
+        preco: c.preco,
+        variacaoPercent: c.variacaoDiaPercent,
+        moeda: c.moeda,
+      });
+    } catch {
+      /* ignora o ativo indisponível */
+    }
+    await dormir(120);
+  }
+
+  for (const e of outros) {
+    try {
+      const c = await buscarCotacao(e.simbolo);
+      resultados.push({
+        simbolo: e.simbolo,
+        nome: e.rotulo,
+        preco: c.preco,
+        variacaoPercent: c.variacaoDiaPercent,
+        moeda: c.moeda,
+      });
+    } catch {
+      /* ignora o ativo indisponível */
+    }
+    await dormir(120);
+  }
+
+  const ordem = new Map(entradas.map((e, i) => [e.simbolo, i]));
+  return resultados
+    .filter((r) => r.preco !== null)
+    .sort((a, b) => (ordem.get(a.simbolo) ?? 0) - (ordem.get(b.simbolo) ?? 0));
 }
