@@ -241,6 +241,12 @@ const PERIODOS_PROVENTOS = [
   { valor: "0", rotulo: "Desde o início" },
 ];
 
+const ESCOPOS_TOTAL = [
+  { valor: "mes", rotulo: "Total do mês" },
+  { valor: "ano", rotulo: "Total do ano" },
+  { valor: "12m", rotulo: "Total últimos 12 meses" },
+];
+
 function SeletorFiltro({
   valor,
   onChange,
@@ -284,6 +290,7 @@ function PainelProventos({
   const [periodo, setPeriodo] = useState("12");
   const [tipoAtivo, setTipoAtivo] = useState("todos");
   const [ativoSel, setAtivoSel] = useState("todos");
+  const [escopoTotal, setEscopoTotal] = useState("12m");
 
   const categoriaPorTicker = new Map(carteira.map((a) => [a.ticker, a.categoria as string]));
 
@@ -316,6 +323,14 @@ function PainelProventos({
   const media = total12m / 12;
   const progresso = Math.min(100, (media / META_MENSAL) * 100);
 
+  const hoje = new Date();
+  const chaveMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
+  const totalMes = filtrados.filter((d) => d.data.startsWith(chaveMes)).reduce((s, d) => s + d.valor, 0);
+  const totalAno = filtrados
+    .filter((d) => d.data.startsWith(String(hoje.getFullYear())))
+    .reduce((s, d) => s + d.valor, 0);
+  const totalEscopo = escopoTotal === "mes" ? totalMes : escopoTotal === "ano" ? totalAno : total12m;
+
   const opcoesTipo = [
     { valor: "todos", rotulo: "Tipo de ativo" },
     ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
@@ -343,8 +358,23 @@ function PainelProventos({
           </div>
         </div>
         <div className="p-5">
-          <p className="text-xs text-muted-foreground">Total de 12 meses</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(total12m, 2)}</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground">{ESCOPOS_TOTAL.find((e) => e.valor === escopoTotal)?.rotulo}</p>
+            <Select value={escopoTotal} onValueChange={setEscopoTotal}>
+              <SelectTrigger
+                aria-label="Escopo do total de proventos"
+                className="h-6 w-6 justify-center border-0 bg-transparent p-0 shadow-none [&>svg]:size-4"
+              />
+              <SelectContent align="end">
+                {ESCOPOS_TOTAL.map((e) => (
+                  <SelectItem key={e.valor} value={e.valor} className="text-xs">
+                    {e.rotulo}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(totalEscopo, 2)}</p>
         </div>
         <div className="p-5">
           <p className="text-xs text-muted-foreground">Total da carteira</p>
