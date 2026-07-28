@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BarChart3, ChevronDown, Landmark, Wallet } from "lucide-react";
+import { BarChart3, Calendar, ChevronDown, CircleDollarSign, Landmark, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
