@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAtivos, useDividendos } from "@/lib/data";
-import { brl, dividendos12m, pct, resumoCarteira, valorAtual, valorInvestido } from "@/lib/portfolio";
+import { brl, dividendos12m, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
 function Indicador({
   rotulo,
