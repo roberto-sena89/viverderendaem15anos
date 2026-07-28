@@ -327,11 +327,16 @@ function FiltroPeriodo({
   valor,
   onChange,
   anos,
+  mensal = false,
 }: {
   valor: string;
   onChange: (v: string) => void;
   anos: string[];
+  mensal?: boolean;
 }) {
+  const anoSelecionado = valor.startsWith("mes:") ? Number(valor.slice(4, 8)) : ANO_ATUAL;
+  const [anoNav, setAnoNav] = useState(anoSelecionado);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -341,7 +346,7 @@ function FiltroPeriodo({
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-72 p-0">
+      <PopoverContent align="end" className="max-h-[28rem] w-72 overflow-y-auto p-0">
         <div className="p-4">
           <p className="font-display text-sm font-semibold">Período</p>
           <p className="mt-3 text-xs text-muted-foreground">Filtros rápidos</p>
@@ -361,6 +366,52 @@ function FiltroPeriodo({
             ))}
           </RadioGroup>
         </div>
+        {mensal ? (
+          <div className="border-t border-border p-4">
+            <p className="text-xs text-muted-foreground">Filtro mensal</p>
+            <div className="mt-2 flex items-center justify-between rounded-md bg-muted px-2 py-1.5">
+              <button
+                type="button"
+                aria-label="Ano anterior"
+                onClick={() => setAnoNav((a) => a - 1)}
+                className="rounded p-1 text-muted-foreground hover:bg-background"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+              <span className="text-sm font-medium tabular-nums">{anoNav}</span>
+              <button
+                type="button"
+                aria-label="Próximo ano"
+                onClick={() => setAnoNav((a) => a + 1)}
+                className="rounded p-1 text-muted-foreground hover:bg-background"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+            </div>
+            <div className="mt-2 flex flex-col gap-2">
+              {MESES.map((nome, i) => {
+                const chave = `mes:${anoNav}-${String(i + 1).padStart(2, "0")}`;
+                return (
+                  <button
+                    key={nome}
+                    type="button"
+                    onClick={() => onChange(chave)}
+                    className="flex items-center gap-2 text-left text-sm"
+                  >
+                    <span
+                      className={`flex size-4 shrink-0 items-center justify-center rounded-full border ${
+                        valor === chave ? "border-primary" : "border-border"
+                      }`}
+                    >
+                      {valor === chave ? <span className="size-2 rounded-full bg-primary" /> : null}
+                    </span>
+                    {nome}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
         {anos.length ? (
           <div className="border-t border-border p-4">
             <p className="text-xs text-muted-foreground">Filtro anual</p>
@@ -386,6 +437,7 @@ function FiltroPeriodo({
     </Popover>
   );
 }
+
 
 function FiltroAtivos({
   valor,
