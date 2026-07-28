@@ -68,6 +68,7 @@ function Landing() {
         </div>
       </header>
 
+      <main>
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[image:var(--gradient-surface)]" />
         <div className="relative mx-auto max-w-6xl px-5 pt-16 pb-10 text-center lg:pt-24">
