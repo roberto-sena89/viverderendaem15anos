@@ -54,12 +54,27 @@ function AuthPage() {
   useEffect(() => {
     let active = true;
     supabase.auth.getSession().then(({ data }) => {
-      if (active && data.session) {
-        navigate({ to: destination, replace: true });
+      if (!active || !data.session) return;
+      if (!data.session.user.email_confirmed_at) {
+        navigate({
+          to: "/verificar-email",
+          search: { email: data.session.user.email ?? undefined },
+          replace: true,
+        });
+        return;
       }
+      navigate({ to: destination, replace: true });
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
+        if (!session.user.email_confirmed_at) {
+          navigate({
+            to: "/verificar-email",
+            search: { email: session.user.email ?? undefined },
+            replace: true,
+          });
+          return;
+        }
         const saved = sessionStorage.getItem(REDIRECT_KEY);
         sessionStorage.removeItem(REDIRECT_KEY);
         navigate({ to: safePath(saved ?? destination), replace: true });
@@ -94,10 +109,21 @@ function AuthPage() {
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast.error("E-mail ou senha inválidos.");
+      toast.error(
+        error.message.toLowerCase().includes("not confirmed")
+          ? "Confirme seu e-mail para acessar."
+          : "E-mail ou senha inválidos.",
+      );
+      if (error.message.toLowerCase().includes("not confirmed")) {
+        navigate({ to: "/verificar-email", search: { email }, replace: true });
+      }
+      return;
+    }
+    if (!data.user?.email_confirmed_at) {
+      navigate({ to: "/verificar-email", search: { email }, replace: true });
       return;
     }
     toast.success("Bem-vindo de volta!");
@@ -111,7 +137,7 @@ function AuthPage() {
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${window.location.origin}/verificar-email`,
         data: { full_name: name },
       },
     });
@@ -120,11 +146,12 @@ function AuthPage() {
       toast.error(error.message);
       return;
     }
-    if (data.session) {
+    if (data.session?.user.email_confirmed_at) {
       navigate({ to: destination, replace: true });
       return;
     }
     toast.success("Conta criada! Confirme seu e-mail para acessar.");
+    navigate({ to: "/verificar-email", search: { email }, replace: true });
   }
 
   return (
