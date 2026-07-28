@@ -279,7 +279,7 @@ function AuthPage() {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
