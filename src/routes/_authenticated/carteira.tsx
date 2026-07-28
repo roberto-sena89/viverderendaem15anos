@@ -102,18 +102,36 @@ function CarteiraPage() {
               const rent = investido > 0 ? (lucro / investido) * 100 : 0;
               return (
                 <TableRow key={a.id}>
-                  <TableCell className="font-medium">{a.ticker}</TableCell>
-                  <TableCell className="text-muted-foreground">{a.nome}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <TickerMark ticker={a.ticker} />
+                      <span className="font-display font-bold">{a.ticker}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="max-w-52 truncate text-muted-foreground">{a.nome}</TableCell>
                   <TableCell>
                     <Badge variant="secondary">{a.categoria}</Badge>
                   </TableCell>
                   <TableCell className="text-right">{a.quantidade.toLocaleString("pt-BR")}</TableCell>
                   <TableCell className="text-right">{brl(a.precoMedio, 2)}</TableCell>
-                  <TableCell className="text-right">{brl(a.precoAtual, 2)}</TableCell>
-                  <TableCell className={`text-right ${lucro >= 0 ? "text-success" : "text-destructive"}`}>{brl(lucro)}</TableCell>
-                  <TableCell className={`text-right ${rent >= 0 ? "text-success" : "text-destructive"}`}>{pct(rent)}</TableCell>
+                  <TableCell className="text-right font-semibold">{brl(a.precoAtual, 2)}</TableCell>
+                  <TableCell className={`text-right font-semibold ${lucro >= 0 ? "text-success" : "text-destructive"}`}>{brl(lucro)}</TableCell>
+                  <TableCell className="text-right">
+                    <DeltaChip value={rent} />
+                  </TableCell>
                   <TableCell className="text-right">{pct(a.dy)}</TableCell>
-                  <TableCell className="text-right">{pct(totalAtual > 0 ? (valorAtual(a) / totalAtual) * 100 : 0)}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="h-1.5 w-12 overflow-hidden rounded-full bg-muted">
+                        <span
+                          className="block h-full rounded-full bg-gradient-brand"
+                          style={{ width: `${Math.min(100, totalAtual > 0 ? (valorAtual(a) / totalAtual) * 100 : 0)}%` }}
+                        />
+                      </span>
+                      {pct(totalAtual > 0 ? (valorAtual(a) / totalAtual) * 100 : 0)}
+                    </div>
+                  </TableCell>
+
                   <TableCell className="text-right whitespace-nowrap">
                     <Button size="icon" variant="ghost" onClick={() => abrir(a)} aria-label={`Editar ${a.ticker}`}>
                       <Pencil className="size-4" />
