@@ -2,15 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
-import {
-  brl,
-  dividendos12m,
-  evolucaoPatrimonio,
-  lucroTotal,
-  pct,
-  rentabilidade,
-  totalAtual,
-} from "@/lib/portfolio";
+import { useAportes, useAtivos, useDividendos } from "@/lib/data";
+import { brl, dividendos12m, evolucaoPatrimonio, pct, resumoCarteira } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/estatisticas")({
   head: () => ({
@@ -25,39 +18,46 @@ export const Route = createFileRoute("/_authenticated/estatisticas")({
 });
 
 function Estatisticas() {
-  const inicio = evolucaoPatrimonio[0].patrimonio;
-  const cagr = (Math.pow(totalAtual / inicio, 1) - 1) * 100;
+  const { data: carteira = [] } = useAtivos();
+  const { data: aportes = [] } = useAportes();
+  const { data: proventos = [] } = useDividendos();
+
+  const { totalAtual, lucroTotal, rentabilidade } = resumoCarteira(carteira);
+  const evolucao = evolucaoPatrimonio(aportes, totalAtual);
+
+  const inicio = evolucao[0]?.patrimonio ?? 0;
+  const cagr = inicio > 0 ? (totalAtual / inicio - 1) * 100 : 0;
   const inflacao = 4.5;
-  const rentReal = ((1 + 14.3 / 100) / (1 + inflacao / 100) - 1) * 100;
+  const rentReal = ((1 + rentabilidade / 100) / (1 + inflacao / 100) - 1) * 100;
 
   let pico = 0;
   let drawdown = 0;
-  for (const p of evolucaoPatrimonio) {
+  for (const p of evolucao) {
     pico = Math.max(pico, p.patrimonio);
-    drawdown = Math.min(drawdown, (p.patrimonio / pico - 1) * 100);
+    if (pico > 0) drawdown = Math.min(drawdown, (p.patrimonio / pico - 1) * 100);
   }
 
   return (
     <AppShell title="Estatísticas" description="Performance detalhada da carteira">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="CAGR (12m)" value={pct(cagr)} tone="positive" />
-        <StatCard label="Rentabilidade acumulada" value={pct(rentabilidade)} tone="positive" />
+        <StatCard label="CAGR (12m)" value={pct(cagr)} tone={cagr >= 0 ? "positive" : "negative"} />
+        <StatCard label="Rentabilidade acumulada" value={pct(rentabilidade)} tone={rentabilidade >= 0 ? "positive" : "negative"} />
         <StatCard label="Rentabilidade real" value={pct(rentReal)} hint={`Descontada inflação de ${pct(inflacao)}`} />
         <StatCard label="Máximo drawdown" value={pct(drawdown)} tone={drawdown < 0 ? "negative" : "default"} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Lucro total" value={brl(lucroTotal)} tone="positive" />
-        <StatCard label="Dividendos 12m" value={brl(dividendos12m)} />
+        <StatCard label="Lucro total" value={brl(lucroTotal)} tone={lucroTotal >= 0 ? "positive" : "negative"} />
+        <StatCard label="Dividendos 12m" value={brl(dividendos12m(proventos))} />
         <StatCard label="Patrimônio" value={brl(totalAtual)} />
-        <StatCard label="Aportes no ano" value={brl(evolucaoPatrimonio.reduce((s, m) => s + m.aportes, 0))} />
+        <StatCard label="Aportes (12m)" value={brl(evolucao.reduce((s, m) => s + m.aportes, 0))} />
       </div>
 
       <div className="surface-card p-6">
         <p className="text-sm font-medium">Patrimônio acumulado</p>
         <div className="mt-4 h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={evolucaoPatrimonio}>
+            <AreaChart data={evolucao}>
               <defs>
                 <linearGradient id="stat" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="var(--color-chart-1)" stopOpacity={0.4} />
