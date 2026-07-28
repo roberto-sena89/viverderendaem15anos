@@ -20,14 +20,18 @@ export const Route = createFileRoute("/_authenticated/rebalanceamento")({
 });
 
 function Rebalanceamento() {
+  const { data: carteira = [] } = useAtivos();
+  const { totalAtual } = resumoCarteira(carteira);
+
   const atual: Record<string, number> = {};
   for (const chave of Object.keys(alocacaoIdeal)) atual[chave] = 0;
   for (const a of carteira) atual[classeDoAtivo(a)] += valorAtual(a);
 
   const linhas = Object.entries(alocacaoIdeal).map(([classe, idealPct]) => {
     const valor = atual[classe] ?? 0;
-    const atualPct = (valor / totalAtual) * 100;
+    const atualPct = totalAtual > 0 ? (valor / totalAtual) * 100 : 0;
     const idealValor = (totalAtual * idealPct) / 100;
+
     const diff = atualPct - idealPct;
     const status = Math.abs(diff) <= 2 ? "verde" : Math.abs(diff) <= 5 ? "amarelo" : "vermelho";
     return { classe, idealPct, atualPct, valor, idealValor, diff, status };
