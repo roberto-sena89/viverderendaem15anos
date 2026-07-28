@@ -119,6 +119,7 @@ function Landing() {
             <Link to="/carteira" className="transition-colors hover:text-foreground">Carteira</Link>
             <Link to="/dividendos" className="transition-colors hover:text-foreground">Dividendos</Link>
             <Link to="/planejador" className="transition-colors hover:text-foreground">Ferramentas</Link>
+            <Link to="/calculadora-juros-compostos" className="transition-colors hover:text-foreground">Calculadora</Link>
             <Link to="/guia-liberdade-financeira" className="transition-colors hover:text-foreground">Guia</Link>
           </nav>
 
