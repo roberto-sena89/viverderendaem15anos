@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -175,12 +175,7 @@ function AuthPage() {
           className="absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/55 to-black/30" />
-        <Link to="/" className="relative flex items-center gap-2">
-          <span className="grid size-9 place-items-center rounded-xl bg-white/15">
-            <Sparkles className="size-4" />
-          </span>
-          <span className="font-display font-semibold tracking-tight">Investidor em 15 Anos</span>
-        </Link>
+        <div />
         <div className="relative max-w-md">
           <h2 className="font-display text-4xl leading-[1.1] font-semibold tracking-tight text-balance [text-shadow:0_2px_16px_rgb(0_0_0/0.6)]">
             Sua independência financeira em um só painel.
@@ -189,7 +184,8 @@ function AuthPage() {
             Carteira, aportes, dividendos, rebalanceamento e metas — com projeções de longo prazo.
           </p>
         </div>
-        <p className="relative text-xs text-[oklch(0.98_0_0)]/70">Sessão protegida por token JWT.</p>
+        <div />
+
       </div>
 
 
