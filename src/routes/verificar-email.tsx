@@ -93,7 +93,7 @@ function VerifyEmailPage() {
 
   async function signOut() {
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/auth", search: {}, replace: true });
   }
 
   return (
