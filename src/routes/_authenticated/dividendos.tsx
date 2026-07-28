@@ -584,8 +584,7 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
 
 function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; carteira: Ativo[] }) {
   const anos = Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) => b.localeCompare(a));
-  const anoAtual = String(new Date().getFullYear());
-  const [ano, setAno] = useState(anos.includes(anoAtual) ? anoAtual : (anos[0] ?? anoAtual));
+  const [periodo, setPeriodo] = useState("ano-atual");
   const [tipoAtivo, setTipoAtivo] = useState("todos");
   const [ativoSel, setAtivoSel] = useState("todos");
 
@@ -593,7 +592,7 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
 
   const filtrados = proventos
     .filter((d) => {
-      if (d.data.slice(0, 4) !== ano) return false;
+      if (!dentroDoPeriodo(d.data, periodo)) return false;
       if (tipoAtivo !== "todos" && categoriaPorTicker.get(d.ticker) !== tipoAtivo) return false;
       if (ativoSel !== "todos" && d.ticker !== ativoSel) return false;
       return true;
@@ -606,7 +605,6 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
     { valor: "todos", rotulo: "Tipo de ativo" },
     ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
   ];
-  const opcoesAno = (anos.includes(anoAtual) ? anos : [anoAtual, ...anos]).map((a) => ({ valor: a, rotulo: a }));
 
   return (
     <div className="surface-card">
@@ -617,13 +615,8 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
             <span className="text-muted-foreground">Total</span>
             <span className="font-semibold tabular-nums text-primary">{brl(total, 2)}</span>
           </div>
-          <SeletorFiltro
-            valor={ano}
-            onChange={setAno}
-            icone={Calendar}
-            opcoes={opcoesAno}
-            rotuloAcessivel="Ano"
-          />
+          <FiltroPeriodo valor={periodo} onChange={setPeriodo} anos={anos} mensal />
+
           <SeletorFiltro
             valor={tipoAtivo}
             onChange={setTipoAtivo}
