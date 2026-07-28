@@ -308,6 +308,12 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
 
   const cabecalhosGerais = Array.from(new Set(abas.flatMap((a) => a.cabecalhos))).filter(Boolean);
   const { layout, rotulo } = detectarLayout(cabecalhosGerais);
+  const amostraTexto = abas
+    .flatMap((a) => a.linhas.slice(0, 20).map((l) => Object.values(l).join(" ")))
+    .join(" ")
+    .slice(0, 4000);
+  const { origem, rotulo: origemRotulo } = detectarOrigem(arquivo.name, `${cabecalhosGerais.join(" ")} ${amostraTexto}`);
+
 
   const mapeamento: MapeamentoCampo[] = Object.entries(CAMPOS).map(([campo, sinonimos]) => ({
     campo,
