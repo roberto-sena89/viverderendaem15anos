@@ -148,7 +148,7 @@ export function evolucaoPatrimonio(aportes: Aporte[], totalAtual: number) {
 
   return aportesPorMes.map((m) => {
     patrimonio += m.aportes;
-    return { mes: m.mes, patrimonio: Math.round(patrimonio), aportes: Math.round(m.aportes) };
+    return { mes: m.mes, chave: m.chave, patrimonio: Math.round(patrimonio), aportes: Math.round(m.aportes) };
   });
 }
 

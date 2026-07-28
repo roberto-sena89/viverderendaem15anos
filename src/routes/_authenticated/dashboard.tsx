@@ -165,9 +165,12 @@ function GrupoCategoria({
 }
 
 const PERIODOS = [
-  { valor: "3", rotulo: "3 Meses" },
-  { valor: "6", rotulo: "6 Meses" },
+  { valor: "inicio", rotulo: "Desde o início" },
   { valor: "12", rotulo: "12 Meses" },
+  { valor: "24", rotulo: "2 Anos" },
+  { valor: "60", rotulo: "5 Anos" },
+  { valor: "120", rotulo: "10 Anos" },
+  { valor: "custom", rotulo: "Data personalizada" },
 ];
 
 function FiltroSelect({
@@ -207,6 +210,8 @@ function Dashboard() {
   void proventos;
 
   const [periodo, setPeriodo] = useState("12");
+  const [inicioCustom, setInicioCustom] = useState("");
+  const [fimCustom, setFimCustom] = useState("");
   const [tipoEvolucao, setTipoEvolucao] = useState("todos");
   const [tipoComposicao, setTipoComposicao] = useState("todos");
 
@@ -220,9 +225,18 @@ function Dashboard() {
   const resumoEvolucao = resumoCarteira(ativosEvolucao);
   const evolucao = evolucaoPatrimonio(aportes, resumoEvolucao.totalAtual);
 
+  const evolucaoFiltrada =
+    periodo === "custom"
+      ? evolucao.filter(
+          (m) => (!inicioCustom || m.chave >= inicioCustom) && (!fimCustom || m.chave <= fimCustom),
+        )
+      : periodo === "inicio"
+        ? evolucao
+        : evolucao.slice(-Number(periodo));
+
   // barra empilhada: valor aplicado + ganho de capital, como no gráfico do Investidor 10
   const aplicadoFinal = Math.max(resumoEvolucao.totalInvestido, 1);
-  const dadosEvolucao = evolucao.slice(-Number(periodo)).map((m) => {
+  const dadosEvolucao = evolucaoFiltrada.map((m) => {
     const aplicado = Math.min(m.patrimonio, resumoEvolucao.totalInvestido || m.patrimonio);
     return {
       mes: m.mes,
@@ -276,7 +290,7 @@ function Dashboard() {
         <Panel
           title="Evolução do Patrimônio"
           action={
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <FiltroSelect
                 valor={periodo}
                 onChange={setPeriodo}
@@ -284,6 +298,25 @@ function Dashboard() {
                 opcoes={PERIODOS}
                 rotuloAcessivel="Período do gráfico de evolução"
               />
+              {periodo === "custom" ? (
+                <div className="flex items-center gap-1">
+                  <input
+                    type="month"
+                    aria-label="Mês inicial"
+                    value={inicioCustom}
+                    onChange={(e) => setInicioCustom(e.target.value)}
+                    className="h-9 rounded-md border border-input bg-background px-2 text-xs"
+                  />
+                  <span className="text-xs text-muted-foreground">até</span>
+                  <input
+                    type="month"
+                    aria-label="Mês final"
+                    value={fimCustom}
+                    onChange={(e) => setFimCustom(e.target.value)}
+                    className="h-9 rounded-md border border-input bg-background px-2 text-xs"
+                  />
+                </div>
+              ) : null}
               <FiltroSelect
                 valor={tipoEvolucao}
                 onChange={setTipoEvolucao}
