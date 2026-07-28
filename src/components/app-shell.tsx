@@ -29,8 +29,8 @@ const grupos = [
     itens: [
       { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
       { to: "/carteira", label: "Carteira", icon: Wallet },
-      { to: "/aportes", label: "Aportes", icon: PlusCircle },
-      { to: "/dividendos", label: "Dividendos", icon: Coins },
+      { to: "/aportes", label: "Patrimônio", icon: PlusCircle },
+      { to: "/dividendos", label: "Proventos", icon: Coins },
     ],
   },
   {
