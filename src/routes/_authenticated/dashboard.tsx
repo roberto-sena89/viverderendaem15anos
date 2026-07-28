@@ -260,74 +260,10 @@ function Dashboard() {
 
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
+      <ResumoKpis />
       <AbasCarteira />
       <AvisoSincronizacao />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <CartaoResumo titulo="Patrimônio total" icone={Wallet}>
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="num font-display text-[1.6rem] leading-none font-bold">{brl(resumo.totalAtual, 2)}</p>
-            <DeltaChip value={resumo.rentabilidade} />
-          </div>
-          <div className="mt-3">
-            <Indicador rotulo="Valor investido" valor={brl(resumo.totalInvestido, 2)} />
-          </div>
-        </CartaoResumo>
-
-        <CartaoResumo titulo="Lucro total" icone={PiggyBank}>
-          <p
-            className={`num font-display text-[1.6rem] leading-none font-bold ${
-              resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
-            }`}
-          >
-            {brl(resumo.lucroTotal, 2)}
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Indicador
-              rotulo="Ganho de capital"
-              valor={brl(resumo.lucroTotal, 2)}
-              tom={resumo.lucroTotal >= 0 ? "positive" : "negative"}
-            />
-            <Indicador rotulo="Dividendos recebidos" valor={brl(totalProventos, 2)} />
-          </div>
-        </CartaoResumo>
-
-        <CartaoResumo titulo="Proventos recebidos (12M)" icone={Coins}>
-          <p className="num font-display text-[1.6rem] leading-none font-bold">{brl(recebidos12m, 2)}</p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Indicador rotulo="Total" valor={brl(totalProventos, 2)} />
-            <Indicador rotulo="Média mensal" valor={brl(recebidos12m / 12, 2)} />
-          </div>
-        </CartaoResumo>
-
-        <CartaoResumo titulo="Rentabilidade" icone={TrendingUp}>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-[0.68rem] text-muted-foreground">12 meses</p>
-              <p
-                className={`num font-display text-xl font-bold ${
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
-                }`}
-              >
-                {pct(resumo.rentabilidade, 2)}
-              </p>
-            </div>
-            <div className="border-l border-border pl-3">
-              <p className="text-[0.68rem] text-muted-foreground">Total</p>
-              <p
-                className={`num font-display text-xl font-bold ${
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
-                }`}
-              >
-                {pct(resumo.rentabilidade, 2)}
-              </p>
-            </div>
-          </div>
-          <p className="mt-3 text-[0.68rem] text-muted-foreground">
-            DY da carteira: {pct(resumo.dyCarteira, 2)}
-          </p>
-        </CartaoResumo>
-      </div>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel title="Evolução do patrimônio" hint="12 meses">
