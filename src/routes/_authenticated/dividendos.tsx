@@ -234,12 +234,112 @@ function DividendosPage() {
 
 const META_MENSAL = 500;
 
-const PERIODOS_PROVENTOS = [
-  { valor: "12", rotulo: "Últimos 12 meses" },
-  { valor: "24", rotulo: "Últimos 2 anos" },
-  { valor: "60", rotulo: "Últimos 5 anos" },
-  { valor: "0", rotulo: "Desde o início" },
+const ANO_ATUAL = new Date().getFullYear();
+
+const FILTROS_RAPIDOS = [
+  { valor: "ano-atual", rotulo: "Ano atual", chip: String(ANO_ATUAL) },
+  { valor: "12m", rotulo: "Últimos 12 meses" },
+  { valor: "5anos", rotulo: "Últimos 5 anos" },
+  { valor: "futuros", rotulo: "Futuros" },
+  { valor: "recebidos", rotulo: "Recebidos" },
+  { valor: "todos", rotulo: "Todos", chip: "Recebidos e Futuros" },
 ];
+
+function rotuloPeriodo(valor: string) {
+  if (valor.startsWith("ano:")) return valor.slice(4);
+  const f = FILTROS_RAPIDOS.find((o) => o.valor === valor);
+  return f ? (f.valor === "ano-atual" ? `Ano ${ANO_ATUAL}` : f.rotulo) : "Período";
+}
+
+function dentroDoPeriodo(dataISO: string, valor: string) {
+  const data = new Date(`${dataISO}T12:00`);
+  const hoje = new Date();
+  if (valor.startsWith("ano:")) return dataISO.startsWith(valor.slice(4));
+  switch (valor) {
+    case "ano-atual":
+      return dataISO.startsWith(String(ANO_ATUAL));
+    case "12m": {
+      const limite = new Date();
+      limite.setMonth(limite.getMonth() - 12);
+      return data >= limite && data <= hoje;
+    }
+    case "5anos": {
+      const limite = new Date();
+      limite.setFullYear(limite.getFullYear() - 5);
+      return data >= limite && data <= hoje;
+    }
+    case "futuros":
+      return data > hoje;
+    case "recebidos":
+      return data <= hoje;
+    default:
+      return true;
+  }
+}
+
+function FiltroPeriodo({
+  valor,
+  onChange,
+  anos,
+}: {
+  valor: string;
+  onChange: (v: string) => void;
+  anos: string[];
+}) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="h-9 gap-2 text-xs font-normal" aria-label="Período dos proventos">
+          <Calendar className="size-3.5 shrink-0 text-muted-foreground" />
+          {rotuloPeriodo(valor)}
+          <ChevronDown className="size-3.5 text-muted-foreground" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-72 p-0">
+        <div className="p-4">
+          <p className="font-display text-sm font-semibold">Período</p>
+          <p className="mt-3 text-xs text-muted-foreground">Filtros rápidos</p>
+          <RadioGroup value={valor} onValueChange={onChange} className="mt-2 gap-2">
+            {FILTROS_RAPIDOS.map((o) => (
+              <Label
+                key={o.valor}
+                htmlFor={`periodo-${o.valor}`}
+                className="flex cursor-pointer items-center gap-2 text-sm font-normal"
+              >
+                <RadioGroupItem value={o.valor} id={`periodo-${o.valor}`} />
+                {o.rotulo}
+                {o.chip ? (
+                  <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{o.chip}</span>
+                ) : null}
+              </Label>
+            ))}
+          </RadioGroup>
+        </div>
+        {anos.length ? (
+          <div className="border-t border-border p-4">
+            <p className="text-xs text-muted-foreground">Filtro anual</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {anos.map((ano) => (
+                <button
+                  key={ano}
+                  type="button"
+                  onClick={() => onChange(`ano:${ano}`)}
+                  className={`rounded-md border px-2 py-1 text-xs tabular-nums ${
+                    valor === `ano:${ano}`
+                      ? "border-primary bg-primary/10 font-medium text-primary"
+                      : "border-border text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  {ano}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 const ESCOPOS_TOTAL = [
   { valor: "mes", rotulo: "Total do mês" },
