@@ -8,9 +8,24 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const apikey = request.headers.get("apikey") ?? "";
-        const esperado = process.env.SUPABASE_PUBLISHABLE_KEY ?? "";
-        if (!esperado || apikey !== esperado) {
+        // Segredo exclusivo de servidor (nunca enviado ao navegador).
+        const esperado = process.env.CRON_SECRET ?? "";
+        const recebido =
+          request.headers.get("x-cron-secret") ??
+          (request.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+
+        const ok =
+          esperado.length > 0 &&
+          recebido.length === esperado.length &&
+          (() => {
+            let diff = 0;
+            for (let i = 0; i < esperado.length; i++) {
+              diff |= esperado.charCodeAt(i) ^ recebido.charCodeAt(i);
+            }
+            return diff === 0;
+          })();
+
+        if (!ok) {
           return Response.json({ error: "unauthorized" }, { status: 401 });
         }
 
