@@ -29,15 +29,15 @@ const grupos = [
     itens: [
       { to: "/dashboard", label: "Resumo", icon: LayoutDashboard },
       { to: "/carteira", label: "Carteira", icon: Wallet },
-      { to: "/aportes", label: "Aportes", icon: PlusCircle },
-      { to: "/dividendos", label: "Dividendos", icon: Coins },
+      { to: "/aportes", label: "Patrimônio", icon: PlusCircle },
+      { to: "/dividendos", label: "Proventos", icon: Coins },
     ],
   },
   {
     titulo: "Análise",
     itens: [
-      { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
-      { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
+      { to: "/estatisticas", label: "Rentabilidade", icon: TrendingUp },
+      { to: "/rebalanceamento", label: "Análise", icon: Scale },
       { to: "/rankings", label: "Ranking de Ativos", icon: Trophy },
       { to: "/mercado", label: "Mercado & B3", icon: CandlestickChart },
     ],

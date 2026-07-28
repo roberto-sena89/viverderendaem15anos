@@ -41,9 +41,9 @@ import {
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard · Investidor em 15 Anos" },
+      { title: "Resumo · Investidor em 15 Anos" },
       { name: "description", content: "Patrimônio, rentabilidade, dividendos e evolução da carteira em tempo real." },
-      { property: "og:title", content: "Dashboard · Investidor em 15 Anos" },
+      { property: "og:title", content: "Resumo · Investidor em 15 Anos" },
       { property: "og:description", content: "Acompanhe patrimônio, rentabilidade e dividendos da sua carteira." },
     ],
   }),
