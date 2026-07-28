@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { BarChart3, Coins, LayoutGrid, LineChart, PieChart, Scale } from "lucide-react";
+import { BarChart3, Coins, LayoutGrid, LineChart, Scale, Wallet } from "lucide-react";
 import { ABAS_CARTEIRA, secaoPorRota } from "@/lib/navegacao";
 
 const ICONES: Record<string, typeof LayoutGrid> = {
   "/dashboard": LayoutGrid,
-  "/carteira": PieChart,
+  "/carteira": Wallet,
   "/dividendos": Coins,
   "/aportes": BarChart3,
   "/estatisticas": LineChart,
