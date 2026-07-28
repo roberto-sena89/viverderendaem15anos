@@ -38,6 +38,9 @@ import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
 import { brl, pct } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/mercado")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    ativo: typeof search.ativo === "string" ? search.ativo.slice(0, 20).toUpperCase() : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Conectar à B3 · Investidor em 15 Anos" },
@@ -93,8 +96,9 @@ function MercadoAoVivo() {
   const historicoFn = useServerFn(historicoAtivo);
   const sincronizarFn = useServerFn(sincronizarPrecos);
 
-  const [busca, setBusca] = useState("");
-  const [simbolo, setSimbolo] = useState("PETR4");
+  const { ativo } = Route.useSearch();
+  const [busca, setBusca] = useState(ativo ?? "");
+  const [simbolo, setSimbolo] = useState(ativo ?? "PETR4");
 
   const painel = useQuery({
     queryKey: ["b3", "painel"],
