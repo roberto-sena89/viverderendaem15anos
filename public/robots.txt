@@ -12,5 +12,21 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /mcp
+Disallow: /.mcp/
+Disallow: /.well-known/
+Disallow: /verificar-email
+Disallow: /dashboard
+Disallow: /carteira
+Disallow: /aportes
+Disallow: /dividendos
+Disallow: /planejador
+Disallow: /rebalanceamento
+Disallow: /metas
+Disallow: /estatisticas
+Disallow: /mercado
+Disallow: /rankings
+Disallow: /chat
 
 Sitemap: https://viverderendaem15.lovable.app/sitemap.xml
