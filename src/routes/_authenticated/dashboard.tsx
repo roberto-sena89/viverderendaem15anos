@@ -163,12 +163,10 @@ function GrupoCategoria({
 function Dashboard() {
   const { data: ativos = [], isLoading } = useAtivos();
   const { data: aportes = [] } = useAportes();
-  const { data: proventos = [] } = useDividendos();
 
   const resumo = resumoCarteira(ativos);
   const evolucao = evolucaoPatrimonio(aportes, resumo.totalAtual);
-  const recebidos12m = dividendos12m(proventos);
-  const totalProventos = proventos.reduce((s, d) => s + d.valor, 0);
+
 
   // barra empilhada: valor aplicado + ganho de capital, como no gráfico do Investidor 10
   const aplicadoFinal = Math.max(resumo.totalInvestido, 1);
