@@ -21,6 +21,7 @@ import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authenticated/estatisticas'
 import { Route as AuthenticatedDividendosRouteImport } from './routes/_authenticated/dividendos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
 
@@ -85,6 +86,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
   id: '/carteira',
   path: '/carteira',
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/verificar-email': typeof VerificarEmailRoute
   '/aportes': typeof AuthenticatedAportesRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/verificar-email': typeof VerificarEmailRoute
   '/aportes': typeof AuthenticatedAportesRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/verificar-email': typeof VerificarEmailRoute
   '/_authenticated/aportes': typeof AuthenticatedAportesRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
+  '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dividendos': typeof AuthenticatedDividendosRoute
   '/_authenticated/estatisticas': typeof AuthenticatedEstatisticasRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/verificar-email'
     | '/aportes'
     | '/carteira'
+    | '/chat'
     | '/dashboard'
     | '/dividendos'
     | '/estatisticas'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/verificar-email'
     | '/aportes'
     | '/carteira'
+    | '/chat'
     | '/dashboard'
     | '/dividendos'
     | '/estatisticas'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/verificar-email'
     | '/_authenticated/aportes'
     | '/_authenticated/carteira'
+    | '/_authenticated/chat'
     | '/_authenticated/dashboard'
     | '/_authenticated/dividendos'
     | '/_authenticated/estatisticas'
@@ -287,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/carteira': {
       id: '/_authenticated/carteira'
       path: '/carteira'
@@ -307,6 +326,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAportesRoute: typeof AuthenticatedAportesRoute
   AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
+  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDividendosRoute: typeof AuthenticatedDividendosRoute
   AuthenticatedEstatisticasRoute: typeof AuthenticatedEstatisticasRoute
@@ -318,6 +338,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAportesRoute: AuthenticatedAportesRoute,
   AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
+  AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDividendosRoute: AuthenticatedDividendosRoute,
   AuthenticatedEstatisticasRoute: AuthenticatedEstatisticasRoute,
