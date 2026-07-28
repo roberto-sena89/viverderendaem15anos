@@ -343,8 +343,23 @@ function PainelProventos({
           </div>
         </div>
         <div className="p-5">
-          <p className="text-xs text-muted-foreground">Total de 12 meses</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(total12m, 2)}</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground">{ESCOPOS_TOTAL.find((e) => e.valor === escopoTotal)?.rotulo}</p>
+            <Select value={escopoTotal} onValueChange={setEscopoTotal}>
+              <SelectTrigger
+                aria-label="Escopo do total de proventos"
+                className="h-6 w-6 justify-center border-0 bg-transparent p-0 shadow-none [&>svg]:size-4"
+              />
+              <SelectContent align="end">
+                {ESCOPOS_TOTAL.map((e) => (
+                  <SelectItem key={e.valor} value={e.valor} className="text-xs">
+                    {e.rotulo}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(totalEscopo, 2)}</p>
         </div>
         <div className="p-5">
           <p className="text-xs text-muted-foreground">Total da carteira</p>
