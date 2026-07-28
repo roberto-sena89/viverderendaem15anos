@@ -284,3 +284,83 @@ export function useCriarMeta() {
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.metas }),
   });
 }
+
+/** Importa em lote os aportes e proventos lidos do extrato da B3. */
+export function useImportarB3() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      aportes,
+      dividendos,
+    }: {
+      aportes: AporteInput[];
+      dividendos: { data: string; ticker: string; tipo: string; valor: number }[];
+    }) => {
+      if (aportes.length) {
+        const { error } = await supabase.from("aportes").insert(
+          aportes.map((a) => ({
+            data: a.data,
+            corretora: a.corretora,
+            ticker: a.ticker.toUpperCase(),
+            categoria: a.categoria,
+            quantidade: a.quantidade,
+            preco: a.preco,
+            taxas: a.taxas,
+            observacoes: a.observacoes || null,
+          })),
+        );
+        if (error) throw error;
+      }
+
+      if (dividendos.length) {
+        const { error } = await supabase
+          .from("dividendos")
+          .insert(dividendos.map((d) => ({ ...d, ticker: d.ticker.toUpperCase() })));
+        if (error) throw error;
+      }
+
+      // Consolida posição e preço médio por ticker
+      const porTicker = new Map<string, { qtd: number; total: number; categoria: Categoria }>();
+      for (const a of aportes) {
+        const t = a.ticker.toUpperCase();
+        const atual = porTicker.get(t) ?? { qtd: 0, total: 0, categoria: a.categoria };
+        atual.qtd += a.quantidade;
+        atual.total += a.quantidade * a.preco;
+        porTicker.set(t, atual);
+      }
+
+      const { data: existentes } = await supabase.from("ativos").select("*");
+      for (const [ticker, novo] of porTicker) {
+        const atual = (existentes ?? []).find((e) => e.ticker === ticker);
+        if (atual) {
+          const qtd = Number(atual.quantidade) + novo.qtd;
+          const pm = qtd > 0 ? (Number(atual.quantidade) * Number(atual.preco_medio) + novo.total) / qtd : 0;
+          const { error } = await supabase
+            .from("ativos")
+            .update({ quantidade: qtd, preco_medio: pm })
+            .eq("id", atual.id);
+          if (error) throw error;
+        } else {
+          const pm = novo.qtd > 0 ? novo.total / novo.qtd : 0;
+          const { error } = await supabase.from("ativos").insert({
+            ticker,
+            nome: ticker,
+            categoria: novo.categoria,
+            quantidade: novo.qtd,
+            preco_medio: pm,
+            preco_atual: pm,
+            dy: 0,
+          });
+          if (error) throw error;
+        }
+      }
+
+      return { aportes: aportes.length, dividendos: dividendos.length };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.ativos });
+      qc.invalidateQueries({ queryKey: qk.aportes });
+      qc.invalidateQueries({ queryKey: qk.dividendos });
+    },
+  });
+}

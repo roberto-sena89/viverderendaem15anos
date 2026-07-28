@@ -18,6 +18,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
 import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
 import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
+import { Route as AuthenticatedMercadoRouteImport } from './routes/_authenticated/mercado'
 import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authenticated/estatisticas'
 import { Route as AuthenticatedDividendosRouteImport } from './routes/_authenticated/dividendos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -70,6 +71,11 @@ const AuthenticatedMetasRoute = AuthenticatedMetasRouteImport.update({
   path: '/metas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMercadoRoute = AuthenticatedMercadoRouteImport.update({
+  id: '/mercado',
+  path: '/mercado',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEstatisticasRoute =
   AuthenticatedEstatisticasRouteImport.update({
     id: '/estatisticas',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
+  '/mercado': typeof AuthenticatedMercadoRoute
   '/metas': typeof AuthenticatedMetasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
+  '/mercado': typeof AuthenticatedMercadoRoute
   '/metas': typeof AuthenticatedMetasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dividendos': typeof AuthenticatedDividendosRoute
   '/_authenticated/estatisticas': typeof AuthenticatedEstatisticasRoute
+  '/_authenticated/mercado': typeof AuthenticatedMercadoRoute
   '/_authenticated/metas': typeof AuthenticatedMetasRoute
   '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dividendos'
     | '/estatisticas'
+    | '/mercado'
     | '/metas'
     | '/planejador'
     | '/rebalanceamento'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dividendos'
     | '/estatisticas'
+    | '/mercado'
     | '/metas'
     | '/planejador'
     | '/rebalanceamento'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/dividendos'
     | '/_authenticated/estatisticas'
+    | '/_authenticated/mercado'
     | '/_authenticated/metas'
     | '/_authenticated/planejador'
     | '/_authenticated/rebalanceamento'
@@ -278,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMetasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mercado': {
+      id: '/_authenticated/mercado'
+      path: '/mercado'
+      fullPath: '/mercado'
+      preLoaderRoute: typeof AuthenticatedMercadoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/estatisticas': {
       id: '/_authenticated/estatisticas'
       path: '/estatisticas'
@@ -330,6 +349,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDividendosRoute: typeof AuthenticatedDividendosRoute
   AuthenticatedEstatisticasRoute: typeof AuthenticatedEstatisticasRoute
+  AuthenticatedMercadoRoute: typeof AuthenticatedMercadoRoute
   AuthenticatedMetasRoute: typeof AuthenticatedMetasRoute
   AuthenticatedPlanejadorRoute: typeof AuthenticatedPlanejadorRoute
   AuthenticatedRebalanceamentoRoute: typeof AuthenticatedRebalanceamentoRoute
@@ -342,6 +362,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDividendosRoute: AuthenticatedDividendosRoute,
   AuthenticatedEstatisticasRoute: AuthenticatedEstatisticasRoute,
+  AuthenticatedMercadoRoute: AuthenticatedMercadoRoute,
   AuthenticatedMetasRoute: AuthenticatedMetasRoute,
   AuthenticatedPlanejadorRoute: AuthenticatedPlanejadorRoute,
   AuthenticatedRebalanceamentoRoute: AuthenticatedRebalanceamentoRoute,
