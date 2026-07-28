@@ -571,7 +571,7 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
 
   const base = [...porEmpresa.values()]
     .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
-    .slice(0, 24);
+    .slice(0, 80);
 
   // A fonte gratuita limita as consultas de fundamentos; preenchemos aos poucos
   // e guardamos por 24h, de modo que o ranking se completa entre as visitas.
