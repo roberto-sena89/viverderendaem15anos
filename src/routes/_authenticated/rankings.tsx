@@ -168,7 +168,7 @@ function ListaRanking({
                   disabled={paginaAtual === totalPaginas}
                   aria-label="Próxima página"
                 >
-                  <ChevronRightIcon className="size-4" />
+                  <ChevronRight className="size-4" />
                 </Button>
               </nav>
             ) : null}
