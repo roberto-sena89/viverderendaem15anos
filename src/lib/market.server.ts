@@ -592,7 +592,7 @@ function linhasTabela(html: string): string[][] {
     .filter((c) => c.length > 3);
 }
 
-type IndicadorPapel = { dy: number | null; receita: number | null; liquidez: number };
+type IndicadorPapel = { dy: number | null; psr?: number | null; receita: number | null; liquidez: number };
 
 /** Ações: DY e receita 12m (valor de mercado ÷ PSR) de toda a bolsa. */
 async function indicadoresAcoes(): Promise<Map<string, IndicadorPapel>> {
