@@ -636,18 +636,20 @@ async function indicadoresFiis(): Promise<Map<string, IndicadorPapel & { valorMe
   return mapa;
 }
 
+const TOPO = 50;
+
 export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<RankingsB3> {
   const lista = await getJson<BrapiLista>(
-    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=250`,
-    15000,
+    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=500`,
+    20000,
   );
 
   // remove fracionários (final F) e mantém apenas o papel mais líquido por empresa
   const porEmpresa = new Map<string, ItemRanking>();
   for (const s of lista.stocks ?? []) {
     const ticker = s.stock.toUpperCase();
-    if (ticker.endsWith("F")) continue;
-    const empresa = ticker.replace(/\d+$/, "");
+    if (ticker.endsWith("F") && tipo !== "fiis") continue;
+    const empresa = tipo === "fiis" ? ticker : ticker.replace(/\d+$/, "");
     const cap = Number(s.market_cap) || 0;
     const atual = porEmpresa.get(empresa);
     if (atual && (atual.valorMercado ?? 0) >= cap) continue;
@@ -663,61 +665,110 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
     });
   }
 
-  const base = [...porEmpresa.values()]
-    .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
-    .slice(0, 80);
+  let itens = [...porEmpresa.values()];
 
-  // A fonte gratuita limita as consultas de fundamentos; preenchemos aos poucos
-  // e guardamos por 24h, de modo que o ranking se completa entre as visitas.
-  const pendentes = base.filter((a) => !fundamentos.has(a.ticker) || fundamentos.get(a.ticker)!.expira < Date.now());
-  for (let i = 0; i < pendentes.length && i < LOTES_POR_CHAMADA * 3; i += 3) {
-    const lote = pendentes.slice(i, i + 3);
+  if (tipo === "acoes") {
     try {
-      const det = await getJson<BrapiDetalhe>(
-        `https://brapi.dev/api/quote/${lote.map((a) => a.ticker).join(",")}?modules=financialData&dividends=true`,
-        15000,
-      );
-      if (!det.results?.length) break;
-      for (const r of det.results) {
-        const preco = r.regularMarketPrice ?? null;
-        const proventos = proventos12m(r.dividendsData?.cashDividends ?? []);
-        fundamentos.set(r.symbol.toUpperCase(), {
-          expira: Date.now() + TTL_FUNDAMENTOS_MS,
-          valor: {
-            nome: r.longName || r.shortName || null,
-            preco,
-            variacaoPercent: r.regularMarketChangePercent ?? null,
-            dy: preco && preco > 0 && proventos > 0 ? (proventos / preco) * 100 : null,
-            valorMercado: r.marketCap ?? null,
-            receita: r.financialData?.totalRevenue ?? null,
-          },
+      const ind = await indicadoresAcoes();
+      itens = itens.map((a) => {
+        const f = ind.get(a.ticker);
+        if (!f) return a;
+        return {
+          ...a,
+          dy: f.dy,
+          receita: a.valorMercado && f.psr ? a.valorMercado / f.psr : null,
+        };
+      });
+    } catch {
+      // fonte de indicadores indisponível: mantém apenas valor de mercado
+    }
+  } else if (tipo === "fiis") {
+    try {
+      const ind = await indicadoresFiis();
+      itens = itens.map((a) => {
+        const f = ind.get(a.ticker);
+        if (!f) return a;
+        return {
+          ...a,
+          dy: f.dy,
+          valorMercado: a.valorMercado ?? f.valorMercado,
+          receita: f.receita,
+        };
+      });
+      // completa com FIIs que não vieram na lista de cotações
+      const conhecidos = new Set(itens.map((a) => a.ticker));
+      for (const [ticker, f] of ind) {
+        if (conhecidos.has(ticker)) continue;
+        itens.push({
+          ticker,
+          nome: ticker,
+          logo: null,
+          preco: null,
+          variacaoPercent: null,
+          dy: f.dy,
+          valorMercado: f.valorMercado,
+          receita: f.receita,
         });
       }
     } catch {
-      break; // provável limite da fonte: usa o que já está em cache
+      // fonte de indicadores indisponível
     }
-    await dormir(200);
+  } else {
+    // BDRs não têm tabela agregada: preenche fundamentos aos poucos (cache 24h)
+    const base = itens
+      .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
+      .slice(0, 80);
+    const pendentes = base.filter(
+      (a) => !fundamentos.has(a.ticker) || fundamentos.get(a.ticker)!.expira < Date.now(),
+    );
+    for (let i = 0; i < pendentes.length && i < LOTES_POR_CHAMADA * 3; i += 3) {
+      const lote = pendentes.slice(i, i + 3);
+      try {
+        const det = await getJson<BrapiDetalhe>(
+          `https://brapi.dev/api/quote/${lote.map((a) => a.ticker).join(",")}?modules=financialData&dividends=true`,
+          15000,
+        );
+        if (!det.results?.length) break;
+        for (const r of det.results) {
+          const preco = r.regularMarketPrice ?? null;
+          const proventos = proventos12m(r.dividendsData?.cashDividends ?? []);
+          fundamentos.set(r.symbol.toUpperCase(), {
+            expira: Date.now() + TTL_FUNDAMENTOS_MS,
+            valor: {
+              nome: r.longName || r.shortName || null,
+              preco,
+              variacaoPercent: r.regularMarketChangePercent ?? null,
+              dy: preco && preco > 0 && proventos > 0 ? (proventos / preco) * 100 : null,
+              valorMercado: r.marketCap ?? null,
+              receita: r.financialData?.totalRevenue ?? null,
+            },
+          });
+        }
+      } catch {
+        break; // provável limite da fonte: usa o que já está em cache
+      }
+      await dormir(200);
+    }
+    itens = base.map((a) => {
+      const f = fundamentos.get(a.ticker)?.valor;
+      if (!f) return a;
+      return {
+        ...a,
+        nome: f.nome ?? a.nome,
+        preco: f.preco ?? a.preco,
+        variacaoPercent: f.variacaoPercent ?? a.variacaoPercent,
+        dy: f.dy,
+        valorMercado: f.valorMercado ?? a.valorMercado,
+        receita: f.receita,
+      };
+    });
   }
-
-  const itens = base.map((a) => {
-    const f = fundamentos.get(a.ticker)?.valor;
-    if (!f) return a;
-    return {
-      ...a,
-      nome: f.nome ?? a.nome,
-      preco: f.preco ?? a.preco,
-      variacaoPercent: f.variacaoPercent ?? a.variacaoPercent,
-      dy: f.dy,
-      valorMercado: f.valorMercado ?? a.valorMercado,
-      receita: f.receita,
-    };
-  });
 
   const topo = (chave: "dy" | "valorMercado" | "receita") =>
     itens
       .filter((a) => typeof a[chave] === "number" && (a[chave] as number) > 0)
       .sort((a, b) => (b[chave] as number) - (a[chave] as number))
-      .slice(0, 50);
+      .slice(0, TOPO);
 
   return {
     tipo,
