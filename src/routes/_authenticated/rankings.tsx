@@ -45,6 +45,8 @@ function valorGrande(v: number) {
   return `R$ ${v.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`;
 }
 
+const VISIVEIS = 5;
+
 function ListaRanking({
   titulo,
   icone: Icone,
@@ -58,6 +60,9 @@ function ListaRanking({
   valor: (i: ItemRanking) => string;
   carregando: boolean;
 }) {
+  const [completo, setCompleto] = useState(false);
+  const visiveis = completo ? itens : itens.slice(0, VISIVEIS);
+
   return (
     <Panel className="overflow-hidden" bodyClassName="p-0">
       <div className="flex flex-col items-center gap-2 border-b border-border bg-muted/30 px-4 py-5">
@@ -76,41 +81,56 @@ function ListaRanking({
           Sem dados disponíveis para esta categoria no momento.
         </p>
       ) : (
-        <ul className="divide-y divide-border">
-          {itens.map((item, idx) => (
-            <li key={item.ticker}>
-              <Link
-                to="/mercado"
-                search={{ ativo: item.ticker }}
-                className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
-              >
-                <span
-                  className={`num w-6 shrink-0 text-xs font-bold ${
-                    idx < 3 ? "text-primary" : "text-muted-foreground/60"
-                  }`}
+        <>
+          <ul className="divide-y divide-border">
+            {visiveis.map((item, idx) => (
+              <li key={item.ticker}>
+                <Link
+                  to="/mercado"
+                  search={{ ativo: item.ticker }}
+                  className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
                 >
-                  #{idx + 1}
-                </span>
-                {item.logo ? (
-                  <img
-                    src={item.logo}
-                    alt={`Logo ${item.ticker}`}
-                    loading="lazy"
-                    className="size-8 shrink-0 rounded-lg bg-muted object-contain"
-                  />
-                ) : (
-                  <TickerMark ticker={item.ticker} />
-                )}
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold">{item.ticker}</span>
-                  <span className="block truncate text-xs text-muted-foreground">{item.nome}</span>
-                </span>
-                <span className="num shrink-0 text-sm font-semibold tabular-nums">{valor(item)}</span>
-                <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </li>
-          ))}
-        </ul>
+                  <span
+                    className={`num w-6 shrink-0 text-xs font-bold ${
+                      idx < 3 ? "text-primary" : "text-muted-foreground/60"
+                    }`}
+                  >
+                    #{idx + 1}
+                  </span>
+                  {item.logo ? (
+                    <img
+                      src={item.logo}
+                      alt={`Logo ${item.ticker}`}
+                      loading="lazy"
+                      className="size-8 shrink-0 rounded-lg bg-muted object-contain"
+                    />
+                  ) : (
+                    <TickerMark ticker={item.ticker} />
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{item.ticker}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{item.nome}</span>
+                  </span>
+                  <span className="num shrink-0 text-sm font-semibold tabular-nums">{valor(item)}</span>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {itens.length > VISIVEIS ? (
+            <div className="border-t border-border p-4">
+              <Button
+                variant="outline"
+                className="w-full rounded-full"
+                onClick={() => setCompleto((v) => !v)}
+                aria-expanded={completo}
+              >
+                {completo ? "Ver menos" : `Ver Rankings (${itens.length})`}
+              </Button>
+            </div>
+          ) : null}
+        </>
       )}
     </Panel>
   );
