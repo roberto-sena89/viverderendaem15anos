@@ -1,6 +1,9 @@
 export type Categoria = "Ações" | "FIIs" | "ETF Brasil" | "ETF EUA" | "Renda Fixa" | "Tesouro";
 
+export const categorias: Categoria[] = ["Ações", "FIIs", "ETF Brasil", "ETF EUA", "Renda Fixa", "Tesouro"];
+
 export interface Ativo {
+  id: string;
   ticker: string;
   nome: string;
   categoria: Categoria;
@@ -9,79 +12,6 @@ export interface Ativo {
   precoAtual: number;
   dy: number;
 }
-
-export const carteira: Ativo[] = [
-  { ticker: "IPCA+ 2035", nome: "Tesouro IPCA+ 2035", categoria: "Tesouro", quantidade: 42, precoMedio: 3120, precoAtual: 3410, dy: 0 },
-  { ticker: "SELIC 2029", nome: "Tesouro Selic 2029", categoria: "Renda Fixa", quantidade: 180, precoMedio: 1180, precoAtual: 1264, dy: 0 },
-  { ticker: "CDB BTG", nome: "CDB BTG 112% CDI", categoria: "Renda Fixa", quantidade: 90, precoMedio: 1000, precoAtual: 1094, dy: 0 },
-  { ticker: "BOVA11", nome: "iShares Ibovespa", categoria: "ETF Brasil", quantidade: 1200, precoMedio: 108.4, precoAtual: 126.9, dy: 4.1 },
-  { ticker: "SMAL11", nome: "iShares Small Caps", categoria: "ETF Brasil", quantidade: 420, precoMedio: 96.2, precoAtual: 101.7, dy: 3.2 },
-  { ticker: "IVVB11", nome: "iShares S&P 500", categoria: "ETF EUA", quantidade: 640, precoMedio: 268.5, precoAtual: 332.8, dy: 1.4 },
-  { ticker: "WRLD11", nome: "ETF Global Markets", categoria: "ETF EUA", quantidade: 210, precoMedio: 92.7, precoAtual: 104.3, dy: 1.1 },
-  { ticker: "HGLG11", nome: "CSHG Logística", categoria: "FIIs", quantidade: 320, precoMedio: 152.3, precoAtual: 161.5, dy: 8.6 },
-  { ticker: "KNCR11", nome: "Kinea Rendimentos", categoria: "FIIs", quantidade: 280, precoMedio: 99.4, precoAtual: 104.2, dy: 11.2 },
-  { ticker: "ITSA4", nome: "Itaúsa", categoria: "Ações", quantidade: 1500, precoMedio: 8.9, precoAtual: 11.42, dy: 7.4 },
-  { ticker: "TAEE11", nome: "Taesa", categoria: "Ações", quantidade: 400, precoMedio: 33.1, precoAtual: 36.8, dy: 9.1 },
-];
-
-export const alocacaoIdeal: Record<string, number> = {
-  "Pós-fixado": 30,
-  "IPCA+": 15,
-  "Pré-fixado": 5,
-  "ETF Brasil": 20,
-  "ETF EUA": 20,
-  FIIs: 10,
-};
-
-/** Mapeia categorias da carteira para as classes da estratégia Rian Tavares. */
-export const classeDoAtivo = (a: Ativo): keyof typeof alocacaoIdeal => {
-  if (a.categoria === "Tesouro") return "IPCA+";
-  if (a.categoria === "Renda Fixa") return a.ticker.includes("CDB") ? "Pós-fixado" : "Pós-fixado";
-  if (a.categoria === "Ações") return "ETF Brasil";
-  return a.categoria as keyof typeof alocacaoIdeal;
-};
-
-export const valorAtual = (a: Ativo) => a.quantidade * a.precoAtual;
-export const valorInvestido = (a: Ativo) => a.quantidade * a.precoMedio;
-
-export const totalAtual = carteira.reduce((s, a) => s + valorAtual(a), 0);
-export const totalInvestido = carteira.reduce((s, a) => s + valorInvestido(a), 0);
-export const lucroTotal = totalAtual - totalInvestido;
-export const rentabilidade = (lucroTotal / totalInvestido) * 100;
-export const dividendos12m = carteira.reduce((s, a) => s + (valorAtual(a) * a.dy) / 100, 0);
-export const dyCarteira = (dividendos12m / totalAtual) * 100;
-
-export const metaFinanceira = 2_000_000;
-
-export const evolucaoPatrimonio = [
-  { mes: "Jan", patrimonio: 862000, aportes: 12000 },
-  { mes: "Fev", patrimonio: 889400, aportes: 12000 },
-  { mes: "Mar", patrimonio: 902100, aportes: 14000 },
-  { mes: "Abr", patrimonio: 938600, aportes: 12000 },
-  { mes: "Mai", patrimonio: 961200, aportes: 15000 },
-  { mes: "Jun", patrimonio: 979800, aportes: 12000 },
-  { mes: "Jul", patrimonio: 1012400, aportes: 18000 },
-  { mes: "Ago", patrimonio: 1034900, aportes: 12000 },
-  { mes: "Set", patrimonio: 1058300, aportes: 13000 },
-  { mes: "Out", patrimonio: 1091700, aportes: 16000 },
-  { mes: "Nov", patrimonio: 1118200, aportes: 12000 },
-  { mes: "Dez", patrimonio: Math.round(totalAtual), aportes: 14000 },
-];
-
-export const dividendosMensais = [
-  { mes: "Jan", valor: 4120 },
-  { mes: "Fev", valor: 3890 },
-  { mes: "Mar", valor: 5240 },
-  { mes: "Abr", valor: 4470 },
-  { mes: "Mai", valor: 4980 },
-  { mes: "Jun", valor: 5610 },
-  { mes: "Jul", valor: 5120 },
-  { mes: "Ago", valor: 5380 },
-  { mes: "Set", valor: 6040 },
-  { mes: "Out", valor: 5720 },
-  { mes: "Nov", valor: 6210 },
-  { mes: "Dez", valor: 6890 },
-];
 
 export interface Aporte {
   id: string;
@@ -92,46 +22,149 @@ export interface Aporte {
   quantidade: number;
   preco: number;
   taxas: number;
-  observacoes?: string;
+  observacoes?: string | null;
 }
 
-export const aportesIniciais: Aporte[] = [
-  { id: "1", data: "2026-07-05", corretora: "BTG Pactual", ticker: "IVVB11", categoria: "ETF EUA", quantidade: 30, preco: 331.4, taxas: 0, observacoes: "Aporte mensal" },
-  { id: "2", data: "2026-07-05", corretora: "BTG Pactual", ticker: "BOVA11", categoria: "ETF Brasil", quantidade: 40, preco: 126.2, taxas: 0 },
-  { id: "3", data: "2026-06-04", corretora: "Rico", ticker: "HGLG11", categoria: "FIIs", quantidade: 12, preco: 160.9, taxas: 2.5 },
-  { id: "4", data: "2026-06-04", corretora: "Tesouro Direto", ticker: "IPCA+ 2035", categoria: "Tesouro", quantidade: 2, preco: 3388, taxas: 0 },
-  { id: "5", data: "2026-05-06", corretora: "BTG Pactual", ticker: "ITSA4", categoria: "Ações", quantidade: 200, preco: 11.1, taxas: 1.9 },
-];
+export interface Dividendo {
+  id: string;
+  data: string;
+  ticker: string;
+  tipo: string;
+  valor: number;
+}
 
 export interface Meta {
+  id: string;
   nome: string;
   alvo: number;
+  ordem: number;
 }
 
-export const metas: Meta[] = [
-  { nome: "Reserva de Emergência", alvo: 60000 },
-  { nome: "100 mil", alvo: 100000 },
-  { nome: "250 mil", alvo: 250000 },
-  { nome: "500 mil", alvo: 500000 },
-  { nome: "1 milhão", alvo: 1000000 },
-  { nome: "2 milhões", alvo: 2000000 },
-  { nome: "3 milhões", alvo: 3000000 },
-];
-
-export const brl = (v: number, digits = 0) =>
-  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: digits, minimumFractionDigits: digits });
-
-export const pct = (v: number, digits = 1) => `${v > 0 ? "" : ""}${v.toFixed(digits).replace(".", ",")}%`;
-
-export interface ProjecaoInput {
+export interface PlanoConfig {
   idadeAtual: number;
   idadeAposentadoria: number;
-  patrimonioAtual: number;
   aporteMensal: number;
   aumentoAnual: number;
   rentabilidadeAnual: number;
   inflacaoAnual: number;
   taxaRetirada: number;
+}
+
+export const planoPadrao: PlanoConfig = {
+  idadeAtual: 32,
+  idadeAposentadoria: 47,
+  aporteMensal: 3000,
+  aumentoAnual: 8,
+  rentabilidadeAnual: 11,
+  inflacaoAnual: 4.5,
+  taxaRetirada: 4,
+};
+
+export const alocacaoIdeal: Record<string, number> = {
+  "Pós-fixado": 30,
+  "IPCA+": 15,
+  "Pré-fixado": 5,
+  "ETF Brasil": 20,
+  "ETF EUA": 20,
+  FIIs: 10,
+};
+
+/** Mapeia categorias da carteira para as classes da estratégia de longo prazo. */
+export const classeDoAtivo = (a: Ativo): keyof typeof alocacaoIdeal => {
+  if (a.categoria === "Tesouro") return "IPCA+";
+  if (a.categoria === "Renda Fixa") return "Pós-fixado";
+  if (a.categoria === "Ações") return "ETF Brasil";
+  return a.categoria as keyof typeof alocacaoIdeal;
+};
+
+export const valorAtual = (a: Ativo) => a.quantidade * a.precoAtual;
+export const valorInvestido = (a: Ativo) => a.quantidade * a.precoMedio;
+
+export interface ResumoCarteira {
+  totalAtual: number;
+  totalInvestido: number;
+  lucroTotal: number;
+  rentabilidade: number;
+  dividendosEstimados12m: number;
+  dyCarteira: number;
+}
+
+export function resumoCarteira(ativos: Ativo[]): ResumoCarteira {
+  const totalAtual = ativos.reduce((s, a) => s + valorAtual(a), 0);
+  const totalInvestido = ativos.reduce((s, a) => s + valorInvestido(a), 0);
+  const lucroTotal = totalAtual - totalInvestido;
+  const dividendosEstimados12m = ativos.reduce((s, a) => s + (valorAtual(a) * a.dy) / 100, 0);
+  return {
+    totalAtual,
+    totalInvestido,
+    lucroTotal,
+    rentabilidade: totalInvestido > 0 ? (lucroTotal / totalInvestido) * 100 : 0,
+    dividendosEstimados12m,
+    dyCarteira: totalAtual > 0 ? (dividendosEstimados12m / totalAtual) * 100 : 0,
+  };
+}
+
+const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+/** Últimos 12 meses (rótulo curto + chave AAAA-MM). */
+export function ultimos12Meses(): { chave: string; mes: string }[] {
+  const hoje = new Date();
+  const lista: { chave: string; mes: string }[] = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+    lista.push({
+      chave: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+      mes: MESES[d.getMonth()],
+    });
+  }
+  return lista;
+}
+
+export function dividendosMensais(dividendos: Dividendo[]) {
+  return ultimos12Meses().map(({ chave, mes }) => ({
+    mes,
+    valor: dividendos.filter((d) => d.data.startsWith(chave)).reduce((s, d) => s + d.valor, 0),
+  }));
+}
+
+export function dividendos12m(dividendos: Dividendo[]) {
+  const chaves = new Set(ultimos12Meses().map((m) => m.chave));
+  return dividendos.filter((d) => chaves.has(d.data.slice(0, 7))).reduce((s, d) => s + d.valor, 0);
+}
+
+/** Evolução do patrimônio reconstruída a partir dos aportes + valor atual da carteira. */
+export function evolucaoPatrimonio(aportes: Aporte[], totalAtual: number) {
+  const meses = ultimos12Meses();
+  const aportesPorMes = meses.map(({ chave, mes }) => ({
+    mes,
+    chave,
+    aportes: aportes
+      .filter((a) => a.data.startsWith(chave))
+      .reduce((s, a) => s + a.quantidade * a.preco + a.taxas, 0),
+  }));
+
+  const totalAportado12m = aportesPorMes.reduce((s, m) => s + m.aportes, 0);
+  let patrimonio = Math.max(0, totalAtual - totalAportado12m);
+
+  return aportesPorMes.map((m) => {
+    patrimonio += m.aportes;
+    return { mes: m.mes, patrimonio: Math.round(patrimonio), aportes: Math.round(m.aportes) };
+  });
+}
+
+export const brl = (v: number, digits = 0) =>
+  (Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits,
+  });
+
+export const pct = (v: number, digits = 1) =>
+  `${(Number.isFinite(v) ? v : 0).toFixed(digits).replace(".", ",")}%`;
+
+export interface ProjecaoInput extends PlanoConfig {
+  patrimonioAtual: number;
 }
 
 export interface ProjecaoAno {
@@ -173,3 +206,13 @@ export function projetar(input: ProjecaoInput, ajusteRentabilidade = 0): Projeca
 
   return linhas;
 }
+
+export const metasPadrao = [
+  { nome: "Reserva de Emergência", alvo: 60000 },
+  { nome: "100 mil", alvo: 100000 },
+  { nome: "250 mil", alvo: 250000 },
+  { nome: "500 mil", alvo: 500000 },
+  { nome: "1 milhão", alvo: 1000000 },
+  { nome: "2 milhões", alvo: 2000000 },
+  { nome: "3 milhões", alvo: 3000000 },
+];
