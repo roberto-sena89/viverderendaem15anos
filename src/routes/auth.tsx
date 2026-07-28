@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -229,7 +229,15 @@ function AuthPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">Senha</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Senha</Label>
+                    <Link
+                      to="/recuperar-senha"
+                      className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    >
+                      Esqueci minha senha
+                    </Link>
+                  </div>
                   <Input
                     id="password"
                     type="password"
@@ -238,6 +246,7 @@ function AuthPage() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
+
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="size-4 animate-spin" /> : "Entrar"}
                 </Button>
