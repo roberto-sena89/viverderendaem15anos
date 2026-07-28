@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Eraser, RefreshCw } from "lucide-react";
+import { Eraser, LineChart, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import {
@@ -49,11 +49,12 @@ export const Route = createFileRoute("/_authenticated/chat")({
 });
 
 const SUGESTOES = [
+  "Como PETR4 se comportou nos últimos 10 anos?",
+  "Qual a projeção da Selic para os próximos anos?",
+  "Compare BOVA11 com IVVB11 em retorno e risco",
   "Analise a diversificação da minha carteira",
-  "Quanto preciso aportar por mês para viver de renda?",
-  "Meus FIIs estão com dividend yield saudável?",
-  "O que devo comprar no próximo aporte?",
 ];
+
 
 function ChatPage() {
   const queryClient = useQueryClient();
@@ -197,17 +198,28 @@ function ChatPage() {
                 </div>
               </ConversationEmptyState>
             ) : (
-              messages.map((message) => (
-                <Message key={message.id} from={message.role}>
-                  <MessageContent>
-                    <MessageResponse>
-                      {message.parts
-                        .map((part) => (part.type === "text" ? part.text : ""))
-                        .join("")}
-                    </MessageResponse>
-                  </MessageContent>
-                </Message>
-              ))
+              messages.map((message) => {
+                const ferramentas = message.parts
+                  .filter((part) => part.type.startsWith("tool-"))
+                  .map((part) => part.type.replace("tool-", ""));
+                const texto = message.parts
+                  .map((part) => (part.type === "text" ? part.text : ""))
+                  .join("");
+                return (
+                  <Message key={message.id} from={message.role}>
+                    <MessageContent>
+                      {ferramentas.length > 0 ? (
+                        <p className="mb-2 text-xs text-muted-foreground">
+                          <LineChart className="mr-1 inline size-3" />
+                          Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}
+                        </p>
+                      ) : null}
+                      <MessageResponse>{texto}</MessageResponse>
+                    </MessageContent>
+                  </Message>
+                );
+              })
+
             )}
             {status === "submitted" ? (
               <div className="px-2 pt-2">
