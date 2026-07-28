@@ -163,7 +163,7 @@ function MetasPage() {
 
       {metas.length > 0 ? (
         <div className="surface-card p-6">
-          <p className="text-sm font-medium">Timeline de objetivos</p>
+          <p className="panel-title">Timeline de objetivos</p>
           <ol className="mt-6 space-y-6 border-l border-border pl-6">
             {metas.map((m) => {
               const progresso = m.alvo > 0 ? Math.min(100, (totalAtual / m.alvo) * 100) : 0;

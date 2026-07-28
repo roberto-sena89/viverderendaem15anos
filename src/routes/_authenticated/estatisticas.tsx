@@ -54,7 +54,7 @@ function Estatisticas() {
       </div>
 
       <div className="surface-card p-6">
-        <p className="text-sm font-medium">Patrimônio acumulado</p>
+        <p className="panel-title">Patrimônio acumulado</p>
         <div className="mt-4 h-80">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={evolucao}>

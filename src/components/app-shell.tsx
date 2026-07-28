@@ -8,7 +8,6 @@ import {
   LineChart,
   Scale,
   Target,
-  Sparkles,
   TrendingUp,
   CandlestickChart,
 
@@ -21,19 +20,37 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
-const nav = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/carteira", label: "Carteira", icon: Wallet },
-  { to: "/aportes", label: "Aportes", icon: PlusCircle },
-  { to: "/dividendos", label: "Dividendos", icon: Coins },
-  { to: "/planejador", label: "Planejador FI", icon: LineChart },
-  { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
-  { to: "/metas", label: "Metas", icon: Target },
-  { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
-  { to: "/mercado", label: "Conectar B3", icon: CandlestickChart },
-  { to: "/chat", label: "Técnico IA", icon: Bot },
+const grupos = [
+  {
+    titulo: "Carteira",
+    itens: [
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/carteira", label: "Carteira", icon: Wallet },
+      { to: "/aportes", label: "Aportes", icon: PlusCircle },
+      { to: "/dividendos", label: "Dividendos", icon: Coins },
+    ],
+  },
+  {
+    titulo: "Análise",
+    itens: [
+      { to: "/estatisticas", label: "Estatísticas", icon: TrendingUp },
+      { to: "/rebalanceamento", label: "Rebalanceamento", icon: Scale },
+      { to: "/mercado", label: "Mercado & B3", icon: CandlestickChart },
+    ],
+  },
+  {
+    titulo: "Planejamento",
+    itens: [
+      { to: "/planejador", label: "Planejador FI", icon: LineChart },
+      { to: "/metas", label: "Metas", icon: Target },
+      { to: "/chat", label: "Técnico IA", icon: Bot },
+    ],
+  },
+];
 
-] as const;
+const nav = grupos.flatMap((g) => g.itens);
+
+
 
 export function AppShell({
   title,
@@ -76,7 +93,11 @@ export function AppShell({
     navigate({ to: "/auth", replace: true, search: { redirect: undefined } });
   }
 
+  const grupoAtual =
+    grupos.find((g) => g.itens.some((i) => i.to === pathname))?.titulo ?? "Investidor em 15 anos";
+
   const initials = (user?.name ?? "IN")
+
     .split(" ")
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase() ?? "")
@@ -85,36 +106,49 @@ export function AppShell({
   return (
     <div className="min-h-screen bg-background lg:flex">
       <aside className="sticky top-0 z-30 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
-        <Link to="/" className="mb-8 flex items-center gap-2 px-2">
-          <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-            <Sparkles className="size-4" />
+        <Link to="/" className="mb-7 flex items-center gap-2.5 px-2">
+          <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand font-display text-[0.7rem] font-bold text-primary-foreground">
+            I15
           </span>
-          <span className="font-display text-sm leading-tight font-semibold text-sidebar-foreground">
+          <span className="font-display text-sm leading-tight font-bold text-sidebar-foreground">
             Investidor
             <br />
-            <span className="text-muted-foreground">em 15 Anos</span>
+            <span className="text-[0.65rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+              em 15 anos
+            </span>
           </span>
         </Link>
 
-        <nav className="flex flex-1 flex-col gap-1">
-          {nav.map(({ to, label, icon: Icon }) => {
-            const active = pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
-                  active
-                    ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                    : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-                }`}
-              >
-                <Icon className="size-4" />
-                {label}
-              </Link>
-            );
-          })}
+        <nav className="flex flex-1 flex-col gap-5 overflow-y-auto">
+          {grupos.map((grupo) => (
+            <div key={grupo.titulo} className="space-y-1">
+              <p className="px-3 pb-1 text-[0.62rem] font-bold tracking-[0.12em] text-muted-foreground/70 uppercase">
+                {grupo.titulo}
+              </p>
+              {grupo.itens.map(({ to, label, icon: Icon }) => {
+                const active = pathname === to;
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={`relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      active
+                        ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
+                        : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    }`}
+                  >
+                    {active ? (
+                      <span className="absolute top-1.5 bottom-1.5 -left-px w-[3px] rounded-full bg-gradient-brand" />
+                    ) : null}
+                    <Icon className={`size-4 shrink-0 ${active ? "text-primary" : ""}`} />
+                    <span className="truncate">{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
+
 
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-sidebar-border p-3">
           <Avatar className="size-9">
@@ -145,11 +179,15 @@ export function AppShell({
         <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
           <div className="flex items-center justify-between gap-4 px-5 py-4 lg:px-8">
             <div className="min-w-0">
-              <h1 className="truncate font-display text-lg font-semibold sm:text-xl">{title}</h1>
+              <p className="text-[0.62rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">
+                {grupoAtual}
+              </p>
+              <h1 className="truncate font-display text-lg font-bold sm:text-xl">{title}</h1>
               {description ? (
                 <p className="truncate text-sm text-muted-foreground">{description}</p>
               ) : null}
             </div>
+
             <div className="flex items-center gap-1">
               <ThemeToggle />
               <Button
