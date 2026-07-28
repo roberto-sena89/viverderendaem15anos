@@ -65,8 +65,8 @@ export function TickerMercado() {
 
   return (
     <div className="flex items-center border-b border-border bg-sidebar">
-      <div className="group min-w-0 flex-1 overflow-hidden">
-        <div className="flex w-max animate-marquee items-center group-hover:[animation-play-state:paused]">
+      <div className="fita-pausa min-w-0 flex-1 overflow-hidden">
+        <div className="fita-rolando flex w-max items-center">
           {sequencia.map((i, idx) => (
             <div
               key={`${i.simbolo}-${idx}`}

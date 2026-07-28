@@ -228,8 +228,14 @@
   }
 }
 
-@utility animate-marquee {
+.fita-rolando {
   animation: marquee 60s linear infinite;
+  will-change: transform;
+}
+
+.fita-rolando:hover,
+.fita-pausa:hover .fita-rolando {
+  animation-play-state: paused;
 }
 
 @keyframes marquee {
@@ -242,10 +248,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee {
+  .fita-rolando {
     animation: none;
   }
 }
+
 
 
 /* ---------------------------------------------------------------
