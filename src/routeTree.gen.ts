@@ -10,59 +10,30 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as RebalanceamentoRouteImport } from './routes/rebalanceamento'
-import { Route as PlanejadorRouteImport } from './routes/planejador'
-import { Route as MetasRouteImport } from './routes/metas'
-import { Route as EstatisticasRouteImport } from './routes/estatisticas'
-import { Route as DividendosRouteImport } from './routes/dividendos'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CarteiraRouteImport } from './routes/carteira'
-import { Route as AportesRouteImport } from './routes/aportes'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
+import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
+import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
+import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authenticated/estatisticas'
+import { Route as AuthenticatedDividendosRouteImport } from './routes/_authenticated/dividendos'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
+import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RebalanceamentoRoute = RebalanceamentoRouteImport.update({
-  id: '/rebalanceamento',
-  path: '/rebalanceamento',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlanejadorRoute = PlanejadorRouteImport.update({
-  id: '/planejador',
-  path: '/planejador',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MetasRoute = MetasRouteImport.update({
-  id: '/metas',
-  path: '/metas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EstatisticasRoute = EstatisticasRouteImport.update({
-  id: '/estatisticas',
-  path: '/estatisticas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DividendosRoute = DividendosRouteImport.update({
-  id: '/dividendos',
-  path: '/dividendos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CarteiraRoute = CarteiraRouteImport.update({
-  id: '/carteira',
-  path: '/carteira',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AportesRoute = AportesRouteImport.update({
-  id: '/aportes',
-  path: '/aportes',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -70,48 +41,96 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRebalanceamentoRoute =
+  AuthenticatedRebalanceamentoRouteImport.update({
+    id: '/rebalanceamento',
+    path: '/rebalanceamento',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPlanejadorRoute = AuthenticatedPlanejadorRouteImport.update({
+  id: '/planejador',
+  path: '/planejador',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMetasRoute = AuthenticatedMetasRouteImport.update({
+  id: '/metas',
+  path: '/metas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEstatisticasRoute =
+  AuthenticatedEstatisticasRouteImport.update({
+    id: '/estatisticas',
+    path: '/estatisticas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDividendosRoute = AuthenticatedDividendosRouteImport.update({
+  id: '/dividendos',
+  path: '/dividendos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
+  id: '/carteira',
+  path: '/carteira',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAportesRoute = AuthenticatedAportesRouteImport.update({
+  id: '/aportes',
+  path: '/aportes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/aportes': typeof AportesRoute
-  '/carteira': typeof CarteiraRoute
-  '/dashboard': typeof DashboardRoute
-  '/dividendos': typeof DividendosRoute
-  '/estatisticas': typeof EstatisticasRoute
-  '/metas': typeof MetasRoute
-  '/planejador': typeof PlanejadorRoute
-  '/rebalanceamento': typeof RebalanceamentoRoute
+  '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/aportes': typeof AuthenticatedAportesRoute
+  '/carteira': typeof AuthenticatedCarteiraRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dividendos': typeof AuthenticatedDividendosRoute
+  '/estatisticas': typeof AuthenticatedEstatisticasRoute
+  '/metas': typeof AuthenticatedMetasRoute
+  '/planejador': typeof AuthenticatedPlanejadorRoute
+  '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/aportes': typeof AportesRoute
-  '/carteira': typeof CarteiraRoute
-  '/dashboard': typeof DashboardRoute
-  '/dividendos': typeof DividendosRoute
-  '/estatisticas': typeof EstatisticasRoute
-  '/metas': typeof MetasRoute
-  '/planejador': typeof PlanejadorRoute
-  '/rebalanceamento': typeof RebalanceamentoRoute
+  '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/aportes': typeof AuthenticatedAportesRoute
+  '/carteira': typeof AuthenticatedCarteiraRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dividendos': typeof AuthenticatedDividendosRoute
+  '/estatisticas': typeof AuthenticatedEstatisticasRoute
+  '/metas': typeof AuthenticatedMetasRoute
+  '/planejador': typeof AuthenticatedPlanejadorRoute
+  '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/aportes': typeof AportesRoute
-  '/carteira': typeof CarteiraRoute
-  '/dashboard': typeof DashboardRoute
-  '/dividendos': typeof DividendosRoute
-  '/estatisticas': typeof EstatisticasRoute
-  '/metas': typeof MetasRoute
-  '/planejador': typeof PlanejadorRoute
-  '/rebalanceamento': typeof RebalanceamentoRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/aportes': typeof AuthenticatedAportesRoute
+  '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dividendos': typeof AuthenticatedDividendosRoute
+  '/_authenticated/estatisticas': typeof AuthenticatedEstatisticasRoute
+  '/_authenticated/metas': typeof AuthenticatedMetasRoute
+  '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
+  '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/sitemap.xml'
     | '/aportes'
     | '/carteira'
     | '/dashboard'
@@ -120,10 +139,11 @@ export interface FileRouteTypes {
     | '/metas'
     | '/planejador'
     | '/rebalanceamento'
-    | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
+    | '/sitemap.xml'
     | '/aportes'
     | '/carteira'
     | '/dashboard'
@@ -132,31 +152,26 @@ export interface FileRouteTypes {
     | '/metas'
     | '/planejador'
     | '/rebalanceamento'
-    | '/sitemap.xml'
   id:
     | '__root__'
     | '/'
-    | '/aportes'
-    | '/carteira'
-    | '/dashboard'
-    | '/dividendos'
-    | '/estatisticas'
-    | '/metas'
-    | '/planejador'
-    | '/rebalanceamento'
+    | '/_authenticated'
+    | '/auth'
     | '/sitemap.xml'
+    | '/_authenticated/aportes'
+    | '/_authenticated/carteira'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/dividendos'
+    | '/_authenticated/estatisticas'
+    | '/_authenticated/metas'
+    | '/_authenticated/planejador'
+    | '/_authenticated/rebalanceamento'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AportesRoute: typeof AportesRoute
-  CarteiraRoute: typeof CarteiraRoute
-  DashboardRoute: typeof DashboardRoute
-  DividendosRoute: typeof DividendosRoute
-  EstatisticasRoute: typeof EstatisticasRoute
-  MetasRoute: typeof MetasRoute
-  PlanejadorRoute: typeof PlanejadorRoute
-  RebalanceamentoRoute: typeof RebalanceamentoRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -169,60 +184,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/rebalanceamento': {
-      id: '/rebalanceamento'
-      path: '/rebalanceamento'
-      fullPath: '/rebalanceamento'
-      preLoaderRoute: typeof RebalanceamentoRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/planejador': {
-      id: '/planejador'
-      path: '/planejador'
-      fullPath: '/planejador'
-      preLoaderRoute: typeof PlanejadorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/metas': {
-      id: '/metas'
-      path: '/metas'
-      fullPath: '/metas'
-      preLoaderRoute: typeof MetasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/estatisticas': {
-      id: '/estatisticas'
-      path: '/estatisticas'
-      fullPath: '/estatisticas'
-      preLoaderRoute: typeof EstatisticasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dividendos': {
-      id: '/dividendos'
-      path: '/dividendos'
-      fullPath: '/dividendos'
-      preLoaderRoute: typeof DividendosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/carteira': {
-      id: '/carteira'
-      path: '/carteira'
-      fullPath: '/carteira'
-      preLoaderRoute: typeof CarteiraRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/aportes': {
-      id: '/aportes'
-      path: '/aportes'
-      fullPath: '/aportes'
-      preLoaderRoute: typeof AportesRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -232,19 +205,94 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/rebalanceamento': {
+      id: '/_authenticated/rebalanceamento'
+      path: '/rebalanceamento'
+      fullPath: '/rebalanceamento'
+      preLoaderRoute: typeof AuthenticatedRebalanceamentoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/planejador': {
+      id: '/_authenticated/planejador'
+      path: '/planejador'
+      fullPath: '/planejador'
+      preLoaderRoute: typeof AuthenticatedPlanejadorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/metas': {
+      id: '/_authenticated/metas'
+      path: '/metas'
+      fullPath: '/metas'
+      preLoaderRoute: typeof AuthenticatedMetasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/estatisticas': {
+      id: '/_authenticated/estatisticas'
+      path: '/estatisticas'
+      fullPath: '/estatisticas'
+      preLoaderRoute: typeof AuthenticatedEstatisticasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dividendos': {
+      id: '/_authenticated/dividendos'
+      path: '/dividendos'
+      fullPath: '/dividendos'
+      preLoaderRoute: typeof AuthenticatedDividendosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/carteira': {
+      id: '/_authenticated/carteira'
+      path: '/carteira'
+      fullPath: '/carteira'
+      preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/aportes': {
+      id: '/_authenticated/aportes'
+      path: '/aportes'
+      fullPath: '/aportes'
+      preLoaderRoute: typeof AuthenticatedAportesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAportesRoute: typeof AuthenticatedAportesRoute
+  AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDividendosRoute: typeof AuthenticatedDividendosRoute
+  AuthenticatedEstatisticasRoute: typeof AuthenticatedEstatisticasRoute
+  AuthenticatedMetasRoute: typeof AuthenticatedMetasRoute
+  AuthenticatedPlanejadorRoute: typeof AuthenticatedPlanejadorRoute
+  AuthenticatedRebalanceamentoRoute: typeof AuthenticatedRebalanceamentoRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAportesRoute: AuthenticatedAportesRoute,
+  AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDividendosRoute: AuthenticatedDividendosRoute,
+  AuthenticatedEstatisticasRoute: AuthenticatedEstatisticasRoute,
+  AuthenticatedMetasRoute: AuthenticatedMetasRoute,
+  AuthenticatedPlanejadorRoute: AuthenticatedPlanejadorRoute,
+  AuthenticatedRebalanceamentoRoute: AuthenticatedRebalanceamentoRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AportesRoute: AportesRoute,
-  CarteiraRoute: CarteiraRoute,
-  DashboardRoute: DashboardRoute,
-  DividendosRoute: DividendosRoute,
-  EstatisticasRoute: EstatisticasRoute,
-  MetasRoute: MetasRoute,
-  PlanejadorRoute: PlanejadorRoute,
-  RebalanceamentoRoute: RebalanceamentoRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport

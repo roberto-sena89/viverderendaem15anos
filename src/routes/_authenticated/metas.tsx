@@ -4,7 +4,7 @@ import { AppShell } from "@/components/app-shell";
 import { Progress } from "@/components/ui/progress";
 import { brl, metas, pct, totalAtual } from "@/lib/portfolio";
 
-export const Route = createFileRoute("/metas")({
+export const Route = createFileRoute("/_authenticated/metas")({
   head: () => ({
     meta: [
       { title: "Metas · Investidor em 15 Anos" },

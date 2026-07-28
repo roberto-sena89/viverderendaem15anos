@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { alocacaoIdeal, brl, carteira, classeDoAtivo, pct, totalAtual, valorAtual } from "@/lib/portfolio";
 
-export const Route = createFileRoute("/rebalanceamento")({
+export const Route = createFileRoute("/_authenticated/rebalanceamento")({
   head: () => ({
     meta: [
       { title: "Rebalanceamento · Investidor em 15 Anos" },

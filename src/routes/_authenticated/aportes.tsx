@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { aportesIniciais, brl, type Aporte, type Categoria } from "@/lib/portfolio";
 
-export const Route = createFileRoute("/aportes")({
+export const Route = createFileRoute("/_authenticated/aportes")({
   head: () => ({
     meta: [
       { title: "Aportes · Investidor em 15 Anos" },

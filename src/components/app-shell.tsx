@@ -1,4 +1,5 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   Wallet,
@@ -9,10 +10,13 @@ import {
   Target,
   Sparkles,
   TrendingUp,
+  LogOut,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -35,6 +39,42 @@ export function AppShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState<{
+    name: string;
+    email: string;
+    avatar?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!active || !data.user) return;
+      const meta = data.user.user_metadata ?? {};
+      setUser({
+        name: (meta.full_name as string) || (meta.name as string) || "Investidor",
+        email: data.user.email ?? "",
+        avatar: meta.avatar_url as string | undefined,
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true, search: { redirect: undefined } });
+  }
+
+  const initials = (user?.name ?? "IN")
+    .split(" ")
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? "")
+    .join("");
 
   return (
     <div className="min-h-screen bg-background lg:flex">
@@ -72,12 +112,26 @@ export function AppShell({
 
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-sidebar-border p-3">
           <Avatar className="size-9">
-            <AvatarFallback className="bg-primary-soft text-xs text-accent-foreground">RT</AvatarFallback>
+            {user?.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
+            <AvatarFallback className="bg-primary-soft text-xs text-accent-foreground">
+              {initials || "IN"}
+            </AvatarFallback>
           </Avatar>
-          <div className="min-w-0 text-xs">
-            <p className="truncate font-medium text-sidebar-foreground">Investidor</p>
-            <p className="truncate text-muted-foreground">Perfil moderado</p>
+          <div className="min-w-0 flex-1 text-xs">
+            <p className="truncate font-medium text-sidebar-foreground">
+              {user?.name ?? "Investidor"}
+            </p>
+            <p className="truncate text-muted-foreground">{user?.email ?? "Perfil moderado"}</p>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Sair da conta"
+            onClick={handleSignOut}
+            className="size-8 shrink-0 text-muted-foreground"
+          >
+            <LogOut className="size-4" />
+          </Button>
         </div>
       </aside>
 
@@ -90,7 +144,18 @@ export function AppShell({
                 <p className="truncate text-sm text-muted-foreground">{description}</p>
               ) : null}
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Sair da conta"
+                onClick={handleSignOut}
+                className="lg:hidden"
+              >
+                <LogOut className="size-4" />
+              </Button>
+            </div>
           </div>
           <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
             {nav.map(({ to, label, icon: Icon }) => (
