@@ -34,6 +34,22 @@ export const Route = createFileRoute("/recuperar-senha")({
 
 const ESPERA_SEGUNDOS = 60;
 
+function mascararEmail(valor: string) {
+  const [usuario, dominio] = valor.trim().split("@");
+  if (!usuario || !dominio) return valor;
+  const visivel =
+    usuario.length <= 2 ? usuario.slice(0, 1) : usuario.slice(0, 2);
+  const oculto = "•".repeat(Math.max(usuario.length - visivel.length, 2));
+
+  const partes = dominio.split(".");
+  const nome = partes[0] ?? "";
+  const resto = partes.slice(1).join(".");
+  const nomeVisivel = nome.slice(0, 1);
+  const nomeOculto = "•".repeat(Math.max(nome.length - 1, 2));
+
+  return `${visivel}${oculto}@${nomeVisivel}${nomeOculto}${resto ? `.${resto}` : ""}`;
+}
+
 function RecuperarSenhaPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
