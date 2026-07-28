@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,24 +32,42 @@ export const Route = createFileRoute("/recuperar-senha")({
   component: RecuperarSenhaPage,
 });
 
+const ESPERA_SEGUNDOS = 60;
+
 function RecuperarSenhaPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const [espera, setEspera] = useState(0);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  useEffect(() => {
+    if (espera <= 0) return;
+    const timer = setTimeout(() => setEspera((s) => s - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [espera]);
+
+  async function enviarEmail(destino: string) {
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(destino, {
       redirectTo: `${window.location.origin}/redefinir-senha`,
     });
     setLoading(false);
     if (error) {
-      toast.error("Não foi possível enviar o e-mail de recuperação. Tente novamente.");
+      toast.error(
+        error.message.toLowerCase().includes("rate")
+          ? "Muitas tentativas. Aguarde alguns minutos antes de tentar de novo."
+          : "Não foi possível enviar o e-mail de recuperação. Tente novamente.",
+      );
       return;
     }
     setEnviado(true);
+    setEspera(ESPERA_SEGUNDOS);
     toast.success("E-mail enviado! Verifique sua caixa de entrada.");
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await enviarEmail(email);
   }
 
   return (
@@ -73,11 +91,30 @@ function RecuperarSenhaPage() {
                 O link expira em pouco tempo — confira também a pasta de spam.
               </p>
             </div>
-            <Button variant="outline" className="w-full" onClick={() => setEnviado(false)}>
-              Enviar novamente
+            <Button
+              variant="outline"
+              className="w-full"
+              disabled={loading || espera > 0}
+              onClick={() => enviarEmail(email)}
+            >
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : espera > 0 ? (
+                `Reenviar em ${espera}s`
+              ) : (
+                "Reenviar e-mail"
+              )}
             </Button>
+            <button
+              type="button"
+              className="w-full text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              onClick={() => setEnviado(false)}
+            >
+              Usar outro e-mail
+            </button>
           </div>
         ) : (
+
           <>
             <p className="mt-1 text-sm text-muted-foreground">
               Informe seu e-mail e enviaremos um link para criar uma nova senha.
