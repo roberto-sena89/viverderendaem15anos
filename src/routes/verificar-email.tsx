@@ -97,7 +97,7 @@ function VerifyEmailPage() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center bg-background px-5 py-12">
+    <main className="grid min-h-dvh place-items-center bg-background px-5 py-12">
       <div className="w-full max-w-md text-center">
         <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-brand text-primary-foreground">
           <MailCheck className="size-6" />
