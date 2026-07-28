@@ -31,7 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cotacaoAtivo, historicoAtivo, painelB3, sincronizarPrecos } from "@/lib/market.functions";
-import { lerArquivoB3, type ResultadoB3 } from "@/lib/b3-import";
+import { lerArquivoB3, type DiagnosticoB3, type ResultadoB3 } from "@/lib/b3-import";
 import { useImportarB3 } from "@/lib/data";
 import { brl, pct } from "@/lib/portfolio";
 
