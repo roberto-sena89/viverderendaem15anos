@@ -1,15 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { CalendarClock, Sparkles, Wallet } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { CalendarClock, Save, Sparkles, Wallet } from "lucide-react";
+import { toast } from "sonner";
 import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { brl, pct, projetar, totalAtual, type ProjecaoInput } from "@/lib/portfolio";
+import { useAtivos, usePlano, useSalvarPlano } from "@/lib/data";
+import { brl, pct, planoPadrao, projetar, resumoCarteira, type ProjecaoInput } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/planejador")({
   head: () => ({
@@ -24,17 +27,21 @@ export const Route = createFileRoute("/_authenticated/planejador")({
 });
 
 function Planejador() {
-  const [input, setInput] = useState<ProjecaoInput>({
-    idadeAtual: 32,
-    idadeAposentadoria: 47,
-    patrimonioAtual: Math.round(totalAtual),
-    aporteMensal: 14000,
-    aumentoAnual: 8,
-    rentabilidadeAnual: 11,
-    inflacaoAnual: 4.5,
-    taxaRetirada: 4,
-  });
+  const { data: carteira = [] } = useAtivos();
+  const { data: plano } = usePlano();
+  const salvarPlano = useSalvarPlano();
+  const { totalAtual } = resumoCarteira(carteira);
+
+  const [input, setInput] = useState<ProjecaoInput>({ ...planoPadrao, patrimonioAtual: 0 });
   const [objetivoRenda, setObjetivoRenda] = useState(25000);
+
+  useEffect(() => {
+    if (plano) setInput((p) => ({ ...plano, patrimonioAtual: p.patrimonioAtual }));
+  }, [plano]);
+
+  useEffect(() => {
+    setInput((p) => ({ ...p, patrimonioAtual: Math.round(totalAtual) }));
+  }, [totalAtual]);
 
   const base = useMemo(() => projetar(input), [input]);
   const otimista = useMemo(() => projetar(input, 2), [input]);
@@ -55,6 +62,15 @@ function Planejador() {
 
   const set = (k: keyof ProjecaoInput) => (v: number) => setInput((p) => ({ ...p, [k]: v }));
 
+  function handleSalvar() {
+    const { patrimonioAtual: _ignorado, ...config } = input;
+    salvarPlano.mutate(config, {
+      onSuccess: () => toast.success("Plano salvo."),
+      onError: () => toast.error("Não foi possível salvar o plano."),
+    });
+  }
+
+
   return (
     <AppShell title="Planejador da Independência Financeira" description="Simule cenários e descubra sua data de liberdade">
       <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
@@ -68,7 +84,11 @@ function Planejador() {
           <SliderField label="Inflação esperada" value={input.inflacaoAnual} onChange={set("inflacaoAnual")} max={12} suffix="% a.a." />
           <SliderField label="Taxa de retirada" value={input.taxaRetirada} onChange={set("taxaRetirada")} max={8} min={2} suffix="%" />
           <NumberField label="Renda passiva desejada (R$/mês)" value={objetivoRenda} onChange={setObjetivoRenda} step={500} />
+          <Button className="w-full" onClick={handleSalvar} disabled={salvarPlano.isPending}>
+            <Save className="size-4" /> Salvar plano
+          </Button>
         </div>
+
 
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

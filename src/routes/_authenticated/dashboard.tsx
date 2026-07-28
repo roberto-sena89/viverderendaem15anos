@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Coins, PiggyBank, Target, TrendingUp, Wallet } from "lucide-react";
 import {
   Area,
@@ -16,20 +16,16 @@ import {
 } from "recharts";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useAportes, useAtivos, useDividendos, useMetas } from "@/lib/data";
 import {
   brl,
-  carteira,
   dividendos12m,
   dividendosMensais,
-  dyCarteira,
   evolucaoPatrimonio,
-  lucroTotal,
-  metaFinanceira,
   pct,
-  rentabilidade,
-  totalAtual,
-  totalInvestido,
+  resumoCarteira,
   valorAtual,
 } from "@/lib/portfolio";
 
@@ -63,51 +59,93 @@ const tooltipStyle = {
 };
 
 function Dashboard() {
+  const { data: ativos = [], isLoading } = useAtivos();
+  const { data: aportes = [] } = useAportes();
+  const { data: proventos = [] } = useDividendos();
+  const { data: metas = [] } = useMetas();
+
+  const resumo = resumoCarteira(ativos);
+  const evolucao = evolucaoPatrimonio(aportes, resumo.totalAtual);
+  const proventosMes = dividendosMensais(proventos);
+  const recebidos12m = dividendos12m(proventos);
+
   const porCategoria = Object.entries(
-    carteira.reduce<Record<string, number>>((acc, a) => {
+    ativos.reduce<Record<string, number>>((acc, a) => {
       acc[a.categoria] = (acc[a.categoria] ?? 0) + valorAtual(a);
       return acc;
     }, {}),
   ).map(([name, value]) => ({ name, value }));
 
-  const progressoMeta = (totalAtual / metaFinanceira) * 100;
-  const anosParaMeta = Math.log(metaFinanceira / totalAtual) / Math.log(1.11);
+  const metaFinanceira = metas.length
+    ? Math.max(...metas.filter((m) => m.alvo > resumo.totalAtual).map((m) => m.alvo), 0) ||
+      Math.max(...metas.map((m) => m.alvo))
+    : 0;
+  const progressoMeta = metaFinanceira > 0 ? (resumo.totalAtual / metaFinanceira) * 100 : 0;
+  const anosParaMeta =
+    metaFinanceira > 0 && resumo.totalAtual > 0
+      ? Math.log(metaFinanceira / resumo.totalAtual) / Math.log(1.11)
+      : 0;
+
+  if (!isLoading && ativos.length === 0) {
+    return (
+      <AppShell title="Dashboard" description="Visão geral do seu patrimônio">
+        <div className="surface-card grid place-items-center gap-3 p-16 text-center">
+          <Wallet className="size-8 text-muted-foreground" />
+          <p className="font-display text-lg font-semibold">Sua carteira está vazia</p>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            Registre seu primeiro aporte ou cadastre um ativo para começar a acompanhar patrimônio,
+            rentabilidade e dividendos.
+          </p>
+          <div className="mt-2 flex gap-2">
+            <Button asChild>
+              <Link to="/aportes">Registrar aporte</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/carteira">Cadastrar ativo</Link>
+            </Button>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell title="Dashboard" description="Visão geral do seu patrimônio">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Patrimônio" value={brl(totalAtual)} icon={Wallet} hint="Atualizado hoje" />
-        <StatCard label="Valor investido" value={brl(totalInvestido)} icon={PiggyBank} hint={`Lucro de ${brl(lucroTotal)}`} />
-        <StatCard label="Rentabilidade" value={pct(rentabilidade)} icon={TrendingUp} tone="positive" hint="Desde o início" />
-        <StatCard label="Dividendos 12m" value={brl(dividendos12m)} icon={Coins} hint={`DY de ${pct(dyCarteira)}`} />
+        <StatCard label="Patrimônio" value={brl(resumo.totalAtual)} icon={Wallet} hint="Atualizado agora" />
+        <StatCard label="Valor investido" value={brl(resumo.totalInvestido)} icon={PiggyBank} hint={`Lucro de ${brl(resumo.lucroTotal)}`} />
+        <StatCard label="Rentabilidade" value={pct(resumo.rentabilidade)} icon={TrendingUp} tone={resumo.rentabilidade >= 0 ? "positive" : "negative"} hint="Desde o início" />
+        <StatCard label="Dividendos 12m" value={brl(recebidos12m)} icon={Coins} hint={`DY estimado de ${pct(resumo.dyCarteira)}`} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Rentabilidade mensal" value={pct(0.92)} tone="positive" />
-        <StatCard label="Rentabilidade anual" value={pct(14.3)} tone="positive" />
-        <StatCard label="Renda passiva mensal" value={brl(dividendos12m / 12)} />
-        <StatCard label="Tempo para independência" value={`${anosParaMeta.toFixed(1)} anos`} icon={Target} />
+        <StatCard label="Proventos recebidos" value={brl(proventos.reduce((s, d) => s + d.valor, 0))} />
+        <StatCard label="Aportes 12m" value={brl(evolucao.reduce((s, m) => s + m.aportes, 0))} />
+        <StatCard label="Renda passiva mensal" value={brl(recebidos12m / 12)} />
+        <StatCard label="Tempo para a próxima meta" value={metaFinanceira ? `${anosParaMeta.toFixed(1)} anos` : "—"} icon={Target} />
       </div>
 
-      <div className="surface-card p-6">
-        <div className="flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <p className="text-sm font-medium">Meta financeira</p>
-            <p className="text-xs text-muted-foreground">
-              {brl(totalAtual)} de {brl(metaFinanceira)}
-            </p>
+      {metaFinanceira > 0 ? (
+        <div className="surface-card p-6">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <p className="text-sm font-medium">Próxima meta financeira</p>
+              <p className="text-xs text-muted-foreground">
+                {brl(resumo.totalAtual)} de {brl(metaFinanceira)}
+              </p>
+            </div>
+            <p className="font-display text-xl font-semibold text-primary">{pct(progressoMeta)}</p>
           </div>
-          <p className="font-display text-xl font-semibold text-primary">{pct(progressoMeta)}</p>
+          <Progress value={progressoMeta} className="mt-4 h-2.5" />
         </div>
-        <Progress value={progressoMeta} className="mt-4 h-2.5" />
-      </div>
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="surface-card p-6 lg:col-span-2">
-          <p className="text-sm font-medium">Evolução patrimonial</p>
+          <p className="text-sm font-medium">Evolução patrimonial (12 meses)</p>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={evolucaoPatrimonio}>
+              <AreaChart data={evolucao}>
                 <defs>
                   <linearGradient id="patr" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="var(--color-chart-1)" stopOpacity={0.45} />
@@ -151,7 +189,9 @@ function Dashboard() {
                   <span className="size-2.5 rounded-full" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
                   {c.name}
                 </span>
-                <span className="font-medium">{pct((c.value / totalAtual) * 100)}</span>
+                <span className="font-medium">
+                  {pct(resumo.totalAtual > 0 ? (c.value / resumo.totalAtual) * 100 : 0)}
+                </span>
               </li>
             ))}
           </ul>
@@ -163,7 +203,7 @@ function Dashboard() {
           <p className="text-sm font-medium">Dividendos por mês</p>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dividendosMensais}>
+              <BarChart data={proventosMes}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                 <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
                 <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
@@ -178,7 +218,7 @@ function Dashboard() {
           <p className="text-sm font-medium">Aportes mensais</p>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={evolucaoPatrimonio}>
+              <BarChart data={evolucao}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                 <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
                 <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
