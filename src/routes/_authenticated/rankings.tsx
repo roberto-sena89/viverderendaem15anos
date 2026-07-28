@@ -90,9 +90,7 @@ function ListaRanking({
         </p>
       ) : (
         <>
-          <ul
-            className={`divide-y divide-border ${completo ? "max-h-[32rem] overflow-y-auto" : ""}`}
-          >
+          <ul className="divide-y divide-border">
             {visiveis.map((item, idx) => (
               <li key={item.ticker}>
                 <Link
@@ -102,10 +100,10 @@ function ListaRanking({
                 >
                   <span
                     className={`num w-6 shrink-0 text-xs font-bold ${
-                      idx < 3 ? "text-primary" : "text-muted-foreground/60"
+                      inicio + idx < 3 ? "text-primary" : "text-muted-foreground/60"
                     }`}
                   >
-                    #{idx + 1}
+                    #{inicio + idx + 1}
                   </span>
                   {item.logo ? (
                     <img
@@ -128,11 +126,60 @@ function ListaRanking({
             ))}
           </ul>
 
-          <div className="border-t border-border p-4">
+          <div className="space-y-3 border-t border-border p-4">
+            {completo && totalPaginas > 1 ? (
+              <nav
+                className="flex items-center justify-between gap-2"
+                aria-label={`Paginação — ${titulo}`}
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setPagina(Math.max(1, paginaAtual - 1))}
+                  disabled={paginaAtual === 1}
+                  aria-label="Página anterior"
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPaginas }).map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setPagina(i + 1)}
+                      aria-current={paginaAtual === i + 1 ? "page" : undefined}
+                      aria-label={`Página ${i + 1}`}
+                      className={`num size-7 rounded-full text-xs font-semibold tabular-nums transition-colors ${
+                        paginaAtual === i + 1
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setPagina(Math.min(totalPaginas, paginaAtual + 1))}
+                  disabled={paginaAtual === totalPaginas}
+                  aria-label="Próxima página"
+                >
+                  <ChevronRightIcon className="size-4" />
+                </Button>
+              </nav>
+            ) : null}
+
             <Button
               variant="outline"
               className="w-full rounded-full"
-              onClick={() => setCompleto((v) => !v)}
+              onClick={() => {
+                setCompleto((v) => !v);
+                setPagina(1);
+              }}
               aria-expanded={completo}
               aria-label={`${completo ? "Ver menos" : "Ver ranking completo"} — ${titulo}`}
               disabled={itens.length <= VISIVEIS}
@@ -140,6 +187,7 @@ function ListaRanking({
               {completo ? "Ver menos" : `Ver Rankings (${itens.length})`}
             </Button>
           </div>
+
         </>
       )}
     </Panel>
