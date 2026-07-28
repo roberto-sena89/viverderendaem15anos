@@ -204,10 +204,11 @@ function NumberField({
   onChange: (v: number) => void;
   step?: number;
 }) {
+  const id = useId();
   return (
     <div className="grid gap-2">
-      <Label>{label}</Label>
-      <Input type="number" step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} type="number" step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
     </div>
   );
 }
