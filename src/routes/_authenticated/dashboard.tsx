@@ -210,6 +210,8 @@ function Dashboard() {
   void proventos;
 
   const [periodo, setPeriodo] = useState("12");
+  const [inicioCustom, setInicioCustom] = useState("");
+  const [fimCustom, setFimCustom] = useState("");
   const [tipoEvolucao, setTipoEvolucao] = useState("todos");
   const [tipoComposicao, setTipoComposicao] = useState("todos");
 
@@ -223,9 +225,18 @@ function Dashboard() {
   const resumoEvolucao = resumoCarteira(ativosEvolucao);
   const evolucao = evolucaoPatrimonio(aportes, resumoEvolucao.totalAtual);
 
+  const evolucaoFiltrada =
+    periodo === "custom"
+      ? evolucao.filter(
+          (m) => (!inicioCustom || m.chave >= inicioCustom) && (!fimCustom || m.chave <= fimCustom),
+        )
+      : periodo === "inicio"
+        ? evolucao
+        : evolucao.slice(-Number(periodo));
+
   // barra empilhada: valor aplicado + ganho de capital, como no gráfico do Investidor 10
   const aplicadoFinal = Math.max(resumoEvolucao.totalInvestido, 1);
-  const dadosEvolucao = evolucao.slice(-Number(periodo)).map((m) => {
+  const dadosEvolucao = evolucaoFiltrada.map((m) => {
     const aplicado = Math.min(m.patrimonio, resumoEvolucao.totalInvestido || m.patrimonio);
     return {
       mes: m.mes,
