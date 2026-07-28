@@ -63,10 +63,33 @@ const semAcento = (v: string) =>
     .toLowerCase()
     .trim();
 
-/** Sinônimos aceitos por campo lógico, em ordem de prioridade. */
+/** Sinônimos aceitos por campo lógico, em ordem de prioridade (B3 e corretoras). */
 const CAMPOS: Record<string, string[]> = {
-  ticker: ["Código de Negociação", "Codigo de Negociacao", "Produto", "Ativo", "Papel", "Ticker"],
-  data: ["Data do Negócio", "Data do Negocio", "Data", "Data Referência", "Data Referencia", "Data Liquidação"],
+  ticker: [
+    "Código de Negociação",
+    "Codigo de Negociacao",
+    "Produto",
+    "Ativo",
+    "Papel",
+    "Ticker",
+    "Título",
+    "Titulo",
+    "Especificação do Ativo",
+    "Especificacao",
+    "Negócio",
+  ],
+  data: [
+    "Data do Negócio",
+    "Data do Negocio",
+    "Data Pregão",
+    "Data Pregao",
+    "Data da Operação",
+    "Data da Operacao",
+    "Data",
+    "Data Referência",
+    "Data Referencia",
+    "Data Liquidação",
+  ],
   movimento: [
     "Tipo de Movimentação",
     "Tipo de Movimentacao",
@@ -75,17 +98,46 @@ const CAMPOS: Record<string, string[]> = {
     "Entrada/Saída",
     "Entrada/Saida",
     "Tipo de Operação",
+    "Tipo Negócio",
+    "Tipo Negocio",
+    "Natureza",
+    "Operação",
+    "Operacao",
     "Compra/Venda",
     "C/V",
   ],
-  quantidade: ["Quantidade", "Qtde", "Qtd", "Quantidade Executada"],
-  preco: ["Preço", "Preco", "Preço unitário", "Preco unitario", "Preço Médio", "Preco Medio", "Preço de Fechamento"],
-  valor: ["Valor da Operação", "Valor da Operacao", "Valor", "Valor Total", "Valor Atualizado"],
-  instituicao: ["Instituição", "Instituicao", "Corretora", "Participante"],
+  quantidade: ["Quantidade", "Qtde", "Qtd", "Quantidade Executada", "Quantidade Negociada", "Qtd. Negociada", "Q Compra"],
+  preco: [
+    "Preço",
+    "Preco",
+    "Preço unitário",
+    "Preco unitario",
+    "Preço/Ajuste",
+    "Preco/Ajuste",
+    "Valor Unitário",
+    "Valor Unitario",
+    "Preço Médio",
+    "Preco Medio",
+    "Preço de Fechamento",
+  ],
+  valor: [
+    "Valor da Operação",
+    "Valor da Operacao",
+    "Valor Líquido",
+    "Valor Liquido",
+    "Valor Bruto",
+    "Financeiro",
+    "Valor",
+    "Valor Total",
+    "Valor Atualizado",
+  ],
+  taxas: ["Taxas", "Corretagem", "Emolumentos", "Custos", "Taxa de Liquidação", "Total de Custos"],
+  instituicao: ["Instituição", "Instituicao", "Corretora", "Participante", "Agente", "Assessor"],
   mercado: ["Mercado", "Tipo de Ativo", "Tipo"],
 };
 
 const OBRIGATORIOS = ["ticker", "data"];
+
 
 function acharColuna(cabecalhos: string[], sinonimos: string[]): string | null {
   const normalizados = cabecalhos.map((c) => ({ original: c, norm: semAcento(c) }));
