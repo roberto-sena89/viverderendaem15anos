@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://investidorsagaz.lovable.app/sitemap.xml
+Sitemap: https://viverderendaem15.lovable.app/sitemap.xml
