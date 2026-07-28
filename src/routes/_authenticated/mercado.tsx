@@ -33,6 +33,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cotacaoAtivo, historicoAtivo, painelB3, sincronizarPrecos } from "@/lib/market.functions";
 import { lerArquivoB3, type DiagnosticoB3, type ResultadoB3 } from "@/lib/b3-import";
 import { useImportarB3 } from "@/lib/data";
+import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
+
 import { brl, pct } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/mercado")({
@@ -381,12 +383,16 @@ function ImportarB3() {
 
   return (
     <>
+      <AvisoSincronizacao compacto />
       <Card>
         <CardHeader>
-          <CardTitle>Importar extrato da B3</CardTitle>
+          <CardTitle>Importar extrato da B3 ou da corretora</CardTitle>
           <CardDescription>
-            Entre na Área do Investidor da B3 (investidor.b3.com.br), exporte o <strong>Extrato de Negociação</strong> e/ou o{" "}
-            <strong>Extrato de Movimentação</strong> em Excel ou CSV e envie o arquivo aqui.
+            Entre na Área do Investidor da B3 (investidor.b3.com.br) ou no home broker da <strong>Ágora
+            Investimentos</strong>, exporte o <strong>Extrato de Negociação</strong>, o{" "}
+            <strong>Extrato de Movimentação</strong> ou o relatório de negócios em Excel/CSV e envie o arquivo aqui.
+            Detectamos o layout e mapeamos as colunas automaticamente.
+
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -434,7 +440,10 @@ function ImportarB3() {
             <div className="flex flex-wrap items-center gap-2">
               <CardTitle>Prévia de {arquivo}</CardTitle>
               <Badge variant={previa.layout === "desconhecido" ? "destructive" : "secondary"}>{previa.layoutRotulo}</Badge>
+              <Badge variant={previa.origem === "generico" ? "outline" : "secondary"}>{previa.origemRotulo}</Badge>
             </div>
+
+
             <CardDescription>
               {previa.totalLinhas} linhas lidas · {previa.aportes.length} compras · {previa.dividendos.length} proventos ·{" "}
               {previa.vendas} vendas ignoradas · {previa.ignoradas} não reconhecidas
