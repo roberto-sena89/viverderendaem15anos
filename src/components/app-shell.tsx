@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   Wallet,
-  PlusCircle,
+  PiggyBank,
   Coins,
   LineChart,
   Scale,
@@ -28,7 +28,7 @@ import { SECOES, secaoPorRota } from "@/lib/navegacao";
 const ICONES: Record<string, typeof LayoutDashboard> = {
   "/dashboard": LayoutDashboard,
   "/carteira": Wallet,
-  "/aportes": PlusCircle,
+  "/aportes": PiggyBank,
   "/dividendos": Coins,
   "/estatisticas": TrendingUp,
   "/rebalanceamento": Scale,
