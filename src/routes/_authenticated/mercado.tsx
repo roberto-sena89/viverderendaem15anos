@@ -391,7 +391,6 @@ function ImportarB3() {
             <strong>Extrato de Movimentação</strong> ou o relatório de negócios em Excel/CSV e envie o arquivo aqui.
             Detectamos o layout e mapeamos as colunas automaticamente.
 
-            <strong>Extrato de Movimentação</strong> em Excel ou CSV e envie o arquivo aqui.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
