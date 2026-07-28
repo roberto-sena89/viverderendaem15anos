@@ -381,11 +381,16 @@ function ImportarB3() {
 
   return (
     <>
+      <AvisoSincronizacao compacto />
       <Card>
         <CardHeader>
-          <CardTitle>Importar extrato da B3</CardTitle>
+          <CardTitle>Importar extrato da B3 ou da corretora</CardTitle>
           <CardDescription>
-            Entre na Área do Investidor da B3 (investidor.b3.com.br), exporte o <strong>Extrato de Negociação</strong> e/ou o{" "}
+            Entre na Área do Investidor da B3 (investidor.b3.com.br) ou no home broker da <strong>Ágora
+            Investimentos</strong>, exporte o <strong>Extrato de Negociação</strong>, o{" "}
+            <strong>Extrato de Movimentação</strong> ou o relatório de negócios em Excel/CSV e envie o arquivo aqui.
+            Detectamos o layout e mapeamos as colunas automaticamente.
+
             <strong>Extrato de Movimentação</strong> em Excel ou CSV e envie o arquivo aqui.
           </CardDescription>
         </CardHeader>
