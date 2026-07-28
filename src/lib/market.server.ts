@@ -5,23 +5,68 @@
  */
 
 const YAHOO = "https://query1.finance.yahoo.com";
+const YAHOO_HOSTS = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
 const UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
-async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
+const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Cache curto em memória para aliviar o rate limit das fontes públicas. */
+const cache = new Map<string, { expira: number; valor: unknown }>();
+const TTL_MS = 5 * 60 * 1000;
+
+async function buscar(url: string, timeoutMs: number): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(url, {
+    return await fetch(url, {
       headers: { "User-Agent": UA, Accept: "application/json" },
       signal: controller.signal,
     });
-    if (!res.ok) throw new Error(`Fonte respondeu ${res.status} em ${new URL(url).host}`);
-    return (await res.json()) as T;
   } finally {
     clearTimeout(timer);
   }
 }
+
+async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
+  const emCache = cache.get(url);
+  if (emCache && emCache.expira > Date.now()) return emCache.valor as T;
+
+  const host = new URL(url).host;
+  const hosts = YAHOO_HOSTS.includes(host) ? YAHOO_HOSTS : [host];
+  let ultimoStatus = 0;
+
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    for (const h of hosts) {
+      const alvo = url.replace(host, h);
+      let res: Response;
+      try {
+        res = await buscar(alvo, timeoutMs);
+      } catch {
+        continue;
+      }
+      if (res.ok) {
+        const valor = (await res.json()) as T;
+        cache.set(url, { valor, expira: Date.now() + TTL_MS });
+        return valor;
+      }
+      ultimoStatus = res.status;
+      if (res.status !== 429 && res.status < 500) {
+        throw new Error(`Fonte respondeu ${res.status} em ${h}`);
+      }
+    }
+    await dormir(500 * 2 ** tentativa);
+  }
+
+  // fallback: devolve o último resultado em cache, mesmo expirado
+  if (emCache) return emCache.valor as T;
+  throw new Error(
+    ultimoStatus === 429
+      ? "A fonte de dados de mercado está limitando as consultas no momento. Tente novamente em alguns instantes."
+      : `Não foi possível consultar a fonte de dados (${ultimoStatus || "sem resposta"}).`,
+  );
+}
+
 
 /** Normaliza tickers da B3: PETR4 -> PETR4.SA. Mantém índices (^BVSP) e símbolos estrangeiros. */
 export function normalizarSimbolo(entrada: string): string {
