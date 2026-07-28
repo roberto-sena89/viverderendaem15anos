@@ -241,6 +241,12 @@ const PERIODOS_PROVENTOS = [
   { valor: "0", rotulo: "Desde o início" },
 ];
 
+const ESCOPOS_TOTAL = [
+  { valor: "mes", rotulo: "Total do mês" },
+  { valor: "ano", rotulo: "Total do ano" },
+  { valor: "12m", rotulo: "Total últimos 12 meses" },
+];
+
 function SeletorFiltro({
   valor,
   onChange,
