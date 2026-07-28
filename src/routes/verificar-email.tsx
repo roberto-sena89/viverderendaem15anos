@@ -132,6 +132,6 @@ function VerifyEmailPage() {
           </Button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
