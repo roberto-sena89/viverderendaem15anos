@@ -389,7 +389,7 @@ function PainelProventos({
   totalCarteira: number;
 }) {
   const [modo, setModo] = useState<"mensal" | "anual">("mensal");
-  const [periodo, setPeriodo] = useState("12");
+  const [periodo, setPeriodo] = useState("12m");
   const [tipoAtivo, setTipoAtivo] = useState("todos");
   const [ativoSel, setAtivoSel] = useState("todos");
   const [escopoTotal, setEscopoTotal] = useState("12m");
@@ -399,12 +399,7 @@ function PainelProventos({
   const filtrados = proventos.filter((d) => {
     if (tipoAtivo !== "todos" && categoriaPorTicker.get(d.ticker) !== tipoAtivo) return false;
     if (ativoSel !== "todos" && d.ticker !== ativoSel) return false;
-    if (periodo !== "0") {
-      const limite = new Date();
-      limite.setMonth(limite.getMonth() - Number(periodo));
-      if (new Date(`${d.data}T12:00`) < limite) return false;
-    }
-    return true;
+    return dentroDoPeriodo(d.data, periodo);
   });
 
   const serie =
