@@ -135,11 +135,66 @@ export const Route = createFileRoute("/api/chat")({
 
         const gateway = createLovableAiGatewayProvider(lovableApiKey, getLovableAiGatewayRunId(request));
 
+        const mercado = await import("@/lib/market.server");
+        const erro = (e: unknown) => ({ erro: e instanceof Error ? e.message : "Falha ao consultar a fonte de dados." });
+
+        const ferramentas = {
+          cotacao: tool({
+            description:
+              "Cotação atual de uma ação, FII, ETF ou índice (B3 e bolsas internacionais). Ex.: PETR4, HGLG11, BOVA11, IBOVESPA, AAPL, DOLAR.",
+            inputSchema: z.object({ ticker: z.string().describe("Código do ativo ou nome do índice") }),
+            execute: async ({ ticker }) => mercado.buscarCotacao(ticker).catch(erro),
+          }),
+          historico: tool({
+            description:
+              "Série histórica de preços (até 10 anos ou máximo disponível) com retorno total, retorno anualizado, drawdown máximo, volatilidade e desempenho ano a ano.",
+            inputSchema: z.object({
+              ticker: z.string(),
+              periodo: z.enum(["1mo", "6mo", "1y", "2y", "5y", "10y", "max"]).optional(),
+              intervalo: z.enum(["1d", "1wk", "1mo"]).optional(),
+            }),
+            execute: async ({ ticker, periodo, intervalo }) => {
+              try {
+                const h = await mercado.buscarHistorico(ticker, periodo ?? "10y", intervalo ?? "1mo");
+                // devolve resumo + série reduzida para não estourar o contexto
+                const passo = Math.max(1, Math.ceil(h.serie.length / 60));
+                return { ...h, serie: h.serie.filter((_, i) => i % passo === 0 || i === h.serie.length - 1) };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          procurarAtivo: tool({
+            description: "Procura o código (ticker) de uma empresa, fundo imobiliário, ETF ou índice pelo nome.",
+            inputSchema: z.object({ termo: z.string() }),
+            execute: async ({ termo }) => mercado.procurarAtivo(termo).catch(erro),
+          }),
+          indicadorEconomico: tool({
+            description:
+              "Série histórica de indicadores do Banco Central: selic, cdi, ipca, igpm, dolar, poupanca.",
+            inputSchema: z.object({
+              indicador: z.enum(["selic", "cdi", "ipca", "igpm", "dolar", "poupanca"]),
+              ultimos: z.number().int().optional().describe("Quantidade de observações mais recentes"),
+            }),
+            execute: async ({ indicador, ultimos }) =>
+              mercado.buscarIndicador(indicador, ultimos ?? 12).catch(erro),
+          }),
+          projecaoJuros: tool({
+            description:
+              "Projeções do Boletim Focus do Banco Central para os próximos anos: taxa de juros (Selic), IPCA, PIB e câmbio.",
+            inputSchema: z.object({ indicador: z.enum(["selic", "ipca", "pib", "cambio", "igpm"]).optional() }),
+            execute: async ({ indicador }) => mercado.buscarProjecoes(indicador ?? "selic").catch(erro),
+          }),
+        };
+
         const result = streamText({
           model: gateway("openai/gpt-5.5"),
-          system: `${SISTEMA}\n\n### Carteira atual do usuário\n${contexto}`,
+          system: `${SISTEMA}\n\n### Carteira atual do usuário\n${contexto}\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`,
           messages: await convertToModelMessages(messages),
+          tools: ferramentas,
+          stopWhen: stepCountIs(50),
         });
+
 
         return result.toUIMessageStreamResponse({
           originalMessages: messages,
