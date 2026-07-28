@@ -3,7 +3,7 @@ import { BarChart3, Coins, LayoutGrid, LineChart, PieChart, Scale } from "lucide
 
 const ABAS = [
   { to: "/dashboard", rotulo: "Resumo", icone: LayoutGrid },
-  { to: "/carteira", rotulo: "Posições", icone: PieChart },
+  { to: "/carteira", rotulo: "Carteira", icone: PieChart },
   { to: "/dividendos", rotulo: "Proventos", icone: Coins },
   { to: "/aportes", rotulo: "Patrimônio", icone: BarChart3 },
   { to: "/estatisticas", rotulo: "Rentabilidade", icone: LineChart },
