@@ -47,9 +47,10 @@ const grupos = [
       { to: "/chat", label: "Técnico IA", icon: Bot },
     ],
   },
-] as const;
+];
 
 const nav = grupos.flatMap((g) => g.itens);
+
 
 
 export function AppShell({
