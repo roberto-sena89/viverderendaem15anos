@@ -111,7 +111,9 @@ function Dashboard() {
 
   return (
     <AppShell title="Dashboard" description="Visão geral do seu patrimônio">
+      <AvisoSincronizacao />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
         <StatCard label="Patrimônio" value={brl(resumo.totalAtual)} icon={Wallet} hint="Atualizado agora" />
         <StatCard label="Valor investido" value={brl(resumo.totalInvestido)} icon={PiggyBank} hint={`Lucro de ${brl(resumo.lucroTotal)}`} />
         <StatCard label="Rentabilidade" value={pct(resumo.rentabilidade)} icon={TrendingUp} tone={resumo.rentabilidade >= 0 ? "positive" : "negative"} hint="Desde o início" />
