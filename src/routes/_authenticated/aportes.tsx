@@ -1,25 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useAportes, useCriarAporte, useExcluir } from "@/lib/data";
-import { brl, categorias, type Categoria } from "@/lib/portfolio";
+import { useAportes, useExcluir } from "@/lib/data";
+import { brl } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/aportes")({
   head: () => ({
@@ -34,9 +22,7 @@ export const Route = createFileRoute("/_authenticated/aportes")({
 });
 
 function AportesPage() {
-  const [open, setOpen] = useState(false);
   const { data: aportes = [], isLoading } = useAportes();
-  const criar = useCriarAporte();
   const excluir = useExcluir("aportes");
 
   const mesRef = aportes[0]?.data.slice(0, 7) ?? "";
@@ -44,31 +30,6 @@ function AportesPage() {
     .filter((a) => a.data.startsWith(mesRef))
     .reduce((s, a) => s + a.quantidade * a.preco + a.taxas, 0);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    const novo = {
-      data: String(form.get("data")),
-      corretora: String(form.get("corretora") || ""),
-      ticker: String(form.get("ticker")).toUpperCase(),
-      categoria: String(form.get("categoria")) as Categoria,
-      quantidade: Number(form.get("quantidade")),
-      preco: Number(form.get("preco")),
-      taxas: Number(form.get("taxas") || 0),
-      observacoes: String(form.get("observacoes") || ""),
-    };
-    if (!novo.data || !novo.ticker || !novo.quantidade || !novo.preco) {
-      toast.error("Preencha data, ativo, quantidade e preço.");
-      return;
-    }
-    try {
-      await criar.mutateAsync(novo);
-      setOpen(false);
-      toast.success(`Aporte em ${novo.ticker} registrado.`);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Não foi possível salvar o aporte.");
-    }
-  }
 
   return (
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
