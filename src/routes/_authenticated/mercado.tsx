@@ -485,7 +485,7 @@ function ImportarB3() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
-                disabled={importar.isPending}
+                disabled={importar.isPending || !previa.podeImportar}
                 onClick={() =>
                   importar.mutate(
                     { aportes: previa.aportes, dividendos: previa.dividendos },
