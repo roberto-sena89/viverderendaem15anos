@@ -84,7 +84,11 @@ function Planejador() {
           <SliderField label="Inflação esperada" value={input.inflacaoAnual} onChange={set("inflacaoAnual")} max={12} suffix="% a.a." />
           <SliderField label="Taxa de retirada" value={input.taxaRetirada} onChange={set("taxaRetirada")} max={8} min={2} suffix="%" />
           <NumberField label="Renda passiva desejada (R$/mês)" value={objetivoRenda} onChange={setObjetivoRenda} step={500} />
+          <Button className="w-full" onClick={handleSalvar} disabled={salvarPlano.isPending}>
+            <Save className="size-4" /> Salvar plano
+          </Button>
         </div>
+
 
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
