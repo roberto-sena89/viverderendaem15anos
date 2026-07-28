@@ -228,6 +228,26 @@
   }
 }
 
+@utility animate-marquee {
+  animation: marquee 60s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+
 /* ---------------------------------------------------------------
  * Camada "terminal de dados" — densidade e legibilidade numérica
  * inspiradas em plataformas de análise de ativos.
