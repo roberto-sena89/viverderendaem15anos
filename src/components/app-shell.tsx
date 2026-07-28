@@ -144,7 +144,18 @@ export function AppShell({
                 <p className="truncate text-sm text-muted-foreground">{description}</p>
               ) : null}
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Sair da conta"
+                onClick={handleSignOut}
+                className="lg:hidden"
+              >
+                <LogOut className="size-4" />
+              </Button>
+            </div>
           </div>
           <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
             {nav.map(({ to, label, icon: Icon }) => (
