@@ -1,14 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  BarChart3,
-  ChevronDown,
-  Coins,
-  Landmark,
-  PiggyBank,
-  TrendingUp,
-  Wallet,
-} from "lucide-react";
+import { BarChart3, ChevronDown, Landmark, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -25,19 +17,20 @@ import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
+import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
-import { useAportes, useAtivos, useDividendos } from "@/lib/data";
+import { useAportes, useAtivos } from "@/lib/data";
 import type { Ativo } from "@/lib/portfolio";
 import {
   brl,
   categorias,
-  dividendos12m,
   evolucaoPatrimonio,
   pct,
   resumoCarteira,
   valorAtual,
   valorInvestido,
 } from "@/lib/portfolio";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
