@@ -12,8 +12,9 @@ export type SecaoNav = {
 export const SECOES: SecaoNav[] = [
   { to: "/dashboard", rotulo: "Resumo", grupo: "Carteira" },
   { to: "/carteira", rotulo: "Carteira", grupo: "Carteira" },
-  { to: "/aportes", rotulo: "Patrimônio", grupo: "Carteira" },
   { to: "/dividendos", rotulo: "Proventos", grupo: "Carteira" },
+  { to: "/aportes", rotulo: "Patrimônio", grupo: "Carteira" },
+
   { to: "/estatisticas", rotulo: "Rentabilidade", grupo: "Análise" },
   { to: "/rebalanceamento", rotulo: "Análise", grupo: "Análise" },
   { to: "/rankings", rotulo: "Ranking de Ativos", grupo: "Análise" },
