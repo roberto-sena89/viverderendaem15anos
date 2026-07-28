@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Calendar, CircleDollarSign, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
@@ -17,8 +17,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAtivos, useCriarDividendo, useDividendos, useExcluir } from "@/lib/data";
+import type { Ativo, Dividendo } from "@/lib/portfolio";
 import { brl, dividendos12m, dividendosMensais, pct, resumoCarteira, valorInvestido } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/dividendos")({
@@ -80,6 +82,9 @@ function DividendosPage() {
   return (
     <AppShell title="Dividendos" description="Sua renda passiva em construção">
       <AbasCarteira />
+
+      <PainelProventos proventos={proventos} carteira={carteira} totalCarteira={resumo.totalAtual} />
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
         <StatCard label="Média mensal" value={brl(recebidos12m / 12)} />
@@ -224,5 +229,202 @@ function DividendosPage() {
         </div>
       </div>
     </AppShell>
+  );
+}
+
+const META_MENSAL = 500;
+
+const PERIODOS_PROVENTOS = [
+  { valor: "12", rotulo: "Últimos 12 meses" },
+  { valor: "24", rotulo: "Últimos 2 anos" },
+  { valor: "60", rotulo: "Últimos 5 anos" },
+  { valor: "0", rotulo: "Desde o início" },
+];
+
+function SeletorFiltro({
+  valor,
+  onChange,
+  icone: Icone,
+  opcoes,
+  rotuloAcessivel,
+}: {
+  valor: string;
+  onChange: (v: string) => void;
+  icone: typeof Calendar;
+  opcoes: { valor: string; rotulo: string }[];
+  rotuloAcessivel: string;
+}) {
+  return (
+    <Select value={valor} onValueChange={onChange}>
+      <SelectTrigger aria-label={rotuloAcessivel} className="h-9 w-[10.5rem] gap-2 text-xs">
+        <Icone className="size-3.5 shrink-0 text-muted-foreground" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {opcoes.map((o) => (
+          <SelectItem key={o.valor} value={o.valor} className="text-xs">
+            {o.rotulo}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function PainelProventos({
+  proventos,
+  carteira,
+  totalCarteira,
+}: {
+  proventos: Dividendo[];
+  carteira: Ativo[];
+  totalCarteira: number;
+}) {
+  const [modo, setModo] = useState<"mensal" | "anual">("mensal");
+  const [periodo, setPeriodo] = useState("12");
+  const [tipoAtivo, setTipoAtivo] = useState("todos");
+  const [ativoSel, setAtivoSel] = useState("todos");
+
+  const categoriaPorTicker = new Map(carteira.map((a) => [a.ticker, a.categoria as string]));
+
+  const filtrados = proventos.filter((d) => {
+    if (tipoAtivo !== "todos" && categoriaPorTicker.get(d.ticker) !== tipoAtivo) return false;
+    if (ativoSel !== "todos" && d.ticker !== ativoSel) return false;
+    if (periodo !== "0") {
+      const limite = new Date();
+      limite.setMonth(limite.getMonth() - Number(periodo));
+      if (new Date(`${d.data}T12:00`) < limite) return false;
+    }
+    return true;
+  });
+
+  const serie =
+    modo === "mensal"
+      ? dividendosMensais(filtrados)
+      : Object.entries(
+          filtrados.reduce<Record<string, number>>((acc, d) => {
+            const ano = d.data.slice(0, 4);
+            acc[ano] = (acc[ano] ?? 0) + d.valor;
+            return acc;
+          }, {}),
+        )
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([mes, valor]) => ({ mes, valor }));
+
+  const temDados = serie.some((s) => s.valor > 0);
+  const total12m = dividendos12m(filtrados);
+  const media = total12m / 12;
+  const progresso = Math.min(100, (media / META_MENSAL) * 100);
+
+  const opcoesTipo = [
+    { valor: "todos", rotulo: "Tipo de ativo" },
+    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
+  ];
+  const opcoesAtivos = [
+    { valor: "todos", rotulo: "Ativos" },
+    ...Array.from(new Set(proventos.map((d) => d.ticker))).map((t) => ({ valor: t, rotulo: t })),
+  ];
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
+      <div className="surface-card divide-y divide-border">
+        <div className="p-5">
+          <p className="font-display text-lg font-semibold">Resumo</p>
+          <p className="mt-3 text-xs text-muted-foreground">Média Mensal (últ. 12 meses)</p>
+          <div className="mt-1 flex items-baseline justify-between gap-2">
+            <p className="text-2xl font-semibold tabular-nums">
+              {brl(media, 2)}{" "}
+              <span className="text-sm font-normal text-muted-foreground">/ {brl(META_MENSAL, 2)}</span>
+            </p>
+            <span className="text-sm tabular-nums text-muted-foreground">{Math.round(progresso)}%</span>
+          </div>
+          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full bg-primary" style={{ width: `${progresso}%` }} />
+          </div>
+        </div>
+        <div className="p-5">
+          <p className="text-xs text-muted-foreground">Total de 12 meses</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(total12m, 2)}</p>
+        </div>
+        <div className="p-5">
+          <p className="text-xs text-muted-foreground">Total da carteira</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(totalCarteira, 2)}</p>
+        </div>
+        <div className="flex min-h-40 items-center justify-center p-5 text-sm text-muted-foreground">
+          {temDados ? `${serie.filter((s) => s.valor > 0).length} períodos com proventos` : "Sem dados para exibir"}
+        </div>
+      </div>
+
+      <div className="surface-card p-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="font-display text-lg font-semibold">Evolução de Proventos</p>
+          <div className="flex rounded-md bg-muted p-1">
+            {(["mensal", "anual"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setModo(m)}
+                className={`rounded px-3 py-1 text-xs capitalize ${
+                  modo === m ? "bg-background font-medium shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <SeletorFiltro
+              valor={periodo}
+              onChange={setPeriodo}
+              icone={Calendar}
+              opcoes={PERIODOS_PROVENTOS}
+              rotuloAcessivel="Período dos proventos"
+            />
+            <SeletorFiltro
+              valor={tipoAtivo}
+              onChange={setTipoAtivo}
+              icone={CircleDollarSign}
+              opcoes={opcoesTipo}
+              rotuloAcessivel="Tipo de ativo"
+            />
+            <SeletorFiltro
+              valor={ativoSel}
+              onChange={setAtivoSel}
+              icone={CircleDollarSign}
+              opcoes={opcoesAtivos}
+              rotuloAcessivel="Ativo"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 h-72">
+          {temDados ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={serie}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
+                <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
+                <Tooltip
+                  cursor={{ fill: "var(--color-muted)" }}
+                  contentStyle={{
+                    backgroundColor: "var(--color-popover)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: "12px",
+                    fontSize: "12px",
+                  }}
+                  formatter={(v: number) => brl(v, 2)}
+                />
+                <Bar dataKey="valor" fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-1 text-center">
+              <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
+              <p className="text-sm text-muted-foreground">Ainda não há dados disponíveis para exibição.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
