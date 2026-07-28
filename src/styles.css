@@ -227,3 +227,100 @@
     transform: none;
   }
 }
+
+/* ---------------------------------------------------------------
+ * Camada "terminal de dados" — densidade e legibilidade numérica
+ * inspiradas em plataformas de análise de ativos.
+ * --------------------------------------------------------------- */
+
+@utility panel {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+@utility panel-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.625rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.1rem;
+    bottom: 0.1rem;
+    width: 3px;
+    border-radius: 999px;
+    background-image: var(--gradient-brand);
+  }
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+@utility chip-pos {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-success);
+  background-color: color-mix(in oklab, var(--color-success) 14%, transparent);
+}
+
+@utility chip-neg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-destructive);
+  background-color: color-mix(in oklab, var(--color-destructive) 14%, transparent);
+}
+
+/* Tabelas de dados dentro de cards ganham cara de terminal financeiro */
+.surface-card table thead th,
+.panel table thead th {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+  background-color: color-mix(in oklab, var(--color-muted) 55%, transparent);
+  white-space: nowrap;
+}
+
+.surface-card table tbody td,
+.panel table tbody td {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.surface-card table tbody tr,
+.panel table tbody tr {
+  transition: background-color var(--transition-smooth);
+}
+
+.surface-card table tbody tr:hover,
+.panel table tbody tr:hover {
+  background-color: color-mix(in oklab, var(--color-primary) 6%, transparent);
+}
