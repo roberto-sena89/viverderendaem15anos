@@ -185,14 +185,29 @@ export function AppShell({
           <div className="flex items-center justify-between gap-4 px-5 py-4 lg:px-8">
 
             <div className="min-w-0">
-              <p className="text-[0.62rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">
-                {grupoAtual}
-              </p>
-              <h1 className="truncate font-display text-lg font-bold sm:text-xl">{title}</h1>
+              <nav aria-label="Trilha de navegação" className="mb-0.5">
+                <ol className="flex items-center gap-1.5 text-[0.62rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">
+                  <li>
+                    <Link to="/" className="transition-colors hover:text-foreground">
+                      Início
+                    </Link>
+                  </li>
+                  <li aria-hidden="true">/</li>
+                  <li>{grupoAtual}</li>
+                  {secaoAtual ? (
+                    <>
+                      <li aria-hidden="true">/</li>
+                      <li className="text-foreground">{secaoAtual.rotulo}</li>
+                    </>
+                  ) : null}
+                </ol>
+              </nav>
+              <h1 className="truncate font-display text-lg font-bold sm:text-xl">{tituloPagina}</h1>
               {description ? (
                 <p className="truncate text-sm text-muted-foreground">{description}</p>
               ) : null}
             </div>
+
 
             <div className="flex items-center gap-1">
               <ThemeToggle />
