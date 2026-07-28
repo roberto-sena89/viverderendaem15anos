@@ -166,7 +166,7 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden border-4 border-primary p-12 text-primary-foreground lg:flex">
+      <div className="relative hidden flex-col justify-between overflow-hidden border-4 border-primary p-12 text-[oklch(0.98_0_0)] lg:flex">
         <img
           src={investidorImg}
           alt="Investidor acompanhando gráficos de ações no computador"
