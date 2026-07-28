@@ -288,7 +288,16 @@ function MercadoAoVivo() {
             </>
           ) : historico.isLoading ? (
             <div className="h-64 animate-pulse rounded-xl bg-muted" />
+          ) : historico.isError ? (
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
+              <AlertTriangle className="size-4 shrink-0" />
+              <span>{(historico.error as Error).message}</span>
+              <Button size="sm" variant="outline" onClick={() => void historico.refetch()}>
+                Tentar novamente
+              </Button>
+            </div>
           ) : null}
+
         </CardContent>
       </Card>
     </>
