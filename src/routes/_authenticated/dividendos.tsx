@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Calendar, ChevronDown, CircleDollarSign, Plus, Trash2 } from "lucide-react";
+import { Calendar, Check, ChevronDown, CircleDollarSign, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
@@ -343,6 +343,66 @@ function FiltroPeriodo({
   );
 }
 
+function FiltroAtivos({
+  valor,
+  onChange,
+  ativos,
+}: {
+  valor: string;
+  onChange: (v: string) => void;
+  ativos: string[];
+}) {
+  const [busca, setBusca] = useState("");
+  const lista = ativos.filter((a) => a.toLowerCase().includes(busca.trim().toLowerCase()));
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="h-9 gap-2 text-xs font-normal" aria-label="Ativos">
+          <CircleDollarSign className="size-3.5 shrink-0 text-muted-foreground" />
+          {valor === "todos" ? "Ativos" : valor}
+          <ChevronDown className="size-3.5 text-muted-foreground" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-64 p-0">
+        <div className="relative p-2">
+          <Input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder=""
+            aria-label="Buscar ativo"
+            className="h-9 pr-8 text-sm"
+          />
+          <Search className="pointer-events-none absolute right-5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        </div>
+        <div className="max-h-64 overflow-y-auto border-t border-border py-1">
+          <OpcaoAtivo rotulo="Todos os ativos" ativo={valor === "todos"} onClick={() => onChange("todos")} />
+          {lista.map((a) => (
+            <OpcaoAtivo key={a} rotulo={a} ativo={valor === a} onClick={() => onChange(a)} />
+          ))}
+          {lista.length === 0 ? (
+            <p className="px-4 py-3 text-sm text-muted-foreground">Nenhum ativo encontrado.</p>
+          ) : null}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function OpcaoAtivo({ rotulo, ativo, onClick }: { rotulo: string; ativo: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center justify-between gap-2 px-4 py-2 text-left text-sm hover:bg-muted"
+    >
+      {rotulo}
+      {ativo ? <Check className="size-4 text-primary" /> : null}
+    </button>
+  );
+}
+
+
 const ESCOPOS_TOTAL = [
   { valor: "mes", rotulo: "Total do mês" },
   { valor: "ano", rotulo: "Total do ano" },
@@ -432,10 +492,6 @@ function PainelProventos({
     { valor: "todos", rotulo: "Tipo de ativo" },
     ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
   ];
-  const opcoesAtivos = [
-    { valor: "todos", rotulo: "Ativos" },
-    ...Array.from(new Set(proventos.map((d) => d.ticker))).map((t) => ({ valor: t, rotulo: t })),
-  ];
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
@@ -512,12 +568,10 @@ function PainelProventos({
               opcoes={opcoesTipo}
               rotuloAcessivel="Tipo de ativo"
             />
-            <SeletorFiltro
+            <FiltroAtivos
               valor={ativoSel}
               onChange={setAtivoSel}
-              icone={CircleDollarSign}
-              opcoes={opcoesAtivos}
-              rotuloAcessivel="Ativo"
+              ativos={Array.from(new Set(proventos.map((d) => d.ticker))).sort()}
             />
           </div>
         </div>
