@@ -245,15 +245,41 @@ const ANO_ATUAL = new Date().getFullYear();
 
 const FILTROS_RAPIDOS = [
   { valor: "ano-atual", rotulo: "Ano atual", chip: String(ANO_ATUAL) },
+  { valor: "30d", rotulo: "Últimos 30 dias" },
   { valor: "12m", rotulo: "Últimos 12 meses" },
   { valor: "5anos", rotulo: "Últimos 5 anos" },
+  { valor: "mes-atual", rotulo: "Mês atual" },
+  { valor: "proximo-mes", rotulo: "Próximo mês" },
   { valor: "futuros", rotulo: "Futuros" },
   { valor: "recebidos", rotulo: "Recebidos" },
   { valor: "todos", rotulo: "Todos", chip: "Recebidos e Futuros" },
 ];
 
+const MESES = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
+
+function chaveMes(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 function rotuloPeriodo(valor: string) {
   if (valor.startsWith("ano:")) return valor.slice(4);
+  if (valor.startsWith("mes:")) {
+    const [ano, mes] = valor.slice(4).split("-");
+    return `${MESES[Number(mes) - 1]} ${ano}`;
+  }
   const f = FILTROS_RAPIDOS.find((o) => o.valor === valor);
   return f ? (f.valor === "ano-atual" ? `Ano ${ANO_ATUAL}` : f.rotulo) : "Período";
 }
@@ -262,9 +288,15 @@ function dentroDoPeriodo(dataISO: string, valor: string) {
   const data = new Date(`${dataISO}T12:00`);
   const hoje = new Date();
   if (valor.startsWith("ano:")) return dataISO.startsWith(valor.slice(4));
+  if (valor.startsWith("mes:")) return dataISO.startsWith(valor.slice(4));
   switch (valor) {
     case "ano-atual":
       return dataISO.startsWith(String(ANO_ATUAL));
+    case "30d": {
+      const limite = new Date();
+      limite.setDate(limite.getDate() - 30);
+      return data >= limite && data <= hoje;
+    }
     case "12m": {
       const limite = new Date();
       limite.setMonth(limite.getMonth() - 12);
@@ -275,6 +307,12 @@ function dentroDoPeriodo(dataISO: string, valor: string) {
       limite.setFullYear(limite.getFullYear() - 5);
       return data >= limite && data <= hoje;
     }
+    case "mes-atual":
+      return dataISO.startsWith(chaveMes(hoje));
+    case "proximo-mes": {
+      const prox = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1);
+      return dataISO.startsWith(chaveMes(prox));
+    }
     case "futuros":
       return data > hoje;
     case "recebidos":
@@ -283,6 +321,7 @@ function dentroDoPeriodo(dataISO: string, valor: string) {
       return true;
   }
 }
+
 
 function FiltroPeriodo({
   valor,
