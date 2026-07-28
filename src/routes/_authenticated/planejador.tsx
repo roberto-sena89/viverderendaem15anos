@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { CalendarClock, Save, Sparkles, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -105,7 +105,7 @@ function Planejador() {
           <div className="surface-card p-6">
             <div className="flex flex-wrap items-end justify-between gap-2">
               <div>
-                <p className="panel-title">Meta de independência</p>
+                <h2 className="panel-title">Meta de independência</h2>
                 <p className="text-xs text-muted-foreground">
                   Necessário {brl(patrimonioNecessario)} para {brl(objetivoRenda)}/mês a {pct(input.taxaRetirada)} ao ano
                 </p>
@@ -125,7 +125,7 @@ function Planejador() {
           </div>
 
           <div className="surface-card p-6">
-            <p className="panel-title">Cenários de evolução</p>
+            <h2 className="panel-title">Cenários de evolução</h2>
             <div className="mt-4 h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
@@ -204,10 +204,11 @@ function NumberField({
   onChange: (v: number) => void;
   step?: number;
 }) {
+  const id = useId();
   return (
     <div className="grid gap-2">
-      <Label>{label}</Label>
-      <Input type="number" step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} type="number" step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
     </div>
   );
 }
@@ -227,16 +228,25 @@ function SliderField({
   max?: number;
   suffix?: string;
 }) {
+  const id = useId();
   return (
     <div className="grid gap-2">
       <div className="flex items-center justify-between">
-        <Label>{label}</Label>
+        <Label htmlFor={id}>{label}</Label>
         <span className="text-xs font-medium text-primary">
           {value.toLocaleString("pt-BR")}
           {suffix}
         </span>
       </div>
-      <Slider value={[value]} min={min} max={max} step={0.5} onValueChange={([v]) => onChange(v)} />
+      <Slider
+        id={id}
+        aria-label={label}
+        value={[value]}
+        min={min}
+        max={max}
+        step={0.5}
+        onValueChange={([v]) => onChange(v)}
+      />
     </div>
   );
 }

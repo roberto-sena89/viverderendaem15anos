@@ -133,7 +133,7 @@ function Dashboard() {
         <div className="surface-card p-6">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
-              <p className="panel-title">Próxima meta financeira</p>
+              <h2 className="panel-title">Próxima meta financeira</h2>
               <p className="text-xs text-muted-foreground">
                 {brl(resumo.totalAtual)} de {brl(metaFinanceira)}
               </p>
@@ -146,7 +146,7 @@ function Dashboard() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="surface-card p-6 lg:col-span-2">
-          <p className="panel-title">Evolução patrimonial (12 meses)</p>
+          <h2 className="panel-title">Evolução patrimonial (12 meses)</h2>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={evolucao}>
@@ -173,7 +173,7 @@ function Dashboard() {
         </div>
 
         <div className="surface-card p-6">
-          <p className="panel-title">Composição da carteira</p>
+          <h2 className="panel-title">Composição da carteira</h2>
           <div className="mt-2 h-52">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -204,7 +204,7 @@ function Dashboard() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="surface-card p-6">
-          <p className="panel-title">Dividendos por mês</p>
+          <h2 className="panel-title">Dividendos por mês</h2>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={proventosMes}>
@@ -219,7 +219,7 @@ function Dashboard() {
         </div>
 
         <div className="surface-card p-6">
-          <p className="panel-title">Aportes mensais</p>
+          <h2 className="panel-title">Aportes mensais</h2>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={evolucao}>
