@@ -516,8 +516,18 @@ type BrapiDetalhe = {
   }>;
 };
 
-const rankingCache = new Map<string, { expira: number; valor: RankingsB3 }>();
-const TTL_RANKING_MS = 30 * 60 * 1000;
+type Fundamento = {
+  nome: string | null;
+  preco: number | null;
+  variacaoPercent: number | null;
+  dy: number | null;
+  valorMercado: number | null;
+  receita: number | null;
+};
+
+const fundamentos = new Map<string, { expira: number; valor: Fundamento }>();
+const TTL_FUNDAMENTOS_MS = 24 * 60 * 60 * 1000;
+const LOTES_POR_CHAMADA = 4;
 
 const TIPO_BRAPI: Record<TipoRanking, string> = { acoes: "stock", fiis: "fund", bdrs: "bdr" };
 
@@ -533,76 +543,93 @@ function proventos12m(dividendos: Array<{ rate?: number | null; paymentDate?: st
 }
 
 export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<RankingsB3> {
-  const emCache = rankingCache.get(tipo);
-  if (emCache && emCache.expira > Date.now()) return emCache.valor;
+  const lista = await getJson<BrapiLista>(
+    `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=80`,
+    15000,
+  );
 
-  try {
-    const lista = await getJson<BrapiLista>(
-      `https://brapi.dev/api/quote/list?type=${TIPO_BRAPI[tipo]}&sortBy=market_cap_basic&sortOrder=desc&limit=80`,
-      15000,
-    );
+  // remove fracionários (final F) e mantém apenas o papel mais líquido por empresa
+  const porEmpresa = new Map<string, ItemRanking>();
+  for (const s of lista.stocks ?? []) {
+    const ticker = s.stock.toUpperCase();
+    if (ticker.endsWith("F")) continue;
+    const empresa = ticker.replace(/\d+$/, "");
+    const cap = Number(s.market_cap) || 0;
+    const atual = porEmpresa.get(empresa);
+    if (atual && (atual.valorMercado ?? 0) >= cap) continue;
+    porEmpresa.set(empresa, {
+      ticker,
+      nome: s.name || ticker,
+      logo: s.logo ?? null,
+      preco: s.close ?? null,
+      variacaoPercent: s.change ?? null,
+      dy: null,
+      valorMercado: cap || null,
+      receita: null,
+    });
+  }
 
-    // remove fracionários (final F) e mantém apenas o papel mais líquido por empresa
-    const porEmpresa = new Map<string, { ticker: string; nome: string; logo: string | null; cap: number }>();
-    for (const s of lista.stocks ?? []) {
-      const ticker = s.stock.toUpperCase();
-      if (ticker.endsWith("F")) continue;
-      const empresa = ticker.replace(/\d+$/, "");
-      const cap = Number(s.market_cap) || 0;
-      const atual = porEmpresa.get(empresa);
-      if (!atual || cap > atual.cap) {
-        porEmpresa.set(empresa, { ticker, nome: s.name || ticker, logo: s.logo ?? null, cap });
-      }
-    }
+  const base = [...porEmpresa.values()]
+    .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
+    .slice(0, 24);
 
-    const alvos = [...porEmpresa.values()].sort((a, b) => b.cap - a.cap).slice(0, 24);
-    const itens: ItemRanking[] = [];
-
-    for (let i = 0; i < alvos.length; i += 3) {
-      const lote = alvos.slice(i, i + 3);
-      try {
-        const det = await getJson<BrapiDetalhe>(
-          `https://brapi.dev/api/quote/${lote.map((a) => a.ticker).join(",")}?modules=financialData&dividends=true`,
-          15000,
-        );
-        for (const r of det.results ?? []) {
-          const base = lote.find((a) => a.ticker === r.symbol.toUpperCase());
-          const preco = r.regularMarketPrice ?? null;
-          const proventos = proventos12m(r.dividendsData?.cashDividends ?? []);
-          itens.push({
-            ticker: r.symbol.toUpperCase(),
-            nome: r.longName || r.shortName || base?.nome || r.symbol,
-            logo: r.logourl ?? base?.logo ?? null,
+  // A fonte gratuita limita as consultas de fundamentos; preenchemos aos poucos
+  // e guardamos por 24h, de modo que o ranking se completa entre as visitas.
+  const pendentes = base.filter((a) => !fundamentos.has(a.ticker) || fundamentos.get(a.ticker)!.expira < Date.now());
+  for (let i = 0; i < pendentes.length && i < LOTES_POR_CHAMADA * 3; i += 3) {
+    const lote = pendentes.slice(i, i + 3);
+    try {
+      const det = await getJson<BrapiDetalhe>(
+        `https://brapi.dev/api/quote/${lote.map((a) => a.ticker).join(",")}?modules=financialData&dividends=true`,
+        15000,
+      );
+      if (!det.results?.length) break;
+      for (const r of det.results) {
+        const preco = r.regularMarketPrice ?? null;
+        const proventos = proventos12m(r.dividendsData?.cashDividends ?? []);
+        fundamentos.set(r.symbol.toUpperCase(), {
+          expira: Date.now() + TTL_FUNDAMENTOS_MS,
+          valor: {
+            nome: r.longName || r.shortName || null,
             preco,
             variacaoPercent: r.regularMarketChangePercent ?? null,
             dy: preco && preco > 0 && proventos > 0 ? (proventos / preco) * 100 : null,
-            valorMercado: r.marketCap ?? base?.cap ?? null,
+            valorMercado: r.marketCap ?? null,
             receita: r.financialData?.totalRevenue ?? null,
-          });
-        }
-      } catch {
-        /* mantém o ranking com os lotes que responderam */
+          },
+        });
       }
-      if (i + 3 < alvos.length) await dormir(150);
+    } catch {
+      break; // provável limite da fonte: usa o que já está em cache
     }
-
-    const topo = (chave: "dy" | "valorMercado" | "receita") =>
-      itens
-        .filter((a) => typeof a[chave] === "number" && (a[chave] as number) > 0)
-        .sort((a, b) => (b[chave] as number) - (a[chave] as number))
-        .slice(0, 8);
-
-    const resultado: RankingsB3 = {
-      tipo,
-      dividendYield: topo("dy"),
-      valorMercado: topo("valorMercado"),
-      receitas: topo("receita"),
-      atualizadoEm: new Date().toISOString(),
-    };
-    rankingCache.set(tipo, { valor: resultado, expira: Date.now() + TTL_RANKING_MS });
-    return resultado;
-  } catch (e) {
-    if (emCache) return emCache.valor;
-    throw e;
+    await dormir(200);
   }
+
+  const itens = base.map((a) => {
+    const f = fundamentos.get(a.ticker)?.valor;
+    if (!f) return a;
+    return {
+      ...a,
+      nome: f.nome ?? a.nome,
+      preco: f.preco ?? a.preco,
+      variacaoPercent: f.variacaoPercent ?? a.variacaoPercent,
+      dy: f.dy,
+      valorMercado: f.valorMercado ?? a.valorMercado,
+      receita: f.receita,
+    };
+  });
+
+  const topo = (chave: "dy" | "valorMercado" | "receita") =>
+    itens
+      .filter((a) => typeof a[chave] === "number" && (a[chave] as number) > 0)
+      .sort((a, b) => (b[chave] as number) - (a[chave] as number))
+      .slice(0, 8);
+
+  return {
+    tipo,
+    dividendYield: topo("dy"),
+    valorMercado: topo("valorMercado"),
+    receitas: topo("receita"),
+    atualizadoEm: new Date().toISOString(),
+  };
 }
