@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerificarEmailRouteImport } from './routes/verificar-email'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
 import { Route as CalculadoraJurosCompostosRouteImport } from './routes/calculadora-juros-compostos'
@@ -43,6 +45,16 @@ const VerificarEmailRoute = VerificarEmailRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
+  id: '/redefinir-senha',
+  path: '/redefinir-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
+  id: '/recuperar-senha',
+  path: '/recuperar-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -173,6 +185,8 @@ export interface FileRoutesByFullPath {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verificar-email': typeof VerificarEmailRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -199,6 +213,8 @@ export interface FileRoutesByTo {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verificar-email': typeof VerificarEmailRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -227,6 +243,8 @@ export interface FileRoutesById {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verificar-email': typeof VerificarEmailRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -255,6 +273,8 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/recuperar-senha'
+    | '/redefinir-senha'
     | '/sitemap.xml'
     | '/verificar-email'
     | '/.mcp/list-tools'
@@ -281,6 +301,8 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/recuperar-senha'
+    | '/redefinir-senha'
     | '/sitemap.xml'
     | '/verificar-email'
     | '/.mcp/list-tools'
@@ -308,6 +330,8 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/recuperar-senha'
+    | '/redefinir-senha'
     | '/sitemap.xml'
     | '/verificar-email'
     | '/.mcp/list-tools'
@@ -336,6 +360,8 @@ export interface RootRouteChildren {
   CalculadoraJurosCompostosRoute: typeof CalculadoraJurosCompostosRoute
   GuiaLiberdadeFinanceiraRoute: typeof GuiaLiberdadeFinanceiraRoute
   McpRoute: typeof McpRoute
+  RecuperarSenhaRoute: typeof RecuperarSenhaRoute
+  RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerificarEmailRoute: typeof VerificarEmailRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
@@ -360,6 +386,20 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/redefinir-senha': {
+      id: '/redefinir-senha'
+      path: '/redefinir-senha'
+      fullPath: '/redefinir-senha'
+      preLoaderRoute: typeof RedefinirSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recuperar-senha': {
+      id: '/recuperar-senha'
+      path: '/recuperar-senha'
+      fullPath: '/recuperar-senha'
+      preLoaderRoute: typeof RecuperarSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -564,6 +604,8 @@ const rootRouteChildren: RootRouteChildren = {
   CalculadoraJurosCompostosRoute: CalculadoraJurosCompostosRoute,
   GuiaLiberdadeFinanceiraRoute: GuiaLiberdadeFinanceiraRoute,
   McpRoute: McpRoute,
+  RecuperarSenhaRoute: RecuperarSenhaRoute,
+  RedefinirSenhaRoute: RedefinirSenhaRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerificarEmailRoute: VerificarEmailRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
