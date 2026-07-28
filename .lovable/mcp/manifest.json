@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "sdk_version": "0.25.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://huyaffyqgrrsgznduwll.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "investidor-15-anos-mcp",
+      "version": "0.1.0",
+      "title": "Investidor em 15 Anos"
+    },
+    "tools": [
+      {
+        "name": "resumo_patrimonio",
+        "title": "Resumo do patrimônio",
+        "description": "Retorna patrimônio total, custo investido, lucro/prejuízo, alocação por categoria e dividendos recebidos nos últimos 12 meses.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "listar_carteira",
+        "title": "Listar carteira",
+        "description": "Lista todos os ativos da carteira do usuário (ticker, categoria, quantidade, preço médio, preço atual e DY).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "listar_dividendos",
+        "title": "Listar dividendos",
+        "description": "Lista os proventos recebidos pelo usuário, do mais recente para o mais antigo.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "ticker": {
+              "description": "Filtrar por ticker, ex.: BBAS3.",
+              "type": "string"
+            },
+            "limite": {
+              "description": "Quantidade máxima de registros (padrão 50).",
+              "type": "number"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "listar_metas",
+        "title": "Listar metas",
+        "description": "Lista as metas patrimoniais do usuário com o progresso atual em relação ao patrimônio da carteira.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "registrar_aporte",
+        "title": "Registrar aporte",
+        "description": "Registra um novo aporte na carteira do usuário e atualiza (ou cria) o ativo com o novo preço médio.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "ticker": {
+              "type": "string",
+              "description": "Ticker do ativo, ex.: BBAS3."
+            },
+            "categoria": {
+              "type": "string",
+              "description": "Categoria do ativo: acoes, fiis, etfs, rendaFixa ou internacional."
+            },
+            "quantidade": {
+              "type": "number",
+              "description": "Quantidade comprada."
+            },
+            "preco": {
+              "type": "number",
+              "description": "Preço unitário pago."
+            },
+            "data": {
+              "description": "Data do aporte no formato AAAA-MM-DD (padrão: hoje).",
+              "type": "string"
+            },
+            "corretora": {
+              "description": "Nome da corretora.",
+              "type": "string"
+            },
+            "taxas": {
+              "description": "Taxas e custos do aporte.",
+              "type": "number"
+            },
+            "observacoes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "ticker",
+            "categoria",
+            "quantidade",
+            "preco"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
