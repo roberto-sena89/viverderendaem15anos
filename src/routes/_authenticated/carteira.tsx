@@ -171,6 +171,8 @@ function CarteiraPage() {
         </Table>
       </div>
 
+      <CarteiraRecomendada />
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
