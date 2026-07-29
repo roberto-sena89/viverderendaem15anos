@@ -17,6 +17,30 @@ import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
 
 const ATALHOS = [500, 1000, 2000, 5000];
+const MIN_APORTE = 1;
+const MAX_APORTE = 10_000_000;
+
+const FORMATO_MOEDA = /^\d{1,3}(\.\d{3})*(,\d{1,2})?$|^\d+([.,]\d{1,2})?$/;
+
+/** Valida o texto digitado e devolve o valor numérico ou uma mensagem de erro. */
+function validarAporte(entrada: string): { valor: number; erro: string | null } {
+  const texto = entrada.trim();
+  if (!texto) return { valor: 0, erro: null };
+  if (!/^[\d.,\s]+$/.test(texto)) return { valor: 0, erro: "Use apenas números, ponto e vírgula (ex.: 1.500,00)." };
+  if (!FORMATO_MOEDA.test(texto.replace(/\s/g, "")))
+    return { valor: 0, erro: "Formato inválido. Use o padrão de moeda, ex.: 1.500,00." };
+
+  const normalizado = texto.replace(/\s/g, "").includes(",")
+    ? texto.replace(/\s/g, "").replace(/\./g, "").replace(",", ".")
+    : texto.replace(/\s/g, "");
+  const valor = Number(normalizado);
+
+  if (!Number.isFinite(valor)) return { valor: 0, erro: "Valor inválido." };
+  if (valor < MIN_APORTE) return { valor: 0, erro: `O aporte mínimo é ${brl(MIN_APORTE)}.` };
+  if (valor > MAX_APORTE) return { valor: 0, erro: `O aporte máximo é ${brl(MAX_APORTE)}.` };
+
+  return { valor: Math.round(valor * 100) / 100, erro: null };
+}
 
 /**
  * Calcula, para um aporte informado, quanto investir em cada classe de ativo
@@ -26,8 +50,11 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   const { alvo } = useAlocacaoAlvo();
   const [aberto, setAberto] = useState(false);
   const [texto, setTexto] = useState("1000");
+  const [tocado, setTocado] = useState(false);
 
-  const aporte = Math.max(0, Number(texto.replace(/\./g, "").replace(",", ".")) || 0);
+  const { valor: aporte, erro } = validarAporte(texto);
+  const mostrarErro = tocado && Boolean(erro);
+
 
   const { linhas, totalAtual, totalFuturo } = useMemo(() => {
     const atualPorClasse: Record<string, number> = {};
