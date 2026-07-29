@@ -6,11 +6,9 @@ import {
   CircleSlash,
   MoreHorizontal,
   Pencil,
-  Plus,
   Trash2,
 } from "lucide-react";
 
-import { DialogTransacao } from "@/components/dialog-transacao";
 import { TickerMark } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import {
@@ -164,9 +162,8 @@ export function CarteiraGrupos({
             </header>
 
             {aberto ? (
-              <>
-                <div className="overflow-x-auto border-t">
-                  <Table>
+              <div className="overflow-x-auto border-t">
+                <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="min-w-56">Ativo</TableHead>
@@ -255,18 +252,9 @@ export function CarteiraGrupos({
                           </TableRow>
                         );
                       })}
-                    </TableBody>
-                  </Table>
-                </div>
-
-                <footer className="flex items-center justify-end border-t px-4 py-3 sm:px-6">
-                  <DialogTransacao>
-                    <Button size="sm">
-                      <Plus className="size-4" /> Adicionar Lançamento
-                    </Button>
-                  </DialogTransacao>
-                </footer>
-              </>
+                </TableBody>
+                </Table>
+              </div>
             ) : null}
           </section>
         );
