@@ -207,9 +207,42 @@ export function CarteiraGrupos({
     );
   }
 
+  const visiveis = COLUNAS.filter((c) => colunas[c.id]).length;
+
   return (
-    <div className="space-y-4">
+    <div className={compacto ? "space-y-2" : "space-y-4"}>
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button size="sm" variant={compacto ? "default" : "outline"} onClick={alternarCompacto} aria-pressed={compacto}>
+          <Rows3 className="size-4" /> Modo compacto
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm" variant="outline">
+              <Columns3 className="size-4" /> Colunas
+              <span className="text-muted-foreground">({visiveis})</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>Colunas visíveis</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {COLUNAS.map((c) => (
+              <DropdownMenuCheckboxItem
+                key={c.id}
+                checked={colunas[c.id]}
+                onCheckedChange={() => alternarColuna(c.id)}
+                onSelect={(e) => e.preventDefault()}
+              >
+                {c.label}
+              </DropdownMenuCheckboxItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={restaurar}>Restaurar padrão</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       {grupos.map((g) => {
+
         const aberto = !fechados[g.classe];
         const cor = corClasse(g.classe);
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
