@@ -1,76 +1,88 @@
 /**
- * Tesouro Direto — dados abertos do governo.
+ * Tesouro Direto — dados abertos do governo (Tesouro Transparente / CKAN).
  *
- * Fonte primária: API pública do Tesouro Direto (preços e taxas do dia, atualizados
- * uma vez por dia útil). O dataset completo de séries históricas está em
- * https://www.tesourotransparente.gov.br/ckan/dataset (CSV de dezenas de MB),
- * pesado demais para rodar dentro do worker — por isso o histórico é acumulado
- * diariamente na tabela `historico_precos`.
+ * Dataset "Taxas dos Títulos Ofertados pelo Tesouro Direto":
+ * https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto
+ *
+ * O CSV traz a série completa desde 2005 (~14 MB). Ele é lido em streaming
+ * (sem carregar o arquivo inteiro na memória), guardando apenas a linha mais
+ * recente de cada título. Como o Tesouro publica preços uma vez por dia útil,
+ * o resultado fica em cache por 6 horas e a sincronização roda 1x/dia.
  */
 
-const API_TESOURO =
-  "https://www.tesourodireto.com.br/json/br/com/b3/tesourodireto/service/api/treasurybondsinfo.json";
+const CSV_TESOURO =
+  "https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv";
 
 export type TituloTesouro = {
   nome: string;
   vencimento: string | null;
+  dataBase: string | null;
   taxaCompra: number | null;
   taxaVenda: number | null;
   precoCompra: number | null;
   precoVenda: number | null;
-  tipo: string | null;
-  atualizadoEm: string | null;
-};
-
-type RespostaTesouro = {
-  response?: {
-    TrsrBdTradgList?: Array<{
-      TrsrBd?: {
-        nm?: string;
-        mtrtyDt?: string;
-        anulInvstmtRate?: number;
-        anulRedRate?: number;
-        untrInvstmtVal?: number;
-        untrRedVal?: number;
-        FinIndxs?: { nm?: string };
-      };
-    }>;
-    BizSts?: { dtTm?: string };
-  };
 };
 
 let cache: { expira: number; valor: TituloTesouro[] } | null = null;
-const TTL_MS = 30 * 60 * 1000;
+const TTL_MS = 6 * 60 * 60 * 1000;
 
-/** Lista todos os títulos públicos com preço e taxa do dia. */
+const numero = (v: string) => {
+  const n = Number(v.trim().replace(/\./g, "").replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+};
+
+/** "15/05/2035" -> "2035-05-15" */
+const dataIso = (v: string) => {
+  const m = v.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : null;
+};
+
+function processarLinha(linha: string, mapa: Map<string, TituloTesouro>) {
+  const c = linha.split(";");
+  if (c.length < 8 || !c[0].startsWith("Tesouro")) return;
+  const vencimento = dataIso(c[1]);
+  const dataBase = dataIso(c[2]);
+  if (!vencimento || !dataBase) return;
+
+  const chave = `${c[0].trim()}|${vencimento}`;
+  const atual = mapa.get(chave);
+  if (atual?.dataBase && atual.dataBase >= dataBase) return;
+
+  mapa.set(chave, {
+    nome: `${c[0].trim()} ${vencimento.slice(0, 4)}`,
+    vencimento,
+    dataBase,
+    taxaCompra: numero(c[3]),
+    taxaVenda: numero(c[4]),
+    precoCompra: numero(c[5]),
+    precoVenda: numero(c[6]),
+  });
+}
+
+/** Preço e taxa mais recentes de cada título público. */
 export async function listarTesouroDireto(): Promise<TituloTesouro[]> {
   if (cache && cache.expira > Date.now()) return cache.valor;
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 20000);
+  const timer = setTimeout(() => controller.abort(), 120000);
   try {
-    const res = await fetch(API_TESOURO, {
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    });
-    if (!res.ok) throw new Error(`Tesouro Direto respondeu ${res.status}`);
-    const json = (await res.json()) as RespostaTesouro;
-    const atualizadoEm = json.response?.BizSts?.dtTm ?? null;
+    const res = await fetch(CSV_TESOURO, { headers: { Accept: "text/csv" }, signal: controller.signal });
+    if (!res.ok || !res.body) throw new Error(`Tesouro Transparente respondeu ${res.status}`);
 
-    const titulos: TituloTesouro[] = (json.response?.TrsrBdTradgList ?? [])
-      .map((item) => item.TrsrBd)
-      .filter((b): b is NonNullable<typeof b> => Boolean(b?.nm))
-      .map((b) => ({
-        nome: String(b.nm),
-        vencimento: b.mtrtyDt ? String(b.mtrtyDt).slice(0, 10) : null,
-        taxaCompra: b.anulInvstmtRate ?? null,
-        taxaVenda: b.anulRedRate ?? null,
-        precoCompra: b.untrInvstmtVal ?? null,
-        precoVenda: b.untrRedVal ?? null,
-        tipo: b.FinIndxs?.nm ?? null,
-        atualizadoEm,
-      }));
+    const mapa = new Map<string, TituloTesouro>();
+    const leitor = res.body.pipeThrough(new TextDecoderStream("utf-8")).getReader();
+    let resto = "";
 
+    for (;;) {
+      const { value, done } = await leitor.read();
+      if (done) break;
+      const partes = (resto + value).split("\n");
+      resto = partes.pop() ?? "";
+      for (const linha of partes) processarLinha(linha, mapa);
+    }
+    if (resto) processarLinha(resto, mapa);
+
+    const titulos = [...mapa.values()].sort((a, b) => (a.vencimento ?? "").localeCompare(b.vencimento ?? ""));
     cache = { valor: titulos, expira: Date.now() + TTL_MS };
     return titulos;
   } finally {
@@ -83,29 +95,39 @@ const normalizar = (t: string) =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, " ")
+    .replace(/[^A-Z0-9+]+/g, " ")
     .trim();
 
-/**
- * Casa o ticker/nome cadastrado na carteira (ex.: "Tesouro Selic 2031") com o
- * título correspondente da API do Tesouro. Exige o mesmo ano de vencimento.
- */
+/** Indexador declarado no ticker/nome do ativo (SELIC, IPCA+, PREFIXADO). */
+function indexador(texto: string): "SELIC" | "IPCA" | "PRE" | null {
+  if (/SELIC|LFT/.test(texto)) return "SELIC";
+  if (/IPCA|NTN B/.test(texto)) return "IPCA";
+  if (/PREFIXAD|PRE\b|LTN|NTN F/.test(texto)) return "PRE";
+  return null;
+}
+
+/** Casa o ativo da carteira (ex.: "Tesouro Selic 2031") com o título oficial. */
 export function casarTitulo(entrada: string, titulos: TituloTesouro[]): TituloTesouro | null {
   const alvo = normalizar(entrada);
-  if (!alvo.includes("TESOURO")) return null;
+  if (!alvo.includes("TESOURO") && !indexador(alvo)) return null;
+
+  const idx = indexador(alvo);
   const ano = alvo.match(/(20\d{2})/)?.[1];
+  const comJuros = /JUROS SEMESTRAIS/.test(alvo);
 
   const candidatos = titulos.filter((t) => {
     const nome = normalizar(t.nome);
-    if (ano && !nome.includes(ano)) return false;
-    const palavras = alvo.split(" ").filter((p) => p.length > 2 && p !== "TESOURO");
-    return palavras.every((p) => nome.includes(p));
+    if (idx && indexador(nome) !== idx) return false;
+    if (ano && t.vencimento?.slice(0, 4) !== ano) return false;
+    if (/JUROS SEMESTRAIS/.test(nome) !== comJuros) return false;
+    return true;
   });
 
+  // Sem ano informado (ex.: "SELIC"), usa o vencimento mais próximo disponível.
   return candidatos[0] ?? null;
 }
 
-/** Preço unitário de compra do título correspondente ao ticker informado. */
+/** Preço unitário de compra do título correspondente ao ativo informado. */
 export async function precoTesouro(entrada: string): Promise<number | null> {
   const titulo = casarTitulo(entrada, await listarTesouroDireto());
   return titulo?.precoCompra ?? titulo?.precoVenda ?? null;
