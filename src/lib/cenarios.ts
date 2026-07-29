@@ -96,3 +96,62 @@ export function serieComparativa(resumos: ResumoCenario[]) {
       return ponto;
     });
 }
+
+/** Variação percentual de `valor` em relação à `base` (null quando não comparável). */
+export function variacao(valor: number, base: number): number | null {
+  if (!Number.isFinite(valor) || !Number.isFinite(base) || base === 0) return null;
+  return ((valor - base) / Math.abs(base)) * 100;
+}
+
+/**
+ * Elege o cenário vencedor: chega primeiro à independência financeira; em caso
+ * de empate (ou nenhum chegar), o maior patrimônio em valor de hoje.
+ */
+export function indiceVencedor(resumos: ResumoCenario[]): number {
+  if (resumos.length < 2) return resumos.length - 1;
+  let melhor = 0;
+  for (let i = 1; i < resumos.length; i++) {
+    const a = resumos[i];
+    const b = resumos[melhor];
+    const anoA = a.anoIndependencia ?? Number.POSITIVE_INFINITY;
+    const anoB = b.anoIndependencia ?? Number.POSITIVE_INFINITY;
+    if (anoA < anoB || (anoA === anoB && a.patrimonioReal > b.patrimonioReal)) melhor = i;
+  }
+  return melhor;
+}
+
+export interface LinhaAnoAAno {
+  ano: number;
+  idade: number | null;
+  valores: { id: string; patrimonio: number | null; variacao: number | null; crescimento: number | null }[];
+}
+
+/**
+ * Evolução ano a ano com a diferença percentual de cada cenário em relação ao
+ * cenário base (`indiceBase`) e o crescimento sobre o ano anterior.
+ */
+export function evolucaoAnoAAno(resumos: ResumoCenario[], indiceBase = 0): LinhaAnoAAno[] {
+  const anos = new Set<number>();
+  resumos.forEach((r) => r.linhas.forEach((l) => anos.add(l.ano)));
+  const base = resumos[indiceBase];
+
+  return [...anos]
+    .sort((a, b) => a - b)
+    .map((ano) => {
+      const linhaBase = base?.linhas.find((l) => l.ano === ano) ?? null;
+      return {
+        ano,
+        idade: linhaBase?.idade ?? null,
+        valores: resumos.map((r) => {
+          const atual = r.linhas.find((l) => l.ano === ano) ?? null;
+          const anterior = r.linhas.find((l) => l.ano === ano - 1) ?? null;
+          return {
+            id: r.cenario.id,
+            patrimonio: atual?.patrimonio ?? null,
+            variacao: atual && linhaBase ? variacao(atual.patrimonio, linhaBase.patrimonio) : null,
+            crescimento: atual && anterior ? variacao(atual.patrimonio, anterior.patrimonio) : null,
+          };
+        }),
+      };
+    });
+}
