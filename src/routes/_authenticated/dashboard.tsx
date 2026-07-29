@@ -19,6 +19,7 @@ import { AppShell } from "@/components/app-shell";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
+import { WidgetCotacoes } from "@/components/widget-cotacoes";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -279,6 +280,9 @@ function Dashboard() {
       ) : null}
 
       <ResumoKpis />
+
+      <WidgetCotacoes />
+
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel
