@@ -254,7 +254,22 @@ export function CarteiraGrupos({
                       })}
                 </TableBody>
                 </Table>
-              </div>
+                </div>
+
+                <footer className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/30 px-4 py-3 sm:px-6">
+                  <p className="text-xs text-muted-foreground">
+                    {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} · {brl(g.total)} ·{" "}
+                    {g.participacao >= g.ideal
+                      ? "acima ou no alvo desta classe"
+                      : `faltam ${pct(g.ideal - g.participacao)} para o alvo`}
+                  </p>
+                  <DialogTransacao>
+                    <Button size="sm" className="font-semibold">
+                      <Plus className="size-4" /> Adicionar lançamento
+                    </Button>
+                  </DialogTransacao>
+                </footer>
+              </>
             ) : null}
           </section>
         );
