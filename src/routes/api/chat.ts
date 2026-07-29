@@ -74,7 +74,7 @@ function textoDaMensagem(message: UIMessage) {
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request }: { request: Request }) => {
         const token = request.headers.get("Authorization")?.replace(/^Bearer\s+/i, "").trim();
         if (!token) return new Response("Não autenticado", { status: 401 });
 
