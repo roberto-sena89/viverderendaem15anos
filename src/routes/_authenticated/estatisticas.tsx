@@ -87,7 +87,7 @@ function Estatisticas() {
       <div className="flex justify-end">
         <Select value={periodo} onValueChange={setPeriodo}>
           <SelectTrigger aria-label="Período do gráfico" className="h-9 w-[11rem] gap-2 text-xs">
-            <Calendar className="size-3.5 shrink-0 text-muted-foreground" />
+            <Calendar className="size-8! shrink-0 text-muted-foreground" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
