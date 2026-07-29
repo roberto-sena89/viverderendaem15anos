@@ -6,8 +6,10 @@ import {
   CircleSlash,
   MoreHorizontal,
   Pencil,
+  Plus,
   Trash2,
 } from "lucide-react";
+import { DialogTransacao } from "@/components/dialog-transacao";
 
 import { TickerMark } from "@/components/panel";
 import { Button } from "@/components/ui/button";
