@@ -133,35 +133,41 @@ export function AppShell({
         </Link>
 
 
-        <nav className="flex flex-1 flex-col gap-5 overflow-y-auto">
-          {grupos.map((grupo) => (
-            <div key={grupo.titulo} className="space-y-1">
-              <p className="px-3 pb-1 text-[0.62rem] font-bold tracking-[0.12em] text-muted-foreground/70 uppercase">
+        <nav className="flex flex-1 flex-col gap-6 overflow-y-auto pr-1">
+          {grupos.map((grupo, i) => (
+            <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-5" : ""}>
+              <p className="mb-2 px-3 text-[0.7rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground/80 uppercase">
                 {grupo.titulo}
               </p>
-              {grupo.itens.map(({ to, label, icon: Icon }) => {
-                const active = pathname === to;
-                return (
-                  <Link
-                    key={to}
-                    to={to}
-                    className={`relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                      active
-                        ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
-                        : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-                    }`}
-                  >
-                    {active ? (
-                      <span className="absolute top-1.5 bottom-1.5 -left-px w-[3px] rounded-full bg-gradient-brand" />
-                    ) : null}
-                    <Icon className={`size-4 shrink-0 ${active ? "text-primary" : ""}`} />
-                    <span className="truncate">{label}</span>
-                  </Link>
-                );
-              })}
+              <div className="flex flex-col gap-0.5">
+                {grupo.itens.map(({ to, label, icon: Icon }) => {
+                  const active = pathname === to;
+                  return (
+                    <Link
+                      key={to}
+                      to={to}
+                      aria-current={active ? "page" : undefined}
+                      className={`group relative flex items-center gap-3 rounded-lg py-2.5 pr-3 pl-4 text-[0.875rem] leading-none transition-colors ${
+                        active
+                          ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
+                          : "font-medium text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+                      }`}
+                    >
+                      {active ? (
+                        <span className="absolute top-2 bottom-2 left-0 w-[3px] rounded-full bg-gradient-brand" />
+                      ) : null}
+                      <Icon
+                        className={`size-[18px] shrink-0 ${active ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"}`}
+                      />
+                      <span className="truncate">{label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </nav>
+
 
 
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-sidebar-border p-3">
