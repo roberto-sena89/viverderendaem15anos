@@ -27,11 +27,34 @@ export function DialogAlocacaoAlvo() {
     }
   }, [aberto, alvo]);
 
+  /** Mantém apenas dígitos e um separador decimal, com no máximo 2 casas. */
+  const sanitizar = (bruto: string) => {
+    let s = bruto.replace(/[^\d.,]/g, "").replace(/\./g, ",");
+    const partes = s.split(",");
+    s = partes.length > 1 ? `${partes[0]},${partes.slice(1).join("").slice(0, 2)}` : partes[0];
+    return s.slice(0, 6);
+  };
+
+  const paraNumero = (v: string) => {
+    const n = Number(v.replace(",", "."));
+    return Number.isFinite(n) ? n : Number.NaN;
+  };
+
   const numeros = Object.fromEntries(
-    Object.entries(valores).map(([c, v]) => [c, Math.max(0, Number(v.replace(",", ".")) || 0)]),
+    Object.entries(valores).map(([c, v]) => [c, v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0)]),
   );
+
+  const invalidos = Object.entries(valores).filter(([, v]) => {
+    if (v.trim() === "") return true;
+    const n = paraNumero(v);
+    return !Number.isFinite(n) || n < 0 || n > 100;
+  });
+  const camposInvalidos = new Set(invalidos.map(([c]) => c));
+
   const total = Object.values(numeros).reduce((s, v) => s + v, 0);
-  const valido = Math.abs(total - 100) < 0.01;
+  const restante = 100 - total;
+  const somaOk = Math.abs(restante) < 0.01;
+  const valido = somaOk && camposInvalidos.size === 0;
 
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
@@ -47,7 +70,7 @@ export function DialogAlocacaoAlvo() {
           <DialogDescription>Defina o percentual-alvo de cada classe. A soma precisa ser 100%.</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3">
+        <div className="max-h-[50vh] space-y-3 overflow-y-auto pr-1">
           {Object.keys(alvo).map((classe) => (
             <div key={classe} className="flex items-center justify-between gap-3">
               <Label htmlFor={`alvo-${classe}`} className="text-sm whitespace-pre-line">
@@ -57,8 +80,9 @@ export function DialogAlocacaoAlvo() {
                 <Input
                   id={`alvo-${classe}`}
                   inputMode="decimal"
+                  aria-invalid={camposInvalidos.has(classe)}
                   value={valores[classe] ?? ""}
-                  onChange={(e) => setValores((v) => ({ ...v, [classe]: e.target.value }))}
+                  onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
                   className="h-9 w-24 text-right text-sm"
                 />
                 <span className="text-xs text-muted-foreground">%</span>
@@ -67,9 +91,16 @@ export function DialogAlocacaoAlvo() {
           ))}
         </div>
 
-        <p className={`text-xs ${valido ? "text-muted-foreground" : "text-destructive"}`}>
-          Total: {total.toFixed(1).replace(".", ",")}%{valido ? "" : " — ajuste para somar 100%."}
-        </p>
+        <div className="space-y-1">
+          <p className={`text-xs font-medium ${valido ? "text-muted-foreground" : "text-destructive"}`}>
+            Total: {total.toFixed(1).replace(".", ",")}%
+            {somaOk ? "" : ` — ${restante > 0 ? "faltam" : "excedem"} ${Math.abs(restante).toFixed(1).replace(".", ",")} pontos.`}
+          </p>
+          {camposInvalidos.size > 0 && (
+            <p className="text-xs text-destructive">Informe um número entre 0 e 100 em cada classe.</p>
+          )}
+        </div>
+
 
         <DialogFooter className="gap-2 sm:justify-between">
           <Button
