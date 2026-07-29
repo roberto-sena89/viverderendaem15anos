@@ -7,7 +7,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request }: { request: Request }) => {
         // Segredo exclusivo de servidor (nunca enviado ao navegador).
         const esperado = process.env.CRON_SECRET ?? "";
         const recebido =
