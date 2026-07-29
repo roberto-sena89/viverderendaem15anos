@@ -164,9 +164,8 @@ export function CarteiraGrupos({
             </header>
 
             {aberto ? (
-              <>
-                <div className="overflow-x-auto border-t">
-                  <Table>
+              <div className="overflow-x-auto border-t">
+                <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="min-w-56">Ativo</TableHead>
