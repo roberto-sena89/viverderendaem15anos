@@ -146,7 +146,7 @@ export function AppShell({
                     {active ? (
                       <span className="absolute top-1.5 bottom-1.5 -left-px w-[3px] rounded-full bg-gradient-brand" />
                     ) : null}
-                    <Icon className={`size-8 shrink-0 ${active ? "text-primary" : ""}`} />
+                    <Icon className={`size-4 shrink-0 ${active ? "text-primary" : ""}`} />
                     <span className="truncate">{label}</span>
                   </Link>
                 );
