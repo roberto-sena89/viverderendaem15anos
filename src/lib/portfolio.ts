@@ -90,7 +90,7 @@ export const planoPadrao: PlanoConfig = {
 };
 
 export const alocacaoIdeal: Record<string, number> = {
-  "Pós-fixado": 30,
+  "Renda Fixa\nPós-fixado": 30,
   "IPCA+": 15,
   "Pré-fixado": 5,
   "ETF Brasil": 20,
@@ -106,7 +106,7 @@ export const classeDoAtivo = (a: Ativo): keyof typeof alocacaoIdeal => {
       return "IPCA+";
     case "Renda Fixa":
     case "Fundos de Investimentos":
-      return "Pós-fixado";
+      return "Renda Fixa\nPós-fixado";
     case "Ações":
     case "ETF Brasil":
       return "ETF Brasil";
@@ -122,7 +122,7 @@ export const classeDoAtivo = (a: Ativo): keyof typeof alocacaoIdeal => {
     case "REITs":
       return "FIIs";
     default:
-      return "Pós-fixado";
+      return "Renda Fixa\nPós-fixado";
   }
 };
 
