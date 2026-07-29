@@ -147,10 +147,22 @@ export function WidgetCotacoes() {
               valor={i.preco}
               moeda={i.moeda}
               variacaoPercent={i.variacaoPercent}
+              onClick={() => setDetalhe({ simbolo: i.simbolo, rotulo: i.nome })}
             />
           ))}
         </ul>
       )}
+
+      {detalhe ? (
+        <DialogDetalheAtivo
+          simbolo={detalhe.simbolo}
+          rotulo={detalhe.rotulo}
+          aberto
+          onOpenChange={(v) => {
+            if (!v) setDetalhe(null);
+          }}
+        />
+      ) : null}
     </Panel>
   );
 }
