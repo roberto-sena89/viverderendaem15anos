@@ -41,7 +41,9 @@ function Rebalanceamento() {
     const idealValor = (totalAtual * idealPct) / 100;
 
     const diff = atualPct - idealPct;
-    const status = Math.abs(diff) <= 2 ? "verde" : Math.abs(diff) <= 5 ? "amarelo" : "vermelho";
+    // Desvio relativo ao alvo da classe: 15% acima/abaixo do ideal = desbalanceado
+    const desvioRelativo = idealPct > 0 ? Math.abs(diff / idealPct) * 100 : 0;
+    const status = desvioRelativo >= 15 ? "vermelho" : "verde";
     return { classe, idealPct, atualPct, valor, idealValor, diff, status };
   });
 
@@ -65,13 +67,11 @@ function Rebalanceamento() {
               <Badge
                 className={
                   l.status === "verde"
-                    ? "bg-success text-success-foreground"
-                    : l.status === "amarelo"
-                      ? "bg-warning text-warning-foreground"
-                      : "bg-destructive text-destructive-foreground"
+                    ? "bg-success text-success-foreground font-semibold tracking-wide"
+                    : "bg-destructive text-destructive-foreground font-semibold tracking-wide"
                 }
               >
-                {l.status === "verde" ? "Equilibrado" : l.status === "amarelo" ? "Atenção" : "Desbalanceado"}
+                {l.status === "verde" ? "IDEAL" : "DESBALANCEADO"}
               </Badge>
             </div>
             <div className="mt-4 space-y-1 text-xs text-muted-foreground">
