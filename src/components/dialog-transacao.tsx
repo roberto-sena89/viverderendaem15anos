@@ -20,8 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { useCriarAporte } from "@/lib/data";
-import { brl, categorias, type Categoria } from "@/lib/portfolio";
+import { useAtualizarAporte, useCriarAporte } from "@/lib/data";
+import { brl, categorias, type Aporte, type Categoria } from "@/lib/portfolio";
 
 const INSTITUICOES = [
   "Ágora Investimentos",
@@ -153,7 +153,7 @@ export function DialogTransacao({
 
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Adicionar Transação</DialogTitle>
+          <DialogTitle>{edicao ? "Editar Transação" : "Adicionar Transação"}</DialogTitle>
           <DialogDescription>
             Preencha os dados, navegue pelas categorias e adicione ativos
           </DialogDescription>
@@ -304,8 +304,8 @@ export function DialogTransacao({
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={criar.isPending}>
-              {criar.isPending ? "Salvando..." : "Adicionar Transação"}
+            <Button type="submit" disabled={salvando}>
+              {salvando ? "Salvando..." : edicao ? "Salvar alterações" : "Adicionar Transação"}
             </Button>
           </div>
         </form>
