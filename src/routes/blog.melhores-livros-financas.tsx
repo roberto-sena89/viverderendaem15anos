@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 const TITLE = "Os Melhores Livros de Finanças e Investimentos para 2026";
 const DESCRIPTION =
-  "Lista comparativa dos melhores livros de finanças e investimentos: comportamento, renda passiva, análise fundamentalista e análise técnica — para quem começa e para quem já investe.";
+  "Comparativo dos melhores livros de finanças e investimentos: comportamento, renda passiva, análise fundamentalista e técnica, para todos os níveis.";
 const URL = "https://viverderendaem15.lovable.app/blog/melhores-livros-financas";
 
 interface Livro {
