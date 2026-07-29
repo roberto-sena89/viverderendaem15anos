@@ -133,11 +133,65 @@ export type Cotacao = {
   atualizadoEm: string | null;
 };
 
+/**
+ * brapi.dev — cotações da B3 (ações, FIIs, ETFs e índices). Usada como fonte
+ * alternativa quando o Yahoo limita as consultas. O token é opcional
+ * (plano gratuito); quando configurado em BRAPI_TOKEN é enviado na chamada.
+ */
+export async function cotacaoBrapi(simboloEntrada: string): Promise<Cotacao | null> {
+  const simbolo = simboloEntrada.trim().toUpperCase().replace(/\.SA$/, "");
+  if (!/^[A-Z0-9]{4,8}$/.test(simbolo)) return null;
+  const token = process.env.BRAPI_TOKEN;
+  const url = `https://brapi.dev/api/quote/${encodeURIComponent(simbolo)}${token ? `?token=${token}` : ""}`;
+  try {
+    const json = await getJson<{
+      results?: Array<{
+        symbol?: string;
+        longName?: string;
+        shortName?: string;
+        currency?: string;
+        regularMarketPrice?: number;
+        regularMarketPreviousClose?: number;
+        regularMarketChange?: number;
+        regularMarketChangePercent?: number;
+        fiftyTwoWeekHigh?: number;
+        fiftyTwoWeekLow?: number;
+        regularMarketTime?: string;
+      }>;
+    }>(url, 15000);
+    const r = json.results?.[0];
+    if (!r?.regularMarketPrice) return null;
+    return {
+      simbolo: r.symbol ?? simbolo,
+      nome: r.longName ?? r.shortName ?? simbolo,
+      moeda: r.currency ?? "BRL",
+      preco: r.regularMarketPrice,
+      fechamentoAnterior: r.regularMarketPreviousClose ?? null,
+      variacaoDia: r.regularMarketChange ?? null,
+      variacaoDiaPercent: r.regularMarketChangePercent ?? null,
+      maxima52s: r.fiftyTwoWeekHigh ?? null,
+      minima52s: r.fiftyTwoWeekLow ?? null,
+      bolsa: "B3",
+      atualizadoEm: r.regularMarketTime ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function buscarCotacao(simboloEntrada: string): Promise<Cotacao> {
   const simbolo = normalizarSimbolo(INDICES[simboloEntrada.trim().toUpperCase()] ?? simboloEntrada);
-  const data = await getJson<ChartResponse>(
-    `${YAHOO}/v8/finance/chart/${encodeURIComponent(simbolo)}?range=5d&interval=1d`,
-  );
+  let data: ChartResponse;
+  try {
+    data = await getJson<ChartResponse>(
+      `${YAHOO}/v8/finance/chart/${encodeURIComponent(simbolo)}?range=5d&interval=1d`,
+    );
+  } catch (err) {
+    const alternativa = await cotacaoBrapi(simbolo);
+    if (alternativa) return alternativa;
+    throw err;
+  }
+
   const r = data.chart.result?.[0];
   if (!r) throw new Error(`Não encontrei o ativo "${simboloEntrada}" nas fontes de mercado.`);
   const m = r.meta;
