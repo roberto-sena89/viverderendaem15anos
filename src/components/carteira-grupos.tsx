@@ -273,11 +273,6 @@ export function CarteiraGrupos({
                       ? "acima ou no alvo desta classe"
                       : `faltam ${pct(g.ideal - g.participacao)} para o alvo`}
                   </p>
-                  <DialogTransacao>
-                    <Button size="sm" className="font-semibold">
-                      <Plus className="size-4" /> Adicionar lançamento
-                    </Button>
-                  </DialogTransacao>
                 </footer>
               </>
             ) : null}
