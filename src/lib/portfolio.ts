@@ -90,7 +90,7 @@ export const planoPadrao: PlanoConfig = {
 };
 
 export const alocacaoIdeal: Record<string, number> = {
-  "Renda Fixa\nPós-fixado": 30,
+  "Renda Fixa\nPós-fixado\nCDI/SELIC": 30,
   "Renda Fixa\nIPCA+": 15,
   "Renda Fixa\nPré-fixado": 5,
   "ETF (Brasil)": 20,
@@ -111,7 +111,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "Tesouro Direto":
       return "Renda Fixa\nIPCA+";
     case "Renda Fixa":
-      return "Renda Fixa\nPós-fixado";
+      return "Renda Fixa\nPós-fixado\nCDI/SELIC";
     case "Fundos de Investimentos":
       return "Fundos de\nInvestimentos";
     case "Ações":
@@ -134,7 +134,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "Fiagro":
       return "FIIs";
     default:
-      return "Renda Fixa\nPós-fixado";
+      return "Renda Fixa\nPós-fixado\nCDI/SELIC";
   }
 };
 
