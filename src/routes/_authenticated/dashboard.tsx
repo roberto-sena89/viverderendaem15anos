@@ -270,7 +270,7 @@ function Dashboard() {
           <DialogTransacao>
             <Button
               size="sm"
-              className="font-display text-[14px] font-semibold uppercase tracking-wide"
+              className="font-display text-[12px] font-semibold uppercase tracking-wide"
             >
               Registrar aporte
             </Button>
