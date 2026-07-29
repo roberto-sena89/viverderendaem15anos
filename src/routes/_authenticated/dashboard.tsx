@@ -331,12 +331,13 @@ function Dashboard() {
 
 
       <section className="panel overflow-hidden">
-        <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border px-4 py-3">
-          <h2 className="font-display text-sm font-bold tracking-wide uppercase">
+        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3">
+          <h2 className="min-w-0 truncate font-display text-sm font-bold tracking-wide uppercase">
             Meus ativos <span className="text-muted-foreground normal-case">({ativos.length})</span>
           </h2>
-          <p className="num text-xs text-muted-foreground">
-            {categoriasComAtivos.length} classes · {brl(resumo.totalAtual, 2)}
+          <p className="num shrink-0 text-right text-xs text-muted-foreground">
+            <span className="hidden sm:inline">{categoriasComAtivos.length} classes · </span>
+            {brl(resumo.totalAtual, 2)}
           </p>
         </header>
 
@@ -345,11 +346,12 @@ function Dashboard() {
             Nenhum ativo cadastrado ainda.
           </p>
         ) : (
-          <div className="p-3">
-            <CarteiraGrupos ativos={ativos} />
+          <div className="p-3 sm:p-4">
+            <CarteiraGrupos ativos={ativos} minimal />
           </div>
         )}
       </section>
+
 
     </AppShell>
   );
