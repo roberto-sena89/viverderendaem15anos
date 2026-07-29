@@ -4,6 +4,8 @@ import { CalendarClock, Save, Sparkles, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AppShell } from "@/components/app-shell";
+import { ComparadorCenarios } from "@/components/comparador-cenarios";
+
 import { StatCard } from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -163,7 +165,10 @@ function Planejador() {
             </div>
           </div>
 
+          <ComparadorCenarios input={input} objetivoRenda={objetivoRenda} />
+
           <div className="surface-card max-h-96 overflow-auto">
+
             <Table>
               <TableHeader>
                 <TableRow>
