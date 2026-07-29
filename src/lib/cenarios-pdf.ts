@@ -171,7 +171,7 @@ function desenharPremissas(doc: import("jspdf").jsPDF, resumos: ResumoCenario[],
     y += 13;
     doc.setTextColor(90, 90, 90);
     const texto = [
-      `Idade ${c.input.idadeAtual} → ${c.input.idadeAposentadoria} · patrimônio inicial ${brl(c.input.patrimonioAtual)}`,
+      `Idade ${c.input.idadeAtual} a ${c.input.idadeAposentadoria} anos · patrimônio inicial ${brl(c.input.patrimonioAtual)}`,
       `Aporte mensal ${brl(c.input.aporteMensal)} com aumento de ${pct(c.input.aumentoAnual)} ao ano`,
       `Rentabilidade ${pct(c.input.rentabilidadeAnual)} a.a. · inflação ${pct(c.input.inflacaoAnual)} a.a. · retirada ${pct(c.input.taxaRetirada)}`,
       `Renda desejada ${brl(c.objetivoRenda)}/mês · necessário ${brl(r.patrimonioNecessario)}`,
