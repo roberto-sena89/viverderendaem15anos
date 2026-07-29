@@ -248,16 +248,24 @@ export function CarteiraGrupos({
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
         return (
           <section key={g.classe} className="surface-card overflow-hidden">
-            <header className="flex flex-wrap items-center gap-4 border-l-4 px-4 py-4 sm:px-6" style={{ borderColor: cor }}>
+            <header
+              className={`flex flex-wrap items-center gap-4 border-l-4 sm:px-6 ${compacto ? "px-4 py-2" : "px-4 py-4"}`}
+              style={{ borderColor: cor }}
+            >
               <div className="flex min-w-48 flex-1 items-center gap-3">
                 <span
-                  className="grid size-10 shrink-0 place-items-center rounded-xl"
+                  className={`grid shrink-0 place-items-center rounded-xl ${compacto ? "size-8" : "size-10"}`}
                   style={{ backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`, color: cor }}
                 >
-                  <BarChart3 className="size-5" />
+                  <BarChart3 className={compacto ? "size-4" : "size-5"} />
                 </span>
-                <h2 className="font-display text-lg leading-tight font-bold whitespace-pre-line">{g.classe}</h2>
+                <h2
+                  className={`font-display leading-tight font-bold whitespace-pre-line ${compacto ? "text-sm" : "text-lg"}`}
+                >
+                  {g.classe}
+                </h2>
               </div>
+
 
               <dl className="grid flex-[3] grid-cols-2 gap-x-6 gap-y-3 text-right sm:grid-cols-5">
                 <div>
