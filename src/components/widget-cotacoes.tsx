@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Search, TrendingDown, TrendingUp } from "lucide-react";
+import { DialogDetalheAtivo } from "@/components/dialog-detalhe-ativo";
 import { Panel } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
