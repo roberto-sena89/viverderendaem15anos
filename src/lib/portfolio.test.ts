@@ -26,8 +26,10 @@ describe("classeDoAtivo · Tesouro Direto e Renda Fixa", () => {
     ["LFT", "", CLASSE_POS_FIXADO],
   ];
 
-  it.each(casos)("%s / %s → classe correta", (ticker, nome, esperado) => {
-    expect(classeDoAtivo(ativo({ ticker, nome, categoria: "Tesouro Direto" }))).toBe(esperado);
+  it("classifica cada título no indexador correto", () => {
+    for (const [ticker, nome, esperado] of casos) {
+      expect(classeDoAtivo(ativo({ ticker, nome, categoria: "Tesouro Direto" }))).toBe(esperado);
+    }
   });
 
   it("CDB/LCI/LCA caem em pós-fixado", () => {
