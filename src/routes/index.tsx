@@ -216,6 +216,19 @@ function HomePage() {
             </li>
           </ul>
         </section>
+
+        <section className="mt-14">
+          <h2 className="text-xl font-semibold tracking-tight">Perguntas frequentes</h2>
+          <dl className="mt-4 grid gap-4">
+            {faq.map((f) => (
+              <div key={f.q} className="bg-card rounded-xl border p-5">
+                <dt className="text-base font-semibold">{f.q}</dt>
+                <dd className="text-muted-foreground mt-2 text-sm leading-relaxed">{f.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
       </main>
     </div>
   );
