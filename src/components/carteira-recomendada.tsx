@@ -1,4 +1,13 @@
+import { useMemo, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { ArrowDownRight, ArrowUpRight, Minus, Wand2 } from "lucide-react";
+import { toast } from "sonner";
 import { Panel } from "@/components/panel";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { useAtivos } from "@/lib/data";
+import { alocacaoIdeal, brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 
 type Linha = { indexador: string; prazo: string; alvo: number };
 type Bloco = { grupo: string; risco: string; linhas: Linha[] };
