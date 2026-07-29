@@ -11,6 +11,15 @@ import { alocacaoIdeal, brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfo
 
 type Linha = { indexador: string; prazo: string; alvo: number };
 type Bloco = { grupo: string; risco: string; linhas: Linha[] };
+type Ordem = {
+  classe: string;
+  ticker: string;
+  nome: string;
+  acao: "Comprar" | "Vender";
+  preco: number;
+  quantidade: number;
+  valor: number;
+};
 
 /** Carteira recomendada (perfil agressivo) — referência de alocação por classe. */
 const BLOCOS: Bloco[] = [
@@ -45,12 +54,14 @@ export function CarteiraRecomendada() {
   const { salvar } = useAlocacaoAlvo();
   const { data: carteira = [] } = useAtivos();
 
-  const { impacto, patrimonio } = useMemo(() => {
+  const { impacto, patrimonio, ordens } = useMemo(() => {
     const patrimonio = carteira.reduce((s, a) => s + valorAtual(a), 0);
+    const porClasse: Record<string, typeof carteira> = {};
     const atualPorClasse: Record<string, number> = {};
     for (const a of carteira) {
       const classe = classeDoAtivo(a);
       atualPorClasse[classe] = (atualPorClasse[classe] ?? 0) + valorAtual(a);
+      (porClasse[classe] ??= []).push(a);
     }
     const impacto = Object.entries(alocacaoIdeal)
       .map(([classe, alvoPct]) => {
@@ -61,8 +72,50 @@ export function CarteiraRecomendada() {
       })
       .filter((l) => l.alvoPct > 0 || Math.abs(l.delta) > 0.5)
       .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
-    return { impacto, patrimonio };
+
+    // Detalha as ordens por ativo: rateia o ajuste da classe entre os papéis existentes,
+    // proporcionalmente ao valor de cada posição.
+    const ordens: Ordem[] = [];
+    for (const linha of impacto) {
+      if (Math.abs(linha.delta) < 0.5) continue;
+      const ativos = porClasse[linha.classe] ?? [];
+      const totalClasse = ativos.reduce((s, a) => s + valorAtual(a), 0);
+      if (ativos.length === 0 || totalClasse <= 0) {
+        if (linha.delta > 0) {
+          ordens.push({
+            classe: linha.classe,
+            ticker: "—",
+            nome: "Sem posição nesta classe — escolha um novo papel",
+            acao: "Comprar",
+            preco: 0,
+            quantidade: 0,
+            valor: linha.delta,
+          });
+        }
+        continue;
+      }
+      for (const a of ativos) {
+        const peso = valorAtual(a) / totalClasse;
+        const valor = linha.delta * peso;
+        if (Math.abs(valor) < 0.5) continue;
+        const bruta = a.precoAtual > 0 ? Math.abs(valor) / a.precoAtual : 0;
+        const quantidade = Math.max(bruta >= 1 ? Math.floor(bruta) : Number(bruta.toFixed(4)), 0);
+        ordens.push({
+          classe: linha.classe,
+          ticker: a.ticker,
+          nome: a.nome,
+          acao: valor > 0 ? "Comprar" : "Vender",
+          preco: a.precoAtual,
+          quantidade: valor < 0 ? Math.min(quantidade, a.quantidade) : quantidade,
+          valor: Math.abs(valor),
+        });
+      }
+    }
+    ordens.sort((a, b) => b.valor - a.valor);
+
+    return { impacto, patrimonio, ordens };
   }, [carteira]);
+
 
   const totalCompras = impacto.filter((l) => l.delta > 0).reduce((s, l) => s + l.delta, 0);
   const totalVendas = impacto.filter((l) => l.delta < 0).reduce((s, l) => s - l.delta, 0);
@@ -211,8 +264,79 @@ export function CarteiraRecomendada() {
                   </tbody>
                 </table>
               </div>
+
+              <div className="rounded-lg border border-border">
+                <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/40 px-3 py-2">
+                  <span className="font-display text-xs font-bold tracking-wide uppercase">
+                    Detalhes por ativo
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {ordens.length} {ordens.length === 1 ? "ordem estimada" : "ordens estimadas"}
+                  </span>
+                </div>
+                {ordens.length === 0 ? (
+                  <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+                    Nenhuma ordem necessária — a carteira já está próxima da recomendação.
+                  </p>
+                ) : (
+                  <div className="max-h-72 overflow-auto">
+                    <table className="w-full min-w-[560px] border-collapse text-sm">
+                      <thead>
+                        <tr className="bg-muted/20 text-[0.68rem] tracking-wider text-muted-foreground uppercase">
+                          <th className="px-3 py-2 text-left font-semibold">Ativo</th>
+                          <th className="px-3 py-2 text-left font-semibold">Ação</th>
+                          <th className="px-3 py-2 text-right font-semibold">Qtd. estimada</th>
+                          <th className="px-3 py-2 text-right font-semibold">Preço atual</th>
+                          <th className="px-3 py-2 text-right font-semibold">Valor estimado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ordens.map((o) => (
+                          <tr key={`${o.classe}-${o.ticker}-${o.acao}`} className="border-t border-border">
+                            <td className="px-3 py-2">
+                              <span className="block font-display font-bold">{o.ticker}</span>
+                              <span className="block text-xs whitespace-pre-line text-muted-foreground">
+                                {o.nome || o.classe}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2">
+                              <span
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                                  o.acao === "Comprar"
+                                    ? "bg-success/15 text-success"
+                                    : "bg-destructive/15 text-destructive"
+                                }`}
+                              >
+                                {o.acao === "Comprar" ? (
+                                  <ArrowUpRight className="size-3.5" />
+                                ) : (
+                                  <ArrowDownRight className="size-3.5" />
+                                )}
+                                {o.acao}
+                              </span>
+                            </td>
+                            <td className="num px-3 py-2 text-right">
+                              {o.quantidade > 0
+                                ? o.quantidade.toLocaleString("pt-BR", { maximumFractionDigits: 4 })
+                                : "—"}
+                            </td>
+                            <td className="num px-3 py-2 text-right text-muted-foreground">
+                              {o.preco > 0 ? brl(o.preco, 2) : "—"}
+                            </td>
+                            <td className="num px-3 py-2 text-right font-semibold">{brl(o.valor, 2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <p className="border-t border-border px-3 py-2 text-xs text-muted-foreground">
+                  Quantidades estimadas pelo preço atual e arredondadas para baixo — valores podem variar na execução.
+                </p>
+              </div>
             </>
           )}
+
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
