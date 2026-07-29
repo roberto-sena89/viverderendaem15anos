@@ -272,7 +272,7 @@ function Dashboard() {
               size="sm"
               className="font-display text-[12px] font-semibold uppercase tracking-wide"
             >
-              Registrar aporte
+              REGISTRAR INVESTIMENTO
             </Button>
           </DialogTransacao>
         </div>
