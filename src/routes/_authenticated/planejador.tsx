@@ -163,7 +163,10 @@ function Planejador() {
             </div>
           </div>
 
+          <ComparadorCenarios input={input} objetivoRenda={objetivoRenda} />
+
           <div className="surface-card max-h-96 overflow-auto">
+
             <Table>
               <TableHeader>
                 <TableRow>
