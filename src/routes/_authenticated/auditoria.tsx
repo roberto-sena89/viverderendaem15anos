@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, CheckCircle2, Clock, Database, RefreshCw, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, RefreshCw, XCircle } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
@@ -97,7 +97,7 @@ function CartaoFonte({ fonte, execucoes }: { fonte: string; execucoes: Sincroniz
   const falhasRecentes = execucoes.slice(0, 10).reduce((s, e) => s + e.falhas.length, 0);
 
   return (
-    <Panel title={fonte} icon={<Database className="size-4" aria-hidden />}>
+    <Panel title={fonte}>
       {ultima ? (
         <div className="space-y-4 p-4">
           <div className="flex flex-wrap items-center gap-3">
@@ -138,16 +138,12 @@ function Auditoria() {
   const fontes = ["Tesouro Transparente", "Yahoo Finance / brapi.dev"];
 
   return (
-    <AppShell>
+    <AppShell
+      title="Auditoria de dados"
+      description="Acompanhe quando cada fonte de mercado sincronizou, quantos ativos foram atualizados e quais erros ocorreram. Ações, FIIs e ETFs atualizam a cada 15 min durante o pregão; o Tesouro Direto, uma vez por dia."
+    >
       <div className="space-y-6">
-        <header className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold">Auditoria de dados</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Acompanhe quando cada fonte de mercado sincronizou, quantos ativos foram atualizados e quais erros
-              ocorreram. Ações, FIIs e ETFs atualizam a cada 15 min durante o pregão; o Tesouro Direto, uma vez por dia.
-            </p>
-          </div>
+        <header className="flex flex-wrap items-start justify-end gap-4">
           <Button variant="outline" onClick={() => void refetch()} disabled={isFetching}>
             <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} aria-hidden />
             Atualizar
@@ -160,7 +156,7 @@ function Auditoria() {
           ))}
         </div>
 
-        <Panel title="Histórico de execuções" icon={<Clock className="size-4" aria-hidden />}>
+        <Panel title="Histórico de execuções">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
