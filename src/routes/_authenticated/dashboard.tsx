@@ -280,10 +280,6 @@ function Dashboard() {
             <DialogTransacao>
               <Button size="sm">Registrar aporte</Button>
             </DialogTransacao>
-
-            <Button asChild size="sm" variant="outline">
-              <Link to="/carteira">Cadastrar ativo</Link>
-            </Button>
           </div>
         </div>
       ) : null}
