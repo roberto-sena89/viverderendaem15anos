@@ -1,21 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { CarteiraGrupos } from "@/components/carteira-grupos";
 import { CarteiraRecomendada } from "@/components/carteira-recomendada";
-import { DeltaChip, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAtivos, useExcluir, useSalvarAtivo } from "@/lib/data";
-import { corCategoria } from "@/lib/cores-ativos";
-import { brl, categorias, pct, resumoCarteira, valorAtual, valorInvestido, type Ativo, type Categoria } from "@/lib/portfolio";
+import { brl, categorias, resumoCarteira, type Ativo, type Categoria } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira")({
   head: () => ({
