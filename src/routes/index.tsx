@@ -54,7 +54,6 @@ export const Route = createFileRoute("/")({
               inLanguage: "pt-BR",
               isPartOf: { "@id": `${URL}#website` },
               about: { "@id": `${URL}#organization` },
-              primaryImageOfPage: undefined,
             },
             {
               "@type": "SoftwareApplication",
