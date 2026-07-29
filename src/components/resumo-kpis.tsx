@@ -117,7 +117,7 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
 }
 
 /** Faixa de indicadores da carteira (padrão Investidor 10). */
-export function ResumoKpis() {
+export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: boolean }) {
   const { data: ativos = [] } = useAtivos();
   const { data: proventos = [] } = useDividendos();
   const [aberto, setAberto] = useState<Detalhe | null>(null);
@@ -249,17 +249,19 @@ export function ResumoKpis() {
 
   return (
     <>
-      <div className="flex justify-start">
-        <DialogTransacao>
-          <Button
-            size="default"
-            className="font-display gap-2 bg-primary px-5 text-[15px] font-semibold tracking-[0.01em] text-primary-foreground shadow-sm hover:bg-primary/90"
-          >
-            <Plus className="size-5" />
-            Adicionar Lançamento
-          </Button>
-        </DialogTransacao>
-      </div>
+      {mostrarLancamento && (
+        <div className="flex justify-start">
+          <DialogTransacao>
+            <Button
+              size="default"
+              className="font-display gap-2 bg-primary px-5 text-[15px] font-semibold tracking-[0.01em] text-primary-foreground shadow-sm hover:bg-primary/90"
+            >
+              <Plus className="size-5" />
+              Adicionar Lançamento
+            </Button>
+          </DialogTransacao>
+        </div>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
 
