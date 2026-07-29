@@ -271,7 +271,7 @@ function Dashboard() {
             <div className="min-w-0">
               <p className="font-display text-sm font-semibold">Sua carteira está vazia</p>
               <p className="text-xs text-muted-foreground">
-                Registre seu primeiro aporte ou cadastre um ativo para preencher os gráficos abaixo.
+                Registre seus aportes aqui👉🏻
               </p>
             </div>
           </div>
