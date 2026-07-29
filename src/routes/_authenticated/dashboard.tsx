@@ -247,6 +247,7 @@ function Dashboard() {
 
   const ativosEvolucao = tipoEvolucao === "todos" ? ativos : ativos.filter((a) => a.categoria === tipoEvolucao);
   const resumo = resumoCarteira(ativos);
+  const categoriasComAtivos = categorias.filter((c) => ativos.some((a) => a.categoria === c));
   const resumoEvolucao = resumoCarteira(ativosEvolucao);
   const evolucao = evolucaoPatrimonio(aportes, resumoEvolucao.totalAtual);
 
