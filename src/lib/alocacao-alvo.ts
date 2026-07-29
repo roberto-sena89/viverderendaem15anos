@@ -37,12 +37,23 @@ function notificar() {
   for (const l of listeners) l();
 }
 
+/** Atualiza quando outra aba altera os alvos. */
+function aoMudarStorage(e: StorageEvent) {
+  if (e.key === null || e.key === CHAVE) notificar();
+}
+
 function subscribe(cb: () => void) {
   listeners.add(cb);
-  if (typeof window !== "undefined") window.addEventListener(EVENTO, notificar);
+  if (typeof window !== "undefined") {
+    window.addEventListener(EVENTO, notificar);
+    window.addEventListener("storage", aoMudarStorage);
+  }
   return () => {
     listeners.delete(cb);
-    if (typeof window !== "undefined" && listeners.size === 0) window.removeEventListener(EVENTO, notificar);
+    if (typeof window !== "undefined" && listeners.size === 0) {
+      window.removeEventListener(EVENTO, notificar);
+      window.removeEventListener("storage", aoMudarStorage);
+    }
   };
 }
 
