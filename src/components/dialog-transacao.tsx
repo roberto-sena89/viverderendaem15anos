@@ -42,7 +42,14 @@ const numero = (v: string) => {
   return Number.isFinite(n) ? n : 0;
 };
 
-export function DialogTransacao({ children }: { children: ReactNode }) {
+export function DialogTransacao({
+  children,
+  aporte,
+}: {
+  children: ReactNode;
+  aporte?: Aporte;
+}) {
+  const edicao = Boolean(aporte);
   const [aberto, setAberto] = useState(false);
   const [tipo, setTipo] = useState<"compra" | "venda">("compra");
   const [categoria, setCategoria] = useState<Categoria | "">("");
@@ -56,6 +63,8 @@ export function DialogTransacao({ children }: { children: ReactNode }) {
   const [instituicao, setInstituicao] = useState("");
 
   const criar = useCriarAporte();
+  const atualizar = useAtualizarAporte();
+  const salvando = criar.isPending || atualizar.isPending;
 
   const custos = numero(corretagem) + numero(emolumentos) + numero(impostos);
   const valorTotal = useMemo(
@@ -80,6 +89,20 @@ export function DialogTransacao({ children }: { children: ReactNode }) {
     setInstituicao("");
   }
 
+  function preencher() {
+    if (!aporte) return limpar();
+    setTipo(aporte.quantidade < 0 ? "venda" : "compra");
+    setCategoria(aporte.categoria);
+    setTicker(aporte.ticker);
+    setData(aporte.data);
+    setPreco(String(aporte.preco));
+    setQuantidade(String(Math.abs(aporte.quantidade)));
+    setCorretagem(aporte.taxas ? String(aporte.taxas) : "");
+    setEmolumentos("");
+    setImpostos("");
+    setInstituicao(aporte.corretora ?? "");
+  }
+
   function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!categoria) return toast.error("Selecione a categoria.");
@@ -88,26 +111,33 @@ export function DialogTransacao({ children }: { children: ReactNode }) {
     if (numero(quantidade) <= 0) return toast.error("Informe uma quantidade válida.");
     if (!instituicao.trim()) return toast.error("Informe a instituição.");
 
-    criar.mutate(
-      {
-        data,
-        corretora: instituicao.trim(),
-        ticker: ticker.trim().toUpperCase(),
-        categoria,
-        quantidade: tipo === "venda" ? -numero(quantidade) : numero(quantidade),
-        preco: numero(preco),
-        taxas: custos,
-        observacoes: tipo === "venda" ? "Venda" : undefined,
+    const payload = {
+      data,
+      corretora: instituicao.trim(),
+      ticker: ticker.trim().toUpperCase(),
+      categoria,
+      quantidade: tipo === "venda" ? -numero(quantidade) : numero(quantidade),
+      preco: numero(preco),
+      taxas: custos,
+      observacoes: tipo === "venda" ? "Venda" : undefined,
+    };
+
+    const opcoes = {
+      onSuccess: () => {
+        toast.success(
+          edicao
+            ? "Transação atualizada e totais recalculados."
+            : tipo === "venda"
+              ? "Venda registrada."
+              : "Aporte registrado.",
+        );
+        setAberto(false);
       },
-      {
-        onSuccess: () => {
-          toast.success(tipo === "venda" ? "Venda registrada." : "Aporte registrado.");
-          limpar();
-          setAberto(false);
-        },
-        onError: () => toast.error("Não foi possível salvar a transação."),
-      },
-    );
+      onError: () => toast.error("Não foi possível salvar a transação."),
+    };
+
+    if (edicao && aporte) atualizar.mutate({ id: aporte.id, ...payload }, opcoes);
+    else criar.mutate(payload, opcoes);
   }
 
   return (
@@ -115,10 +145,12 @@ export function DialogTransacao({ children }: { children: ReactNode }) {
       open={aberto}
       onOpenChange={(o) => {
         setAberto(o);
-        if (!o) limpar();
+        if (o) preencher();
+        else limpar();
       }}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
+
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Adicionar Transação</DialogTitle>
