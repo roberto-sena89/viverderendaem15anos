@@ -266,7 +266,7 @@ function Dashboard() {
 
       {carteiraVazia ? (
         <div className="surface-card flex flex-wrap items-center gap-3 p-4">
-          <PiggyBank className="size-5 shrink-0 text-muted-foreground" />
+          <PiggyBank className="size-4 shrink-0 text-muted-foreground" />
           <DialogTransacao>
             <Button
               size="sm"
