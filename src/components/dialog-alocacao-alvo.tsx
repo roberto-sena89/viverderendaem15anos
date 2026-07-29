@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ export function DialogAlocacaoAlvo() {
   const valido = somaOk && camposInvalidos.size === 0;
 
   /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
-  const aoTeclar = (classe: string) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const aoTeclar = (classe: string) => (e: KeyboardEvent<HTMLInputElement>) => {
     const passo =
       e.key === "PageUp" || e.key === "PageDown" ? 5 : e.shiftKey ? 1 : 0.01;
     const sinal =
