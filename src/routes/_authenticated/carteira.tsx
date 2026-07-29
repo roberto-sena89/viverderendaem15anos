@@ -40,6 +40,10 @@ function CarteiraPage() {
   const excluir = useExcluir("ativos");
   const { totalAtual } = resumoCarteira(carteira);
   const ativos = carteira.filter((a) => filtro === "Todos" || a.categoria === filtro);
+  const contagem = carteira.reduce(
+    (m, a) => m.set(a.categoria, (m.get(a.categoria) ?? 0) + 1),
+    new Map<string, number>(),
+  );
 
   function abrir(ativo: Ativo | null) {
     setEditando(ativo);
