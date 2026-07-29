@@ -97,6 +97,7 @@
   },
   "overrides": {
     "@hono/node-server": "^2.0.12",
+    "@tanstack/react-router": "1.170.18",
     "js-yaml": "^4.3.0",
   },
   "packages": {
