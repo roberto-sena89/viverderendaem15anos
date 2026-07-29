@@ -1,11 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BarChart3,
   ChevronDown,
   CircleCheck,
   CircleSlash,
+  Columns3,
   MoreHorizontal,
   Pencil,
+  Rows3,
   Trash2,
 } from "lucide-react";
 
@@ -13,8 +15,11 @@ import { TickerMark } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,6 +27,96 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
+
+type ColunaId =
+  | "quantidade"
+  | "precoMedio"
+  | "precoAtual"
+  | "variacao"
+  | "rentabilidade"
+  | "saldo"
+  | "nota"
+  | "participacao"
+  | "ideal"
+  | "comprar";
+
+const COLUNAS: { id: ColunaId; label: string }[] = [
+  { id: "quantidade", label: "Quant." },
+  { id: "precoMedio", label: "Preço médio" },
+  { id: "precoAtual", label: "Preço atual" },
+  { id: "variacao", label: "Variação (%)" },
+  { id: "rentabilidade", label: "Rentabilidade" },
+  { id: "saldo", label: "Saldo" },
+  { id: "nota", label: "Nota" },
+  { id: "participacao", label: "% Carteira" },
+  { id: "ideal", label: "% Ideal" },
+  { id: "comprar", label: "Comprar?" },
+];
+
+const PADRAO: Record<ColunaId, boolean> = {
+  quantidade: true,
+  precoMedio: true,
+  precoAtual: true,
+  variacao: true,
+  rentabilidade: true,
+  saldo: true,
+  nota: true,
+  participacao: true,
+  ideal: true,
+  comprar: true,
+};
+
+const CHAVE_COLUNAS = "carteira:colunas";
+const CHAVE_COMPACTO = "carteira:compacto";
+
+function usePreferenciasTabela() {
+  const [colunas, setColunas] = useState<Record<ColunaId, boolean>>(PADRAO);
+  const [compacto, setCompacto] = useState(false);
+
+  useEffect(() => {
+    try {
+      const c = localStorage.getItem(CHAVE_COLUNAS);
+      if (c) setColunas({ ...PADRAO, ...(JSON.parse(c) as Record<ColunaId, boolean>) });
+      setCompacto(localStorage.getItem(CHAVE_COMPACTO) === "1");
+    } catch {
+      /* preferências opcionais */
+    }
+  }, []);
+
+  const alternarColuna = (id: ColunaId) =>
+    setColunas((atual) => {
+      const proximo = { ...atual, [id]: !atual[id] };
+      if (!Object.values(proximo).some(Boolean)) return atual; // mantém ao menos uma coluna
+      try {
+        localStorage.setItem(CHAVE_COLUNAS, JSON.stringify(proximo));
+      } catch {
+        /* ignora */
+      }
+      return proximo;
+    });
+
+  const alternarCompacto = () =>
+    setCompacto((v) => {
+      try {
+        localStorage.setItem(CHAVE_COMPACTO, v ? "0" : "1");
+      } catch {
+        /* ignora */
+      }
+      return !v;
+    });
+
+  const restaurar = () => {
+    setColunas(PADRAO);
+    try {
+      localStorage.setItem(CHAVE_COLUNAS, JSON.stringify(PADRAO));
+    } catch {
+      /* ignora */
+    }
+  };
+
+  return { colunas, compacto, alternarColuna, alternarCompacto, restaurar };
+}
+
 
 interface Grupo {
   classe: string;
@@ -74,6 +169,9 @@ export function CarteiraGrupos({
 }) {
   const { alvo } = useAlocacaoAlvo();
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
+  const { colunas, compacto, alternarColuna, alternarCompacto, restaurar } = usePreferenciasTabela();
+  const cel = compacto ? "py-1.5 text-xs" : "";
+
 
   const { grupos, totalCarteira } = useMemo(() => {
     const totalCarteira = ativos.reduce((s, a) => s + valorAtual(a), 0);
@@ -109,24 +207,65 @@ export function CarteiraGrupos({
     );
   }
 
+  const visiveis = COLUNAS.filter((c) => colunas[c.id]).length;
+
   return (
-    <div className="space-y-4">
+    <div className={compacto ? "space-y-2" : "space-y-4"}>
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button size="sm" variant={compacto ? "default" : "outline"} onClick={alternarCompacto} aria-pressed={compacto}>
+          <Rows3 className="size-4" /> Modo compacto
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm" variant="outline">
+              <Columns3 className="size-4" /> Colunas
+              <span className="text-muted-foreground">({visiveis})</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>Colunas visíveis</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {COLUNAS.map((c) => (
+              <DropdownMenuCheckboxItem
+                key={c.id}
+                checked={colunas[c.id]}
+                onCheckedChange={() => alternarColuna(c.id)}
+                onSelect={(e) => e.preventDefault()}
+              >
+                {c.label}
+              </DropdownMenuCheckboxItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={restaurar}>Restaurar padrão</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       {grupos.map((g) => {
+
         const aberto = !fechados[g.classe];
         const cor = corClasse(g.classe);
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
         return (
           <section key={g.classe} className="surface-card overflow-hidden">
-            <header className="flex flex-wrap items-center gap-4 border-l-4 px-4 py-4 sm:px-6" style={{ borderColor: cor }}>
+            <header
+              className={`flex flex-wrap items-center gap-4 border-l-4 sm:px-6 ${compacto ? "px-4 py-2" : "px-4 py-4"}`}
+              style={{ borderColor: cor }}
+            >
               <div className="flex min-w-48 flex-1 items-center gap-3">
                 <span
-                  className="grid size-10 shrink-0 place-items-center rounded-xl"
+                  className={`grid shrink-0 place-items-center rounded-xl ${compacto ? "size-8" : "size-10"}`}
                   style={{ backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`, color: cor }}
                 >
-                  <BarChart3 className="size-5" />
+                  <BarChart3 className={compacto ? "size-4" : "size-5"} />
                 </span>
-                <h2 className="font-display text-lg leading-tight font-bold whitespace-pre-line">{g.classe}</h2>
+                <h2
+                  className={`font-display leading-tight font-bold whitespace-pre-line ${compacto ? "text-sm" : "text-lg"}`}
+                >
+                  {g.classe}
+                </h2>
               </div>
+
 
               <dl className="grid flex-[3] grid-cols-2 gap-x-6 gap-y-3 text-right sm:grid-cols-5">
                 <div>
@@ -174,18 +313,20 @@ export function CarteiraGrupos({
                 <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="min-w-56">Ativo</TableHead>
-                        <TableHead className="text-right">Quant.</TableHead>
-                        <TableHead className="text-right">Preço médio</TableHead>
-                        <TableHead className="text-right">Preço atual</TableHead>
-                        <TableHead className="text-right whitespace-pre-line">VARIAÇÃO{"\n"}(%)</TableHead>
-                        <TableHead className="text-right">Rentabilidade</TableHead>
-                        <TableHead className="text-right">Saldo</TableHead>
-                        <TableHead className="text-center">Nota</TableHead>
-                        <TableHead className="text-right">% Carteira</TableHead>
-                        <TableHead className="text-right">% Ideal</TableHead>
-                        <TableHead className="text-center">Comprar?</TableHead>
-                        <TableHead className="text-center">Opções</TableHead>
+                        <TableHead className={compacto ? "min-w-40" : "min-w-56"}>Ativo</TableHead>
+                        {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
+                        {colunas.precoMedio && <TableHead className="text-right">Preço médio</TableHead>}
+                        {colunas.precoAtual && <TableHead className="text-right">Preço atual</TableHead>}
+                        {colunas.variacao && (
+                          <TableHead className="text-right whitespace-pre-line">VARIAÇÃO{"\n"}(%)</TableHead>
+                        )}
+                        {colunas.rentabilidade && <TableHead className="text-right">Rentabilidade</TableHead>}
+                        {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
+                        {colunas.nota && <TableHead className="text-center">Nota</TableHead>}
+                        {colunas.participacao && <TableHead className="text-right">% Carteira</TableHead>}
+                        {colunas.ideal && <TableHead className="text-right">% Ideal</TableHead>}
+                        {colunas.comprar && <TableHead className="text-center">Comprar?</TableHead>}
+                        {onEditar && onExcluir ? <TableHead className="text-center">Opções</TableHead> : null}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -199,66 +340,99 @@ export function CarteiraGrupos({
                         const n = nota(participacao, idealAtivo, rent);
                         return (
                           <TableRow key={a.id}>
-                            <TableCell>
-                              <div className="flex items-center gap-3">
-                                <TickerMark ticker={a.ticker} />
+                            <TableCell className={cel}>
+                              <div className={`flex items-center ${compacto ? "gap-2" : "gap-3"}`}>
+                                {compacto ? null : <TickerMark ticker={a.ticker} />}
                                 <div className="min-w-0">
                                   <p className="font-display leading-tight font-bold">{a.ticker}</p>
-                                  <p className="max-w-48 truncate text-xs text-muted-foreground">{a.nome || a.categoria}</p>
+                                  {compacto ? null : (
+                                    <p className="max-w-48 truncate text-xs text-muted-foreground">
+                                      {a.nome || a.categoria}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </TableCell>
-                            <TableCell className="text-right tabular-nums">{num(a.quantidade)}</TableCell>
-                            <TableCell className="text-right tabular-nums">{brl(a.precoMedio, 2)}</TableCell>
-                            <TableCell className="text-right font-semibold tabular-nums">{brl(a.precoAtual, 2)}</TableCell>
-                            <TableCell className="text-right">
-                              <Variacao value={variacao} />
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Variacao value={rent} />
-                            </TableCell>
-                            <TableCell className="text-right font-semibold tabular-nums">{brl(saldo)}</TableCell>
-                            <TableCell className="text-center">
-                              <span
-                                title="Nota de aderência ao alvo e desempenho"
-                                className="inline-grid size-8 place-items-center rounded-md bg-foreground text-sm font-bold text-background tabular-nums"
-                              >
-                                {n.toFixed(0)}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-right tabular-nums">{pct(participacao)}</TableCell>
-                            <TableCell className="text-right text-muted-foreground tabular-nums">{pct(idealAtivo)}</TableCell>
-                            <TableCell className="text-center">
-                              <span
-                                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-                                  comprar
-                                    ? "border-success/40 bg-success/10 text-success"
-                                    : "border-destructive/40 bg-destructive/10 text-destructive"
-                                }`}
-                              >
-                                {comprar ? <CircleCheck className="size-3.5" /> : <CircleSlash className="size-3.5" />}
-                                {comprar ? "Sim" : "Não"}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {onEditar && onExcluir ? (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button size="icon" variant="ghost" aria-label={`Opções de ${a.ticker}`}>
-                                    <MoreHorizontal className="size-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onSelect={() => onEditar?.(a)}>
-                                    <Pencil className="size-4" /> Editar ativo
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir?.(a)}>
-                                    <Trash2 className="size-4" /> Excluir ativo
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                              ) : null}
-                            </TableCell>
+                            {colunas.quantidade && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{num(a.quantidade)}</TableCell>
+                            )}
+                            {colunas.precoMedio && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{brl(a.precoMedio, 2)}</TableCell>
+                            )}
+                            {colunas.precoAtual && (
+                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>
+                                {brl(a.precoAtual, 2)}
+                              </TableCell>
+                            )}
+                            {colunas.variacao && (
+                              <TableCell className={`text-right ${cel}`}>
+                                <Variacao value={variacao} />
+                              </TableCell>
+                            )}
+                            {colunas.rentabilidade && (
+                              <TableCell className={`text-right ${cel}`}>
+                                <Variacao value={rent} />
+                              </TableCell>
+                            )}
+                            {colunas.saldo && (
+                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>{brl(saldo)}</TableCell>
+                            )}
+                            {colunas.nota && (
+                              <TableCell className={`text-center ${cel}`}>
+                                <span
+                                  title="Nota de aderência ao alvo e desempenho"
+                                  className={`inline-grid place-items-center rounded-md bg-foreground font-bold text-background tabular-nums ${
+                                    compacto ? "size-6 text-xs" : "size-8 text-sm"
+                                  }`}
+                                >
+                                  {n.toFixed(0)}
+                                </span>
+                              </TableCell>
+                            )}
+                            {colunas.participacao && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{pct(participacao)}</TableCell>
+                            )}
+                            {colunas.ideal && (
+                              <TableCell className={`text-right text-muted-foreground tabular-nums ${cel}`}>
+                                {pct(idealAtivo)}
+                              </TableCell>
+                            )}
+                            {colunas.comprar && (
+                              <TableCell className={`text-center ${cel}`}>
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full border text-xs font-semibold ${
+                                    compacto ? "px-2 py-0.5" : "px-2.5 py-1"
+                                  } ${
+                                    comprar
+                                      ? "border-success/40 bg-success/10 text-success"
+                                      : "border-destructive/40 bg-destructive/10 text-destructive"
+                                  }`}
+                                >
+                                  {comprar ? <CircleCheck className="size-3.5" /> : <CircleSlash className="size-3.5" />}
+                                  {comprar ? "Sim" : "Não"}
+                                </span>
+                              </TableCell>
+                            )}
+                            {onEditar && onExcluir ? (
+                              <TableCell className={`text-center ${cel}`}>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button size="icon" variant="ghost" aria-label={`Opções de ${a.ticker}`}>
+                                      <MoreHorizontal className="size-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onSelect={() => onEditar?.(a)}>
+                                      <Pencil className="size-4" /> Editar ativo
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir?.(a)}>
+                                      <Trash2 className="size-4" /> Excluir ativo
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            ) : null}
+
                           </TableRow>
                         );
                       })}
