@@ -264,8 +264,79 @@ export function CarteiraRecomendada() {
                   </tbody>
                 </table>
               </div>
+
+              <div className="rounded-lg border border-border">
+                <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/40 px-3 py-2">
+                  <span className="font-display text-xs font-bold tracking-wide uppercase">
+                    Detalhes por ativo
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {ordens.length} {ordens.length === 1 ? "ordem estimada" : "ordens estimadas"}
+                  </span>
+                </div>
+                {ordens.length === 0 ? (
+                  <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+                    Nenhuma ordem necessária — a carteira já está próxima da recomendação.
+                  </p>
+                ) : (
+                  <div className="max-h-72 overflow-auto">
+                    <table className="w-full min-w-[560px] border-collapse text-sm">
+                      <thead>
+                        <tr className="bg-muted/20 text-[0.68rem] tracking-wider text-muted-foreground uppercase">
+                          <th className="px-3 py-2 text-left font-semibold">Ativo</th>
+                          <th className="px-3 py-2 text-left font-semibold">Ação</th>
+                          <th className="px-3 py-2 text-right font-semibold">Qtd. estimada</th>
+                          <th className="px-3 py-2 text-right font-semibold">Preço atual</th>
+                          <th className="px-3 py-2 text-right font-semibold">Valor estimado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ordens.map((o) => (
+                          <tr key={`${o.classe}-${o.ticker}-${o.acao}`} className="border-t border-border">
+                            <td className="px-3 py-2">
+                              <span className="block font-display font-bold">{o.ticker}</span>
+                              <span className="block text-xs whitespace-pre-line text-muted-foreground">
+                                {o.nome || o.classe}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2">
+                              <span
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                                  o.acao === "Comprar"
+                                    ? "bg-success/15 text-success"
+                                    : "bg-destructive/15 text-destructive"
+                                }`}
+                              >
+                                {o.acao === "Comprar" ? (
+                                  <ArrowUpRight className="size-3.5" />
+                                ) : (
+                                  <ArrowDownRight className="size-3.5" />
+                                )}
+                                {o.acao}
+                              </span>
+                            </td>
+                            <td className="num px-3 py-2 text-right">
+                              {o.quantidade > 0
+                                ? o.quantidade.toLocaleString("pt-BR", { maximumFractionDigits: 4 })
+                                : "—"}
+                            </td>
+                            <td className="num px-3 py-2 text-right text-muted-foreground">
+                              {o.preco > 0 ? brl(o.preco, 2) : "—"}
+                            </td>
+                            <td className="num px-3 py-2 text-right font-semibold">{brl(o.valor, 2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <p className="border-t border-border px-3 py-2 text-xs text-muted-foreground">
+                  Quantidades estimadas pelo preço atual e arredondadas para baixo — valores podem variar na execução.
+                </p>
+              </div>
             </>
           )}
+
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
