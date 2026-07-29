@@ -236,7 +236,7 @@ function HomePage() {
       </section>
 
       <main className="mx-auto max-w-6xl px-6 pb-24">
-        <section className="-mt-10 grid gap-4 sm:grid-cols-3">
+        <section className="grid gap-4 pt-14 sm:grid-cols-3">
           {recursos.map((r) => (
             <article key={r.title} className="bg-card rounded-xl border p-5">
               <r.icon className="text-primary size-6" />
