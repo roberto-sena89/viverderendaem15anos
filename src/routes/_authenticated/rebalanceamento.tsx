@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAtivos } from "@/lib/data";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { corClasse } from "@/lib/cores-ativos";
 import { brl, classeDoAtivo, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
 
@@ -63,9 +64,16 @@ function Rebalanceamento() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {linhas.map((l) => (
-          <div key={l.classe} className="surface-card p-5">
-            <div className="flex items-center justify-between">
-              <p className="font-medium whitespace-pre-line">{l.classe}</p>
+          <div
+            key={l.classe}
+            className="surface-card p-5"
+            style={{ borderLeft: `4px solid ${corClasse(l.classe)}` }}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <p className="flex items-center gap-2 font-medium whitespace-pre-line">
+                <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(l.classe) }} />
+                {l.classe}
+              </p>
               <Badge
                 className={
                   l.status === "verde"
@@ -110,7 +118,12 @@ function Rebalanceamento() {
           <TableBody>
             {linhas.map((l) => (
               <TableRow key={l.classe}>
-                <TableCell className="font-medium whitespace-pre-line text-center">{l.classe}</TableCell>
+                <TableCell className="font-medium whitespace-pre-line text-center">
+                  <span className="inline-flex items-center gap-2">
+                    <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(l.classe) }} />
+                    {l.classe}
+                  </span>
+                </TableCell>
                 <TableCell className="text-center">{brl(l.valor)}</TableCell>
                 <TableCell className="text-center">{pct(l.atualPct)}</TableCell>
                 <TableCell className="text-center">{pct(l.idealPct)}</TableCell>

@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAportes, useAtivos, useDividendos } from "@/lib/data";
+import { corCategoria } from "@/lib/cores-ativos";
 import type { Ativo } from "@/lib/portfolio";
 import {
   brl,
@@ -52,19 +53,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   }),
   component: Dashboard,
 });
-
-const CHART_COLORS = [
-  "var(--color-chart-1)",
-  "var(--color-chart-3)",
-  "var(--color-chart-4)",
-  "var(--color-chart-5)",
-  "var(--color-chart-6)",
-  "var(--color-chart-7)",
-  "var(--color-chart-8)",
-  "var(--color-chart-9)",
-  "var(--color-chart-2)",
-  "var(--color-chart-10)",
-];
 
 const tooltipStyle = {
   backgroundColor: "var(--color-popover)",
@@ -392,7 +380,7 @@ function Dashboard() {
                       strokeWidth={2}
                     >
                       {porCategoria.map((_, i) => (
-                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                        <Cell key={i} fill={corCategoria(porCategoria[i].name)} />
                       ))}
                     </Pie>
                     <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} />
@@ -409,7 +397,7 @@ function Dashboard() {
               </div>
               <ul className="min-w-[15rem] flex-1 space-y-1.5 text-xs">
                 {porCategoria.map((c, i) => {
-                  const cor = CHART_COLORS[i % CHART_COLORS.length];
+                  const cor = corCategoria(c.name);
                   const percentual = totalComposicao > 0 ? (c.value / totalComposicao) * 100 : 0;
                   return (
                     <li

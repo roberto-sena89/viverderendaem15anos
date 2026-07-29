@@ -4,6 +4,7 @@ import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { corClasse } from "@/lib/cores-ativos";
 import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
 
@@ -148,7 +149,12 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
                     .filter((o) => o.acao !== "Manter")
                     .map((o) => (
                       <TableRow key={o.classe}>
-                        <TableCell className="font-medium">{o.classe}</TableCell>
+                        <TableCell className="font-medium whitespace-pre-line">
+                          <span className="inline-flex items-center gap-2">
+                            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(o.classe) }} />
+                            {o.classe}
+                          </span>
+                        </TableCell>
                         <TableCell>
                           <Badge
                             className={

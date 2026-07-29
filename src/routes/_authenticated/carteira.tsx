@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAtivos, useExcluir, useSalvarAtivo } from "@/lib/data";
+import { corCategoria } from "@/lib/cores-ativos";
 import { brl, categorias, pct, resumoCarteira, valorAtual, valorInvestido, type Ativo, type Categoria } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira")({
@@ -118,7 +119,21 @@ function CarteiraPage() {
                   </TableCell>
                   <TableCell className="max-w-52 truncate text-muted-foreground">{a.nome}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{a.categoria}</Badge>
+                    <Badge
+                      variant="secondary"
+                      className="gap-1.5 border"
+                      style={{
+                        borderColor: corCategoria(a.categoria),
+                        color: corCategoria(a.categoria),
+                        backgroundColor: `color-mix(in oklab, ${corCategoria(a.categoria)} 12%, transparent)`,
+                      }}
+                    >
+                      <span
+                        className="size-1.5 rounded-full"
+                        style={{ backgroundColor: corCategoria(a.categoria) }}
+                      />
+                      {a.categoria}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">{a.quantidade.toLocaleString("pt-BR")}</TableCell>
                   <TableCell className="text-right">{brl(a.precoMedio, 2)}</TableCell>
