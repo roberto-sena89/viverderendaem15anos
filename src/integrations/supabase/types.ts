@@ -158,6 +158,39 @@ export type Database = {
         }
         Relationships: []
       }
+      historico_precos: {
+        Row: {
+          classe: string
+          created_at: string
+          data: string
+          fonte: string
+          id: string
+          preco: number
+          ticker: string
+          updated_at: string
+        }
+        Insert: {
+          classe?: string
+          created_at?: string
+          data?: string
+          fonte?: string
+          id?: string
+          preco: number
+          ticker: string
+          updated_at?: string
+        }
+        Update: {
+          classe?: string
+          created_at?: string
+          data?: string
+          fonte?: string
+          id?: string
+          preco?: number
+          ticker?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       metas: {
         Row: {
           alvo: number
