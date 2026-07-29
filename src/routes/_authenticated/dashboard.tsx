@@ -466,31 +466,17 @@ function Dashboard() {
           </p>
         </header>
 
-        <div className="hidden grid-cols-[minmax(0,14rem)_repeat(5,minmax(0,1fr))_1.25rem] gap-x-4 border-b border-border bg-muted/30 px-4 py-2 text-[0.62rem] font-semibold tracking-wider text-muted-foreground uppercase md:grid">
-          <span>Classe / ativo</span>
-          <span className="text-right">Saldo</span>
-          <span className="text-right">Investido</span>
-          <span className="text-right">Lucro (R$)</span>
-          <span className="text-right">Rentab.</span>
-          <span className="text-right">% Carteira</span>
-          <span />
-        </div>
-
-        {categoriasComAtivos.length === 0 ? (
+        {ativos.length === 0 ? (
           <p className="px-4 py-10 text-center text-sm text-muted-foreground">
             Nenhum ativo cadastrado ainda.
           </p>
         ) : (
-          categoriasComAtivos.map((c) => (
-            <GrupoCategoria
-              key={c}
-              categoria={c}
-              ativos={ativos.filter((a) => a.categoria === c)}
-              totalCarteira={resumo.totalAtual}
-            />
-          ))
+          <div className="p-3">
+            <CarteiraGrupos ativos={ativos} />
+          </div>
         )}
       </section>
+
     </AppShell>
   );
 }
