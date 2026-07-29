@@ -113,9 +113,12 @@ const indexadorRendaFixa = (a: Ativo): string | null => {
     .replace(/[\u0300-\u036f]/g, "")
     .toUpperCase();
 
-  if (/\b(SELIC|CDI|DI\b|CDB|LCI|LCA|LFT|POS[- ]?FIXAD)/.test(texto)) return CLASSE_POS_FIXADO;
-  if (/(IPCA|NTN[- ]?B|INFLAC)/.test(texto)) return "Renda Fixa\nIPCA+";
-  if (/(PRE[- ]?FIXAD|PREFIXAD|LTN|NTN[- ]?F)/.test(texto)) return "Renda Fixa\nPré-fixado";
+  // Pré-fixado: "TESOURO PREFIXADO 2029", "TESOURO PRE-2032", LTN, NTN-F
+  if (/(PRE[- ]?FIXAD|PREFIXAD|\bPREF?\b|\bPRE[- ]?\d{4}|\bLTN\b|NTN[- ]?F)/.test(texto)) return "Renda Fixa\nPré-fixado";
+  // IPCA+: "TESOURO IPCA+ 2035", NTN-B, "B-2035"
+  if (/(IPCA|NTN[- ]?B|INFLAC|\bB[- ]?\d{4})/.test(texto)) return "Renda Fixa\nIPCA+";
+  // Pós-fixado: Selic / CDI / CDB / LCI / LCA / LFT
+  if (/(SELIC|\bCDI\b|\bDI\b|\bCDB\b|\bLCI\b|\bLCA\b|\bLFT\b|POS[- ]?FIXAD)/.test(texto)) return CLASSE_POS_FIXADO;
   return null;
 };
 
