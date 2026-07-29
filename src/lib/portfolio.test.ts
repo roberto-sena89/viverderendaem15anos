@@ -51,8 +51,8 @@ describe("classeDoAtivo · demais categorias", () => {
   const mapa: [Categoria, string][] = [
     ["Ações", "Ações"],
     ["ETF Brasil", "ETF (Brasil)"],
-    ["ETF EUA", "ETF (EUA)"],
-    ["ETF (Exterior)", "ETF (EUA)"],
+    ["ETF EUA", "ETF (Exterior)"],
+    ["ETF (Exterior)", "ETF (Exterior)"],
     ["BDR", "BDRs"],
     ["Stocks", "Stocks"],
     ["REITs", "REITs"],
