@@ -32,7 +32,11 @@ function Rebalanceamento() {
 
   const atual: Record<string, number> = {};
   for (const chave of Object.keys(alocacaoIdeal)) atual[chave] = 0;
-  for (const a of carteira) atual[classeDoAtivo(a)] += valorAtual(a);
+  for (const a of carteira) {
+    const classe = classeDoAtivo(a);
+    atual[classe] = (atual[classe] ?? 0) + valorAtual(a);
+  }
+
 
   const linhas = Object.entries(alocacaoIdeal).map(([classe, idealPct]) => {
     const valor = atual[classe] ?? 0;
