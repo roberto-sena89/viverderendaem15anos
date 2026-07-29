@@ -75,19 +75,10 @@ function Variacao({ valor }: { valor: number | null }) {
 
 function MercadoPage() {
   return (
-    <AppShell title="Conectar à B3" description="Dados de mercado ao vivo e importação do seu extrato da Área do Investidor">
-      <Tabs defaultValue="mercado" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="mercado">Mercado ao vivo</TabsTrigger>
-          <TabsTrigger value="importar">Importar carteira</TabsTrigger>
-        </TabsList>
-        <TabsContent value="mercado" className="space-y-6">
-          <MercadoAoVivo />
-        </TabsContent>
-        <TabsContent value="importar" className="space-y-6">
-          <ImportarB3 />
-        </TabsContent>
-      </Tabs>
+    <AppShell title="Conectar à B3" description="Dados de mercado ao vivo da B3">
+      <div className="space-y-6">
+        <MercadoAoVivo />
+      </div>
     </AppShell>
   );
 }
