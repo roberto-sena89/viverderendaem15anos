@@ -40,15 +40,53 @@ const BLOCOS: Bloco[] = [
 
 export function CarteiraRecomendada() {
   const total = BLOCOS.reduce((s, b) => s + b.linhas.reduce((x, l) => x + l.alvo, 0), 0);
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const { salvar } = useAlocacaoAlvo();
+  const { data: carteira = [] } = useAtivos();
+
+  const { impacto, patrimonio } = useMemo(() => {
+    const patrimonio = carteira.reduce((s, a) => s + valorAtual(a), 0);
+    const atualPorClasse: Record<string, number> = {};
+    for (const a of carteira) {
+      const classe = classeDoAtivo(a);
+      atualPorClasse[classe] = (atualPorClasse[classe] ?? 0) + valorAtual(a);
+    }
+    const impacto = Object.entries(alocacaoIdeal)
+      .map(([classe, alvoPct]) => {
+        const atualValor = atualPorClasse[classe] ?? 0;
+        const atualPct = patrimonio > 0 ? (atualValor / patrimonio) * 100 : 0;
+        const alvoValor = (patrimonio * alvoPct) / 100;
+        return { classe, atualPct, alvoPct, delta: alvoValor - atualValor };
+      })
+      .filter((l) => l.alvoPct > 0 || Math.abs(l.delta) > 0.5)
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+    return { impacto, patrimonio };
+  }, [carteira]);
+
+  const totalCompras = impacto.filter((l) => l.delta > 0).reduce((s, l) => s + l.delta, 0);
+  const totalVendas = impacto.filter((l) => l.delta < 0).reduce((s, l) => s - l.delta, 0);
+
+  function aplicar() {
+    salvar({ ...alocacaoIdeal });
+    setOpen(false);
+    toast.success("Alocação-alvo atualizada com a carteira recomendada.");
+    navigate({ to: "/rebalanceamento" });
+  }
 
   return (
     <Panel
       title="Carteira recomendada"
       hint="Perfil agressivo · referência de alocação-alvo por classe de ativo"
       action={
-        <span className="rounded-full border border-primary/30 bg-primary-soft px-3 py-1 font-display text-xs font-bold tracking-wide text-accent-foreground uppercase">
-          Total {total}%
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full border border-primary/30 bg-primary-soft px-3 py-1 font-display text-xs font-bold tracking-wide text-accent-foreground uppercase">
+            Total {total}%
+          </span>
+          <Button size="sm" className="h-9" onClick={() => setOpen(true)}>
+            <Wand2 className="size-4" /> Aplicar recomendações
+          </Button>
+        </div>
       }
       bodyClassName="p-0"
     >
