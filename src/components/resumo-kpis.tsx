@@ -246,7 +246,21 @@ export function ResumoKpis() {
 
   return (
     <>
+      <div className="flex justify-end">
+        <DialogTransacao>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="font-display gap-2 text-[13px] font-semibold"
+          >
+            <Plus className="size-4" />
+            Adicionar Lançamento
+          </Button>
+        </DialogTransacao>
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+
         <CartaoResumo titulo="Patrimônio total" icone={Wallet} onClick={() => setAberto(detalhePatrimonio)}>
           <div className="flex flex-wrap items-center gap-2">
             <p className="num font-display text-[1.6rem] leading-none font-bold">{brl(resumo.totalAtual, 2)}</p>
