@@ -131,7 +131,12 @@ function DividendosPage() {
         </Dialog>
       </div>
 
-      <PainelProventos proventos={proventos} carteira={carteira} totalCarteira={resumo.totalAtual} />
+      <PainelProventos
+        proventos={proventos}
+        carteira={carteira}
+        totalCarteira={resumo.totalAtual}
+        onRegistrar={() => setOpen(true)}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
@@ -707,10 +712,12 @@ function PainelProventos({
   proventos,
   carteira,
   totalCarteira,
+  onRegistrar,
 }: {
   proventos: Dividendo[];
   carteira: Ativo[];
   totalCarteira: number;
+  onRegistrar?: () => void;
 }) {
   const [modo, setModo] = useState<"mensal" | "anual">("mensal");
   const [periodo, setPeriodo] = useState("12m");
@@ -860,14 +867,34 @@ function PainelProventos({
                 <Bar dataKey="valor" fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+          ) : proventos.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-muted/30 px-6 text-center">
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <CircleDollarSign className="size-6!" />
+              </div>
+              <div className="space-y-1">
+                <p className="font-display text-lg font-semibold">Nenhum provento registrado</p>
+                <p className="mx-auto max-w-sm text-sm text-muted-foreground">
+                  Registre dividendos, JCP e rendimentos para acompanhar a evolução da sua renda passiva mês a mês.
+                </p>
+              </div>
+              {onRegistrar ? (
+                <Button onClick={onRegistrar} className="mt-1">
+                  <Plus className="size-4!" /> Registrar primeiro provento
+                </Button>
+              ) : null}
+            </div>
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-1 text-center">
               <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
-              <p className="text-sm text-muted-foreground">Ainda não há dados disponíveis para exibição.</p>
+              <p className="text-sm text-muted-foreground">
+                Ajuste os filtros de período, tipo ou ativo para visualizar seus proventos.
+              </p>
             </div>
           )}
         </div>
       </div>
+
     </div>
   );
 }
