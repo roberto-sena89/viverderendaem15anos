@@ -1,69 +1,146 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
- * Job diário: atualiza `preco_atual` de todos os ativos com a cotação pública
- * mais recente. Chamado pelo pg_cron com o header `apikey`.
+ * Job de sincronização de preços, chamado pelo pg_cron.
+ *
+ * Escopos:
+ * - `b3`      → ações, FIIs, ETFs e BDRs (Yahoo com fallback brapi.dev),
+ *               a cada 15 min durante o pregão (10h–18h, dias úteis).
+ * - `tesouro` → títulos públicos (API de dados abertos do Tesouro Direto),
+ *               uma vez por dia.
+ * - `todos`   → executa os dois escopos.
+ *
+ * Todo preço obtido é gravado em `historico_precos` (um registro por ativo/dia),
+ * garantindo série histórica mesmo que as fontes públicas fiquem indisponíveis.
  */
+
+type Escopo = "b3" | "tesouro" | "todos";
+
+function autorizado(request: Request) {
+  const esperado = process.env.CRON_SECRET ?? "";
+  const recebido =
+    request.headers.get("x-cron-secret") ??
+    (request.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+  if (esperado.length === 0 || recebido.length !== esperado.length) return false;
+  let diff = 0;
+  for (let i = 0; i < esperado.length; i++) diff |= esperado.charCodeAt(i) ^ recebido.charCodeAt(i);
+  return diff === 0;
+}
+
+/** Horário de Brasília, para respeitar a janela do pregão. */
+function agoraBrasilia() {
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo",
+    hour12: false,
+    weekday: "short",
+    hour: "2-digit",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const p = Object.fromEntries(fmt.formatToParts(new Date()).map((x) => [x.type, x.value]));
+  return {
+    data: `${p.year}-${p.month}-${p.day}`,
+    hora: Number(p.hour),
+    diaUtil: !["Sat", "Sun"].includes(String(p.weekday)),
+  };
+}
+
+const ehTesouro = (texto: string) => /TESOURO|SELIC|IPCA|PREFIXAD|NTN|LTN|LFT/i.test(texto);
+
 export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
-        // Segredo exclusivo de servidor (nunca enviado ao navegador).
-        const esperado = process.env.CRON_SECRET ?? "";
-        const recebido =
-          request.headers.get("x-cron-secret") ??
-          (request.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+        if (!autorizado(request)) return Response.json({ error: "unauthorized" }, { status: 401 });
 
-        const ok =
-          esperado.length > 0 &&
-          recebido.length === esperado.length &&
-          (() => {
-            let diff = 0;
-            for (let i = 0; i < esperado.length; i++) {
-              diff |= esperado.charCodeAt(i) ^ recebido.charCodeAt(i);
-            }
-            return diff === 0;
-          })();
+        const corpo = (await request.json().catch(() => ({}))) as { escopo?: Escopo; forcar?: boolean };
+        const escopo: Escopo = corpo.escopo ?? "todos";
+        const { data: hoje, hora, diaUtil } = agoraBrasilia();
+        const dentroDoPregao = diaUtil && hora >= 10 && hora < 18;
 
-        if (!ok) {
-          return Response.json({ error: "unauthorized" }, { status: 401 });
+        if (escopo === "b3" && !dentroDoPregao && !corpo.forcar) {
+          return Response.json({ ok: true, ignorado: "fora do pregão", hora, diaUtil });
         }
 
-        const [{ supabaseAdmin }, mercado] = await Promise.all([
+        const [{ supabaseAdmin }, mercado, tesouro] = await Promise.all([
           import("@/integrations/supabase/client.server"),
           import("@/lib/market.server"),
+          import("@/lib/tesouro.server"),
         ]);
 
-        const { data: ativos, error } = await supabaseAdmin.from("ativos").select("id, ticker");
+        const { data: ativos, error } = await supabaseAdmin.from("ativos").select("id, ticker, nome, categoria");
         if (error) return Response.json({ error: error.message }, { status: 500 });
 
-        const tickers = Array.from(new Set((ativos ?? []).map((a) => String(a.ticker))));
-        const precos = new Map<string, number>();
+        const lista = ativos ?? [];
+        const chaves = new Map<string, { ticker: string; texto: string; tesouro: boolean }>();
+        for (const a of lista) {
+          const ticker = String(a.ticker ?? "").trim();
+          if (!ticker) continue;
+          const texto = `${ticker} ${a.nome ?? ""} ${a.categoria ?? ""}`;
+          chaves.set(ticker, { ticker, texto, tesouro: ehTesouro(texto) });
+        }
+
+        const titulos = escopo === "b3" ? [] : await tesouro.listarTesouroDireto().catch(() => []);
+
+        const precos = new Map<string, { preco: number; fonte: string; classe: string }>();
         const falhas: string[] = [];
 
-        for (const ticker of tickers) {
+        for (const item of chaves.values()) {
+          const alvoTesouro = item.tesouro;
+          if (alvoTesouro && escopo === "b3") continue;
+          if (!alvoTesouro && escopo === "tesouro") continue;
+
           try {
-            const c = await mercado.buscarCotacao(ticker);
-            if (c.preco && c.preco > 0) precos.set(ticker, c.preco);
-            else falhas.push(ticker);
+            if (alvoTesouro) {
+              const titulo = tesouro.casarTitulo(item.texto, titulos);
+              const preco = titulo?.precoCompra ?? titulo?.precoVenda ?? null;
+              if (preco && preco > 0) precos.set(item.ticker, { preco, fonte: "tesouro-direto", classe: "tesouro" });
+              else falhas.push(item.ticker);
+            } else {
+              const c = await mercado.buscarCotacao(item.ticker);
+              if (c.preco && c.preco > 0) precos.set(item.ticker, { preco: c.preco, fonte: "yahoo/brapi", classe: "variavel" });
+              else falhas.push(item.ticker);
+            }
           } catch {
-            falhas.push(ticker);
+            falhas.push(item.ticker);
           }
         }
 
         let atualizados = 0;
-        for (const [ticker, preco] of precos) {
+        for (const [ticker, info] of precos) {
           const { error: upErr } = await supabaseAdmin
             .from("ativos")
-            .update({ preco_atual: preco })
+            .update({ preco_atual: info.preco })
             .eq("ticker", ticker);
           if (!upErr) atualizados++;
         }
 
+        // Série histórica: um registro por ativo por dia (o último preço do dia vence).
+        const historico = [...precos.entries()].map(([ticker, info]) => ({
+          ticker,
+          data: hoje,
+          preco: info.preco,
+          fonte: info.fonte,
+          classe: info.classe,
+          updated_at: new Date().toISOString(),
+        }));
+
+        let gravados = 0;
+        if (historico.length > 0) {
+          const { error: histErr } = await supabaseAdmin
+            .from("historico_precos")
+            .upsert(historico, { onConflict: "ticker,data" });
+          if (!histErr) gravados = historico.length;
+        }
+
         return Response.json({
           ok: true,
-          tickers: tickers.length,
+          escopo,
+          dentroDoPregao,
+          tickers: chaves.size,
           atualizados,
+          historicoGravado: gravados,
           falhas,
           executadoEm: new Date().toISOString(),
         });
