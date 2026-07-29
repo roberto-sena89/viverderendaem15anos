@@ -707,10 +707,12 @@ function PainelProventos({
   proventos,
   carteira,
   totalCarteira,
+  onRegistrar,
 }: {
   proventos: Dividendo[];
   carteira: Ativo[];
   totalCarteira: number;
+  onRegistrar?: () => void;
 }) {
   const [modo, setModo] = useState<"mensal" | "anual">("mensal");
   const [periodo, setPeriodo] = useState("12m");
