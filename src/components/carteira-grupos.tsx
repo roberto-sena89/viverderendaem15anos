@@ -214,14 +214,12 @@ export function CarteiraGrupos({
                             </TableCell>
                             <TableCell className="text-right font-semibold tabular-nums">{brl(saldo)}</TableCell>
                             <TableCell className="text-center">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span className="inline-grid size-8 place-items-center rounded-md bg-foreground text-sm font-bold text-background tabular-nums">
-                                    {n.toFixed(0)}
-                                  </span>
-                                </TooltipTrigger>
-                                <TooltipContent>Nota de aderência ao alvo e desempenho</TooltipContent>
-                              </Tooltip>
+                              <span
+                                title="Nota de aderência ao alvo e desempenho"
+                                className="inline-grid size-8 place-items-center rounded-md bg-foreground text-sm font-bold text-background tabular-nums"
+                              >
+                                {n.toFixed(0)}
+                              </span>
                             </TableCell>
                             <TableCell className="text-right tabular-nums">{pct(participacao)}</TableCell>
                             <TableCell className="text-right text-muted-foreground tabular-nums">{pct(idealAtivo)}</TableCell>
