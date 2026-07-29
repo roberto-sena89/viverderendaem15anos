@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Search, TrendingDown, TrendingUp } from "lucide-react";
+import { DialogDetalheAtivo } from "@/components/dialog-detalhe-ativo";
 import { Panel } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,34 +25,43 @@ function LinhaCotacao({
   valor,
   moeda,
   variacaoPercent,
+  onClick,
 }: {
   nome: string;
   descricao?: string | null;
   valor: number | null;
   moeda: string;
   variacaoPercent: number | null;
+  onClick: () => void;
 }) {
   const positivo = (variacaoPercent ?? 0) >= 0;
   const Icone = positivo ? TrendingUp : TrendingDown;
   return (
-    <li className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50">
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold">{nome}</span>
-        {descricao ? (
-          <span className="block truncate text-[0.7rem] text-muted-foreground">{descricao}</span>
-        ) : null}
-      </span>
-      <span className="shrink-0 text-right">
-        <span className="num block text-sm font-semibold">{preco(valor, moeda)}</span>
-        <span
-          className={`flex items-center justify-end gap-1 text-[0.7rem] font-medium ${
-            positivo ? "text-success" : "text-destructive"
-          }`}
-        >
-          <Icone className="size-3" />
-          {variacao(variacaoPercent)}
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={`Ver detalhes de ${nome}`}
+        className="flex w-full items-center justify-between gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-muted/50"
+      >
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold">{nome}</span>
+          {descricao ? (
+            <span className="block truncate text-[0.7rem] text-muted-foreground">{descricao}</span>
+          ) : null}
         </span>
-      </span>
+        <span className="shrink-0 text-right">
+          <span className="num block text-sm font-semibold">{preco(valor, moeda)}</span>
+          <span
+            className={`flex items-center justify-end gap-1 text-[0.7rem] font-medium ${
+              positivo ? "text-success" : "text-destructive"
+            }`}
+          >
+            <Icone className="size-3" />
+            {variacao(variacaoPercent)}
+          </span>
+        </span>
+      </button>
     </li>
   );
 }
@@ -62,6 +72,7 @@ export function WidgetCotacoes() {
   const cotacaoFn = useServerFn(cotacaoAtivo);
   const [texto, setTexto] = useState("");
   const [busca, setBusca] = useState("");
+  const [detalhe, setDetalhe] = useState<{ simbolo: string; rotulo: string } | null>(null);
 
   const { data: fita, isLoading } = useQuery({
     queryKey: ["fita-mercado"],
@@ -119,6 +130,7 @@ export function WidgetCotacoes() {
               valor={resultado.preco}
               moeda={resultado.moeda}
               variacaoPercent={resultado.variacaoDiaPercent}
+              onClick={() => setDetalhe({ simbolo: resultado.simbolo, rotulo: resultado.simbolo })}
             />
           </ul>
         ) : null
@@ -137,10 +149,22 @@ export function WidgetCotacoes() {
               valor={i.preco}
               moeda={i.moeda}
               variacaoPercent={i.variacaoPercent}
+              onClick={() => setDetalhe({ simbolo: i.simbolo, rotulo: i.nome })}
             />
           ))}
         </ul>
       )}
+
+      {detalhe ? (
+        <DialogDetalheAtivo
+          simbolo={detalhe.simbolo}
+          rotulo={detalhe.rotulo}
+          aberto
+          onOpenChange={(v) => {
+            if (!v) setDetalhe(null);
+          }}
+        />
+      ) : null}
     </Panel>
   );
 }
