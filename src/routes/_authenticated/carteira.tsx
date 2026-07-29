@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/carteira")({
       { property: "og:description", content: "Todos os seus ativos consolidados por categoria em uma única tabela." },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/carteira" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/carteira" }],
   }),
   component: CarteiraPage,
 });

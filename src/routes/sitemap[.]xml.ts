@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "https://viverderendaem15.lovable.app";
+const BASE_URL = "https://viverderendaem15anos.lovable.app";
 
 interface SitemapEntry {
   path: string;
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         // These are excluded here and disallowed in public/robots.txt.
 
         const entries: SitemapEntry[] = [
-          // "/" foi removida: agora redireciona para o app, não é conteúdo indexável.
+          { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/calculadora-juros-compostos", changefreq: "monthly", priority: "0.9" },
           { path: "/guia-liberdade-financeira", changefreq: "monthly", priority: "0.8" },
           { path: "/blog/melhores-livros-financas", changefreq: "monthly", priority: "0.8" },

@@ -50,7 +50,7 @@ export const Route = createFileRoute("/_authenticated/mercado")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/mercado" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/mercado" }],
   }),
   component: MercadoPage,
 });

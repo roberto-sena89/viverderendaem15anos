@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/planejador")({
       { property: "og:description", content: "Cenários otimista, base e conservador com inflação, aportes crescentes e taxa de retirada." },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/planejador" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/planejador" }],
   }),
   component: Planejador,
 });

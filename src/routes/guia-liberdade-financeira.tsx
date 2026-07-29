@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme";
 const TITLE = "Liberdade Financeira: Guia Passo a Passo (2026)";
 const DESCRIPTION =
   "Guia de liberdade financeira: quanto acumular, alocação de ativos, renda passiva com dividendos e o passo a passo para viver de renda.";
-const URL = "https://viverderendaem15.lovable.app/guia-liberdade-financeira";
+const URL = "https://viverderendaem15anos.lovable.app/guia-liberdade-financeira";
 
 export const Route = createFileRoute("/guia-liberdade-financeira")({
   head: () => ({

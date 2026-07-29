@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/estatisticas")({
       { property: "og:description", content: "Indicadores avançados de performance da carteira de investimentos." },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/estatisticas" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/estatisticas" }],
   }),
   component: Estatisticas,
 });

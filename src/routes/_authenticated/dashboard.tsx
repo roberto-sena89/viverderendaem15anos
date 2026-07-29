@@ -48,7 +48,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { property: "og:description", content: "Acompanhe patrimônio, rentabilidade e dividendos da sua carteira." },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/dashboard" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/dashboard" }],
   }),
   component: Dashboard,
 });

@@ -26,7 +26,7 @@ export const Route = createFileRoute("/recuperar-senha")({
       { name: "robots", content: "noindex, follow" },
     ],
     links: [
-      { rel: "canonical", href: "https://viverderendaem15.lovable.app/recuperar-senha" },
+      { rel: "canonical", href: "https://viverderendaem15anos.lovable.app/recuperar-senha" },
     ],
   }),
   component: RecuperarSenhaPage,
