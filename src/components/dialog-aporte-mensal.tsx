@@ -77,10 +77,11 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-2 text-xs">
-          <Calculator className="size-8!" />
+        <Button size="sm" className="h-9 gap-2 px-4 text-xs font-semibold">
+          <Calculator className="size-4!" />
           Calcular aporte mensal
         </Button>
+
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>

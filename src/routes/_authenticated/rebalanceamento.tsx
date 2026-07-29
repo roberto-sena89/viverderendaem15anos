@@ -49,10 +49,11 @@ function Rebalanceamento() {
     <AppShell title="Análise" description="Estratégia por classes de ativos">
       <AbasCarteira />
 
-      <div className="flex flex-wrap justify-end gap-2">
-        <DialogAlocacaoAlvo />
+      <div className="flex flex-wrap items-center justify-start gap-3">
         <DialogAporteMensal carteira={carteira} />
+        <DialogAlocacaoAlvo />
       </div>
+
 
       <RebalanceamentoSugerido carteira={carteira} />
 
