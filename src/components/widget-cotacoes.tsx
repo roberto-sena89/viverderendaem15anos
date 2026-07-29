@@ -72,6 +72,7 @@ export function WidgetCotacoes() {
   const cotacaoFn = useServerFn(cotacaoAtivo);
   const [texto, setTexto] = useState("");
   const [busca, setBusca] = useState("");
+  const [detalhe, setDetalhe] = useState<{ simbolo: string; rotulo: string } | null>(null);
 
   const { data: fita, isLoading } = useQuery({
     queryKey: ["fita-mercado"],
