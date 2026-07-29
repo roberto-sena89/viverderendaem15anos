@@ -27,14 +27,83 @@ export const Route = createFileRoute("/")({
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "Viver de Renda em 15 Anos",
-          url: URL,
-          inLanguage: "pt-BR",
-          description: DESCRIPTION,
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": `${URL}#organization`,
+              name: "Viver de Renda em 15 Anos",
+              url: URL,
+              description:
+                "Plataforma de controle de investimentos, dividendos e planejamento da independência financeira.",
+            },
+            {
+              "@type": "WebSite",
+              "@id": `${URL}#website`,
+              name: "Viver de Renda em 15 Anos",
+              url: URL,
+              inLanguage: "pt-BR",
+              description: DESCRIPTION,
+              publisher: { "@id": `${URL}#organization` },
+            },
+            {
+              "@type": "WebPage",
+              "@id": URL,
+              url: URL,
+              name: TITLE,
+              description: DESCRIPTION,
+              inLanguage: "pt-BR",
+              isPartOf: { "@id": `${URL}#website` },
+              about: { "@id": `${URL}#organization` },
+            },
+            {
+              "@type": "SoftwareApplication",
+              "@id": `${URL}#app`,
+              name: "Viver de Renda em 15 Anos",
+              applicationCategory: "FinanceApplication",
+              operatingSystem: "Web",
+              url: URL,
+              inLanguage: "pt-BR",
+              description: DESCRIPTION,
+              featureList: recursos.map((r) => `${r.title}: ${r.body}`),
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "BRL",
+              },
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": `${URL}#breadcrumb`,
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Início", item: URL },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Calculadora de juros compostos",
+                  item: `${URL}calculadora-juros-compostos`,
+                },
+                {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: "Guia de liberdade financeira",
+                  item: `${URL}guia-liberdade-financeira`,
+                },
+              ],
+            },
+            {
+              "@type": "FAQPage",
+              "@id": `${URL}#faq`,
+              mainEntity: faq.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ],
         }),
       },
     ],
+
   }),
   component: HomePage,
 });
@@ -56,6 +125,22 @@ const recursos = [
     body: "Alocação-alvo por classe, sugestão de onde investir o próximo aporte e um assistente de IA com o contexto da sua carteira.",
   },
 ];
+
+const faq: { q: string; a: string }[] = [
+  {
+    q: "O que é viver de renda?",
+    a: "É quando a renda gerada pelos seus investimentos (dividendos, juros e aluguéis) cobre o seu custo de vida, tornando o trabalho opcional.",
+  },
+  {
+    q: "Quanto preciso investir por mês para viver de renda em 15 anos?",
+    a: "Depende do seu custo de vida e da rentabilidade real da carteira. Use a calculadora de juros compostos para simular aportes mensais e prazos.",
+  },
+  {
+    q: "A plataforma é gratuita?",
+    a: "Sim. Você pode criar sua conta e controlar carteira, aportes e dividendos sem custo.",
+  },
+];
+
 
 function HomePage() {
   const navigate = useNavigate();
@@ -130,6 +215,19 @@ function HomePage() {
             </li>
           </ul>
         </section>
+
+        <section className="mt-14">
+          <h2 className="text-xl font-semibold tracking-tight">Perguntas frequentes</h2>
+          <dl className="mt-4 grid gap-4">
+            {faq.map((f) => (
+              <div key={f.q} className="bg-card rounded-xl border p-5">
+                <dt className="text-base font-semibold">{f.q}</dt>
+                <dd className="text-muted-foreground mt-2 text-sm leading-relaxed">{f.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
       </main>
     </div>
   );
