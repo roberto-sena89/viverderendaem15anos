@@ -88,7 +88,7 @@ function Rebalanceamento() {
                 </span>
               </div>
             </div>
-            <Progress value={Math.min(100, (l.atualPct / l.idealPct) * 100)} className="mt-3 h-2" />
+            <Progress value={l.idealPct > 0 ? Math.min(100, (l.atualPct / l.idealPct) * 100) : 0} className="mt-3 h-2" />
           </div>
         ))}
       </div>
