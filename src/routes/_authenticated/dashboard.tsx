@@ -276,9 +276,10 @@ function Dashboard() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild size="sm">
-              <Link to="/aportes">Registrar aporte</Link>
-            </Button>
+            <DialogTransacao>
+              <Button size="sm">Registrar aporte</Button>
+            </DialogTransacao>
+
             <Button asChild size="sm" variant="outline">
               <Link to="/carteira">Cadastrar ativo</Link>
             </Button>
