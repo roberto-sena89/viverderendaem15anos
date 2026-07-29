@@ -275,8 +275,14 @@ export function DialogTransacao({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Categoria *</Label>
-              <Select value={categoria} onValueChange={(v) => setCategoria(v as Categoria)}>
-                <SelectTrigger>
+              <Select
+                value={categoria}
+                onValueChange={(v) => {
+                  setCategoria(v as Categoria);
+                  limparErro("categoria");
+                }}
+              >
+                <SelectTrigger aria-invalid={!!erros.categoria}>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
@@ -287,6 +293,7 @@ export function DialogTransacao({
                   ))}
                 </SelectContent>
               </Select>
+              <MensagemErro id="erro-categoria" texto={erros.categoria} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="ticker">Nome ou código do ativo *</Label>
@@ -298,9 +305,15 @@ export function DialogTransacao({
                   placeholder={categoria ? "Ex.: BBAS3" : "Selecione uma categoria"}
                   disabled={!categoria}
                   value={ticker}
-                  onChange={(e) => setTicker(e.target.value)}
+                  aria-invalid={!!erros.ticker}
+                  aria-describedby={erros.ticker ? "erro-ticker" : undefined}
+                  onChange={(e) => {
+                    setTicker(e.target.value);
+                    limparErro("ticker");
+                  }}
                 />
               </div>
+              <MensagemErro id="erro-ticker" texto={erros.ticker} />
             </div>
           </div>
 
@@ -309,7 +322,20 @@ export function DialogTransacao({
               <Label htmlFor="data">
                 {tipo === "venda" ? "Data da venda *" : "Data da compra *"}
               </Label>
-              <Input id="data" type="date" value={data} onChange={(e) => setData(e.target.value)} />
+              <Input
+                id="data"
+                type="date"
+                max={HOJE()}
+                min={DATA_MINIMA}
+                value={data}
+                aria-invalid={!!erros.data}
+                aria-describedby={erros.data ? "erro-data" : undefined}
+                onChange={(e) => {
+                  setData(e.target.value);
+                  limparErro("data");
+                }}
+              />
+              <MensagemErro id="erro-data" texto={erros.data} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="preco">Preço *</Label>
@@ -318,8 +344,15 @@ export function DialogTransacao({
                 inputMode="decimal"
                 placeholder="R$ 0,00"
                 value={preco}
-                onChange={(e) => setPreco(e.target.value)}
+                aria-invalid={!!erros.preco}
+                aria-describedby={erros.preco ? "erro-preco" : undefined}
+                onChange={(e) => {
+                  setPreco(e.target.value);
+                  limparErro("preco");
+                }}
+                onBlur={(e) => setPreco(formatarMoeda(e.target.value))}
               />
+              <MensagemErro id="erro-preco" texto={erros.preco} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="qtd">Quantidade *</Label>
@@ -328,8 +361,14 @@ export function DialogTransacao({
                 inputMode="decimal"
                 placeholder="0"
                 value={quantidade}
-                onChange={(e) => setQuantidade(e.target.value)}
+                aria-invalid={!!erros.quantidade}
+                aria-describedby={erros.quantidade ? "erro-quantidade" : undefined}
+                onChange={(e) => {
+                  setQuantidade(e.target.value);
+                  limparErro("quantidade");
+                }}
               />
+              <MensagemErro id="erro-quantidade" texto={erros.quantidade} />
             </div>
           </div>
 
@@ -343,8 +382,15 @@ export function DialogTransacao({
                   inputMode="decimal"
                   placeholder="R$ 0,00"
                   value={corretagem}
-                  onChange={(e) => setCorretagem(e.target.value)}
+                  aria-invalid={!!erros.corretagem}
+                  aria-describedby={erros.corretagem ? "erro-corretagem" : undefined}
+                  onChange={(e) => {
+                    setCorretagem(e.target.value);
+                    limparErro("corretagem");
+                  }}
+                  onBlur={(e) => setCorretagem(formatarMoeda(e.target.value))}
                 />
+                <MensagemErro id="erro-corretagem" texto={erros.corretagem} />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="emolumentos">Emolumentos</Label>
@@ -353,8 +399,15 @@ export function DialogTransacao({
                   inputMode="decimal"
                   placeholder="R$ 0,00"
                   value={emolumentos}
-                  onChange={(e) => setEmolumentos(e.target.value)}
+                  aria-invalid={!!erros.emolumentos}
+                  aria-describedby={erros.emolumentos ? "erro-emolumentos" : undefined}
+                  onChange={(e) => {
+                    setEmolumentos(e.target.value);
+                    limparErro("emolumentos");
+                  }}
+                  onBlur={(e) => setEmolumentos(formatarMoeda(e.target.value))}
                 />
+                <MensagemErro id="erro-emolumentos" texto={erros.emolumentos} />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="impostos">Impostos</Label>
@@ -363,8 +416,15 @@ export function DialogTransacao({
                   inputMode="decimal"
                   placeholder="R$ 0,00"
                   value={impostos}
-                  onChange={(e) => setImpostos(e.target.value)}
+                  aria-invalid={!!erros.impostos}
+                  aria-describedby={erros.impostos ? "erro-impostos" : undefined}
+                  onChange={(e) => {
+                    setImpostos(e.target.value);
+                    limparErro("impostos");
+                  }}
+                  onBlur={(e) => setImpostos(formatarMoeda(e.target.value))}
                 />
+                <MensagemErro id="erro-impostos" texto={erros.impostos} />
               </div>
             </div>
           </div>
@@ -384,7 +444,13 @@ export function DialogTransacao({
                   list="instituicoes"
                   placeholder="Procure uma instituição"
                   value={instituicao}
-                  onChange={(e) => setInstituicao(e.target.value)}
+                  maxLength={60}
+                  aria-invalid={!!erros.instituicao}
+                  aria-describedby={erros.instituicao ? "erro-instituicao" : undefined}
+                  onChange={(e) => {
+                    setInstituicao(e.target.value);
+                    limparErro("instituicao");
+                  }}
                 />
                 <datalist id="instituicoes">
                   {instituicoesFiltradas.map((i) => (
@@ -392,6 +458,7 @@ export function DialogTransacao({
                   ))}
                 </datalist>
               </div>
+              <MensagemErro id="erro-instituicao" texto={erros.instituicao} />
             </div>
           </div>
 
@@ -402,8 +469,17 @@ export function DialogTransacao({
               maxLength={200}
               placeholder="Ex.: aporte mensal de julho"
               value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
+              aria-invalid={!!erros.descricao}
+              aria-describedby={erros.descricao ? "erro-descricao" : undefined}
+              onChange={(e) => {
+                setDescricao(e.target.value);
+                limparErro("descricao");
+              }}
             />
+            <div className="flex items-center justify-between gap-3">
+              <MensagemErro id="erro-descricao" texto={erros.descricao} />
+              <span className="ml-auto text-[0.7rem] text-muted-foreground">{descricao.length}/200</span>
+            </div>
           </div>
 
           <div className="flex justify-end">
