@@ -862,7 +862,6 @@ function PainelProventos({
                 <Bar dataKey="valor" fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          ) : (
           ) : proventos.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-muted/30 px-6 text-center">
               <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
