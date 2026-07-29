@@ -87,15 +87,6 @@ function DividendosPage() {
     <AppShell title="Proventos" description="Sua renda passiva em construção">
       <AbasCarteira />
 
-      <PainelProventos proventos={proventos} carteira={carteira} totalCarteira={resumo.totalAtual} />
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
-        <StatCard label="Média mensal" value={brl(recebidos12m / 12)} />
-        <StatCard label="DY estimado da carteira" value={pct(resumo.dyCarteira)} tone="positive" />
-        <StatCard label="Yield on cost" value={pct(yieldOnCost)} tone="positive" />
-      </div>
-
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -139,6 +130,16 @@ function DividendosPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <PainelProventos proventos={proventos} carteira={carteira} totalCarteira={resumo.totalAtual} />
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
+        <StatCard label="Média mensal" value={brl(recebidos12m / 12)} />
+        <StatCard label="DY estimado da carteira" value={pct(resumo.dyCarteira)} tone="positive" />
+        <StatCard label="Yield on cost" value={pct(yieldOnCost)} tone="positive" />
+      </div>
+
 
       <HistoricoMensal proventos={proventos} carteira={carteira} />
 
