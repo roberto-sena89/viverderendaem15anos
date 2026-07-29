@@ -41,9 +41,6 @@ export function AvisoSincronizacao({ compacto = false }: { compacto?: boolean })
           ) : null}
         </div>
       </div>
-      <Button asChild size="sm" variant="outline" className="shrink-0">
-        <Link to="/mercado">Atualizar carteira</Link>
-      </Button>
     </div>
   );
 }
