@@ -173,7 +173,7 @@ export function CarteiraGrupos({
                         <TableHead className="text-right">Quant.</TableHead>
                         <TableHead className="text-right">Preço médio</TableHead>
                         <TableHead className="text-right">Preço atual</TableHead>
-                        <TableHead className="text-right">Variação</TableHead>
+                        <TableHead className="text-right whitespace-pre-line">VARIAÇÃO{"\n"}(%)</TableHead>
                         <TableHead className="text-right">Rentabilidade</TableHead>
                         <TableHead className="text-right">Saldo</TableHead>
                         <TableHead className="text-center">Nota</TableHead>
