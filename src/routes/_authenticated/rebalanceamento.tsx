@@ -98,6 +98,7 @@ function Rebalanceamento() {
           <TableHeader>
             <TableRow>
               <TableHead>Classe</TableHead>
+              <TableHead className="text-right">Alocação em (R$)</TableHead>
               <TableHead className="text-right">Alocação atual</TableHead>
               <TableHead className="text-right">Alocação ideal</TableHead>
               <TableHead className="text-right">Diferença</TableHead>
@@ -108,6 +109,7 @@ function Rebalanceamento() {
             {linhas.map((l) => (
               <TableRow key={l.classe}>
                 <TableCell className="font-medium whitespace-pre-line">{l.classe}</TableCell>
+                <TableCell className="text-right">{brl(l.valor)}</TableCell>
                 <TableCell className="text-right">{pct(l.atualPct)}</TableCell>
                 <TableCell className="text-right">{pct(l.idealPct)}</TableCell>
                 <TableCell className={`text-right ${l.diff < 0 ? "text-success" : "text-destructive"}`}>{pct(l.diff)}</TableCell>
