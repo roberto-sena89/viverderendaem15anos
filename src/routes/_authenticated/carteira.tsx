@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAtivos, useExcluir, useSalvarAtivo } from "@/lib/data";
+import { corCategoria } from "@/lib/cores-ativos";
 import { brl, categorias, pct, resumoCarteira, valorAtual, valorInvestido, type Ativo, type Categoria } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira")({

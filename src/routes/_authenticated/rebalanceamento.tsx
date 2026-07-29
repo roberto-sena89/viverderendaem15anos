@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAtivos } from "@/lib/data";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { corClasse } from "@/lib/cores-ativos";
 import { brl, classeDoAtivo, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
 
