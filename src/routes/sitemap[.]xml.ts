@@ -24,6 +24,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/calculadora-juros-compostos", changefreq: "monthly", priority: "0.9" },
           { path: "/guia-liberdade-financeira", changefreq: "monthly", priority: "0.8" },
+          { path: "/blog/melhores-livros-financas", changefreq: "monthly", priority: "0.8" },
           { path: "/auth", changefreq: "monthly", priority: "0.5" },
         ];
 
