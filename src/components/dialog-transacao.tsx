@@ -38,9 +38,39 @@ const INSTITUICOES = [
 ];
 
 const numero = (v: string) => {
-  const n = Number(v.replace(/\./g, "").replace(",", "."));
+  const n = Number(String(v).trim().replace(/\s|R\$/g, "").replace(/\./g, "").replace(",", "."));
   return Number.isFinite(n) ? n : 0;
 };
+
+/** Aceita apenas dígitos, ponto e vírgula (formato monetário brasileiro). */
+const monetarioValido = (v: string) => /^\d{1,3}(\.\d{3})*(,\d{1,8})?$|^\d+([.,]\d{1,8})?$/.test(v.trim());
+
+/** Formata o campo para o padrão brasileiro (1.234,56) ao sair do input. */
+const formatarMoeda = (v: string) => {
+  if (!v.trim()) return "";
+  if (!monetarioValido(v)) return v;
+  return numero(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
+const HOJE = () => new Date().toISOString().slice(0, 10);
+const DATA_MINIMA = "1990-01-01";
+const LIMITE_VALOR = 1_000_000_000;
+
+type Erros = Partial<
+  Record<
+    "data" | "categoria" | "ticker" | "preco" | "quantidade" | "corretagem" | "emolumentos" | "impostos" | "instituicao" | "descricao",
+    string
+  >
+>;
+
+function MensagemErro({ id, texto }: { id: string; texto?: string }) {
+  if (!texto) return null;
+  return (
+    <p id={id} role="alert" className="text-[0.75rem] font-medium text-destructive">
+      {texto}
+    </p>
+  );
+}
 
 export function DialogTransacao({
   children,
@@ -62,6 +92,10 @@ export function DialogTransacao({
   const [impostos, setImpostos] = useState("");
   const [instituicao, setInstituicao] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [erros, setErros] = useState<Erros>({});
+
+  const limparErro = (campo: keyof Erros) =>
+    setErros((e) => (e[campo] ? { ...e, [campo]: undefined } : e));
 
   const criar = useCriarAporte();
   const atualizar = useAtualizarAporte();
@@ -89,6 +123,7 @@ export function DialogTransacao({
     setImpostos("");
     setInstituicao("");
     setDescricao("");
+    setErros({});
   }
 
   function preencher() {
@@ -104,15 +139,69 @@ export function DialogTransacao({
     setImpostos("");
     setInstituicao(aporte.corretora ?? "");
     setDescricao(aporte.observacoes ?? "");
+    setErros({});
+  }
+
+  /** Valida todos os campos antes de gravar no banco. */
+  function validar(): Erros {
+    const e: Erros = {};
+
+    if (!data) e.data = "Informe a data da operação.";
+    else if (Number.isNaN(Date.parse(data))) e.data = "Data inválida.";
+    else if (data > HOJE()) e.data = "A data não pode ser futura.";
+    else if (data < DATA_MINIMA) e.data = "Use uma data a partir de 01/01/1990.";
+
+    if (!categoria) e.categoria = "Selecione a categoria.";
+
+    const t = ticker.trim();
+    if (!t) e.ticker = "Informe o nome ou código do ativo.";
+    else if (t.length < 2) e.ticker = "Use ao menos 2 caracteres.";
+    else if (t.length > 20) e.ticker = "Máximo de 20 caracteres.";
+    else if (!/^[A-Za-z0-9À-ÿ.\-\s]+$/.test(t)) e.ticker = "Use apenas letras, números, ponto e hífen.";
+
+    if (!preco.trim()) e.preco = "Informe o preço.";
+    else if (!monetarioValido(preco)) e.preco = "Formato inválido. Use 1.234,56.";
+    else if (numero(preco) <= 0) e.preco = "O preço deve ser maior que zero.";
+    else if (numero(preco) > LIMITE_VALOR) e.preco = "Valor acima do limite permitido.";
+
+    if (!quantidade.trim()) e.quantidade = "Informe a quantidade.";
+    else if (!monetarioValido(quantidade)) e.quantidade = "Formato inválido. Use 10 ou 10,5.";
+    else if (numero(quantidade) <= 0) e.quantidade = "A quantidade deve ser maior que zero.";
+    else if (numero(quantidade) > LIMITE_VALOR) e.quantidade = "Quantidade acima do limite permitido.";
+
+    ([
+      ["corretagem", corretagem],
+      ["emolumentos", emolumentos],
+      ["impostos", impostos],
+    ] as const).forEach(([campo, valor]) => {
+      if (!valor.trim()) return;
+      if (!monetarioValido(valor)) e[campo] = "Formato inválido. Use 1.234,56.";
+      else if (numero(valor) < 0) e[campo] = "O custo não pode ser negativo.";
+      else if (numero(valor) > LIMITE_VALOR) e[campo] = "Valor acima do limite permitido.";
+    });
+
+    if (!instituicao.trim()) e.instituicao = "Informe a instituição.";
+    else if (instituicao.trim().length > 60) e.instituicao = "Máximo de 60 caracteres.";
+
+    if (descricao.trim().length > 200) e.descricao = "Máximo de 200 caracteres.";
+
+    return e;
   }
 
   function enviar(e: React.FormEvent) {
     e.preventDefault();
-    if (!categoria) return toast.error("Selecione a categoria.");
-    if (!ticker.trim()) return toast.error("Informe o nome ou código do ativo.");
-    if (numero(preco) <= 0) return toast.error("Informe um preço válido.");
-    if (numero(quantidade) <= 0) return toast.error("Informe uma quantidade válida.");
-    if (!instituicao.trim()) return toast.error("Informe a instituição.");
+
+    const validacao = validar();
+    setErros(validacao);
+    const pendentes = Object.values(validacao).filter(Boolean);
+    if (pendentes.length > 0) {
+      toast.error(
+        pendentes.length === 1
+          ? String(pendentes[0])
+          : `Corrija ${pendentes.length} campos antes de salvar.`,
+      );
+      return;
+    }
 
     const payload = {
       data,
