@@ -1,6 +1,35 @@
-export type Categoria = "Ações" | "FIIs" | "ETF Brasil" | "ETF EUA" | "Renda Fixa" | "Tesouro";
+export type Categoria =
+  | "Ações"
+  | "Fundos Imobiliários"
+  | "Tesouro Direto"
+  | "BDR"
+  | "ETF Brasil"
+  | "ETF (Exterior)"
+  | "Fiagro"
+  | "Fundos de Investimentos"
+  | "Renda Fixa"
+  | "Stocks"
+  | "REITs"
+  | "Criptomoedas"
+  // Valores legados já gravados no banco
+  | "FIIs"
+  | "ETF EUA"
+  | "Tesouro";
 
-export const categorias: Categoria[] = ["Ações", "FIIs", "ETF Brasil", "ETF EUA", "Renda Fixa", "Tesouro"];
+export const categorias: Categoria[] = [
+  "Ações",
+  "Fundos Imobiliários",
+  "Tesouro Direto",
+  "BDR",
+  "ETF Brasil",
+  "ETF (Exterior)",
+  "Fiagro",
+  "Fundos de Investimentos",
+  "Renda Fixa",
+  "Stocks",
+  "REITs",
+  "Criptomoedas",
+];
 
 export interface Ativo {
   id: string;
@@ -71,10 +100,30 @@ export const alocacaoIdeal: Record<string, number> = {
 
 /** Mapeia categorias da carteira para as classes da estratégia de longo prazo. */
 export const classeDoAtivo = (a: Ativo): keyof typeof alocacaoIdeal => {
-  if (a.categoria === "Tesouro") return "IPCA+";
-  if (a.categoria === "Renda Fixa") return "Pós-fixado";
-  if (a.categoria === "Ações") return "ETF Brasil";
-  return a.categoria as keyof typeof alocacaoIdeal;
+  switch (a.categoria) {
+    case "Tesouro":
+    case "Tesouro Direto":
+      return "IPCA+";
+    case "Renda Fixa":
+    case "Fundos de Investimentos":
+      return "Pós-fixado";
+    case "Ações":
+    case "ETF Brasil":
+      return "ETF Brasil";
+    case "ETF EUA":
+    case "ETF (Exterior)":
+    case "BDR":
+    case "Stocks":
+    case "Criptomoedas":
+      return "ETF EUA";
+    case "FIIs":
+    case "Fundos Imobiliários":
+    case "Fiagro":
+    case "REITs":
+      return "FIIs";
+    default:
+      return "Pós-fixado";
+  }
 };
 
 export const valorAtual = (a: Ativo) => a.quantidade * a.precoAtual;

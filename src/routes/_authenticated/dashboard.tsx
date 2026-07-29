@@ -16,6 +16,7 @@ import {
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
+import { DialogTransacao } from "@/components/dialog-transacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
@@ -276,9 +277,10 @@ function Dashboard() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild size="sm">
-              <Link to="/aportes">Registrar aporte</Link>
-            </Button>
+            <DialogTransacao>
+              <Button size="sm">Registrar aporte</Button>
+            </DialogTransacao>
+
             <Button asChild size="sm" variant="outline">
               <Link to="/carteira">Cadastrar ativo</Link>
             </Button>
