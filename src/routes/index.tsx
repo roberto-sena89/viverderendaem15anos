@@ -128,6 +128,10 @@ const recursos = [
   },
 ];
 
+const numeros: { valor: string; label: string }[] = [
+  { valor: "12+", valor2: "", label: "Classes de ativos suportadas" } as never,
+];
+
 const faq: { q: string; a: string }[] = [
   {
     q: "O que é viver de renda?",
