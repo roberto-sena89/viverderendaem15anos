@@ -95,6 +95,7 @@ export function DialogAlocacaoAlvo() {
                   inputMode="decimal"
                   aria-invalid={camposInvalidos.has(classe)}
                   value={valores[classe] ?? ""}
+                  onKeyDown={aoTeclar(classe)}
                   onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
                   className="h-9 w-24 text-right text-sm"
                 />
