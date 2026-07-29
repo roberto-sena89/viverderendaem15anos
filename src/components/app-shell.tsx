@@ -116,11 +116,11 @@ export function AppShell({
           <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand font-display text-[0.7rem] font-bold text-primary-foreground">
             I15
           </span>
-          <span className="font-brand text-sm leading-tight font-bold text-sidebar-foreground">
+          <span className="font-brand text-sm leading-tight font-bold text-sidebar-foreground uppercase">
             VIVER DE RENDA
             <br />
-            <span className="font-brand text-[0.65rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-              EM 15
+            <span className="font-brand text-[0.65rem] font-semibold tracking-[0.14em] text-muted-foreground">
+              EM 15 ANOS
             </span>
           </span>
         </Link>
