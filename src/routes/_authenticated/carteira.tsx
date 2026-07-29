@@ -118,7 +118,21 @@ function CarteiraPage() {
                   </TableCell>
                   <TableCell className="max-w-52 truncate text-muted-foreground">{a.nome}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{a.categoria}</Badge>
+                    <Badge
+                      variant="secondary"
+                      className="gap-1.5 border"
+                      style={{
+                        borderColor: corCategoria(a.categoria),
+                        color: corCategoria(a.categoria),
+                        backgroundColor: `color-mix(in oklab, ${corCategoria(a.categoria)} 12%, transparent)`,
+                      }}
+                    >
+                      <span
+                        className="size-1.5 rounded-full"
+                        style={{ backgroundColor: corCategoria(a.categoria) }}
+                      />
+                      {a.categoria}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">{a.quantidade.toLocaleString("pt-BR")}</TableCell>
                   <TableCell className="text-right">{brl(a.precoMedio, 2)}</TableCell>

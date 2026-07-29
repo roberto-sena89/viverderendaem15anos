@@ -63,9 +63,16 @@ function Rebalanceamento() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {linhas.map((l) => (
-          <div key={l.classe} className="surface-card p-5">
-            <div className="flex items-center justify-between">
-              <p className="font-medium whitespace-pre-line">{l.classe}</p>
+          <div
+            key={l.classe}
+            className="surface-card p-5"
+            style={{ borderLeft: `4px solid ${corClasse(l.classe)}` }}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <p className="flex items-center gap-2 font-medium whitespace-pre-line">
+                <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(l.classe) }} />
+                {l.classe}
+              </p>
               <Badge
                 className={
                   l.status === "verde"
