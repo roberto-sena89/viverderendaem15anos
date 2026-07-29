@@ -128,6 +128,7 @@ export function WidgetCotacoes() {
               valor={resultado.preco}
               moeda={resultado.moeda}
               variacaoPercent={resultado.variacaoDiaPercent}
+              onClick={() => setDetalhe({ simbolo: resultado.simbolo, rotulo: resultado.simbolo })}
             />
           </ul>
         ) : null
