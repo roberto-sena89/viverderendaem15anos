@@ -128,7 +128,7 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
       ) : (
         <>
           <p className="mb-4 flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-            <Sparkles className="mt-px size-3.5 shrink-0 text-primary" />
+            <Sparkles className="mt-px size-8! shrink-0 text-primary" />
             <span>
               {aporte > 0 ? (
                 <>
@@ -147,7 +147,7 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
 
           {equilibrada ? (
             <p className="flex items-center justify-center gap-2 py-8 text-sm text-success">
-              <CheckCircle2 className="size-4" /> Carteira dentro do alvo — nenhuma ordem necessária.
+              <CheckCircle2 className="size-8!" /> Carteira dentro do alvo — nenhuma ordem necessária.
             </p>
           ) : (
             <div className="overflow-x-auto">
@@ -176,9 +176,9 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
                             }
                           >
                             {o.acao === "Comprar" ? (
-                              <ArrowUpRight className="mr-1 size-3" />
+                              <ArrowUpRight className="mr-1 size-8!" />
                             ) : (
-                              <ArrowDownRight className="mr-1 size-3" />
+                              <ArrowDownRight className="mr-1 size-8!" />
                             )}
                             {o.acao}
                           </Badge>
