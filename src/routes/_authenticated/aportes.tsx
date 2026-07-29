@@ -5,6 +5,7 @@ import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { GraficoEvolucaoPatrimonio } from "@/components/grafico-evolucao-patrimonio";
+import { HistoricoMensalAportes } from "@/components/historico-mensal-aportes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -43,6 +44,8 @@ function AportesPage() {
 
 
       <GraficoEvolucaoPatrimonio />
+
+      <HistoricoMensalAportes />
 
       <div className="surface-card overflow-x-auto">
         <Table>
