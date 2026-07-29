@@ -222,7 +222,7 @@ export function CarteiraGrupos({
 
   return (
     <div className={compacto ? "space-y-2" : "space-y-4"}>
-      <div className="flex flex-wrap items-center justify-end gap-2">
+      <div className={`flex-wrap items-center justify-end gap-2 ${minimal ? "hidden" : "flex"}`}>
         <Button size="sm" variant={compacto ? "default" : "outline"} onClick={alternarCompacto} aria-pressed={compacto}>
           <Rows3 className="size-4" /> Modo compacto
         </Button>
