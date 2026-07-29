@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { DialogAlocacaoAlvo } from "@/components/dialog-alocacao-alvo";
+import { DialogAporteMensal } from "@/components/dialog-aporte-mensal";
 import { RebalanceamentoSugerido } from "@/components/rebalanceamento-sugerido";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -48,8 +49,9 @@ function Rebalanceamento() {
     <AppShell title="Análise" description="Estratégia por classes de ativos">
       <AbasCarteira />
 
-      <div className="flex justify-end">
+      <div className="flex flex-wrap justify-end gap-2">
         <DialogAlocacaoAlvo />
+        <DialogAporteMensal carteira={carteira} />
       </div>
 
       <RebalanceamentoSugerido carteira={carteira} />
