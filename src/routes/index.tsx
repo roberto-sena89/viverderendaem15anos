@@ -203,7 +203,7 @@ function HomePage() {
         <div className="from-background via-background/85 to-background/40 absolute inset-0 -z-10 bg-gradient-to-r" />
         <div className="from-background absolute inset-0 -z-10 bg-gradient-to-t via-transparent to-transparent" />
 
-        <div className="mx-auto max-w-6xl px-6 pt-36 pb-24 sm:pt-44 sm:pb-32">
+        <div className="mx-auto max-w-6xl px-6 pt-32 pb-20 sm:pt-40 sm:pb-24">
           <span className="border-primary/40 bg-primary/10 text-primary inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase">
             <Sparkles className="size-3.5" /> Carteira, dividendos e independência
           </span>
