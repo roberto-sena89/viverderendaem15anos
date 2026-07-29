@@ -17,6 +17,30 @@ import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
 
 const ATALHOS = [500, 1000, 2000, 5000];
+const MIN_APORTE = 1;
+const MAX_APORTE = 10_000_000;
+
+const FORMATO_MOEDA = /^\d{1,3}(\.\d{3})*(,\d{1,2})?$|^\d+([.,]\d{1,2})?$/;
+
+/** Valida o texto digitado e devolve o valor numérico ou uma mensagem de erro. */
+function validarAporte(entrada: string): { valor: number; erro: string | null } {
+  const texto = entrada.trim();
+  if (!texto) return { valor: 0, erro: null };
+  if (!/^[\d.,\s]+$/.test(texto)) return { valor: 0, erro: "Use apenas números, ponto e vírgula (ex.: 1.500,00)." };
+  if (!FORMATO_MOEDA.test(texto.replace(/\s/g, "")))
+    return { valor: 0, erro: "Formato inválido. Use o padrão de moeda, ex.: 1.500,00." };
+
+  const normalizado = texto.replace(/\s/g, "").includes(",")
+    ? texto.replace(/\s/g, "").replace(/\./g, "").replace(",", ".")
+    : texto.replace(/\s/g, "");
+  const valor = Number(normalizado);
+
+  if (!Number.isFinite(valor)) return { valor: 0, erro: "Valor inválido." };
+  if (valor < MIN_APORTE) return { valor: 0, erro: `O aporte mínimo é ${brl(MIN_APORTE)}.` };
+  if (valor > MAX_APORTE) return { valor: 0, erro: `O aporte máximo é ${brl(MAX_APORTE)}.` };
+
+  return { valor: Math.round(valor * 100) / 100, erro: null };
+}
 
 /**
  * Calcula, para um aporte informado, quanto investir em cada classe de ativo
@@ -26,8 +50,11 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   const { alvo } = useAlocacaoAlvo();
   const [aberto, setAberto] = useState(false);
   const [texto, setTexto] = useState("1000");
+  const [tocado, setTocado] = useState(false);
 
-  const aporte = Math.max(0, Number(texto.replace(/\./g, "").replace(",", ".")) || 0);
+  const { valor: aporte, erro } = validarAporte(texto);
+  const mostrarErro = tocado && Boolean(erro);
+
 
   const { linhas, totalAtual, totalFuturo } = useMemo(() => {
     const atualPorClasse: Record<string, number> = {};
@@ -97,13 +124,37 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
           <Input
             id="aporte-mensal"
             inputMode="decimal"
+            maxLength={15}
+            placeholder="1.000,00"
             value={texto}
-            onChange={(e) => setTexto(e.target.value)}
-            className="h-10 text-right"
+            aria-invalid={mostrarErro}
+            aria-describedby="aporte-mensal-ajuda"
+            onChange={(e) => {
+              setTocado(true);
+              setTexto(e.target.value);
+            }}
+            onBlur={() => setTocado(true)}
+            className={`h-10 text-right ${mostrarErro ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
           />
+          <p
+            id="aporte-mensal-ajuda"
+            className={`text-xs ${mostrarErro ? "text-destructive" : "text-muted-foreground"}`}
+          >
+            {mostrarErro ? erro : `Entre ${brl(MIN_APORTE)} e ${brl(MAX_APORTE)} · use vírgula para centavos.`}
+          </p>
           <div className="flex flex-wrap gap-2 pt-1">
             {ATALHOS.map((v) => (
-              <Button key={v} type="button" variant="outline" size="sm" className="text-xs" onClick={() => setTexto(String(v))}>
+              <Button
+                key={v}
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() => {
+                  setTocado(false);
+                  setTexto(String(v));
+                }}
+              >
                 {brl(v)}
               </Button>
             ))}
@@ -111,8 +162,11 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
         </div>
 
         {aporte <= 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">Informe um valor para ver a distribuição.</p>
+          <p className="py-6 text-center text-sm text-muted-foreground">
+            {erro ? "Corrija o valor informado para ver a distribuição." : "Informe um valor para ver a distribuição."}
+          </p>
         ) : (
+
           <>
             <div className="max-h-[45vh] overflow-auto">
               <Table>
