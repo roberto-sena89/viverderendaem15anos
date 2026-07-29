@@ -69,8 +69,8 @@ export function CarteiraGrupos({
   onExcluir,
 }: {
   ativos: Ativo[];
-  onEditar: (a: Ativo) => void;
-  onExcluir: (a: Ativo) => void;
+  onEditar?: (a: Ativo) => void;
+  onExcluir?: (a: Ativo) => void;
 }) {
   const { alvo } = useAlocacaoAlvo();
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
@@ -241,6 +241,7 @@ export function CarteiraGrupos({
                               </span>
                             </TableCell>
                             <TableCell className="text-center">
+                              {onEditar && onExcluir ? (
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button size="icon" variant="ghost" aria-label={`Opções de ${a.ticker}`}>
@@ -248,14 +249,15 @@ export function CarteiraGrupos({
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onSelect={() => onEditar(a)}>
+                                  <DropdownMenuItem onSelect={() => onEditar?.(a)}>
                                     <Pencil className="size-4" /> Editar ativo
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir(a)}>
+                                  <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir?.(a)}>
                                     <Trash2 className="size-4" /> Excluir ativo
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
+                              ) : null}
                             </TableCell>
                           </TableRow>
                         );
