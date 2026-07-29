@@ -149,3 +149,14 @@ export const sincronizarPrecos = createServerFn({ method: "POST" })
 
     return { atualizados, falhas, total: (ativos ?? []).length };
   });
+
+export const panoramaMercado = createServerFn({ method: "GET" })
+  .inputValidator((d?: { periodo?: string }) => ({
+    periodo: (["1D", "7D", "30D", "6M", "1A", "5A"].includes(String(d?.periodo))
+      ? String(d?.periodo)
+      : "1D") as "1D" | "7D" | "30D" | "6M" | "1A" | "5A",
+  }))
+  .handler(async ({ data }) => {
+    const mercado = await import("@/lib/market.server");
+    return mercado.buscarPanoramaMercado(data.periodo);
+  });

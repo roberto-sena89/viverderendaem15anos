@@ -778,3 +778,109 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
     atualizadoEm: new Date().toISOString(),
   };
 }
+
+/* ------------------------------------------------------------------
+ * Panorama do mercado: índice Ibovespa com série por período e as
+ * maiores altas / maiores baixas do pregão.
+ * ------------------------------------------------------------------ */
+
+export type PeriodoPanorama = "1D" | "7D" | "30D" | "6M" | "1A" | "5A";
+
+export type ItemVariacao = {
+  ticker: string;
+  nome: string;
+  logo: string | null;
+  preco: number | null;
+  variacaoPercent: number;
+};
+
+export type PanoramaMercado = {
+  periodo: PeriodoPanorama;
+  indice: {
+    nome: string;
+    pontos: number | null;
+    variacaoPercent: number | null;
+    fechamentoAnterior: number | null;
+    abertura: number | null;
+  };
+  serie: { rotulo: string; valor: number }[];
+  altas: ItemVariacao[];
+  baixas: ItemVariacao[];
+  atualizadoEm: string;
+};
+
+const FAIXAS: Record<PeriodoPanorama, { range: string; interval: string }> = {
+  "1D": { range: "1d", interval: "5m" },
+  "7D": { range: "7d", interval: "30m" },
+  "30D": { range: "1mo", interval: "1d" },
+  "6M": { range: "6mo", interval: "1d" },
+  "1A": { range: "1y", interval: "1wk" },
+  "5A": { range: "5y", interval: "1mo" },
+};
+
+export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Promise<PanoramaMercado> {
+  const faixa = FAIXAS[periodo] ?? FAIXAS["1D"];
+
+  const indicePromise = getJson<ChartResponse>(
+    `${YAHOO}/v8/finance/chart/%5EBVSP?range=${faixa.range}&interval=${faixa.interval}`,
+    20000,
+  ).catch(() => null);
+
+  const listaPromise = getJson<BrapiLista>(
+    "https://brapi.dev/api/quote/list?type=stock&sortBy=volume&sortOrder=desc&limit=150",
+    20000,
+  ).catch(() => null);
+
+  const [dadosIndice, lista] = await Promise.all([indicePromise, listaPromise]);
+
+  const r = dadosIndice?.chart.result?.[0];
+  const closes = r?.indicators.quote?.[0]?.close ?? r?.indicators.adjclose?.[0]?.adjclose ?? [];
+  const pontos: { rotulo: string; valor: number }[] = [];
+  (r?.timestamp ?? []).forEach((t, i) => {
+    const v = closes[i];
+    if (typeof v !== "number") return;
+    const d = new Date(t * 1000);
+    const rotulo =
+      periodo === "1D"
+        ? d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" })
+        : d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" });
+    pontos.push({ rotulo, valor: v });
+  });
+
+  const preco = r?.meta.regularMarketPrice ?? pontos[pontos.length - 1]?.valor ?? null;
+  const anterior = r?.meta.previousClose ?? r?.meta.chartPreviousClose ?? null;
+  const abertura = pontos[0]?.valor ?? null;
+
+  const candidatos = (lista?.stocks ?? [])
+    .filter((s) => {
+      const t = s.stock?.toUpperCase() ?? "";
+      return /^[A-Z]{4}(3|4|5|6|11)$/.test(t) && typeof s.change === "number" && typeof s.close === "number";
+    })
+    .map<ItemVariacao>((s) => ({
+      ticker: s.stock.toUpperCase(),
+      nome: s.name || s.stock,
+      logo: s.logo ?? null,
+      preco: s.close ?? null,
+      variacaoPercent: Number(s.change),
+    }));
+
+  const ordenados = [...candidatos].sort((a, b) => b.variacaoPercent - a.variacaoPercent);
+
+  return {
+    periodo,
+    indice: {
+      nome: "Ibovespa",
+      pontos: preco,
+      variacaoPercent: preco !== null && anterior ? ((preco - anterior) / anterior) * 100 : null,
+      fechamentoAnterior: anterior,
+      abertura,
+    },
+    serie: pontos,
+    altas: ordenados.filter((a) => a.variacaoPercent > 0).slice(0, 6),
+    baixas: ordenados
+      .filter((a) => a.variacaoPercent < 0)
+      .sort((a, b) => a.variacaoPercent - b.variacaoPercent)
+      .slice(0, 6),
+    atualizadoEm: new Date().toISOString(),
+  };
+}
