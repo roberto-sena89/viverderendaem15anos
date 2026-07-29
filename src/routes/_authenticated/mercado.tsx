@@ -32,7 +32,7 @@ import { cotacaoAtivo, historicoAtivo, painelB3, sincronizarPrecos } from "@/lib
 import { brl, pct } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/mercado")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { ativo?: string } => ({
     ativo: typeof search.ativo === "string" ? search.ativo.slice(0, 20).toUpperCase() : undefined,
   }),
   head: () => ({
