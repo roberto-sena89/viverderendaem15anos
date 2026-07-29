@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -56,6 +56,19 @@ export function DialogAlocacaoAlvo() {
   const somaOk = Math.abs(restante) < 0.01;
   const valido = somaOk && camposInvalidos.size === 0;
 
+  /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
+  const aoTeclar = (classe: string) => (e: KeyboardEvent<HTMLInputElement>) => {
+    const passo =
+      e.key === "PageUp" || e.key === "PageDown" ? 5 : e.shiftKey ? 1 : 0.01;
+    const sinal =
+      e.key === "ArrowUp" || e.key === "PageUp" ? 1 : e.key === "ArrowDown" || e.key === "PageDown" ? -1 : 0;
+    if (sinal === 0) return;
+    e.preventDefault();
+    const atual = paraNumero(valores[classe] ?? "") || 0;
+    const novo = Math.min(100, Math.max(0, Math.round((atual + sinal * passo) * 100) / 100));
+    setValores((v) => ({ ...v, [classe]: novo.toFixed(2).replace(".", ",") }));
+  };
+
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
       <DialogTrigger asChild>
@@ -82,6 +95,7 @@ export function DialogAlocacaoAlvo() {
                   inputMode="decimal"
                   aria-invalid={camposInvalidos.has(classe)}
                   value={valores[classe] ?? ""}
+                  onKeyDown={aoTeclar(classe)}
                   onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
                   className="h-9 w-24 text-right text-sm"
                 />
