@@ -210,7 +210,7 @@ export function HistoricoMensalAportes() {
                         <table className="w-full text-xs">
                           <thead>
                             <tr className="border-b border-border text-[0.6rem] tracking-[0.06em] text-muted-foreground uppercase">
-                              <th className="py-1.5 pr-2 text-left font-semibold">Período</th>
+                              <th className="py-1.5 pr-2 text-left font-semibold">DATA</th>
                               <th className="py-1.5 pr-2 text-left font-semibold">Ativo</th>
                               <th className="py-1.5 pr-2 text-left font-semibold">Categoria</th>
                               <th className="py-1.5 pr-2 text-left font-semibold">Corretora</th>
