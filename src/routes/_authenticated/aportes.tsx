@@ -39,13 +39,8 @@ function AportesPage() {
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
 
-      <div className="flex justify-end">
-        <DialogTransacao>
-          <Button size="sm">
-            <Plus className="size-8!" /> Nova transação
-          </Button>
-        </DialogTransacao>
-      </div>
+
+
 
       <GraficoEvolucaoPatrimonio />
 
