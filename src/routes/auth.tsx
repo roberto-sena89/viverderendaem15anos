@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import investidorImg from "@/assets/investidor-computador.jpg";
+import logoIcone from "@/assets/logo-icone.png";
 
 
 const REDIRECT_KEY = "auth:redirect";
@@ -177,9 +178,13 @@ function AuthPage() {
         <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/55 to-black/30" />
 
         <div className="relative flex max-w-md items-center gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-brand font-display text-sm font-bold text-primary-foreground">
-            15
-          </span>
+          <img
+            src={logoIcone}
+            alt="Viver de Renda em 15 Anos"
+            width={44}
+            height={44}
+            className="size-11 shrink-0 rounded-xl object-contain"
+          />
           <span className="font-display text-[0.95rem] leading-tight font-semibold tracking-[0.16em] uppercase [text-shadow:0_2px_12px_rgb(0_0_0/0.6)]">
             Viver de renda
             <br />
