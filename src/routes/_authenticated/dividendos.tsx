@@ -100,7 +100,7 @@ function DividendosPage() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="size-4" /> Novo provento
+              <Plus className="size-8" /> Novo provento
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
@@ -228,7 +228,7 @@ function DividendosPage() {
                         })
                       }
                     >
-                      <Trash2 className="size-4 text-destructive" />
+                      <Trash2 className="size-8 text-destructive" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -343,7 +343,7 @@ function FiltroPeriodo({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="h-9 gap-2 text-xs font-normal" aria-label="Período dos proventos">
-          <Calendar className="size-3.5 shrink-0 text-muted-foreground" />
+          <Calendar className="size-8 shrink-0 text-muted-foreground" />
           {rotuloPeriodo(valor)}
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </Button>
@@ -457,7 +457,7 @@ function FiltroAtivos({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="h-9 gap-2 text-xs font-normal" aria-label="Ativos">
-          <CircleDollarSign className="size-3.5 shrink-0 text-muted-foreground" />
+          <CircleDollarSign className="size-8 shrink-0 text-muted-foreground" />
           {valor === "todos" ? "Ativos" : valor}
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </Button>
@@ -688,7 +688,7 @@ function SeletorFiltro({
   return (
     <Select value={valor} onValueChange={onChange}>
       <SelectTrigger aria-label={rotuloAcessivel} className="h-9 w-[10.5rem] gap-2 text-xs">
-        <Icone className="size-3.5 shrink-0 text-muted-foreground" />
+        <Icone className="size-8 shrink-0 text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
