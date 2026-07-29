@@ -118,7 +118,12 @@ function Rebalanceamento() {
           <TableBody>
             {linhas.map((l) => (
               <TableRow key={l.classe}>
-                <TableCell className="font-medium whitespace-pre-line text-center">{l.classe}</TableCell>
+                <TableCell className="font-medium whitespace-pre-line text-center">
+                  <span className="inline-flex items-center gap-2">
+                    <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(l.classe) }} />
+                    {l.classe}
+                  </span>
+                </TableCell>
                 <TableCell className="text-center">{brl(l.valor)}</TableCell>
                 <TableCell className="text-center">{pct(l.atualPct)}</TableCell>
                 <TableCell className="text-center">{pct(l.idealPct)}</TableCell>

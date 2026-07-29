@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { corClasse } from "@/lib/cores-ativos";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
@@ -183,7 +184,12 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                 <TableBody>
                   {linhas.map((l) => (
                     <TableRow key={l.classe}>
-                      <TableCell className="font-medium whitespace-pre-line">{l.classe}</TableCell>
+                      <TableCell className="font-medium whitespace-pre-line">
+                        <span className="inline-flex items-center gap-2">
+                          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(l.classe) }} />
+                          {l.classe}
+                        </span>
+                      </TableCell>
                       <TableCell className="num text-right text-muted-foreground">{pct(l.alvoPct)}</TableCell>
                       <TableCell className="num text-right text-muted-foreground">{pct(l.atualPct)}</TableCell>
                       <TableCell className="num text-right font-semibold">{brl(l.valor, 2)}</TableCell>
