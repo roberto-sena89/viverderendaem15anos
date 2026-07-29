@@ -42,7 +42,7 @@ function AportesPage() {
       <div className="flex justify-end">
         <DialogTransacao>
           <Button size="sm">
-            <Plus className="size-4" /> Nova transação
+            <Plus className="size-8!" /> Nova transação
           </Button>
         </DialogTransacao>
       </div>
@@ -81,7 +81,7 @@ function AportesPage() {
                   <div className="flex justify-end gap-1">
                     <DialogTransacao aporte={a}>
                       <Button size="icon" variant="ghost" aria-label={`Editar transação ${a.ticker}`}>
-                        <Pencil className="size-4" />
+                        <Pencil className="size-8!" />
                       </Button>
                     </DialogTransacao>
                     <Button
@@ -97,7 +97,7 @@ function AportesPage() {
                         });
                       }}
                     >
-                      <Trash2 className="size-4 text-destructive" />
+                      <Trash2 className="size-8! text-destructive" />
                     </Button>
                   </div>
                 </TableCell>
