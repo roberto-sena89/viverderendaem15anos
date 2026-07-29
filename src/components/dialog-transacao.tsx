@@ -207,7 +207,7 @@ export function DialogTransacao({
       data,
       corretora: instituicao.trim(),
       ticker: ticker.trim().toUpperCase(),
-      categoria,
+      categoria: categoria as Categoria,
       quantidade: tipo === "venda" ? -numero(quantidade) : numero(quantidade),
       preco: numero(preco),
       taxas: custos,
