@@ -1,27 +1,136 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, LineChart, PiggyBank, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme";
+import { supabase } from "@/integrations/supabase/client";
+
+const TITLE = "Viver de Renda em 15 Anos — Carteira, Dividendos e Independência";
+const DESCRIPTION =
+  "Controle a sua carteira de ações, FIIs e renda fixa, acompanhe dividendos, rebalanceie a alocação e projete em quantos anos você vive de renda.";
+const URL = "https://viverderendaem15anos.lovable.app/";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: () => {
-    throw redirect({ to: "/dashboard" });
-  },
   head: () => ({
     meta: [
-      { title: "Viver de Renda em 15 Anos — Carteira e Renda Passiva" },
-      {
-        name: "description",
-        content:
-          "Plataforma para controlar carteira, dividendos e projetar a sua independência financeira.",
-      },
-      { property: "og:title", content: "Viver de Renda em 15 Anos — Carteira e Renda Passiva" },
-      {
-        property: "og:description",
-        content: "Controle sua carteira, acompanhe dividendos e projete sua liberdade financeira.",
-      },
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://viverderendaem15anos.lovable.app/" },
+      { property: "og:url", content: URL },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/" }],
+    links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Viver de Renda em 15 Anos",
+          url: URL,
+          inLanguage: "pt-BR",
+          description: DESCRIPTION,
+        }),
+      },
+    ],
   }),
-  component: () => null,
+  component: HomePage,
 });
+
+const recursos = [
+  {
+    icon: PiggyBank,
+    title: "Carteira consolidada",
+    body: "Registre aportes de ações, FIIs, ETFs, renda fixa e cripto e acompanhe preço médio, lucro e patrimônio em um só lugar.",
+  },
+  {
+    icon: LineChart,
+    title: "Dividendos e rentabilidade",
+    body: "Histórico de proventos, yield on cost e evolução do patrimônio ano a ano, comparados aos principais índices.",
+  },
+  {
+    icon: Sparkles,
+    title: "Rebalanceamento e IA",
+    body: "Alocação-alvo por classe, sugestão de onde investir o próximo aporte e um assistente de IA com o contexto da sua carteira.",
+  },
+];
+
+function HomePage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let ativo = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (ativo && data.session) navigate({ to: "/dashboard" });
+    });
+    return () => {
+      ativo = false;
+    };
+  }, [navigate]);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
+        <span className="text-sm font-semibold tracking-tight">VIVER DE RENDA EM 15 ANOS</span>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button asChild size="sm">
+            <Link to="/auth">Entrar</Link>
+          </Button>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-5xl px-6 pb-24">
+        <section className="py-14">
+          <h1 className="font-display max-w-3xl text-4xl leading-tight font-bold tracking-tight text-balance sm:text-5xl">
+            Organize a sua carteira e descubra em quantos anos você vive de renda
+          </h1>
+          <p className="text-muted-foreground mt-5 max-w-2xl text-lg">{DESCRIPTION}</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button asChild size="lg">
+              <Link to="/auth">
+                Começar agora <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link to="/calculadora-juros-compostos">Calculadora de juros compostos</Link>
+            </Button>
+          </div>
+        </section>
+
+        <section className="grid gap-4 sm:grid-cols-3">
+          {recursos.map((r) => (
+            <article key={r.title} className="bg-card rounded-xl border p-5">
+              <r.icon className="text-primary size-6" />
+              <h2 className="mt-4 text-base font-semibold">{r.title}</h2>
+              <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{r.body}</p>
+            </article>
+          ))}
+        </section>
+
+        <section className="mt-14">
+          <h2 className="text-xl font-semibold tracking-tight">Conteúdo gratuito</h2>
+          <ul className="mt-4 grid gap-2 text-sm">
+            <li>
+              <Link className="text-primary hover:underline" to="/guia-liberdade-financeira">
+                Liberdade financeira: guia passo a passo
+              </Link>
+            </li>
+            <li>
+              <Link className="text-primary hover:underline" to="/calculadora-juros-compostos">
+                Calculadora de juros compostos com aportes mensais
+              </Link>
+            </li>
+            <li>
+              <Link className="text-primary hover:underline" to="/blog/melhores-livros-financas">
+                Melhores livros de finanças e investimentos
+              </Link>
+            </li>
+          </ul>
+        </section>
+      </main>
+    </div>
+  );
+}
