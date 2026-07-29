@@ -58,7 +58,7 @@ function AportesPage() {
               <TableHead className="text-right">Qtd.</TableHead>
               <TableHead className="text-right">Preço</TableHead>
               <TableHead className="text-right">Taxas</TableHead>
-              <TableHead className="text-right">Total</TableHead>
+              <TableHead className="text-right">VALOR APLICADO</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
