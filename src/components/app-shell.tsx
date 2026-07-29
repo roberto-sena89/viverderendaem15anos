@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme";
-import { TickerMercado } from "@/components/ticker-mercado";
+
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -180,7 +180,7 @@ export function AppShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <TickerMercado />
+        
         <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
           <div className="flex items-center justify-between gap-4 px-5 py-4 lg:px-8">
 
