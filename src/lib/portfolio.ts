@@ -92,14 +92,14 @@ export const planoPadrao: PlanoConfig = {
 export const alocacaoIdeal: Record<string, number> = {
   "Renda Fixa\nPós-fixado": 30,
   "IPCA+": 15,
-  "Pré-fixado": 5,
+  "Renda Fixa\nPré-fixado": 5,
   "ETF Brasil": 20,
   "ETF EUA": 20,
   FIIs: 10,
 };
 
 /** Mapeia categorias da carteira para as classes da estratégia de longo prazo. */
-export const classeDoAtivo = (a: Ativo): keyof typeof alocacaoIdeal => {
+export const classeDoAtivo = (a: Ativo): string => {
   switch (a.categoria) {
     case "Tesouro":
     case "Tesouro Direto":
