@@ -50,7 +50,7 @@ export function DialogAlocacaoAlvo() {
         <div className="space-y-3">
           {Object.keys(alvo).map((classe) => (
             <div key={classe} className="flex items-center justify-between gap-3">
-              <Label htmlFor={`alvo-${classe}`} className="text-sm">
+              <Label htmlFor={`alvo-${classe}`} className="text-sm whitespace-pre-line">
                 {classe}
               </Label>
               <div className="flex items-center gap-2">
