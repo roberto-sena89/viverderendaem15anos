@@ -11,6 +11,15 @@ import { alocacaoIdeal, brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfo
 
 type Linha = { indexador: string; prazo: string; alvo: number };
 type Bloco = { grupo: string; risco: string; linhas: Linha[] };
+type Ordem = {
+  classe: string;
+  ticker: string;
+  nome: string;
+  acao: "Comprar" | "Vender";
+  preco: number;
+  quantidade: number;
+  valor: number;
+};
 
 /** Carteira recomendada (perfil agressivo) — referência de alocação por classe. */
 const BLOCOS: Bloco[] = [
