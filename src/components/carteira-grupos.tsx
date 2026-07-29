@@ -313,18 +313,20 @@ export function CarteiraGrupos({
                 <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="min-w-56">Ativo</TableHead>
-                        <TableHead className="text-right">Quant.</TableHead>
-                        <TableHead className="text-right">Preço médio</TableHead>
-                        <TableHead className="text-right">Preço atual</TableHead>
-                        <TableHead className="text-right whitespace-pre-line">VARIAÇÃO{"\n"}(%)</TableHead>
-                        <TableHead className="text-right">Rentabilidade</TableHead>
-                        <TableHead className="text-right">Saldo</TableHead>
-                        <TableHead className="text-center">Nota</TableHead>
-                        <TableHead className="text-right">% Carteira</TableHead>
-                        <TableHead className="text-right">% Ideal</TableHead>
-                        <TableHead className="text-center">Comprar?</TableHead>
-                        <TableHead className="text-center">Opções</TableHead>
+                        <TableHead className={compacto ? "min-w-40" : "min-w-56"}>Ativo</TableHead>
+                        {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
+                        {colunas.precoMedio && <TableHead className="text-right">Preço médio</TableHead>}
+                        {colunas.precoAtual && <TableHead className="text-right">Preço atual</TableHead>}
+                        {colunas.variacao && (
+                          <TableHead className="text-right whitespace-pre-line">VARIAÇÃO{"\n"}(%)</TableHead>
+                        )}
+                        {colunas.rentabilidade && <TableHead className="text-right">Rentabilidade</TableHead>}
+                        {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
+                        {colunas.nota && <TableHead className="text-center">Nota</TableHead>}
+                        {colunas.participacao && <TableHead className="text-right">% Carteira</TableHead>}
+                        {colunas.ideal && <TableHead className="text-right">% Ideal</TableHead>}
+                        {colunas.comprar && <TableHead className="text-center">Comprar?</TableHead>}
+                        {onEditar && onExcluir ? <TableHead className="text-center">Opções</TableHead> : null}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -338,66 +340,99 @@ export function CarteiraGrupos({
                         const n = nota(participacao, idealAtivo, rent);
                         return (
                           <TableRow key={a.id}>
-                            <TableCell>
-                              <div className="flex items-center gap-3">
-                                <TickerMark ticker={a.ticker} />
+                            <TableCell className={cel}>
+                              <div className={`flex items-center ${compacto ? "gap-2" : "gap-3"}`}>
+                                {compacto ? null : <TickerMark ticker={a.ticker} />}
                                 <div className="min-w-0">
                                   <p className="font-display leading-tight font-bold">{a.ticker}</p>
-                                  <p className="max-w-48 truncate text-xs text-muted-foreground">{a.nome || a.categoria}</p>
+                                  {compacto ? null : (
+                                    <p className="max-w-48 truncate text-xs text-muted-foreground">
+                                      {a.nome || a.categoria}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </TableCell>
-                            <TableCell className="text-right tabular-nums">{num(a.quantidade)}</TableCell>
-                            <TableCell className="text-right tabular-nums">{brl(a.precoMedio, 2)}</TableCell>
-                            <TableCell className="text-right font-semibold tabular-nums">{brl(a.precoAtual, 2)}</TableCell>
-                            <TableCell className="text-right">
-                              <Variacao value={variacao} />
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Variacao value={rent} />
-                            </TableCell>
-                            <TableCell className="text-right font-semibold tabular-nums">{brl(saldo)}</TableCell>
-                            <TableCell className="text-center">
-                              <span
-                                title="Nota de aderência ao alvo e desempenho"
-                                className="inline-grid size-8 place-items-center rounded-md bg-foreground text-sm font-bold text-background tabular-nums"
-                              >
-                                {n.toFixed(0)}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-right tabular-nums">{pct(participacao)}</TableCell>
-                            <TableCell className="text-right text-muted-foreground tabular-nums">{pct(idealAtivo)}</TableCell>
-                            <TableCell className="text-center">
-                              <span
-                                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-                                  comprar
-                                    ? "border-success/40 bg-success/10 text-success"
-                                    : "border-destructive/40 bg-destructive/10 text-destructive"
-                                }`}
-                              >
-                                {comprar ? <CircleCheck className="size-3.5" /> : <CircleSlash className="size-3.5" />}
-                                {comprar ? "Sim" : "Não"}
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {onEditar && onExcluir ? (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button size="icon" variant="ghost" aria-label={`Opções de ${a.ticker}`}>
-                                    <MoreHorizontal className="size-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onSelect={() => onEditar?.(a)}>
-                                    <Pencil className="size-4" /> Editar ativo
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir?.(a)}>
-                                    <Trash2 className="size-4" /> Excluir ativo
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                              ) : null}
-                            </TableCell>
+                            {colunas.quantidade && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{num(a.quantidade)}</TableCell>
+                            )}
+                            {colunas.precoMedio && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{brl(a.precoMedio, 2)}</TableCell>
+                            )}
+                            {colunas.precoAtual && (
+                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>
+                                {brl(a.precoAtual, 2)}
+                              </TableCell>
+                            )}
+                            {colunas.variacao && (
+                              <TableCell className={`text-right ${cel}`}>
+                                <Variacao value={variacao} />
+                              </TableCell>
+                            )}
+                            {colunas.rentabilidade && (
+                              <TableCell className={`text-right ${cel}`}>
+                                <Variacao value={rent} />
+                              </TableCell>
+                            )}
+                            {colunas.saldo && (
+                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>{brl(saldo)}</TableCell>
+                            )}
+                            {colunas.nota && (
+                              <TableCell className={`text-center ${cel}`}>
+                                <span
+                                  title="Nota de aderência ao alvo e desempenho"
+                                  className={`inline-grid place-items-center rounded-md bg-foreground font-bold text-background tabular-nums ${
+                                    compacto ? "size-6 text-xs" : "size-8 text-sm"
+                                  }`}
+                                >
+                                  {n.toFixed(0)}
+                                </span>
+                              </TableCell>
+                            )}
+                            {colunas.participacao && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{pct(participacao)}</TableCell>
+                            )}
+                            {colunas.ideal && (
+                              <TableCell className={`text-right text-muted-foreground tabular-nums ${cel}`}>
+                                {pct(idealAtivo)}
+                              </TableCell>
+                            )}
+                            {colunas.comprar && (
+                              <TableCell className={`text-center ${cel}`}>
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full border text-xs font-semibold ${
+                                    compacto ? "px-2 py-0.5" : "px-2.5 py-1"
+                                  } ${
+                                    comprar
+                                      ? "border-success/40 bg-success/10 text-success"
+                                      : "border-destructive/40 bg-destructive/10 text-destructive"
+                                  }`}
+                                >
+                                  {comprar ? <CircleCheck className="size-3.5" /> : <CircleSlash className="size-3.5" />}
+                                  {comprar ? "Sim" : "Não"}
+                                </span>
+                              </TableCell>
+                            )}
+                            {onEditar && onExcluir ? (
+                              <TableCell className={`text-center ${cel}`}>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button size="icon" variant="ghost" aria-label={`Opções de ${a.ticker}`}>
+                                      <MoreHorizontal className="size-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onSelect={() => onEditar?.(a)}>
+                                      <Pencil className="size-4" /> Editar ativo
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir?.(a)}>
+                                      <Trash2 className="size-4" /> Excluir ativo
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            ) : null}
+
                           </TableRow>
                         );
                       })}
