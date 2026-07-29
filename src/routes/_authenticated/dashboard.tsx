@@ -97,7 +97,7 @@ function GrupoCategoria({
         className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/40 md:grid-cols-[minmax(0,1fr)_repeat(5,7rem)_auto]"
       >
         <span className="flex min-w-0 items-center gap-2">
-          <Landmark className="size-4 shrink-0 text-primary" />
+          <Landmark className="size-8 shrink-0 text-primary" />
           <span className="truncate font-display text-sm font-bold">{categoria}</span>
         </span>
         <span className="hidden text-right md:block">
@@ -193,7 +193,7 @@ function FiltroSelect({
   return (
     <Select value={valor} onValueChange={onChange}>
       <SelectTrigger aria-label={rotuloAcessivel} className="h-9 w-[9.5rem] gap-2 text-xs">
-        <Icone className="size-3.5 shrink-0 text-muted-foreground" />
+        <Icone className="size-8 shrink-0 text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -422,7 +422,7 @@ function Dashboard() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-muted/30 px-4 py-3">
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <BarChart3 className="size-4 text-primary" />
+          <BarChart3 className="size-8 text-primary" />
           Veja proventos, rentabilidade detalhada e rebalanceamento da carteira.
         </p>
         <div className="flex gap-2">
