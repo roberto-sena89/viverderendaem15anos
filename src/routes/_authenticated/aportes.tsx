@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
@@ -39,13 +39,8 @@ function AportesPage() {
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
 
-      <div className="flex justify-end">
-        <DialogTransacao>
-          <Button size="sm">
-            <Plus className="size-8!" /> Nova transação
-          </Button>
-        </DialogTransacao>
-      </div>
+
+
 
       <GraficoEvolucaoPatrimonio />
 
