@@ -104,14 +104,29 @@ export const alocacaoIdeal: Record<string, number> = {
   Stocks: 0,
 };
 
+export const CLASSE_POS_FIXADO = "Renda Fixa\nPós-fixado\nCDI/SELIC";
+
+/** Detecta o indexador da renda fixa pelo ticker/nome (Selic, CDI, IPCA, pré). */
+const indexadorRendaFixa = (a: Ativo): string | null => {
+  const texto = `${a.ticker ?? ""} ${a.nome ?? ""}`
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase();
+
+  if (/\b(SELIC|CDI|DI\b|CDB|LCI|LCA|LFT|POS[- ]?FIXAD)/.test(texto)) return CLASSE_POS_FIXADO;
+  if (/(IPCA|NTN[- ]?B|INFLAC)/.test(texto)) return "Renda Fixa\nIPCA+";
+  if (/(PRE[- ]?FIXAD|PREFIXAD|LTN|NTN[- ]?F)/.test(texto)) return "Renda Fixa\nPré-fixado";
+  return null;
+};
+
 /** Mapeia categorias da carteira para as classes da estratégia de longo prazo. */
 export const classeDoAtivo = (a: Ativo): string => {
   switch (a.categoria) {
     case "Tesouro":
     case "Tesouro Direto":
-      return "Renda Fixa\nIPCA+";
+      return indexadorRendaFixa(a) ?? "Renda Fixa\nIPCA+";
     case "Renda Fixa":
-      return "Renda Fixa\nPós-fixado\nCDI/SELIC";
+      return indexadorRendaFixa(a) ?? CLASSE_POS_FIXADO;
     case "Fundos de Investimentos":
       return "Fundos de\nInvestimentos";
     case "Ações":
@@ -134,9 +149,10 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "Fiagro":
       return "FIIs";
     default:
-      return "Renda Fixa\nPós-fixado\nCDI/SELIC";
+      return indexadorRendaFixa(a) ?? CLASSE_POS_FIXADO;
   }
 };
+
 
 export const valorAtual = (a: Ativo) => a.quantidade * a.precoAtual;
 export const valorInvestido = (a: Ativo) => a.quantidade * a.precoMedio;
