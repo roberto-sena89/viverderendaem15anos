@@ -1,6 +1,35 @@
-export type Categoria = "Ações" | "FIIs" | "ETF Brasil" | "ETF EUA" | "Renda Fixa" | "Tesouro";
+export type Categoria =
+  | "Ações"
+  | "Fundos Imobiliários"
+  | "Tesouro Direto"
+  | "BDR"
+  | "ETF Brasil"
+  | "ETF (Exterior)"
+  | "Fiagro"
+  | "Fundos de Investimentos"
+  | "Renda Fixa"
+  | "Stocks"
+  | "REITs"
+  | "Criptomoedas"
+  // Valores legados já gravados no banco
+  | "FIIs"
+  | "ETF EUA"
+  | "Tesouro";
 
-export const categorias: Categoria[] = ["Ações", "FIIs", "ETF Brasil", "ETF EUA", "Renda Fixa", "Tesouro"];
+export const categorias: Categoria[] = [
+  "Ações",
+  "Fundos Imobiliários",
+  "Tesouro Direto",
+  "BDR",
+  "ETF Brasil",
+  "ETF (Exterior)",
+  "Fiagro",
+  "Fundos de Investimentos",
+  "Renda Fixa",
+  "Stocks",
+  "REITs",
+  "Criptomoedas",
+];
 
 export interface Ativo {
   id: string;
