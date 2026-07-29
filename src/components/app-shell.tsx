@@ -117,10 +117,10 @@ export function AppShell({
             I15
           </span>
           <span className="font-display text-sm leading-tight font-bold text-sidebar-foreground">
-            Investidor
+            VIVER DE RENDA
             <br />
             <span className="text-[0.65rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-              em 15 anos
+              EM 15
             </span>
           </span>
         </Link>
