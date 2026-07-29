@@ -17,6 +17,8 @@ Disallow: /mcp
 Disallow: /.mcp/
 Disallow: /.well-known/
 Disallow: /verificar-email
+Disallow: /recuperar-senha
+Disallow: /redefinir-senha
 Disallow: /dashboard
 Disallow: /carteira
 Disallow: /aportes
