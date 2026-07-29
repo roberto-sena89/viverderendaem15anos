@@ -1,7 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { CalendarClock } from "lucide-react";
 import { useAportes } from "@/lib/data";
-import { Button } from "@/components/ui/button";
 
 const LIMITE_DIAS = 15;
 
