@@ -53,7 +53,7 @@ function FiltroSelect({
   return (
     <Select value={valor} onValueChange={onChange}>
       <SelectTrigger aria-label={rotuloAcessivel} className="h-9 w-[9.5rem] gap-2 text-xs">
-        <Icone className="size-3.5 shrink-0 text-muted-foreground" />
+        <Icone className="size-8! shrink-0 text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
