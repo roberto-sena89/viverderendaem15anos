@@ -57,7 +57,6 @@ function Rebalanceamento() {
       </div>
 
 
-      <RebalanceamentoSugerido carteira={carteira} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {linhas.map((l) => (
