@@ -249,14 +249,13 @@ export function ResumoKpis() {
 
   return (
     <>
-      <div className="flex justify-end">
+      <div className="flex justify-start">
         <DialogTransacao>
           <Button
-            size="sm"
-            variant="secondary"
-            className="font-display gap-2 text-[13px] font-semibold"
+            size="default"
+            className="font-display gap-2 bg-primary px-5 text-[15px] font-semibold tracking-[0.01em] text-primary-foreground shadow-sm hover:bg-primary/90"
           >
-            <Plus className="size-4" />
+            <Plus className="size-5" />
             Adicionar Lançamento
           </Button>
         </DialogTransacao>

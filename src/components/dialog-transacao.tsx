@@ -61,6 +61,7 @@ export function DialogTransacao({
   const [emolumentos, setEmolumentos] = useState("");
   const [impostos, setImpostos] = useState("");
   const [instituicao, setInstituicao] = useState("");
+  const [descricao, setDescricao] = useState("");
 
   const criar = useCriarAporte();
   const atualizar = useAtualizarAporte();
@@ -87,6 +88,7 @@ export function DialogTransacao({
     setEmolumentos("");
     setImpostos("");
     setInstituicao("");
+    setDescricao("");
   }
 
   function preencher() {
@@ -101,6 +103,7 @@ export function DialogTransacao({
     setEmolumentos("");
     setImpostos("");
     setInstituicao(aporte.corretora ?? "");
+    setDescricao(aporte.observacoes ?? "");
   }
 
   function enviar(e: React.FormEvent) {
@@ -119,7 +122,7 @@ export function DialogTransacao({
       quantidade: tipo === "venda" ? -numero(quantidade) : numero(quantidade),
       preco: numero(preco),
       taxas: custos,
-      observacoes: tipo === "venda" ? "Venda" : undefined,
+      observacoes: descricao.trim() || (tipo === "venda" ? "Venda" : undefined),
     };
 
     const opcoes = {
@@ -301,6 +304,17 @@ export function DialogTransacao({
                 </datalist>
               </div>
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="descricao">Descrição</Label>
+            <Input
+              id="descricao"
+              maxLength={200}
+              placeholder="Ex.: aporte mensal de julho"
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+            />
           </div>
 
           <div className="flex justify-end">
