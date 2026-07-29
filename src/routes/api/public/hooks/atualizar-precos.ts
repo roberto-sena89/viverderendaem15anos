@@ -83,7 +83,14 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
 
         const titulos = escopo === "b3" ? [] : await tesouro.listarTesouroDireto().catch(() => []);
 
+        const iniciadoEm = Date.now();
         const precos = new Map<string, { preco: number; fonte: string; classe: string }>();
+
+        // Métricas por fonte, para a tela de auditoria.
+        const metricas = {
+          tesouro: { total: 0, obtidos: 0, atualizados: 0, gravados: 0, falhas: [] as string[] },
+          b3: { total: 0, obtidos: 0, atualizados: 0, gravados: 0, falhas: [] as string[] },
+        };
         const falhas: string[] = [];
 
         for (const item of chaves.values()) {
@@ -91,29 +98,46 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
           if (alvoTesouro && escopo === "b3") continue;
           if (!alvoTesouro && escopo === "tesouro") continue;
 
+          const m = alvoTesouro ? metricas.tesouro : metricas.b3;
+          m.total++;
+
           try {
             if (alvoTesouro) {
               const titulo = tesouro.casarTitulo(item.texto, titulos);
               const preco = titulo?.precoCompra ?? titulo?.precoVenda ?? null;
-              if (preco && preco > 0) precos.set(item.ticker, { preco, fonte: "tesouro-direto", classe: "tesouro" });
-              else falhas.push(item.ticker);
+              if (preco && preco > 0) {
+                precos.set(item.ticker, { preco, fonte: "tesouro-direto", classe: "tesouro" });
+                m.obtidos++;
+              } else {
+                m.falhas.push(item.ticker);
+              }
             } else {
               const c = await mercado.buscarCotacao(item.ticker);
-              if (c.preco && c.preco > 0) precos.set(item.ticker, { preco: c.preco, fonte: "yahoo/brapi", classe: "variavel" });
-              else falhas.push(item.ticker);
+              if (c.preco && c.preco > 0) {
+                precos.set(item.ticker, { preco: c.preco, fonte: "yahoo/brapi", classe: "variavel" });
+                m.obtidos++;
+              } else {
+                m.falhas.push(item.ticker);
+              }
             }
-          } catch {
-            falhas.push(item.ticker);
+          } catch (e) {
+            m.falhas.push(`${item.ticker}: ${e instanceof Error ? e.message : "erro desconhecido"}`);
           }
         }
+        falhas.push(...metricas.tesouro.falhas, ...metricas.b3.falhas);
 
         let atualizados = 0;
         for (const [ticker, info] of precos) {
+          const m = info.classe === "tesouro" ? metricas.tesouro : metricas.b3;
           const { error: upErr } = await supabaseAdmin
             .from("ativos")
             .update({ preco_atual: info.preco })
             .eq("ticker", ticker);
-          if (!upErr) atualizados++;
+          if (upErr) m.falhas.push(`${ticker}: ${upErr.message}`);
+          else {
+            atualizados++;
+            m.atualizados++;
+          }
         }
 
         // Série histórica: um registro por ativo por dia (o último preço do dia vence).
@@ -127,12 +151,49 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
         }));
 
         let gravados = 0;
+        let erroHistorico: string | null = null;
         if (historico.length > 0) {
           const { error: histErr } = await supabaseAdmin
             .from("historico_precos")
             .upsert(historico, { onConflict: "ticker,data" });
-          if (!histErr) gravados = historico.length;
+          if (histErr) erroHistorico = histErr.message;
+          else {
+            gravados = historico.length;
+            metricas.tesouro.gravados = historico.filter((h) => h.classe === "tesouro").length;
+            metricas.b3.gravados = historico.filter((h) => h.classe !== "tesouro").length;
+          }
         }
+
+        // Registro de auditoria: uma linha por fonte consultada nesta execução.
+        const duracao = Date.now() - iniciadoEm;
+        const registros = [
+          escopo !== "b3"
+            ? {
+                escopo: "tesouro",
+                fonte: "Tesouro Transparente",
+                metricas: metricas.tesouro,
+                erro: titulos.length === 0 ? "Nenhum título retornado pela fonte" : erroHistorico,
+              }
+            : null,
+          escopo !== "tesouro"
+            ? { escopo: "b3", fonte: "Yahoo Finance / brapi.dev", metricas: metricas.b3, erro: erroHistorico }
+            : null,
+        ].filter((r): r is NonNullable<typeof r> => r !== null);
+
+        await supabaseAdmin.from("sincronizacoes").insert(
+          registros.map((r) => ({
+            escopo: r.escopo,
+            fonte: r.fonte,
+            status: r.erro ? "erro" : r.metricas.falhas.length > 0 ? "parcial" : "ok",
+            dentro_do_pregao: dentroDoPregao,
+            total_tickers: r.metricas.total,
+            atualizados: r.metricas.atualizados,
+            historico_gravado: r.metricas.gravados,
+            falhas: r.metricas.falhas,
+            erro: r.erro,
+            duracao_ms: duracao,
+          })),
+        );
 
         return Response.json({
           ok: true,
@@ -142,8 +203,10 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
           atualizados,
           historicoGravado: gravados,
           falhas,
+          duracaoMs: duracao,
           executadoEm: new Date().toISOString(),
         });
+
       },
     },
   },
