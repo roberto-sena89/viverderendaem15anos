@@ -19,6 +19,7 @@ import { AppShell } from "@/components/app-shell";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
+import { WidgetCotacoes } from "@/components/widget-cotacoes";
 import { Button } from "@/components/ui/button";
 import {
   Select,
