@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ArrowDownRight, ArrowUpRight, CheckCircle2, Sparkles } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
@@ -101,7 +101,6 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
 
   return (
     <Panel title="Rebalanceamento recomendado">
-    >
       {totalAtual === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
           Cadastre ativos na carteira para receber sugestões de rebalanceamento.
