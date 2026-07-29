@@ -131,7 +131,12 @@ function DividendosPage() {
         </Dialog>
       </div>
 
-      <PainelProventos proventos={proventos} carteira={carteira} totalCarteira={resumo.totalAtual} />
+      <PainelProventos
+        proventos={proventos}
+        carteira={carteira}
+        totalCarteira={resumo.totalAtual}
+        onRegistrar={() => setOpen(true)}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
