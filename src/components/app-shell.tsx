@@ -112,18 +112,19 @@ export function AppShell({
   return (
     <div className="min-h-screen bg-background lg:flex">
       <aside className="sticky top-0 z-30 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
-        <Link to="/" className="mb-7 flex items-center gap-2.5 px-2">
-          <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand font-display text-[0.7rem] font-bold text-primary-foreground">
+        <Link to="/" className="mb-7 flex items-center gap-3 px-1">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-brand font-display text-xs font-bold text-primary-foreground">
             I15
           </span>
-          <span className="font-brand text-sm leading-tight font-bold text-sidebar-foreground uppercase">
+          <span className="font-brand text-base leading-[1.15] font-bold text-sidebar-foreground uppercase">
             VIVER DE RENDA
             <br />
-            <span className="font-brand text-[0.65rem] font-semibold tracking-[0.14em] text-muted-foreground">
+            <span className="font-brand text-sm font-semibold tracking-[0.1em] text-muted-foreground">
               EM 15 ANOS
             </span>
           </span>
         </Link>
+
 
         <nav className="flex flex-1 flex-col gap-5 overflow-y-auto">
           {grupos.map((grupo) => (
