@@ -21,6 +21,8 @@ export const qk = {
 export function useAtivos() {
   return useQuery({
     queryKey: qk.ativos,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     queryFn: async (): Promise<Ativo[]> => {
       const { data, error } = await supabase.from("ativos").select("*").order("ticker");
       if (error) throw error;
