@@ -1,15 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
-import { DialogTransacao } from "@/components/dialog-transacao";
 import { GraficoEvolucaoPatrimonio } from "@/components/grafico-evolucao-patrimonio";
 import { HistoricoMensalAportes } from "@/components/historico-mensal-aportes";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useAportes, useExcluirAporte } from "@/lib/data";
+import { useAportes } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/aportes")({
@@ -27,13 +21,13 @@ export const Route = createFileRoute("/_authenticated/aportes")({
 });
 
 function AportesPage() {
-  const { data: aportes = [], isLoading } = useAportes();
-  const excluir = useExcluirAporte();
+  const { data: aportes = [] } = useAportes();
 
   const mesRef = aportes[0]?.data.slice(0, 7) ?? "";
   const totalMes = aportes
     .filter((a) => a.data.startsWith(mesRef))
     .reduce((s, a) => s + a.quantidade * a.preco + a.taxas, 0);
+
 
 
   return (
