@@ -3,7 +3,8 @@ import { ArrowDownRight, ArrowUpRight, CheckCircle2, Sparkles } from "lucide-rea
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { alocacaoIdeal, brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
+import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
 
 type Ordem = {
@@ -37,6 +38,7 @@ function distribuirNaClasse(ativos: Ativo[], valor: number) {
  */
 export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
   const aporte = 0;
+  const { alvo: alocacaoIdeal } = useAlocacaoAlvo();
 
   const { ordens, totalAtual, totalFuturo, semVenda } = useMemo(() => {
     const total = carteira.reduce((s, a) => s + valorAtual(a), 0);
@@ -93,7 +95,7 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
       .sort((a, b) => b.valor - a.valor);
 
     return { ordens: lista, totalAtual: total, totalFuturo: futuro, semVenda: aporte > 0 };
-  }, [carteira, aporte]);
+  }, [carteira, aporte, alocacaoIdeal]);
 
   const comprar = ordens.filter((o) => o.acao === "Comprar");
   const vender = ordens.filter((o) => o.acao === "Vender");

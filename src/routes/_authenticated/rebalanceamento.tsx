@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { DialogAlocacaoAlvo } from "@/components/dialog-alocacao-alvo";
 import { RebalanceamentoSugerido } from "@/components/rebalanceamento-sugerido";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAtivos } from "@/lib/data";
-import { alocacaoIdeal, brl, classeDoAtivo, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
+import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { brl, classeDoAtivo, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
 
 export const Route = createFileRoute("/_authenticated/rebalanceamento")({
@@ -26,6 +28,7 @@ export const Route = createFileRoute("/_authenticated/rebalanceamento")({
 function Rebalanceamento() {
   const { data: carteira = [] } = useAtivos();
   const { totalAtual } = resumoCarteira(carteira);
+  const { alvo: alocacaoIdeal } = useAlocacaoAlvo();
 
   const atual: Record<string, number> = {};
   for (const chave of Object.keys(alocacaoIdeal)) atual[chave] = 0;
@@ -44,6 +47,10 @@ function Rebalanceamento() {
   return (
     <AppShell title="Análise" description="Estratégia por classes de ativos">
       <AbasCarteira />
+
+      <div className="flex justify-end">
+        <DialogAlocacaoAlvo />
+      </div>
 
       <RebalanceamentoSugerido carteira={carteira} />
 
