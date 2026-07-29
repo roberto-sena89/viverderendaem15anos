@@ -198,34 +198,40 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         
         <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
-          <div className="flex items-center justify-between gap-4 px-5 py-4 lg:px-8">
-
-            <div className="min-w-0">
-              <nav aria-label="Trilha de navegação" className="mb-0.5">
-                <ol className="flex items-center gap-1.5 text-[0.62rem] font-bold tracking-[0.14em] text-muted-foreground uppercase">
-                  <li>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4 lg:px-8 lg:py-5">
+            <div className="min-w-0 space-y-1">
+              <nav aria-label="Trilha de navegação">
+                <ol className="flex min-w-0 items-center gap-1.5 text-[0.65rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+                  <li className="hidden sm:block">
                     <Link to="/" className="transition-colors hover:text-foreground">
                       Início
                     </Link>
                   </li>
-                  <li aria-hidden="true">/</li>
-                  <li>{grupoAtual}</li>
+                  <li aria-hidden="true" className="hidden text-border sm:block">
+                    /
+                  </li>
+                  <li className="shrink-0">{grupoAtual}</li>
                   {secaoAtual ? (
                     <>
-                      <li aria-hidden="true">/</li>
-                      <li className="text-foreground">{secaoAtual.rotulo}</li>
+                      <li aria-hidden="true" className="text-border">
+                        /
+                      </li>
+                      <li className="truncate text-foreground">{secaoAtual.rotulo}</li>
                     </>
                   ) : null}
                 </ol>
               </nav>
-              <h1 className="truncate font-display text-lg font-bold sm:text-xl">{tituloPagina}</h1>
+              <h1 className="truncate font-display text-xl leading-tight font-bold tracking-tight sm:text-2xl">
+                {tituloPagina}
+              </h1>
               {description ? (
-                <p className="truncate text-sm text-muted-foreground">{description}</p>
+                <p className="line-clamp-2 max-w-2xl text-xs leading-snug text-muted-foreground sm:text-sm">
+                  {description}
+                </p>
               ) : null}
             </div>
 
-
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1 self-start sm:self-center">
               <ThemeToggle />
               <Button
                 variant="ghost"
@@ -238,6 +244,7 @@ export function AppShell({
               </Button>
             </div>
           </div>
+
           <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
             {nav.map(({ to, label, icon: Icon }) => (
               <Link
