@@ -29,7 +29,7 @@ export function AbasCarteira() {
                 activeOptions={{ exact: true }}
                 className="flex items-center gap-2 border-b-2 border-transparent px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[status=active]:border-primary data-[status=active]:font-semibold data-[status=active]:text-foreground"
               >
-                <Icone className="size-4" />
+                <Icone className="size-8!" />
                 {rotulo}
               </Link>
             </li>
