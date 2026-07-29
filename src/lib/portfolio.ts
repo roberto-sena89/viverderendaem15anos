@@ -94,7 +94,7 @@ export const alocacaoIdeal: Record<string, number> = {
   "Renda Fixa\nIPCA+": 15,
   "Renda Fixa\nPré-fixado": 5,
   "ETF (Brasil)": 20,
-  "ETF (EUA)": 20,
+  "ETF (Exterior)": 20,
   FIIs: 10,
   "Ações": 0,
   BDRs: 0,
@@ -138,7 +138,7 @@ export const classeDoAtivo = (a: Ativo): string => {
       return "ETF (Brasil)";
     case "ETF EUA":
     case "ETF (Exterior)":
-      return "ETF (EUA)";
+      return "ETF (Exterior)";
     case "BDR":
       return "BDRs";
     case "Stocks":
