@@ -235,7 +235,7 @@ export function AppShell({
                     : "text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Icon className="size-3.5" />
+                <Icon className="size-8 shrink-0" />
                 {label}
               </Link>
             ))}
