@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAportes, useAtivos, useDividendos } from "@/lib/data";
+import { corCategoria } from "@/lib/cores-ativos";
 import type { Ativo } from "@/lib/portfolio";
 import {
   brl,
