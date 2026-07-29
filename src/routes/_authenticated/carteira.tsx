@@ -72,7 +72,7 @@ function CarteiraPage() {
   return (
     <AppShell title="Carteira" description={`${carteira.length} ativos · ${brl(totalAtual)}`}>
       <AbasCarteira />
-      <ResumoKpis />
+      <ResumoKpis mostrarLancamento />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2">
           {filtros.map((f) => (
