@@ -4,6 +4,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { CarteiraRecomendada } from "@/components/carteira-recomendada";
 import { DeltaChip, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Badge } from "@/components/ui/badge";
@@ -170,6 +171,8 @@ function CarteiraPage() {
           </TableBody>
         </Table>
       </div>
+
+      <CarteiraRecomendada />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
