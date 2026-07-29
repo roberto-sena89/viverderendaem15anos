@@ -56,6 +56,19 @@ export function DialogAlocacaoAlvo() {
   const somaOk = Math.abs(restante) < 0.01;
   const valido = somaOk && camposInvalidos.size === 0;
 
+  /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
+  const aoTeclar = (classe: string) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const passo =
+      e.key === "PageUp" || e.key === "PageDown" ? 5 : e.shiftKey ? 1 : 0.01;
+    const sinal =
+      e.key === "ArrowUp" || e.key === "PageUp" ? 1 : e.key === "ArrowDown" || e.key === "PageDown" ? -1 : 0;
+    if (sinal === 0) return;
+    e.preventDefault();
+    const atual = paraNumero(valores[classe] ?? "") || 0;
+    const novo = Math.min(100, Math.max(0, Math.round((atual + sinal * passo) * 100) / 100));
+    setValores((v) => ({ ...v, [classe]: novo.toFixed(2).replace(".", ",") }));
+  };
+
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
       <DialogTrigger asChild>
