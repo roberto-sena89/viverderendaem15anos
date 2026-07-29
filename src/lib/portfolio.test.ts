@@ -63,8 +63,10 @@ describe("classeDoAtivo · demais categorias", () => {
     ["Fiagro", "FIIs"],
   ];
 
-  it.each(mapa)("%s → %s", (categoria, esperado) => {
-    expect(classeDoAtivo(ativo({ ticker: "TESTE11", categoria }))).toBe(esperado);
+  it("mapeia cada categoria para a janela correspondente", () => {
+    for (const [categoria, esperado] of mapa) {
+      expect(classeDoAtivo(ativo({ ticker: "TESTE11", categoria }))).toBe(esperado);
+    }
   });
 
   it("ticker com palavra de renda fixa não muda a classe de categorias de variável", () => {
