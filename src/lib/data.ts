@@ -194,6 +194,55 @@ export function useExcluir(tabela: "ativos" | "aportes" | "dividendos" | "metas"
   });
 }
 
+/**
+ * Recalcula quantidade e preço médio do ativo a partir de TODO o histórico de
+ * aportes/vendas do ticker. Usado após editar ou excluir uma transação.
+ */
+async function recalcularAtivo(ticker: string) {
+  const t = ticker.toUpperCase();
+  const { data: linhas, error } = await supabase
+    .from("aportes")
+    .select("*")
+    .eq("ticker", t)
+    .order("data", { ascending: true });
+  if (error) throw error;
+
+  let qtd = 0;
+  let custo = 0;
+  for (const l of linhas ?? []) {
+    const q = Number(l.quantidade);
+    const p = Number(l.preco);
+    if (q >= 0) {
+      qtd += q;
+      custo += q * p;
+    } else {
+      const pm = qtd > 0 ? custo / qtd : 0;
+      qtd += q;
+      custo += q * pm;
+    }
+  }
+  if (qtd <= 0) {
+    qtd = Math.max(0, qtd);
+    custo = 0;
+  }
+  const precoMedio = qtd > 0 ? custo / qtd : 0;
+
+  const { data: ativo } = await supabase.from("ativos").select("*").eq("ticker", t).maybeSingle();
+  if (!ativo) return;
+
+  if (qtd === 0 && (linhas ?? []).length === 0) {
+    const { error: delErr } = await supabase.from("ativos").delete().eq("id", ativo.id);
+    if (delErr) throw delErr;
+    return;
+  }
+
+  const { error: upErr } = await supabase
+    .from("ativos")
+    .update({ quantidade: qtd, preco_medio: precoMedio })
+    .eq("id", ativo.id);
+  if (upErr) throw upErr;
+}
+
 export interface AporteInput {
   data: string;
   corretora: string;
