@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
+import { GraficosAtivos } from "@/components/graficos-ativos";
 import { WidgetCotacoes } from "@/components/widget-cotacoes";
 
 export const Route = createFileRoute("/_authenticated/cotacoes")({
