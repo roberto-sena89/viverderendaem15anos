@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
-import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
+
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
