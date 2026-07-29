@@ -91,7 +91,7 @@ export const planoPadrao: PlanoConfig = {
 
 export const alocacaoIdeal: Record<string, number> = {
   "Renda Fixa\nPós-fixado": 30,
-  "IPCA+": 15,
+  "Renda Fixa\nIPCA+": 15,
   "Renda Fixa\nPré-fixado": 5,
   "ETF Brasil": 20,
   "ETF EUA": 20,
@@ -103,7 +103,7 @@ export const classeDoAtivo = (a: Ativo): string => {
   switch (a.categoria) {
     case "Tesouro":
     case "Tesouro Direto":
-      return "IPCA+";
+      return "Renda Fixa\nIPCA+";
     case "Renda Fixa":
     case "Fundos de Investimentos":
       return "Renda Fixa\nPós-fixado";
