@@ -267,9 +267,6 @@ function Dashboard() {
       {carteiraVazia ? (
         <div className="surface-card flex flex-wrap items-center gap-3 p-4">
           <PiggyBank className="size-5 shrink-0 text-muted-foreground" />
-          <p className="text-xs text-muted-foreground">
-            Registre seus aportes aqui👉🏻
-          </p>
           <DialogTransacao>
             <Button
               size="sm"
