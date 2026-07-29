@@ -138,7 +138,7 @@ export const classeDoAtivo = (a: Ativo): string => {
       return "ETF (Brasil)";
     case "ETF EUA":
     case "ETF (Exterior)":
-      return "ETF (EUA)";
+      return "ETF (Exterior)";
     case "BDR":
       return "BDRs";
     case "Stocks":
