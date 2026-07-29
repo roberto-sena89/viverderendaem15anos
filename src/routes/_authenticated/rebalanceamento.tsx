@@ -97,23 +97,23 @@ function Rebalanceamento() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Classe</TableHead>
-              <TableHead className="text-right whitespace-pre-line">{"ALOCAÇÃO ATUAL\n(R$)"}</TableHead>
-              <TableHead className="text-right whitespace-pre-line">{"ALOCAÇÃO ATUAL\n(%)"}</TableHead>
-              <TableHead className="text-right">Alocação ideal</TableHead>
-              <TableHead className="text-right">Diferença</TableHead>
-              <TableHead className="text-right">Valor para rebalancear</TableHead>
+              <TableHead className="text-center align-middle whitespace-pre-line h-14">{"CLASSE\n "}</TableHead>
+              <TableHead className="text-center align-middle whitespace-pre-line h-14">{"ALOCAÇÃO ATUAL\n(R$)"}</TableHead>
+              <TableHead className="text-center align-middle whitespace-pre-line h-14">{"ALOCAÇÃO ATUAL\n(%)"}</TableHead>
+              <TableHead className="text-center align-middle whitespace-pre-line h-14">{"ALOCAÇÃO IDEAL\n(%)"}</TableHead>
+              <TableHead className="text-center align-middle whitespace-pre-line h-14">{"DIFERENÇA\n(%)"}</TableHead>
+              <TableHead className="text-center align-middle whitespace-pre-line h-14">{"VALOR PARA\nREBALANCEAR"}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {linhas.map((l) => (
               <TableRow key={l.classe}>
-                <TableCell className="font-medium whitespace-pre-line">{l.classe}</TableCell>
-                <TableCell className="text-right">{brl(l.valor)}</TableCell>
-                <TableCell className="text-right">{pct(l.atualPct)}</TableCell>
-                <TableCell className="text-right">{pct(l.idealPct)}</TableCell>
-                <TableCell className={`text-right ${l.diff < 0 ? "text-success" : "text-destructive"}`}>{pct(l.diff)}</TableCell>
-                <TableCell className="text-right">{brl(Math.abs(l.idealValor - l.valor))}</TableCell>
+                <TableCell className="font-medium whitespace-pre-line text-center">{l.classe}</TableCell>
+                <TableCell className="text-center">{brl(l.valor)}</TableCell>
+                <TableCell className="text-center">{pct(l.atualPct)}</TableCell>
+                <TableCell className="text-center">{pct(l.idealPct)}</TableCell>
+                <TableCell className={`text-center ${l.diff < 0 ? "text-success" : "text-destructive"}`}>{pct(l.diff)}</TableCell>
+                <TableCell className="text-center">{brl(Math.abs(l.idealValor - l.valor))}</TableCell>
               </TableRow>
             ))}
           </TableBody>
