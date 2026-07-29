@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { BarChart3, ChevronLeft, ChevronRight, CircleDollarSign, Landmark, RefreshCw } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Panel, TickerMark } from "@/components/panel";
+import { PainelPanoramaMercado } from "@/components/painel-panorama-mercado";
 import { Button } from "@/components/ui/button";
 import { rankingsAtivos } from "@/lib/market.functions";
 import type { ItemRanking, TipoRanking } from "@/lib/market.server";
@@ -220,6 +221,8 @@ function RankingsPage() {
       title="Ranking de Ativos"
       description="Maiores dividend yield, valor de mercado e receitas da B3"
     >
+      <PainelPanoramaMercado />
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {abas.map((a) => (
