@@ -376,11 +376,21 @@ function Dashboard() {
               Sem ativos para exibir neste filtro.
             </p>
           ) : (
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="h-52 min-w-[12rem] flex-1">
+            <div className="flex flex-wrap items-center gap-5">
+              <div className="relative h-56 min-w-[13rem] flex-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={porCategoria} dataKey="value" nameKey="name" innerRadius={54} outerRadius={82} paddingAngle={2} stroke="none">
+                    <Pie
+                      data={porCategoria}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={58}
+                      outerRadius={88}
+                      paddingAngle={3}
+                      cornerRadius={4}
+                      stroke="var(--color-card)"
+                      strokeWidth={2}
+                    >
                       {porCategoria.map((_, i) => (
                         <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                       ))}
@@ -388,19 +398,38 @@ function Dashboard() {
                     <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} />
                   </PieChart>
                 </ResponsiveContainer>
+                <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                  <div className="text-center">
+                    <p className="text-[0.6rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                      Total
+                    </p>
+                    <p className="num font-display text-base font-bold">{brl(totalComposicao, 2)}</p>
+                  </div>
+                </div>
               </div>
-              <ul className="space-y-2 text-xs">
-                {porCategoria.map((c, i) => (
-                  <li key={c.name} className="flex items-center gap-3">
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
-                      {c.name}
-                    </span>
-                    <span className="num ml-auto font-medium">
-                      {pct(totalComposicao > 0 ? (c.value / totalComposicao) * 100 : 0)}
-                    </span>
-                  </li>
-                ))}
+              <ul className="min-w-[15rem] flex-1 space-y-1.5 text-xs">
+                {porCategoria.map((c, i) => {
+                  const cor = CHART_COLORS[i % CHART_COLORS.length];
+                  const percentual = totalComposicao > 0 ? (c.value / totalComposicao) * 100 : 0;
+                  return (
+                    <li
+                      key={c.name}
+                      className="flex items-center gap-3 rounded-md border border-transparent bg-muted/40 px-2.5 py-2 transition-colors hover:border-border hover:bg-muted"
+                      style={{ borderLeft: `3px solid ${cor}` }}
+                    >
+                      <span className="flex min-w-0 items-center gap-2 font-medium text-foreground">
+                        <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: cor }} />
+                        <span className="truncate whitespace-pre-line">{c.name}</span>
+                      </span>
+                      <span className="ml-auto flex shrink-0 items-baseline gap-2">
+                        <span className="num text-[0.68rem] text-muted-foreground">{brl(c.value, 2)}</span>
+                        <span className="num w-12 text-right font-semibold" style={{ color: cor }}>
+                          {pct(percentual)}
+                        </span>
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
