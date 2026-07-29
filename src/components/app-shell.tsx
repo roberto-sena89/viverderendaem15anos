@@ -24,6 +24,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { SECOES, secaoPorRota } from "@/lib/navegacao";
+import logoIcone from "@/assets/logo-icone.png";
+
 
 
 const ICONES: Record<string, typeof LayoutDashboard> = {
@@ -113,9 +115,14 @@ export function AppShell({
     <div className="min-h-screen bg-background lg:flex">
       <aside className="sticky top-0 z-30 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
         <Link to="/" className="mb-7 flex items-center gap-3 px-1">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-brand font-display text-xs font-bold text-primary-foreground">
-            I15
-          </span>
+          <img
+            src={logoIcone}
+            alt="Viver de Renda em 15 Anos"
+            width={512}
+            height={512}
+            className="size-10 shrink-0 rounded-xl object-contain"
+          />
+
           <span className="font-brand text-base leading-[1.15] font-bold text-sidebar-foreground uppercase">
             VIVER DE RENDA
             <br />
