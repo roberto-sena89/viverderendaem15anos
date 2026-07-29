@@ -287,6 +287,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sincronizacoes: {
+        Row: {
+          atualizados: number
+          created_at: string
+          dentro_do_pregao: boolean
+          duracao_ms: number
+          erro: string | null
+          escopo: string
+          falhas: string[]
+          fonte: string
+          historico_gravado: number
+          id: string
+          status: string
+          total_tickers: number
+        }
+        Insert: {
+          atualizados?: number
+          created_at?: string
+          dentro_do_pregao?: boolean
+          duracao_ms?: number
+          erro?: string | null
+          escopo: string
+          falhas?: string[]
+          fonte: string
+          historico_gravado?: number
+          id?: string
+          status?: string
+          total_tickers?: number
+        }
+        Update: {
+          atualizados?: number
+          created_at?: string
+          dentro_do_pregao?: boolean
+          duracao_ms?: number
+          erro?: string | null
+          escopo?: string
+          falhas?: string[]
+          fonte?: string
+          historico_gravado?: number
+          id?: string
+          status?: string
+          total_tickers?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
