@@ -3,7 +3,6 @@ import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { DialogAlocacaoAlvo } from "@/components/dialog-alocacao-alvo";
 import { DialogAporteMensal } from "@/components/dialog-aporte-mensal";
-import { RebalanceamentoSugerido } from "@/components/rebalanceamento-sugerido";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
