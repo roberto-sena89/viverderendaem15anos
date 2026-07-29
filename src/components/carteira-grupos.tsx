@@ -47,13 +47,20 @@ function nota(participacao: number, ideal: number, rentabilidade: number) {
 const num = (v: number, d = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 
+/**
+ * Exibe um valor com sinal explícito (+/-) e arredondamento consistente (2 casas).
+ * O sinal é definido a partir do valor JÁ arredondado, evitando "-0,00".
+ */
 function Variacao({ value, suffix = "%" }: { value: number; suffix?: string }) {
-  const cor = value > 0 ? "text-success" : value < 0 ? "text-destructive" : "text-muted-foreground";
+  const arredondado = Math.round((Number.isFinite(value) ? value : 0) * 100) / 100;
+  const seguro = Object.is(arredondado, -0) ? 0 : arredondado;
+  const cor = seguro > 0 ? "text-success" : seguro < 0 ? "text-destructive" : "text-muted-foreground";
+  const sinal = seguro > 0 ? "+" : seguro < 0 ? "−" : "";
+  const corpo = suffix === "%" ? `${num(Math.abs(seguro))}%` : brl(Math.abs(seguro));
   return (
     <span className={`font-semibold tabular-nums ${cor}`}>
-      {value > 0 ? "+" : ""}
-      {num(value)}
-      {suffix}
+      {sinal}
+      {corpo}
     </span>
   );
 }
