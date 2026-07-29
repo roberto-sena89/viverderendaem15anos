@@ -89,9 +89,6 @@ function Rebalanceamento() {
               </div>
             </div>
             <Progress value={Math.min(100, (l.atualPct / l.idealPct) * 100)} className="mt-3 h-2" />
-            <p className={`mt-3 text-sm font-medium ${l.diff < 0 ? "text-success" : "text-destructive"}`}>
-              {l.diff < 0 ? `Aportar ${brl(l.idealValor - l.valor)}` : `Reduzir ${brl(l.valor - l.idealValor)}`}
-            </p>
           </div>
         ))}
       </div>
