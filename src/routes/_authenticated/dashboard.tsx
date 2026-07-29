@@ -455,19 +455,41 @@ function Dashboard() {
       </div>
 
 
-      <div className="space-y-3">
-        <h2 className="font-display text-lg font-bold">
-          Meus ativos <span className="text-sm font-medium text-muted-foreground">({ativos.length})</span>
-        </h2>
-        {categorias.map((c) => (
-          <GrupoCategoria
-            key={c}
-            categoria={c}
-            ativos={ativos.filter((a) => a.categoria === c)}
-            totalCarteira={resumo.totalAtual}
-          />
-        ))}
-      </div>
+      <section className="panel overflow-hidden">
+        <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border px-4 py-3">
+          <h2 className="font-display text-sm font-bold tracking-wide uppercase">
+            Meus ativos <span className="text-muted-foreground normal-case">({ativos.length})</span>
+          </h2>
+          <p className="num text-xs text-muted-foreground">
+            {categoriasComAtivos.length} classes · {brl(resumo.totalAtual, 2)}
+          </p>
+        </header>
+
+        <div className="hidden grid-cols-[minmax(0,14rem)_repeat(5,minmax(0,1fr))_1.25rem] gap-x-4 border-b border-border bg-muted/30 px-4 py-2 text-[0.62rem] font-semibold tracking-wider text-muted-foreground uppercase md:grid">
+          <span>Classe / ativo</span>
+          <span className="text-right">Saldo</span>
+          <span className="text-right">Investido</span>
+          <span className="text-right">Lucro (R$)</span>
+          <span className="text-right">Rentab.</span>
+          <span className="text-right">% Carteira</span>
+          <span />
+        </div>
+
+        {categoriasComAtivos.length === 0 ? (
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground">
+            Nenhum ativo cadastrado ainda.
+          </p>
+        ) : (
+          categoriasComAtivos.map((c) => (
+            <GrupoCategoria
+              key={c}
+              categoria={c}
+              ativos={ativos.filter((a) => a.categoria === c)}
+              totalCarteira={resumo.totalAtual}
+            />
+          ))
+        )}
+      </section>
     </AppShell>
   );
 }
