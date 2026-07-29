@@ -162,15 +162,26 @@ export function CarteiraGrupos({
   ativos,
   onEditar,
   onExcluir,
+  minimal = false,
 }: {
   ativos: Ativo[];
   onEditar?: (a: Ativo) => void;
   onExcluir?: (a: Ativo) => void;
+  /** Modo enxuto: sem barra de ferramentas, densidade compacta e grupos recolhidos. */
+  minimal?: boolean;
 }) {
   const { alvo } = useAlocacaoAlvo();
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
-  const { colunas, compacto, alternarColuna, alternarCompacto, restaurar } = usePreferenciasTabela();
+  const {
+    colunas,
+    compacto: compactoPref,
+    alternarColuna,
+    alternarCompacto,
+    restaurar,
+  } = usePreferenciasTabela();
+  const compacto = compactoPref || minimal;
   const cel = compacto ? "py-1.5 text-xs" : "";
+
 
 
   const { grupos, totalCarteira } = useMemo(() => {
