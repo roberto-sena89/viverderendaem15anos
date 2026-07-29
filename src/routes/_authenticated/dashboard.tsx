@@ -19,7 +19,6 @@ import { AppShell } from "@/components/app-shell";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { DeltaChip, Panel, TickerMark } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
-import { WidgetCotacoes } from "@/components/widget-cotacoes";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -265,7 +264,6 @@ function Dashboard() {
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
       <AbasCarteira />
 
-      <WidgetCotacoes />
 
       {carteiraVazia ? (
         <div className="surface-card flex flex-wrap items-center gap-3 p-4">
