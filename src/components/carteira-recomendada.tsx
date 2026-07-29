@@ -142,6 +142,87 @@ export function CarteiraRecomendada() {
           </tbody>
         </table>
       </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Aplicar carteira recomendada</DialogTitle>
+            <DialogDescription>
+              Sua alocação-alvo passa a seguir o perfil agressivo. Veja abaixo o impacto estimado sobre o patrimônio
+              atual de {brl(patrimonio, 2)}.
+            </DialogDescription>
+          </DialogHeader>
+
+          {patrimonio === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              Cadastre ativos na carteira para ver o impacto estimado. Você ainda pode aplicar os alvos recomendados.
+            </p>
+          ) : (
+            <>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-lg border border-border p-3">
+                  <span className="text-xs tracking-wide text-muted-foreground uppercase">Total a comprar</span>
+                  <p className="num font-display text-lg font-bold text-success">{brl(totalCompras, 2)}</p>
+                </div>
+                <div className="rounded-lg border border-border p-3">
+                  <span className="text-xs tracking-wide text-muted-foreground uppercase">Total a reduzir</span>
+                  <p className="num font-display text-lg font-bold text-destructive">{brl(totalVendas, 2)}</p>
+                </div>
+              </div>
+
+              <div className="max-h-72 overflow-y-auto rounded-lg border border-border">
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-muted/40 text-[0.68rem] tracking-wider text-muted-foreground uppercase">
+                      <th className="px-3 py-2 text-left font-semibold">Classe</th>
+                      <th className="px-3 py-2 text-right font-semibold">Atual</th>
+                      <th className="px-3 py-2 text-right font-semibold">Alvo</th>
+                      <th className="px-3 py-2 text-right font-semibold">Ajuste</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {impacto.map((l) => (
+                      <tr key={l.classe} className="border-t border-border">
+                        <td className="px-3 py-2 font-medium whitespace-pre-line">{l.classe}</td>
+                        <td className="num px-3 py-2 text-right text-muted-foreground">{pct(l.atualPct)}</td>
+                        <td className="num px-3 py-2 text-right">{pct(l.alvoPct)}</td>
+                        <td
+                          className={`num px-3 py-2 text-right font-semibold ${
+                            Math.abs(l.delta) < 0.5
+                              ? "text-muted-foreground"
+                              : l.delta > 0
+                                ? "text-success"
+                                : "text-destructive"
+                          }`}
+                        >
+                          <span className="inline-flex items-center justify-end gap-1">
+                            {Math.abs(l.delta) < 0.5 ? (
+                              <Minus className="size-3.5" />
+                            ) : l.delta > 0 ? (
+                              <ArrowUpRight className="size-3.5" />
+                            ) : (
+                              <ArrowDownRight className="size-3.5" />
+                            )}
+                            {brl(Math.abs(l.delta), 2)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={aplicar}>Aplicar e rebalancear</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Panel>
+
   );
 }
