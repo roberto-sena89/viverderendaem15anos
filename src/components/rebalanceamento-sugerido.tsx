@@ -2,8 +2,6 @@ import { useMemo, useState } from "react";
 import { ArrowDownRight, ArrowUpRight, CheckCircle2, Sparkles } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { alocacaoIdeal, brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
@@ -38,8 +36,7 @@ function distribuirNaClasse(ativos: Ativo[], valor: number) {
  * as ordens necessárias, considerando um novo aporte opcional.
  */
 export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
-  const [aporteTexto, setAporteTexto] = useState("");
-  const aporte = Math.max(0, Number(aporteTexto.replace(",", ".")) || 0);
+  const aporte = 0;
 
   const { ordens, totalAtual, totalFuturo, semVenda } = useMemo(() => {
     const total = carteira.reduce((s, a) => s + valorAtual(a), 0);
@@ -103,23 +100,7 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
   const equilibrada = comprar.length === 0 && vender.length === 0;
 
   return (
-    <Panel
-      title="Rebalanceamento recomendado"
-      action={
-        <div className="flex items-center gap-2">
-          <Label htmlFor="aporte-rebal" className="text-xs whitespace-nowrap text-muted-foreground">
-            Novo aporte (R$)
-          </Label>
-          <Input
-            id="aporte-rebal"
-            inputMode="decimal"
-            placeholder="0,00"
-            value={aporteTexto}
-            onChange={(e) => setAporteTexto(e.target.value)}
-            className="h-9 w-32 text-xs"
-          />
-        </div>
-      }
+    <Panel title="Rebalanceamento recomendado">
     >
       {totalAtual === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
