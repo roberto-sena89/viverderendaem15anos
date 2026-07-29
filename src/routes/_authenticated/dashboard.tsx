@@ -281,6 +281,9 @@ function Dashboard() {
 
       <ResumoKpis />
 
+      <WidgetCotacoes />
+
+
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel
           title="Evolução do Patrimônio"
