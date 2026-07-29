@@ -24,34 +24,43 @@ function LinhaCotacao({
   valor,
   moeda,
   variacaoPercent,
+  onClick,
 }: {
   nome: string;
   descricao?: string | null;
   valor: number | null;
   moeda: string;
   variacaoPercent: number | null;
+  onClick: () => void;
 }) {
   const positivo = (variacaoPercent ?? 0) >= 0;
   const Icone = positivo ? TrendingUp : TrendingDown;
   return (
-    <li className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50">
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold">{nome}</span>
-        {descricao ? (
-          <span className="block truncate text-[0.7rem] text-muted-foreground">{descricao}</span>
-        ) : null}
-      </span>
-      <span className="shrink-0 text-right">
-        <span className="num block text-sm font-semibold">{preco(valor, moeda)}</span>
-        <span
-          className={`flex items-center justify-end gap-1 text-[0.7rem] font-medium ${
-            positivo ? "text-success" : "text-destructive"
-          }`}
-        >
-          <Icone className="size-3" />
-          {variacao(variacaoPercent)}
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={`Ver detalhes de ${nome}`}
+        className="flex w-full items-center justify-between gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-muted/50"
+      >
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold">{nome}</span>
+          {descricao ? (
+            <span className="block truncate text-[0.7rem] text-muted-foreground">{descricao}</span>
+          ) : null}
         </span>
-      </span>
+        <span className="shrink-0 text-right">
+          <span className="num block text-sm font-semibold">{preco(valor, moeda)}</span>
+          <span
+            className={`flex items-center justify-end gap-1 text-[0.7rem] font-medium ${
+              positivo ? "text-success" : "text-destructive"
+            }`}
+          >
+            <Icone className="size-3" />
+            {variacao(variacaoPercent)}
+          </span>
+        </span>
+      </button>
     </li>
   );
 }
