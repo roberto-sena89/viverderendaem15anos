@@ -265,6 +265,8 @@ function Dashboard() {
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
       <AbasCarteira />
 
+      <WidgetCotacoes />
+
       {carteiraVazia ? (
         <div className="surface-card flex flex-wrap items-center gap-3 p-4">
           <PiggyBank className="size-4 shrink-0 text-muted-foreground" />
@@ -281,7 +283,6 @@ function Dashboard() {
 
       <ResumoKpis />
 
-      <WidgetCotacoes />
 
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
