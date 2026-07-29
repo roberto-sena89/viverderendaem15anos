@@ -49,7 +49,7 @@ function CartaoResumo({
       className="panel cursor-pointer p-4 text-left transition-colors hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       <div className="flex items-center gap-2">
-        <Icone className="size-4 shrink-0 text-muted-foreground/70" />
+        <Icone className="size-8! shrink-0 text-muted-foreground/70" />
         <p className="truncate text-[0.7rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
           {titulo}
         </p>
