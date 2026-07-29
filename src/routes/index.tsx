@@ -129,7 +129,10 @@ const recursos = [
 ];
 
 const numeros: { valor: string; label: string }[] = [
-  { valor: "12+", valor2: "", label: "Classes de ativos suportadas" } as never,
+  { valor: "12+", label: "Classes de ativos suportadas" },
+  { valor: "10 anos", label: "Histórico de cotações e proventos" },
+  { valor: "IA", label: "Assistente com o contexto da sua carteira" },
+  { valor: "R$ 0", label: "Para começar a usar hoje" },
 ];
 
 const faq: { q: string; a: string }[] = [
