@@ -96,6 +96,12 @@ export const alocacaoIdeal: Record<string, number> = {
   "ETF (Brasil)": 20,
   "ETF (EUA)": 20,
   FIIs: 10,
+  "Ações": 0,
+  BDRs: 0,
+  "Fundos de\nInvestimentos": 0,
+  Criptomoedas: 0,
+  REITs: 0,
+  Stocks: 0,
 };
 
 /** Mapeia categorias da carteira para as classes da estratégia de longo prazo. */
@@ -105,21 +111,27 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "Tesouro Direto":
       return "Renda Fixa\nIPCA+";
     case "Renda Fixa":
-    case "Fundos de Investimentos":
       return "Renda Fixa\nPós-fixado";
+    case "Fundos de Investimentos":
+      return "Fundos de\nInvestimentos";
     case "Ações":
+      return "Ações";
     case "ETF Brasil":
       return "ETF (Brasil)";
     case "ETF EUA":
     case "ETF (Exterior)":
-    case "BDR":
-    case "Stocks":
-    case "Criptomoedas":
       return "ETF (EUA)";
+    case "BDR":
+      return "BDRs";
+    case "Stocks":
+      return "Stocks";
+    case "Criptomoedas":
+      return "Criptomoedas";
+    case "REITs":
+      return "REITs";
     case "FIIs":
     case "Fundos Imobiliários":
     case "Fiagro":
-    case "REITs":
       return "FIIs";
     default:
       return "Renda Fixa\nPós-fixado";
