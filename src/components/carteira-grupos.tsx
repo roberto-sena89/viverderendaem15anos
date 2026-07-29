@@ -169,6 +169,9 @@ export function CarteiraGrupos({
 }) {
   const { alvo } = useAlocacaoAlvo();
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
+  const { colunas, compacto, alternarColuna, alternarCompacto, restaurar } = usePreferenciasTabela();
+  const cel = compacto ? "py-1.5 text-xs" : "";
+
 
   const { grupos, totalCarteira } = useMemo(() => {
     const totalCarteira = ativos.reduce((s, a) => s + valorAtual(a), 0);
