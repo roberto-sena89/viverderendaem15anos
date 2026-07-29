@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
   Area,
@@ -12,15 +12,10 @@ import {
   YAxis,
 } from "recharts";
 import {
-  AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
-  CheckCircle2,
-  FileSpreadsheet,
   RefreshCw,
   Search,
-  Upload,
-  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
@@ -28,12 +23,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cotacaoAtivo, historicoAtivo, painelB3, sincronizarPrecos } from "@/lib/market.functions";
-import { lerArquivoB3, type DiagnosticoB3, type ResultadoB3 } from "@/lib/b3-import";
-import { useImportarB3 } from "@/lib/data";
-import { AvisoSincronizacao } from "@/components/aviso-sincronizacao";
 
 import { brl, pct } from "@/lib/portfolio";
 
