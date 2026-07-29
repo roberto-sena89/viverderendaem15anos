@@ -127,6 +127,22 @@ const recursos = [
   },
 ];
 
+const faq: { q: string; a: string }[] = [
+  {
+    q: "O que é viver de renda?",
+    a: "É quando a renda gerada pelos seus investimentos (dividendos, juros e aluguéis) cobre o seu custo de vida, tornando o trabalho opcional.",
+  },
+  {
+    q: "Quanto preciso investir por mês para viver de renda em 15 anos?",
+    a: "Depende do seu custo de vida e da rentabilidade real da carteira. Use a calculadora de juros compostos para simular aportes mensais e prazos.",
+  },
+  {
+    q: "A plataforma é gratuita?",
+    a: "Sim. Você pode criar sua conta e controlar carteira, aportes e dividendos sem custo.",
+  },
+];
+
+
 function HomePage() {
   const navigate = useNavigate();
 
