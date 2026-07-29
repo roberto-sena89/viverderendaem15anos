@@ -4,6 +4,8 @@ import { ArrowRight, LineChart, PiggyBank, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
 import { supabase } from "@/integrations/supabase/client";
+import logoIcone from "@/assets/logo-icone.png";
+import heroFundo from "@/assets/hero-mercado-fundo.jpg";
 
 const TITLE = "Viver de Renda em 15 Anos — Carteira, Dividendos e Independência";
 const DESCRIPTION =
@@ -126,6 +128,13 @@ const recursos = [
   },
 ];
 
+const numeros: { valor: string; label: string }[] = [
+  { valor: "12+", label: "Classes de ativos suportadas" },
+  { valor: "10 anos", label: "Histórico de cotações e proventos" },
+  { valor: "IA", label: "Assistente com o contexto da sua carteira" },
+  { valor: "R$ 0", label: "Para começar a usar hoje" },
+];
+
 const faq: { q: string; a: string }[] = [
   {
     q: "O que é viver de renda?",
@@ -156,24 +165,55 @@ function HomePage() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
-        <span className="text-sm font-semibold tracking-tight">VIVER DE RENDA EM 15 ANOS</span>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <Button asChild size="sm">
-            <Link to="/auth">Entrar</Link>
-          </Button>
+    <div className="bg-background min-h-screen">
+      <header className="absolute inset-x-0 top-0 z-20">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+          <Link to="/" className="flex items-center gap-3">
+            <img
+              src={logoIcone}
+              alt="Logo Viver de Renda em 15 Anos"
+              width={40}
+              height={40}
+              className="size-10 rounded-xl shadow-lg"
+            />
+            <span className="text-sm leading-tight font-semibold tracking-tight uppercase">
+              Viver de Renda
+              <br />
+              em 15 Anos
+            </span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button asChild size="sm">
+              <Link to="/auth">Entrar</Link>
+            </Button>
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 pb-24">
-        <section className="py-14">
-          <h1 className="font-display max-w-3xl text-4xl leading-tight font-bold tracking-tight text-balance sm:text-5xl">
+      <section className="relative isolate overflow-hidden">
+        <img
+          src={heroFundo}
+          alt="Gráficos de candlestick e cotações do mercado financeiro"
+          width={1920}
+          height={1088}
+          className="absolute inset-0 -z-10 size-full object-cover"
+          fetchPriority="high"
+        />
+        <div className="from-background via-background/85 to-background/40 absolute inset-0 -z-10 bg-gradient-to-r" />
+        <div className="from-background absolute inset-0 -z-10 bg-gradient-to-t via-transparent to-transparent" />
+
+        <div className="mx-auto max-w-6xl px-6 pt-32 pb-20 sm:pt-40 sm:pb-24">
+          <span className="border-primary/40 bg-primary/10 text-primary inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase">
+            <Sparkles className="size-3.5" /> Carteira, dividendos e independência
+          </span>
+          <h1 className="font-display mt-6 max-w-3xl text-4xl leading-[1.08] font-bold tracking-tight text-balance sm:text-6xl">
             Organize a sua carteira e descubra em quantos anos você vive de renda
           </h1>
-          <p className="text-muted-foreground mt-5 max-w-2xl text-lg">{DESCRIPTION}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <p className="text-muted-foreground mt-6 max-w-2xl text-lg leading-relaxed">
+            {DESCRIPTION}
+          </p>
+          <div className="mt-9 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link to="/auth">
                 Começar agora <ArrowRight className="size-4" />
@@ -183,9 +223,20 @@ function HomePage() {
               <Link to="/calculadora-juros-compostos">Calculadora de juros compostos</Link>
             </Button>
           </div>
-        </section>
 
-        <section className="grid gap-4 sm:grid-cols-3">
+          <dl className="mt-14 grid max-w-2xl grid-cols-2 gap-6 sm:grid-cols-4">
+            {numeros.map((n) => (
+              <div key={n.label}>
+                <dt className="text-primary text-2xl font-bold tracking-tight">{n.valor}</dt>
+                <dd className="text-muted-foreground mt-1 text-xs leading-snug">{n.label}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-6xl px-6 pb-24">
+        <section className="grid gap-4 pt-14 sm:grid-cols-3">
           {recursos.map((r) => (
             <article key={r.title} className="bg-card rounded-xl border p-5">
               <r.icon className="text-primary size-6" />
