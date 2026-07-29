@@ -84,11 +84,29 @@ function MercadoAoVivo() {
   const { ativo } = Route.useSearch();
   const [busca, setBusca] = useState(ativo ?? "");
   const [simbolo, setSimbolo] = useState(ativo ?? "PETR4");
+  const [intervalo, setIntervalo] = useState<number>(60_000);
+  const [agora, setAgora] = useState(() => Date.now());
+
+  useEffect(() => {
+    const salvo = Number(localStorage.getItem("mercado:intervalo"));
+    if (!Number.isNaN(salvo) && OPCOES_INTERVALO.some((o) => o.valor === salvo)) setIntervalo(salvo);
+  }, []);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setAgora(Date.now()), 1_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  function alterarIntervalo(valor: string) {
+    const n = Number(valor);
+    setIntervalo(n);
+    localStorage.setItem("mercado:intervalo", String(n));
+  }
 
   const painel = useQuery({
     queryKey: ["b3", "painel"],
     queryFn: () => painelFn(),
-    refetchInterval: 60_000,
+    refetchInterval: intervalo > 0 ? intervalo : false,
   });
 
   const cotacao = useQuery({
@@ -96,6 +114,7 @@ function MercadoAoVivo() {
     queryFn: () => cotacaoFn({ data: { simbolo } }),
     enabled: !!simbolo,
     retry: false,
+    refetchInterval: intervalo > 0 ? intervalo : false,
   });
 
   const historico = useQuery({
@@ -114,8 +133,58 @@ function MercadoAoVivo() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const atualizando = painel.isFetching || cotacao.isFetching;
+  const ultima = painel.dataUpdatedAt || 0;
+
   return (
     <>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
+        <div className="flex items-center gap-2 text-sm">
+          <span
+            aria-hidden
+            className={`size-2.5 rounded-full ${
+              atualizando ? "animate-pulse bg-amber-500" : intervalo > 0 ? "bg-primary" : "bg-muted-foreground"
+            }`}
+          />
+          <span className="font-medium">
+            {atualizando ? "Sincronizando…" : intervalo > 0 ? "Dados ao vivo" : "Atualização pausada"}
+          </span>
+          <span className="text-muted-foreground" aria-live="polite">
+            {ultima ? `· atualizado ${tempoRelativo(ultima, agora)}` : "· aguardando primeira carga"}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="intervalo-mercado" className="text-xs tracking-wide text-muted-foreground uppercase">
+            Atualizar a cada
+          </Label>
+          <Select value={String(intervalo)} onValueChange={alterarIntervalo}>
+            <SelectTrigger id="intervalo-mercado" className="h-9 w-[150px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {OPCOES_INTERVALO.map((o) => (
+                <SelectItem key={o.valor} value={String(o.valor)}>
+                  {o.rotulo}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9"
+            aria-label="Atualizar agora"
+            onClick={() => {
+              void painel.refetch();
+              void cotacao.refetch();
+            }}
+            disabled={atualizando}
+          >
+            <RefreshCw className={`size-4 ${atualizando ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {(painel.data?.indices ?? []).map((i) => (
           <Card key={i.simbolo}>
@@ -138,6 +207,7 @@ function MercadoAoVivo() {
             ))
           : null}
       </div>
+
 
       <Card>
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
