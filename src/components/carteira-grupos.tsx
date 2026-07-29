@@ -9,7 +9,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { TickerMark } from "@/components/panel";
 import { Button } from "@/components/ui/button";
@@ -259,15 +259,7 @@ export function CarteiraGrupos({
                   </Table>
                 </div>
 
-                <footer className="flex flex-wrap items-center justify-end gap-2 border-t px-4 py-3 sm:px-6">
-                  <Button asChild size="sm" variant="ghost">
-                    <Link to="/aportes">Lançamentos</Link>
-                  </Button>
-                  <Button asChild size="sm" variant="outline">
-                    <Link to="/estatisticas">
-                      <BarChart3 className="size-4" /> Gráficos
-                    </Link>
-                  </Button>
+                <footer className="flex items-center justify-end border-t px-4 py-3 sm:px-6">
                   <DialogTransacao>
                     <Button size="sm">
                       <Plus className="size-4" /> Adicionar Lançamento
