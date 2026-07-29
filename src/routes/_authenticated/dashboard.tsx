@@ -263,7 +263,6 @@ function Dashboard() {
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
       <AbasCarteira />
-      <AvisoSincronizacao />
 
       {carteiraVazia ? (
         <div className="surface-card flex flex-wrap items-center justify-between gap-3 p-4">
