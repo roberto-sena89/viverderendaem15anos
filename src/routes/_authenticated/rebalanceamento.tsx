@@ -58,7 +58,7 @@ function Rebalanceamento() {
         {linhas.map((l) => (
           <div key={l.classe} className="surface-card p-5">
             <div className="flex items-center justify-between">
-              <p className="font-medium">{l.classe}</p>
+              <p className="font-medium whitespace-pre-line">{l.classe}</p>
               <Badge
                 className={
                   l.status === "verde"
@@ -107,7 +107,7 @@ function Rebalanceamento() {
           <TableBody>
             {linhas.map((l) => (
               <TableRow key={l.classe}>
-                <TableCell className="font-medium">{l.classe}</TableCell>
+                <TableCell className="font-medium whitespace-pre-line">{l.classe}</TableCell>
                 <TableCell className="text-right">{pct(l.atualPct)}</TableCell>
                 <TableCell className="text-right">{pct(l.idealPct)}</TableCell>
                 <TableCell className={`text-right ${l.diff < 0 ? "text-success" : "text-destructive"}`}>{pct(l.diff)}</TableCell>
