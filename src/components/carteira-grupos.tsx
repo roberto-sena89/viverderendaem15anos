@@ -259,64 +259,100 @@ export function CarteiraGrupos({
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
         return (
           <section key={g.classe} className="surface-card overflow-hidden">
-            <header
-              className={`flex flex-wrap items-center gap-4 border-l-4 sm:px-6 ${compacto ? "px-4 py-2" : "px-4 py-4"}`}
-              style={{ borderColor: cor }}
-            >
-              <div className="flex min-w-48 flex-1 items-center gap-3">
-                <span
-                  className={`grid shrink-0 place-items-center rounded-xl ${compacto ? "size-8" : "size-10"}`}
-                  style={{ backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`, color: cor }}
-                >
-                  <BarChart3 className={compacto ? "size-4" : "size-5"} />
-                </span>
-                <h2
-                  className={`font-display leading-tight font-bold whitespace-pre-line ${compacto ? "text-sm" : "text-lg"}`}
-                >
-                  {g.classe}
-                </h2>
-              </div>
-
-
-              <dl className="grid flex-[3] grid-cols-2 gap-x-6 gap-y-3 text-right sm:grid-cols-5">
-                <div>
-                  <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Ativos</dt>
-                  <dd className="font-semibold tabular-nums">{g.ativos.length}</dd>
-                </div>
-                <div>
-                  <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Valor total</dt>
-                  <dd className="font-semibold tabular-nums">{brl(g.total)}</dd>
-                </div>
-                <div>
-                  <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Variação</dt>
-                  <dd>
-                    <Variacao value={g.variacao} suffix="" />
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Rentabilidade</dt>
-                  <dd>
-                    <Variacao value={g.rentabilidade} />
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">% na carteira</dt>
-                  <dd className="font-semibold tabular-nums">
-                    {pct(g.participacao)} <span className="text-muted-foreground">/ {pct(g.ideal)}</span>
-                  </dd>
-                </div>
-              </dl>
-
-              <Button
-                size="icon"
-                variant="ghost"
-                aria-expanded={aberto}
-                aria-label={`${aberto ? "Recolher" : "Expandir"} ${g.classe.replace(/\n/g, " ")}`}
-                onClick={() => setFechados((f) => ({ ...f, [g.classe]: aberto }))}
+            {minimal ? (
+              <header
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-l-[3px] px-3 py-2.5 sm:px-4"
+                style={{ borderColor: cor }}
               >
-                <ChevronDown className={`size-5 transition-transform ${aberto ? "rotate-180" : ""}`} />
-              </Button>
-            </header>
+                <button
+                  type="button"
+                  aria-expanded={aberto}
+                  onClick={() => setFechados((f) => ({ ...f, [g.classe]: aberto }))}
+                  className="flex min-w-0 items-center gap-2.5 text-left"
+                >
+                  <ChevronDown
+                    className={`size-4 shrink-0 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
+                  />
+                  <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: cor }} />
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold whitespace-pre-line sm:whitespace-normal">
+                      {g.classe.replace(/\n/g, " · ")}
+                    </span>
+                    <span className="block text-[0.7rem] text-muted-foreground">
+                      {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} ·{" "}
+                      <span className="tabular-nums">{pct(g.participacao)}</span> de{" "}
+                      <span className="tabular-nums">{pct(g.ideal)}</span>
+                    </span>
+                  </span>
+                </button>
+
+                <div className="flex shrink-0 flex-col items-end leading-tight">
+                  <span className="text-sm font-semibold tabular-nums">{brl(g.total)}</span>
+                  <span className="text-xs">
+                    <Variacao value={g.rentabilidade} />
+                  </span>
+                </div>
+              </header>
+            ) : (
+              <header
+                className={`flex flex-wrap items-center gap-4 border-l-4 sm:px-6 ${compacto ? "px-4 py-2" : "px-4 py-4"}`}
+                style={{ borderColor: cor }}
+              >
+                <div className="flex min-w-48 flex-1 items-center gap-3">
+                  <span
+                    className={`grid shrink-0 place-items-center rounded-xl ${compacto ? "size-8" : "size-10"}`}
+                    style={{ backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`, color: cor }}
+                  >
+                    <BarChart3 className={compacto ? "size-4" : "size-5"} />
+                  </span>
+                  <h2
+                    className={`font-display leading-tight font-bold whitespace-pre-line ${compacto ? "text-sm" : "text-lg"}`}
+                  >
+                    {g.classe}
+                  </h2>
+                </div>
+
+                <dl className="grid flex-[3] grid-cols-2 gap-x-6 gap-y-3 text-right sm:grid-cols-5">
+                  <div>
+                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Ativos</dt>
+                    <dd className="font-semibold tabular-nums">{g.ativos.length}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Valor total</dt>
+                    <dd className="font-semibold tabular-nums">{brl(g.total)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Variação</dt>
+                    <dd>
+                      <Variacao value={g.variacao} suffix="" />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Rentabilidade</dt>
+                    <dd>
+                      <Variacao value={g.rentabilidade} />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">% na carteira</dt>
+                    <dd className="font-semibold tabular-nums">
+                      {pct(g.participacao)} <span className="text-muted-foreground">/ {pct(g.ideal)}</span>
+                    </dd>
+                  </div>
+                </dl>
+
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  aria-expanded={aberto}
+                  aria-label={`${aberto ? "Recolher" : "Expandir"} ${g.classe.replace(/\n/g, " ")}`}
+                  onClick={() => setFechados((f) => ({ ...f, [g.classe]: aberto }))}
+                >
+                  <ChevronDown className={`size-5 transition-transform ${aberto ? "rotate-180" : ""}`} />
+                </Button>
+              </header>
+            )}
+
 
             {aberto ? (
               <>
