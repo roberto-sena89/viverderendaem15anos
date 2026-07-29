@@ -248,7 +248,7 @@ export function CarteiraGrupos({
                                   <DropdownMenuItem onSelect={() => onEditar(a)}>
                                     <Pencil className="size-4" /> Editar ativo
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem variant="destructive" onSelect={() => onExcluir(a)}>
+                                  <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir(a)}>
                                     <Trash2 className="size-4" /> Excluir ativo
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
