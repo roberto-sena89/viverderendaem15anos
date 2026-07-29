@@ -87,105 +87,21 @@ function CarteiraPage() {
         </Button>
       </div>
 
-      <div className="surface-card overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Ticker</TableHead>
-              <TableHead>Nome</TableHead>
-              <TableHead>Categoria</TableHead>
-              <TableHead className="text-right">Qtd.</TableHead>
-              <TableHead className="text-right">Preço médio</TableHead>
-              <TableHead className="text-right">Preço atual</TableHead>
-              <TableHead className="text-right">Lucro</TableHead>
-              <TableHead className="text-right">Rent.</TableHead>
-              <TableHead className="text-right">DY</TableHead>
-              <TableHead className="text-right">Part.</TableHead>
-              <TableHead />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {ativos.map((a) => {
-              const investido = valorInvestido(a);
-              const lucro = valorAtual(a) - investido;
-              const rent = investido > 0 ? (lucro / investido) * 100 : 0;
-              return (
-                <TableRow key={a.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <TickerMark ticker={a.ticker} />
-                      <span className="font-display font-bold">{a.ticker}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="max-w-52 truncate text-muted-foreground">{a.nome}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className="gap-1.5 border"
-                      style={{
-                        borderColor: corCategoria(a.categoria),
-                        color: corCategoria(a.categoria),
-                        backgroundColor: `color-mix(in oklab, ${corCategoria(a.categoria)} 12%, transparent)`,
-                      }}
-                    >
-                      <span
-                        className="size-1.5 rounded-full"
-                        style={{ backgroundColor: corCategoria(a.categoria) }}
-                      />
-                      {a.categoria}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">{a.quantidade.toLocaleString("pt-BR")}</TableCell>
-                  <TableCell className="text-right">{brl(a.precoMedio, 2)}</TableCell>
-                  <TableCell className="text-right font-semibold">{brl(a.precoAtual, 2)}</TableCell>
-                  <TableCell className={`text-right font-semibold ${lucro >= 0 ? "text-success" : "text-destructive"}`}>{brl(lucro)}</TableCell>
-                  <TableCell className="text-right">
-                    <DeltaChip value={rent} />
-                  </TableCell>
-                  <TableCell className="text-right">{pct(a.dy)}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <span className="h-1.5 w-12 overflow-hidden rounded-full bg-muted">
-                        <span
-                          className="block h-full rounded-full bg-gradient-brand"
-                          style={{ width: `${Math.min(100, totalAtual > 0 ? (valorAtual(a) / totalAtual) * 100 : 0)}%` }}
-                        />
-                      </span>
-                      {pct(totalAtual > 0 ? (valorAtual(a) / totalAtual) * 100 : 0)}
-                    </div>
-                  </TableCell>
+      {isLoading ? (
+        <div className="surface-card p-12 text-center text-sm text-muted-foreground">Carregando carteira…</div>
+      ) : (
+        <CarteiraGrupos
+          ativos={ativos}
+          onEditar={abrir}
+          onExcluir={(a) =>
+            excluir.mutate(a.id, {
+              onSuccess: () => toast.success(`${a.ticker} removido.`),
+              onError: () => toast.error("Não foi possível excluir."),
+            })
+          }
+        />
+      )}
 
-                  <TableCell className="text-right whitespace-nowrap">
-                    <Button size="icon" variant="ghost" onClick={() => abrir(a)} aria-label={`Editar ${a.ticker}`}>
-                      <Pencil className="size-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      aria-label={`Excluir ${a.ticker}`}
-                      onClick={() =>
-                        excluir.mutate(a.id, {
-                          onSuccess: () => toast.success(`${a.ticker} removido.`),
-                          onError: () => toast.error("Não foi possível excluir."),
-                        })
-                      }
-                    >
-                      <Trash2 className="size-4 text-destructive" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-            {!isLoading && ativos.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={11} className="py-12 text-center text-sm text-muted-foreground">
-                  Nenhum ativo nesta categoria ainda.
-                </TableCell>
-              </TableRow>
-            ) : null}
-          </TableBody>
-        </Table>
-      </div>
 
       <CarteiraRecomendada />
 
