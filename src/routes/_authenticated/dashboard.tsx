@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BarChart3, Calendar, ChevronDown, CircleDollarSign, Landmark, PiggyBank, Wallet } from "lucide-react";
+import { BarChart3, Calendar, ChevronDown, CircleDollarSign, PiggyBank, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -73,43 +73,60 @@ function GrupoCategoria({
   ativos: Ativo[];
   totalCarteira: number;
 }) {
-  const [aberto, setAberto] = useState(ativos.length > 0);
+  const [aberto, setAberto] = useState(false);
   const total = ativos.reduce((s, a) => s + valorAtual(a), 0);
   const investido = ativos.reduce((s, a) => s + valorInvestido(a), 0);
-  const rent = investido > 0 ? ((total - investido) / investido) * 100 : 0;
+  const lucro = total - investido;
+  const rent = investido > 0 ? (lucro / investido) * 100 : 0;
   const participacao = totalCarteira > 0 ? (total / totalCarteira) * 100 : 0;
+  const cor = corCategoria(categoria);
 
   return (
-    <div className="panel overflow-hidden">
+    <div className="border-b border-border last:border-b-0">
       <button
         type="button"
         onClick={() => setAberto((v) => !v)}
         aria-expanded={aberto}
-        className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/40 md:grid-cols-[minmax(0,1fr)_repeat(5,7rem)_auto]"
+        className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 text-left transition-colors hover:bg-muted/40 md:grid-cols-[minmax(0,14rem)_repeat(5,minmax(0,1fr))_1.25rem]"
       >
-        <span className="flex min-w-0 items-center gap-2">
-          <Landmark className="size-8 shrink-0 text-primary" />
-          <span className="truncate font-display text-sm font-bold">{categoria}</span>
+        <span className="flex min-w-0 items-center gap-2.5">
+          <span className="h-7 w-1 shrink-0 rounded-full" style={{ backgroundColor: cor }} />
+          <span className="min-w-0">
+            <span className="block truncate font-display text-sm font-bold whitespace-pre-line">{categoria}</span>
+            <span className="block text-[0.68rem] text-muted-foreground">
+              {ativos.length} {ativos.length === 1 ? "ativo" : "ativos"}
+            </span>
+          </span>
         </span>
         <span className="hidden text-right md:block">
-          <span className="block text-[0.65rem] text-muted-foreground">Ativos</span>
-          <span className="num text-sm font-semibold">{ativos.length}</span>
+          <span className="num block text-sm font-semibold">{brl(total, 2)}</span>
+          <span className="block text-[0.65rem] text-muted-foreground">saldo</span>
         </span>
         <span className="hidden text-right md:block">
-          <span className="block text-[0.65rem] text-muted-foreground">Valor total</span>
-          <span className="num text-sm font-semibold">{brl(total, 2)}</span>
+          <span className="num block text-sm">{brl(investido, 2)}</span>
+          <span className="block text-[0.65rem] text-muted-foreground">investido</span>
         </span>
         <span className="hidden text-right md:block">
-          <span className="block text-[0.65rem] text-muted-foreground">Investido</span>
-          <span className="num text-sm font-semibold">{brl(investido, 2)}</span>
+          <span
+            className={`num block text-sm font-semibold ${lucro > 0 ? "text-success" : lucro < 0 ? "text-destructive" : "text-muted-foreground"}`}
+          >
+            {lucro > 0 ? "+" : ""}
+            {brl(lucro, 2)}
+          </span>
+          <span className="block text-[0.65rem] text-muted-foreground">lucro</span>
         </span>
         <span className="hidden justify-items-end md:grid">
-          <span className="block text-[0.65rem] text-muted-foreground">Rentabilidade</span>
           <DeltaChip value={rent} />
+          <span className="block text-[0.65rem] text-muted-foreground">rentab.</span>
         </span>
-        <span className="hidden text-right md:block">
-          <span className="block text-[0.65rem] text-muted-foreground">% na carteira</span>
-          <span className="num text-sm font-semibold">{pct(participacao)}</span>
+        <span className="hidden md:block">
+          <span className="num block text-right text-sm font-semibold">{pct(participacao)}</span>
+          <span className="mt-1 block h-1 w-full overflow-hidden rounded-full bg-muted">
+            <span
+              className="block h-full rounded-full"
+              style={{ width: `${Math.min(100, participacao)}%`, backgroundColor: cor }}
+            />
+          </span>
         </span>
         <ChevronDown
           className={`size-4 shrink-0 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
@@ -118,34 +135,47 @@ function GrupoCategoria({
 
       {aberto ? (
         ativos.length === 0 ? (
-          <p className="border-t border-border px-4 py-8 text-center text-sm text-muted-foreground">
-            Nenhum ativo nesta classe. Adicione um lançamento para começar.
+          <p className="border-t border-border/60 bg-muted/20 px-4 py-6 text-center text-xs text-muted-foreground">
+            Nenhum ativo nesta classe.
           </p>
         ) : (
-          <ul className="divide-y divide-border border-t border-border">
+          <ul className="divide-y divide-border/60 border-t border-border/60 bg-muted/20">
             {ativos.map((a) => {
               const atual = valorAtual(a);
               const invest = valorInvestido(a);
-              const rentAtivo = invest > 0 ? ((atual - invest) / invest) * 100 : 0;
+              const lucroA = atual - invest;
+              const rentAtivo = invest > 0 ? (lucroA / invest) * 100 : 0;
               return (
                 <li
                   key={a.id}
-                  className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 md:grid-cols-[minmax(0,1fr)_repeat(5,7rem)_1rem]"
+                  className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-2.5 md:grid-cols-[minmax(0,14rem)_repeat(5,minmax(0,1fr))_1.25rem]"
                 >
-                  <span className="flex min-w-0 items-center gap-3">
+                  <span className="flex min-w-0 items-center gap-2.5 pl-3.5">
                     <TickerMark ticker={a.ticker} />
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold">{a.ticker}</span>
-                      <span className="block truncate text-xs text-muted-foreground">{a.nome}</span>
+                      <span className="num block truncate text-[0.68rem] text-muted-foreground">
+                        {a.quantidade} × {brl(a.precoMedio, 2)}
+                      </span>
                     </span>
                   </span>
-                  <span className="num hidden text-right text-sm md:block">{a.quantidade}</span>
-                  <span className="num text-right text-sm font-semibold">{brl(atual, 2)}</span>
+                  <span className="text-right">
+                    <span className="num block text-sm font-semibold">{brl(atual, 2)}</span>
+                    <span className="num block text-[0.65rem] text-muted-foreground">
+                      atual {brl(a.precoAtual, 2)}
+                    </span>
+                  </span>
                   <span className="num hidden text-right text-sm md:block">{brl(invest, 2)}</span>
+                  <span
+                    className={`num hidden text-right text-sm font-medium md:block ${lucroA > 0 ? "text-success" : lucroA < 0 ? "text-destructive" : "text-muted-foreground"}`}
+                  >
+                    {lucroA > 0 ? "+" : ""}
+                    {brl(lucroA, 2)}
+                  </span>
                   <span className="hidden justify-items-end md:grid">
                     <DeltaChip value={rentAtivo} />
                   </span>
-                  <span className="num hidden text-right text-sm md:block">
+                  <span className="num hidden text-right text-sm text-muted-foreground md:block">
                     {pct(totalCarteira > 0 ? (atual / totalCarteira) * 100 : 0)}
                   </span>
                   <span className="hidden md:block" />
@@ -217,6 +247,7 @@ function Dashboard() {
 
   const ativosEvolucao = tipoEvolucao === "todos" ? ativos : ativos.filter((a) => a.categoria === tipoEvolucao);
   const resumo = resumoCarteira(ativos);
+  const categoriasComAtivos = categorias.filter((c) => ativos.some((a) => a.categoria === c));
   const resumoEvolucao = resumoCarteira(ativosEvolucao);
   const evolucao = evolucaoPatrimonio(aportes, resumoEvolucao.totalAtual);
 
@@ -425,19 +456,41 @@ function Dashboard() {
       </div>
 
 
-      <div className="space-y-3">
-        <h2 className="font-display text-lg font-bold">
-          Meus ativos <span className="text-sm font-medium text-muted-foreground">({ativos.length})</span>
-        </h2>
-        {categorias.map((c) => (
-          <GrupoCategoria
-            key={c}
-            categoria={c}
-            ativos={ativos.filter((a) => a.categoria === c)}
-            totalCarteira={resumo.totalAtual}
-          />
-        ))}
-      </div>
+      <section className="panel overflow-hidden">
+        <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border px-4 py-3">
+          <h2 className="font-display text-sm font-bold tracking-wide uppercase">
+            Meus ativos <span className="text-muted-foreground normal-case">({ativos.length})</span>
+          </h2>
+          <p className="num text-xs text-muted-foreground">
+            {categoriasComAtivos.length} classes · {brl(resumo.totalAtual, 2)}
+          </p>
+        </header>
+
+        <div className="hidden grid-cols-[minmax(0,14rem)_repeat(5,minmax(0,1fr))_1.25rem] gap-x-4 border-b border-border bg-muted/30 px-4 py-2 text-[0.62rem] font-semibold tracking-wider text-muted-foreground uppercase md:grid">
+          <span>Classe / ativo</span>
+          <span className="text-right">Saldo</span>
+          <span className="text-right">Investido</span>
+          <span className="text-right">Lucro (R$)</span>
+          <span className="text-right">Rentab.</span>
+          <span className="text-right">% Carteira</span>
+          <span />
+        </div>
+
+        {categoriasComAtivos.length === 0 ? (
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground">
+            Nenhum ativo cadastrado ainda.
+          </p>
+        ) : (
+          categoriasComAtivos.map((c) => (
+            <GrupoCategoria
+              key={c}
+              categoria={c}
+              ativos={ativos.filter((a) => a.categoria === c)}
+              totalCarteira={resumo.totalAtual}
+            />
+          ))
+        )}
+      </section>
     </AppShell>
   );
 }
