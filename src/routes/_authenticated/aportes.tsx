@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { DialogTransacao } from "@/components/dialog-transacao";
 import { GraficoEvolucaoPatrimonio } from "@/components/grafico-evolucao-patrimonio";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useAportes, useExcluir } from "@/lib/data";
+import { useAportes, useExcluirAporte } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/aportes")({
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/aportes")({
 
 function AportesPage() {
   const { data: aportes = [], isLoading } = useAportes();
-  const excluir = useExcluir("aportes");
+  const excluir = useExcluirAporte();
 
   const mesRef = aportes[0]?.data.slice(0, 7) ?? "";
   const totalMes = aportes
@@ -37,6 +38,14 @@ function AportesPage() {
   return (
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
+
+      <div className="flex justify-end">
+        <DialogTransacao>
+          <Button size="sm">
+            <Plus className="size-4" /> Nova transação
+          </Button>
+        </DialogTransacao>
+      </div>
 
       <GraficoEvolucaoPatrimonio />
 
@@ -69,19 +78,28 @@ function AportesPage() {
                 <TableCell className="text-right">{brl(a.taxas, 2)}</TableCell>
                 <TableCell className="text-right font-medium">{brl(a.quantidade * a.preco + a.taxas)}</TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Excluir aporte"
-                    onClick={() =>
-                      excluir.mutate(a.id, {
-                        onSuccess: () => toast.success("Aporte excluído."),
-                        onError: () => toast.error("Não foi possível excluir."),
-                      })
-                    }
-                  >
-                    <Trash2 className="size-4 text-destructive" />
-                  </Button>
+                  <div className="flex justify-end gap-1">
+                    <DialogTransacao aporte={a}>
+                      <Button size="icon" variant="ghost" aria-label={`Editar transação ${a.ticker}`}>
+                        <Pencil className="size-4" />
+                      </Button>
+                    </DialogTransacao>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      aria-label={`Excluir transação ${a.ticker}`}
+                      disabled={excluir.isPending}
+                      onClick={() => {
+                        if (!confirm(`Excluir a transação de ${a.ticker}? A posição do ativo será recalculada.`)) return;
+                        excluir.mutate(a.id, {
+                          onSuccess: () => toast.success("Transação excluída e totais recalculados."),
+                          onError: () => toast.error("Não foi possível excluir."),
+                        });
+                      }}
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

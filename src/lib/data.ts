@@ -194,6 +194,55 @@ export function useExcluir(tabela: "ativos" | "aportes" | "dividendos" | "metas"
   });
 }
 
+/**
+ * Recalcula quantidade e preço médio do ativo a partir de TODO o histórico de
+ * aportes/vendas do ticker. Usado após editar ou excluir uma transação.
+ */
+async function recalcularAtivo(ticker: string) {
+  const t = ticker.toUpperCase();
+  const { data: linhas, error } = await supabase
+    .from("aportes")
+    .select("*")
+    .eq("ticker", t)
+    .order("data", { ascending: true });
+  if (error) throw error;
+
+  let qtd = 0;
+  let custo = 0;
+  for (const l of linhas ?? []) {
+    const q = Number(l.quantidade);
+    const p = Number(l.preco);
+    if (q >= 0) {
+      qtd += q;
+      custo += q * p;
+    } else {
+      const pm = qtd > 0 ? custo / qtd : 0;
+      qtd += q;
+      custo += q * pm;
+    }
+  }
+  if (qtd <= 0) {
+    qtd = Math.max(0, qtd);
+    custo = 0;
+  }
+  const precoMedio = qtd > 0 ? custo / qtd : 0;
+
+  const { data: ativo } = await supabase.from("ativos").select("*").eq("ticker", t).maybeSingle();
+  if (!ativo) return;
+
+  if (qtd === 0 && (linhas ?? []).length === 0) {
+    const { error: delErr } = await supabase.from("ativos").delete().eq("id", ativo.id);
+    if (delErr) throw delErr;
+    return;
+  }
+
+  const { error: upErr } = await supabase
+    .from("ativos")
+    .update({ quantidade: qtd, preco_medio: precoMedio })
+    .eq("id", ativo.id);
+  if (upErr) throw upErr;
+}
+
 export interface AporteInput {
   data: string;
   corretora: string;
@@ -361,6 +410,64 @@ export function useImportarB3() {
       qc.invalidateQueries({ queryKey: qk.ativos });
       qc.invalidateQueries({ queryKey: qk.aportes });
       qc.invalidateQueries({ queryKey: qk.dividendos });
+    },
+  });
+}
+
+/** Edita uma transação existente e recalcula a posição dos tickers afetados. */
+export function useAtualizarAporte() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...a }: AporteInput & { id: string }) => {
+      const { data: anterior } = await supabase
+        .from("aportes")
+        .select("ticker")
+        .eq("id", id)
+        .maybeSingle();
+
+      const ticker = a.ticker.toUpperCase();
+      const { error } = await supabase
+        .from("aportes")
+        .update({
+          data: a.data,
+          corretora: a.corretora,
+          ticker,
+          categoria: a.categoria,
+          quantidade: a.quantidade,
+          preco: a.preco,
+          taxas: a.taxas,
+          observacoes: a.observacoes || null,
+        })
+        .eq("id", id);
+      if (error) throw error;
+
+      const tickers = new Set([ticker, anterior?.ticker?.toUpperCase()].filter(Boolean) as string[]);
+      for (const t of tickers) await recalcularAtivo(t);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.aportes });
+      qc.invalidateQueries({ queryKey: qk.ativos });
+    },
+  });
+}
+
+/** Exclui uma transação e recalcula a posição do ticker. */
+export function useExcluirAporte() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data: linha } = await supabase
+        .from("aportes")
+        .select("ticker")
+        .eq("id", id)
+        .maybeSingle();
+      const { error } = await supabase.from("aportes").delete().eq("id", id);
+      if (error) throw error;
+      if (linha?.ticker) await recalcularAtivo(linha.ticker);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.aportes });
+      qc.invalidateQueries({ queryKey: qk.ativos });
     },
   });
 }
