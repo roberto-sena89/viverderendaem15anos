@@ -45,12 +45,14 @@ export function CarteiraRecomendada() {
   const { salvar } = useAlocacaoAlvo();
   const { data: carteira = [] } = useAtivos();
 
-  const { impacto, patrimonio } = useMemo(() => {
+  const { impacto, patrimonio, ordens } = useMemo(() => {
     const patrimonio = carteira.reduce((s, a) => s + valorAtual(a), 0);
+    const porClasse: Record<string, typeof carteira> = {};
     const atualPorClasse: Record<string, number> = {};
     for (const a of carteira) {
       const classe = classeDoAtivo(a);
       atualPorClasse[classe] = (atualPorClasse[classe] ?? 0) + valorAtual(a);
+      (porClasse[classe] ??= []).push(a);
     }
     const impacto = Object.entries(alocacaoIdeal)
       .map(([classe, alvoPct]) => {
@@ -61,8 +63,50 @@ export function CarteiraRecomendada() {
       })
       .filter((l) => l.alvoPct > 0 || Math.abs(l.delta) > 0.5)
       .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
-    return { impacto, patrimonio };
+
+    // Detalha as ordens por ativo: rateia o ajuste da classe entre os papéis existentes,
+    // proporcionalmente ao valor de cada posição.
+    const ordens: Ordem[] = [];
+    for (const linha of impacto) {
+      if (Math.abs(linha.delta) < 0.5) continue;
+      const ativos = porClasse[linha.classe] ?? [];
+      const totalClasse = ativos.reduce((s, a) => s + valorAtual(a), 0);
+      if (ativos.length === 0 || totalClasse <= 0) {
+        if (linha.delta > 0) {
+          ordens.push({
+            classe: linha.classe,
+            ticker: "—",
+            nome: "Sem posição nesta classe — escolha um novo papel",
+            acao: "Comprar",
+            preco: 0,
+            quantidade: 0,
+            valor: linha.delta,
+          });
+        }
+        continue;
+      }
+      for (const a of ativos) {
+        const peso = valorAtual(a) / totalClasse;
+        const valor = linha.delta * peso;
+        if (Math.abs(valor) < 0.5) continue;
+        const bruta = a.precoAtual > 0 ? Math.abs(valor) / a.precoAtual : 0;
+        const quantidade = Math.max(bruta >= 1 ? Math.floor(bruta) : Number(bruta.toFixed(4)), 0);
+        ordens.push({
+          classe: linha.classe,
+          ticker: a.ticker,
+          nome: a.nome,
+          acao: valor > 0 ? "Comprar" : "Vender",
+          preco: a.precoAtual,
+          quantidade: valor < 0 ? Math.min(quantidade, a.quantidade) : quantidade,
+          valor: Math.abs(valor),
+        });
+      }
+    }
+    ordens.sort((a, b) => b.valor - a.valor);
+
+    return { impacto, patrimonio, ordens };
   }, [carteira]);
+
 
   const totalCompras = impacto.filter((l) => l.delta > 0).reduce((s, l) => s + l.delta, 0);
   const totalVendas = impacto.filter((l) => l.delta < 0).reduce((s, l) => s - l.delta, 0);
