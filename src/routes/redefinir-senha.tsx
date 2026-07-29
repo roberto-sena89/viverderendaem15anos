@@ -23,7 +23,7 @@ export const Route = createFileRoute("/redefinir-senha")({
       { name: "robots", content: "noindex, follow" },
     ],
     links: [
-      { rel: "canonical", href: "https://viverderendaem15.lovable.app/redefinir-senha" },
+      { rel: "canonical", href: "https://viverderendaem15anos.lovable.app/redefinir-senha" },
     ],
   }),
   component: RedefinirSenhaPage,

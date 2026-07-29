@@ -18,7 +18,7 @@ import { ThemeToggle } from "@/components/theme";
 const TITLE = "Calculadora de Juros Compostos | Simulador de Investimentos";
 const DESCRIPTION =
   "Calculadora de juros compostos gratuita: informe capital inicial, aporte mensal, prazo e taxa de juros e veja a projeção do seu patrimônio com gráfico ano a ano.";
-const URL = "https://viverderendaem15.lovable.app/calculadora-juros-compostos";
+const URL = "https://viverderendaem15anos.lovable.app/calculadora-juros-compostos";
 
 const faqs = [
   {

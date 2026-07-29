@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 const TITLE = "Os Melhores Livros de Finanças e Investimentos para 2026";
 const DESCRIPTION =
   "Comparativo dos melhores livros de finanças e investimentos: comportamento, renda passiva, análise fundamentalista e técnica, para todos os níveis.";
-const URL = "https://viverderendaem15.lovable.app/blog/melhores-livros-financas";
+const URL = "https://viverderendaem15anos.lovable.app/blog/melhores-livros-financas";
 
 interface Livro {
   titulo: string;
@@ -233,7 +233,7 @@ export const Route = createFileRoute("/blog/melhores-livros-financas")({
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Início", item: "https://viverderendaem15.lovable.app/" },
+            { "@type": "ListItem", position: 1, name: "Início", item: "https://viverderendaem15anos.lovable.app/" },
             { "@type": "ListItem", position: 2, name: "Melhores livros de finanças", item: URL },
           ],
         }),

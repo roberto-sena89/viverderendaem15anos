@@ -39,9 +39,9 @@ export const Route = createFileRoute("/auth")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:url", content: "https://viverderendaem15.lovable.app/auth" },
+      { property: "og:url", content: "https://viverderendaem15anos.lovable.app/auth" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/auth" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/auth" }],
   }),
   component: AuthPage,
 });

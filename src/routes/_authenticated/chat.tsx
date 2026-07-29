@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_authenticated/chat")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/chat" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/chat" }],
   }),
 });
 

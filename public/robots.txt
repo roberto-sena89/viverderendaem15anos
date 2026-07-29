@@ -31,4 +31,4 @@ Disallow: /mercado
 Disallow: /rankings
 Disallow: /chat
 
-Sitemap: https://viverderendaem15.lovable.app/sitemap.xml
+Sitemap: https://viverderendaem15anos.lovable.app/sitemap.xml

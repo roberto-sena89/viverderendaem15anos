@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/cotacoes")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/cotacoes" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/cotacoes" }],
   }),
   component: Cotacoes,
 });

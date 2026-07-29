@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/metas")({
       { property: "og:description", content: "Timeline de objetivos patrimoniais com barras de progresso e prazo estimado." },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/metas" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/metas" }],
   }),
   component: MetasPage,
 });

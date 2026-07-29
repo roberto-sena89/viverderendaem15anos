@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/rebalanceamento")({
       { property: "og:description", content: "Semáforo de alocação e valores exatos para rebalancear sua carteira." },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/rebalanceamento" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/rebalanceamento" }],
   }),
   component: Rebalanceamento,
 });

@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/rankings")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/rankings" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/rankings" }],
   }),
 });
 

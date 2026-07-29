@@ -26,7 +26,7 @@ export const Route = createFileRoute("/verificar-email")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/verificar-email" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/verificar-email" }],
   }),
   component: VerifyEmailPage,
 });

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/aportes")({
       { property: "og:description", content: "Histórico completo de aportes da sua carteira de investimentos." },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15.lovable.app/aportes" }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/aportes" }],
   }),
   component: AportesPage,
 });
