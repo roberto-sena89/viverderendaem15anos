@@ -41,7 +41,7 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/chat": Bot,
 };
 
-const grupos = ["Carteira", "Análise", "Planejamento"].map((titulo) => ({
+const grupos = ["Carteira", "MERCADO", "Planejamento"].map((titulo) => ({
   titulo,
   itens: SECOES.filter((s) => s.grupo === titulo).map((s) => ({
     to: s.to,
