@@ -28,6 +28,7 @@ import { Route as AuthenticatedMercadoRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authenticated/estatisticas'
 import { Route as AuthenticatedDividendosRouteImport } from './routes/_authenticated/dividendos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCotacoesRouteImport } from './routes/_authenticated/cotacoes'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
 import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
@@ -134,6 +135,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCotacoesRoute = AuthenticatedCotacoesRouteImport.update({
+  id: '/cotacoes',
+  path: '/cotacoes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/aportes': typeof AuthenticatedAportesRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
   '/chat': typeof AuthenticatedChatRoute
+  '/cotacoes': typeof AuthenticatedCotacoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByTo {
   '/aportes': typeof AuthenticatedAportesRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
   '/chat': typeof AuthenticatedChatRoute
+  '/cotacoes': typeof AuthenticatedCotacoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
   '/estatisticas': typeof AuthenticatedEstatisticasRoute
@@ -252,6 +260,7 @@ export interface FileRoutesById {
   '/_authenticated/aportes': typeof AuthenticatedAportesRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
+  '/_authenticated/cotacoes': typeof AuthenticatedCotacoesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dividendos': typeof AuthenticatedDividendosRoute
   '/_authenticated/estatisticas': typeof AuthenticatedEstatisticasRoute
@@ -282,6 +291,7 @@ export interface FileRouteTypes {
     | '/aportes'
     | '/carteira'
     | '/chat'
+    | '/cotacoes'
     | '/dashboard'
     | '/dividendos'
     | '/estatisticas'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/aportes'
     | '/carteira'
     | '/chat'
+    | '/cotacoes'
     | '/dashboard'
     | '/dividendos'
     | '/estatisticas'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/_authenticated/aportes'
     | '/_authenticated/carteira'
     | '/_authenticated/chat'
+    | '/_authenticated/cotacoes'
     | '/_authenticated/dashboard'
     | '/_authenticated/dividendos'
     | '/_authenticated/estatisticas'
@@ -507,6 +519,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cotacoes': {
+      id: '/_authenticated/cotacoes'
+      path: '/cotacoes'
+      fullPath: '/cotacoes'
+      preLoaderRoute: typeof AuthenticatedCotacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/chat': {
       id: '/_authenticated/chat'
       path: '/chat'
@@ -570,6 +589,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAportesRoute: typeof AuthenticatedAportesRoute
   AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
+  AuthenticatedCotacoesRoute: typeof AuthenticatedCotacoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDividendosRoute: typeof AuthenticatedDividendosRoute
   AuthenticatedEstatisticasRoute: typeof AuthenticatedEstatisticasRoute
@@ -584,6 +604,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAportesRoute: AuthenticatedAportesRoute,
   AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
+  AuthenticatedCotacoesRoute: AuthenticatedCotacoesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDividendosRoute: AuthenticatedDividendosRoute,
   AuthenticatedEstatisticasRoute: AuthenticatedEstatisticasRoute,
