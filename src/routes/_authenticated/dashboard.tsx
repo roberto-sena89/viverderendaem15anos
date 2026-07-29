@@ -269,7 +269,7 @@ function Dashboard() {
           <div className="flex min-w-0 items-center gap-3">
             <Wallet className="size-5 shrink-0 text-muted-foreground" />
             <div className="min-w-0">
-              <p className="font-display text-sm font-semibold">Sua carteira está vazia</p>
+              
               <p className="text-xs text-muted-foreground">
                 Registre seus aportes aqui👉🏻
               </p>
