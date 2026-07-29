@@ -98,7 +98,7 @@ function Rebalanceamento() {
           <TableHeader>
             <TableRow>
               <TableHead>Classe</TableHead>
-              <TableHead className="text-right whitespace-pre-line">ALOCAÇÃO ATUAL EM\n(R$)</TableHead>
+              <TableHead className="text-right whitespace-pre-line">{"ALOCAÇÃO ATUAL EM\n(R$)"}</TableHead>
               <TableHead className="text-right">Alocação atual</TableHead>
               <TableHead className="text-right">Alocação ideal</TableHead>
               <TableHead className="text-right">Diferença</TableHead>
