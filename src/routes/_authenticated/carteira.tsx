@@ -40,6 +40,10 @@ function CarteiraPage() {
   const excluir = useExcluir("ativos");
   const { totalAtual } = resumoCarteira(carteira);
   const ativos = carteira.filter((a) => filtro === "Todos" || a.categoria === filtro);
+  const contagem = carteira.reduce(
+    (m, a) => m.set(a.categoria, (m.get(a.categoria) ?? 0) + 1),
+    new Map<string, number>(),
+  );
 
   function abrir(ativo: Ativo | null) {
     setEditando(ativo);
@@ -71,15 +75,32 @@ function CarteiraPage() {
     <AppShell title="Carteira" description={`${carteira.length} ativos · ${brl(totalAtual)}`}>
       <AbasCarteira />
       <ResumoKpis mostrarLancamento />
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-2">
-          {filtros.map((f) => (
-            <Button key={f} size="sm" variant={filtro === f ? "default" : "outline"} onClick={() => setFiltro(f)}>
-              {f}
-            </Button>
-          ))}
+      <div className="flex items-center gap-2 border-b pb-2">
+        <div className="scrollbar-none -mb-px flex flex-1 items-center gap-1 overflow-x-auto">
+          {filtros
+            .filter((f) => f === "Todos" || contagem.get(f))
+            .map((f) => {
+              const ativo = filtro === f;
+              const qtd = f === "Todos" ? carteira.length : (contagem.get(f) ?? 0);
+              return (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFiltro(f)}
+                  aria-pressed={ativo}
+                  className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors ${
+                    ativo
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {f}
+                  <span className={`tabular-nums ${ativo ? "opacity-80" : "opacity-60"}`}>{qtd}</span>
+                </button>
+              );
+            })}
         </div>
-        <Button onClick={() => abrir(null)}>
+        <Button size="sm" variant="ghost" className="shrink-0 gap-1.5 text-xs font-semibold" onClick={() => abrir(null)}>
           <Plus className="size-4" /> Novo ativo
         </Button>
       </div>
