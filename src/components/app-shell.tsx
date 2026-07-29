@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme";
-import { TickerMercado } from "@/components/ticker-mercado";
+
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
