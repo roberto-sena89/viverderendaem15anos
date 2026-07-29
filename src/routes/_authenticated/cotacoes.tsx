@@ -31,6 +31,8 @@ function Cotacoes() {
       description="Índices, moedas e ETFs atualizados, com busca por ativo"
     >
       <WidgetCotacoes />
+      <GraficosAtivos />
+
     </AppShell>
   );
 }
