@@ -417,21 +417,6 @@ function Dashboard() {
           />
         ))}
       </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-muted/30 px-4 py-3">
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <BarChart3 className="size-8 text-primary" />
-          Veja proventos, rentabilidade detalhada e rebalanceamento da carteira.
-        </p>
-        <div className="flex gap-2">
-          <Button asChild size="sm" variant="outline">
-            <Link to="/dividendos">Proventos</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link to="/aportes">Adicionar lançamento</Link>
-          </Button>
-        </div>
-      </div>
     </AppShell>
   );
 }
