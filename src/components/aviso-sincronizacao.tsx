@@ -1,7 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { CalendarClock } from "lucide-react";
 import { useAportes } from "@/lib/data";
-import { Button } from "@/components/ui/button";
 
 const LIMITE_DIAS = 15;
 
@@ -41,9 +39,6 @@ export function AvisoSincronizacao({ compacto = false }: { compacto?: boolean })
           ) : null}
         </div>
       </div>
-      <Button asChild size="sm" variant="outline" className="shrink-0">
-        <Link to="/mercado">Atualizar carteira</Link>
-      </Button>
     </div>
   );
 }
