@@ -11,6 +11,7 @@ import {
   TrendingUp,
   CandlestickChart,
   Trophy,
+  BarChart3,
 
   Bot,
   LogOut,
@@ -32,6 +33,7 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/dividendos": Coins,
   "/estatisticas": TrendingUp,
   "/rebalanceamento": Scale,
+  "/cotacoes": BarChart3,
   "/rankings": Trophy,
   "/mercado": CandlestickChart,
   "/planejador": LineChart,
