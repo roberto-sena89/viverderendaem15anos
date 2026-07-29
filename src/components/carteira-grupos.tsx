@@ -254,7 +254,7 @@ export function CarteiraGrupos({
 
       {grupos.map((g) => {
 
-        const aberto = !fechados[g.classe];
+        const aberto = fechados[g.classe] === undefined ? !minimal : !fechados[g.classe];
         const cor = corClasse(g.classe);
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
         return (
