@@ -413,3 +413,61 @@ export function useImportarB3() {
     },
   });
 }
+
+/** Edita uma transação existente e recalcula a posição dos tickers afetados. */
+export function useAtualizarAporte() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...a }: AporteInput & { id: string }) => {
+      const { data: anterior } = await supabase
+        .from("aportes")
+        .select("ticker")
+        .eq("id", id)
+        .maybeSingle();
+
+      const ticker = a.ticker.toUpperCase();
+      const { error } = await supabase
+        .from("aportes")
+        .update({
+          data: a.data,
+          corretora: a.corretora,
+          ticker,
+          categoria: a.categoria,
+          quantidade: a.quantidade,
+          preco: a.preco,
+          taxas: a.taxas,
+          observacoes: a.observacoes || null,
+        })
+        .eq("id", id);
+      if (error) throw error;
+
+      const tickers = new Set([ticker, anterior?.ticker?.toUpperCase()].filter(Boolean) as string[]);
+      for (const t of tickers) await recalcularAtivo(t);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.aportes });
+      qc.invalidateQueries({ queryKey: qk.ativos });
+    },
+  });
+}
+
+/** Exclui uma transação e recalcula a posição do ticker. */
+export function useExcluirAporte() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data: linha } = await supabase
+        .from("aportes")
+        .select("ticker")
+        .eq("id", id)
+        .maybeSingle();
+      const { error } = await supabase.from("aportes").delete().eq("id", id);
+      if (error) throw error;
+      if (linha?.ticker) await recalcularAtivo(linha.ticker);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qk.aportes });
+      qc.invalidateQueries({ queryKey: qk.ativos });
+    },
+  });
+}
