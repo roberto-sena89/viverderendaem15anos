@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -23,6 +23,8 @@ import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cotacaoAtivo, historicoAtivo, painelB3, sincronizarPrecos } from "@/lib/market.functions";
@@ -52,6 +54,23 @@ export const Route = createFileRoute("/_authenticated/mercado")({
   }),
   component: MercadoPage,
 });
+
+const OPCOES_INTERVALO = [
+  { valor: 15_000, rotulo: "15 segundos" },
+  { valor: 30_000, rotulo: "30 segundos" },
+  { valor: 60_000, rotulo: "1 minuto" },
+  { valor: 300_000, rotulo: "5 minutos" },
+  { valor: 0, rotulo: "Desativado" },
+];
+
+function tempoRelativo(ts: number, agora: number) {
+  const s = Math.max(0, Math.round((agora - ts) / 1000));
+  if (s < 5) return "agora mesmo";
+  if (s < 60) return `há ${s}s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `há ${m} min`;
+  return `às ${new Date(ts).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
+}
 
 function Variacao({ valor }: { valor: number | null }) {
   if (valor === null) return <span className="text-muted-foreground">—</span>;
