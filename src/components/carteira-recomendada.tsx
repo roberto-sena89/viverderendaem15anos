@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { useAtivos } from "@/lib/data";
+import { corClasse } from "@/lib/cores-ativos";
 import { alocacaoIdeal, brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 
 type Linha = { indexador: string; prazo: string; alvo: number };
@@ -236,7 +237,12 @@ export function CarteiraRecomendada() {
                   <tbody>
                     {impacto.map((l) => (
                       <tr key={l.classe} className="border-t border-border">
-                        <td className="px-3 py-2 font-medium whitespace-pre-line">{l.classe}</td>
+                        <td className="px-3 py-2 font-medium whitespace-pre-line">
+                          <span className="inline-flex items-center gap-2">
+                            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(l.classe) }} />
+                            {l.classe}
+                          </span>
+                        </td>
                         <td className="num px-3 py-2 text-right text-muted-foreground">{pct(l.atualPct)}</td>
                         <td className="num px-3 py-2 text-right">{pct(l.alvoPct)}</td>
                         <td
