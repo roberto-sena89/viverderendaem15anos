@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BarChart3, Calendar, ChevronDown, CircleDollarSign, Landmark, Wallet } from "lucide-react";
+import { BarChart3, Calendar, ChevronDown, CircleDollarSign, Landmark, PiggyBank, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -265,21 +265,19 @@ function Dashboard() {
       <AbasCarteira />
 
       {carteiraVazia ? (
-        <div className="surface-card flex flex-wrap items-center justify-between gap-3 p-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <Wallet className="size-5 shrink-0 text-muted-foreground" />
-            <div className="min-w-0">
-              
-              <p className="text-xs text-muted-foreground">
-                Registre seus aportes aqui👉🏻
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <DialogTransacao>
-              <Button size="sm">Registrar aporte</Button>
-            </DialogTransacao>
-          </div>
+        <div className="surface-card flex flex-wrap items-center gap-3 p-4">
+          <PiggyBank className="size-5 shrink-0 text-muted-foreground" />
+          <p className="text-xs text-muted-foreground">
+            Registre seus aportes aqui👉🏻
+          </p>
+          <DialogTransacao>
+            <Button
+              size="sm"
+              className="font-display text-[14px] font-semibold uppercase tracking-wide"
+            >
+              Registrar aporte
+            </Button>
+          </DialogTransacao>
         </div>
       ) : null}
 
