@@ -57,7 +57,6 @@ export function DialogAlocacaoAlvo() {
   ) as Record<string, number>;
   const somaSubs = Math.round(Object.values(subNumeros).reduce((s, v) => s + v, 0) * 100) / 100;
   /** Renda Fixa é sempre a soma das sub-classes. */
-  const alvoRendaFixa = somaSubs;
   const textoRendaFixa = somaSubs.toFixed(2).replace(".", ",");
 
   const numeros = Object.fromEntries(
