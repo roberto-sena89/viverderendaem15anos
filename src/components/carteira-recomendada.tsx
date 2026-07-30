@@ -39,11 +39,11 @@ const BLOCOS: Bloco[] = [
     linhas: [
       { indexador: "Bolsa Brasileira", prazo: "BOVA11 ou Trend Bolsa Brasileira", alvo: 20 },
       { indexador: "Bolsa Americana", prazo: "IVVB11 ou Trend Bolsa Americana (sem o dólar)", alvo: 20 },
-      { indexador: "Fundos Imobiliários", prazo: "MCRE11 (Mauá Capital Real Estate)", alvo: 2 },
-      { indexador: "Fundos Imobiliários", prazo: "TRXF11 (TRX Real Estate)", alvo: 2 },
-      { indexador: "Fundos Imobiliários", prazo: "MXRF11 (Maxi Renda)", alvo: 2 },
-      { indexador: "Fundos Imobiliários", prazo: "XPML11 (BTG Pactual Shoppings)", alvo: 2 },
-      { indexador: "Fundos Imobiliários", prazo: "BTLG11 (Kinea Renda Imobiliária)", alvo: 2 },
+      { indexador: "FIIS (Fundos Imobiliários)", prazo: "MCRE11 (Mauá Capital Real Estate)", alvo: 2 },
+      { indexador: "FIIS (Fundos Imobiliários)", prazo: "TRXF11 (TRX Real Estate)", alvo: 2 },
+      { indexador: "FIIS (Fundos Imobiliários)", prazo: "MXRF11 (Maxi Renda)", alvo: 2 },
+      { indexador: "FIIS (Fundos Imobiliários)", prazo: "XPML11 (BTG Pactual Shoppings)", alvo: 2 },
+      { indexador: "FIIS (Fundos Imobiliários)", prazo: "BTLG11 (Kinea Renda Imobiliária)", alvo: 2 },
     ],
   },
 ];
