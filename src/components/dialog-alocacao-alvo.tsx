@@ -213,7 +213,7 @@ export function DialogAlocacaoAlvo() {
             disabled={!valido}
             onClick={() => {
               salvar(numeros);
-              salvarSub({ [SUB_RENDA_FIXA]: subNumero });
+              salvarSub(subNumeros);
               setAberto(false);
               toast.success("Alocação ideal atualizada.");
             }}
