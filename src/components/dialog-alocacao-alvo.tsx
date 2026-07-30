@@ -72,7 +72,7 @@ export function DialogAlocacaoAlvo() {
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 gap-2 px-4 text-xs font-semibold">
+        <Button size="sm" className="h-9 gap-2 px-4 text-xs font-semibold">
           <SlidersHorizontal className="size-4!" />
           Editar alocação ideal
         </Button>
