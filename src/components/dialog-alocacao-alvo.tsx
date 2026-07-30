@@ -166,8 +166,7 @@ export function DialogAlocacaoAlvo() {
                 })}
               </div>
               <p className={`mt-2 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}>
-                Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% (máx.{" "}
-                {alvoRendaFixa.toFixed(1).replace(".", ",")}% da Renda Fixa).
+                Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% = total da Renda Fixa.
               </p>
             </div>
           )}
