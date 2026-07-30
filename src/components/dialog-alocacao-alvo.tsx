@@ -61,7 +61,16 @@ export function DialogAlocacaoAlvo() {
   const total = Object.values(numeros).reduce((s, v) => s + v, 0);
   const restante = 100 - total;
   const somaOk = Math.abs(restante) < 0.01;
-  const valido = somaOk && camposInvalidos.size === 0;
+
+  const subNumero = subValor.trim() === "" ? 0 : Math.max(0, paraNumero(subValor) || 0);
+  const alvoRendaFixa = numeros[CLASSE_POS_FIXADO] ?? 0;
+  const subInvalido =
+    subValor.trim() === "" ||
+    !Number.isFinite(paraNumero(subValor)) ||
+    subNumero < 0 ||
+    subNumero > alvoRendaFixa + 0.001;
+
+  const valido = somaOk && camposInvalidos.size === 0 && !subInvalido;
 
   /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
   const aoTeclar = (classe: string) => (e: KeyboardEvent<HTMLInputElement>) => {
