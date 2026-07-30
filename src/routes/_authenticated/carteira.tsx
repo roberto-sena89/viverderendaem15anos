@@ -125,61 +125,117 @@ function CarteiraPage() {
       <CarteiraRecomendada />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editando ? `Editar ${editando.ticker}` : "Novo ativo"}</DialogTitle>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="font-display text-lg font-bold">
+              {editando ? `Editar ${editando.ticker}` : "Novo ativo"}
+            </DialogTitle>
+            <DialogDescription>
+              {editando
+                ? "Atualize os dados do ativo. As alterações refletem na carteira e nos indicadores."
+                : "Cadastre um ativo informando identificação, classificação e posição atual."}
+            </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="ticker">Ticker</Label>
-              <Input id="ticker" name="ticker" defaultValue={editando?.ticker} placeholder="BOVA11" required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="nome">Nome</Label>
-              <Input id="nome" name="nome" defaultValue={editando?.nome} placeholder="iShares Ibovespa" />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="categoria">Categoria</Label>
-              <select
-                id="categoria"
-                name="categoria"
-                defaultValue={editando?.categoria}
-                className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
-              >
-                {categorias.map((c) => (
-                  <option key={c} value={c}>
-                    {rotuloCategoria[c] ?? c}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-muted-foreground">
-                Alterar a categoria realoca o ativo para o grupo correspondente da carteira.
-              </p>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="quantidade">Quantidade</Label>
-              <InputNumeroBR key={`qtd-${editando?.id ?? "novo"}`} id="quantidade" name="quantidade" defaultValue={editando?.quantidade ?? 0} required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="precoMedio">Preço médio (R$)</Label>
-              <InputNumeroBR key={`pm-${editando?.id ?? "novo"}`} id="precoMedio" name="precoMedio" prefixo="R$" defaultValue={editando?.precoMedio ?? 0} required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="precoAtual">Preço atual (R$)</Label>
-              <InputNumeroBR key={`pa-${editando?.id ?? "novo"}`} id="precoAtual" name="precoAtual" prefixo="R$" defaultValue={editando?.precoAtual ?? 0} required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="dy">Dividend yield (%)</Label>
-              <InputNumeroBR key={`dy-${editando?.id ?? "novo"}`} id="dy" name="dy" defaultValue={editando?.dy ?? 0} />
-            </div>
-            <DialogFooter className="sm:col-span-2">
+
+          <form onSubmit={handleSubmit} className="grid gap-6">
+            <section className="grid gap-3">
+              <h3 className="text-[0.7rem] font-semibold tracking-widest text-muted-foreground uppercase">
+                Identificação
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                <div className="grid gap-2">
+                  <Label htmlFor="ticker">Ticker *</Label>
+                  <Input id="ticker" name="ticker" defaultValue={editando?.ticker} placeholder="BOVA11" required />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="nome">Nome do ativo</Label>
+                  <Input id="nome" name="nome" defaultValue={editando?.nome} placeholder="iShares Ibovespa" />
+                </div>
+              </div>
+            </section>
+
+            <section className="grid gap-3">
+              <h3 className="text-[0.7rem] font-semibold tracking-widest text-muted-foreground uppercase">
+                Classificação
+              </h3>
+              <div className="grid gap-2">
+                <Label htmlFor="categoria">Categoria</Label>
+                <select
+                  id="categoria"
+                  name="categoria"
+                  defaultValue={editando?.categoria}
+                  className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                >
+                  {categorias.map((c) => (
+                    <option key={c} value={c}>
+                      {rotuloCategoria[c] ?? c}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  Alterar a categoria realoca o ativo para o grupo correspondente da carteira.
+                </p>
+              </div>
+            </section>
+
+            <section className="grid gap-3">
+              <h3 className="text-[0.7rem] font-semibold tracking-widest text-muted-foreground uppercase">
+                Posição
+              </h3>
+              <div className="grid gap-4 rounded-lg border bg-muted/30 p-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="quantidade">Quantidade *</Label>
+                  <InputNumeroBR
+                    key={`qtd-${editando?.id ?? "novo"}`}
+                    id="quantidade"
+                    name="quantidade"
+                    defaultValue={editando?.quantidade ?? 0}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="precoMedio">Preço médio *</Label>
+                  <InputNumeroBR
+                    key={`pm-${editando?.id ?? "novo"}`}
+                    id="precoMedio"
+                    name="precoMedio"
+                    prefixo="R$"
+                    defaultValue={editando?.precoMedio ?? 0}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="precoAtual">Preço atual *</Label>
+                  <InputNumeroBR
+                    key={`pa-${editando?.id ?? "novo"}`}
+                    id="precoAtual"
+                    name="precoAtual"
+                    prefixo="R$"
+                    defaultValue={editando?.precoAtual ?? 0}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="dy">Dividend yield (%)</Label>
+                  <InputNumeroBR key={`dy-${editando?.id ?? "novo"}`} id="dy" name="dy" defaultValue={editando?.dy ?? 0} />
+                </div>
+              </div>
+            </section>
+
+            <DialogFooter className="gap-2 border-t pt-4 sm:justify-end">
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  Cancelar
+                </Button>
+              </DialogClose>
               <Button type="submit" disabled={salvar.isPending}>
-                Salvar ativo
+                {salvar.isPending ? "Salvando…" : "Salvar ativo"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
 
     </AppShell>
   );
