@@ -157,12 +157,38 @@ function CarteiraPage() {
               <Input id="quantidade" name="quantidade" type="number" step="any" min="0" defaultValue={editando?.quantidade ?? 0} required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="precoMedio">Preço médio</Label>
-              <Input id="precoMedio" name="precoMedio" type="number" step="any" min="0" defaultValue={editando?.precoMedio ?? 0} required />
+              <Label htmlFor="precoMedio">Preço médio (R$)</Label>
+              <div className="relative">
+                <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
+                <Input
+                  id="precoMedio"
+                  name="precoMedio"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  inputMode="decimal"
+                  className="pl-10"
+                  defaultValue={(editando?.precoMedio ?? 0).toFixed(2)}
+                  required
+                />
+              </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="precoAtual">Preço atual</Label>
-              <Input id="precoAtual" name="precoAtual" type="number" step="any" min="0" defaultValue={editando?.precoAtual ?? 0} required />
+              <Label htmlFor="precoAtual">Preço atual (R$)</Label>
+              <div className="relative">
+                <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
+                <Input
+                  id="precoAtual"
+                  name="precoAtual"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  inputMode="decimal"
+                  className="pl-10"
+                  defaultValue={(editando?.precoAtual ?? 0).toFixed(2)}
+                  required
+                />
+              </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="dy">Dividend yield (%)</Label>
