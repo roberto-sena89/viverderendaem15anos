@@ -195,7 +195,7 @@ export function useSalvarAtivo() {
         : await supabase.from("ativos").insert(row);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.ativos }),
+    onSuccess: () => sincronizarCarteira(qc, [qk.ativos]),
   });
 }
 
@@ -206,12 +206,14 @@ export function useExcluir(tabela: "ativos" | "aportes" | "dividendos" | "metas"
       const { error } = await supabase.from(tabela).delete().eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [tabela] });
-      if (tabela === "aportes") qc.invalidateQueries({ queryKey: qk.ativos });
-    },
+    onSuccess: () =>
+      sincronizarCarteira(
+        qc,
+        tabela === "aportes" ? [qk.aportes, qk.ativos] : [[tabela] as const],
+      ),
   });
 }
+
 
 /**
  * Recalcula quantidade e preço médio do ativo a partir de TODO o histórico de
