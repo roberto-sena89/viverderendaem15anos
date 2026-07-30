@@ -311,6 +311,9 @@ export function HistoricoMensalAportes() {
             ))}
           </dl>
 
+          <GraficoAportesMensais meses={meses} />
+
+
           <div className="mt-3 divide-y divide-border">
             {mesesPagina.map((m, i) => {
               const idx = inicio + i;
