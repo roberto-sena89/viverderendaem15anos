@@ -109,63 +109,88 @@ export function DialogAlocacaoAlvo() {
           <DialogDescription>Defina o percentual-alvo de cada classe. A soma precisa ser 100%.</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
-          {Object.keys(alvo).map((classe) => (
-            <div
-              key={classe}
-              className="rounded-md border border-border/60 bg-muted/20 px-3 py-2"
-            >
+        <div className="space-y-3">
+          {Object.keys(alvo).includes(CLASSE_POS_FIXADO) && (
+            <div className="rounded-md border border-border/60 bg-muted/20 px-3 py-2.5">
               <div className="flex items-center justify-between gap-3">
-                <Label htmlFor={`alvo-${classe}`} className="text-xs leading-tight font-medium whitespace-pre-line">
-                  {classe}
+                <Label
+                  htmlFor={`alvo-${CLASSE_POS_FIXADO}`}
+                  className="text-xs leading-tight font-semibold whitespace-pre-line"
+                >
+                  {CLASSE_POS_FIXADO}
                 </Label>
                 <div className="flex shrink-0 items-center gap-1.5">
                   <Input
-                    id={`alvo-${classe}`}
+                    id={`alvo-${CLASSE_POS_FIXADO}`}
                     inputMode="decimal"
-                    aria-invalid={camposInvalidos.has(classe)}
-                    value={valores[classe] ?? ""}
-                    onKeyDown={aoTeclar(classe)}
-                    onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
+                    aria-invalid={camposInvalidos.has(CLASSE_POS_FIXADO)}
+                    value={valores[CLASSE_POS_FIXADO] ?? ""}
+                    onKeyDown={aoTeclar(CLASSE_POS_FIXADO)}
+                    onChange={(e) =>
+                      setValores((v) => ({ ...v, [CLASSE_POS_FIXADO]: sanitizar(e.target.value) }))
+                    }
                     className="h-9 w-20 text-right text-sm tabular-nums"
                   />
                   <span className="text-xs text-muted-foreground">%</span>
                 </div>
               </div>
 
-              {classe === CLASSE_POS_FIXADO && (
-                <div className="mt-2 space-y-2 border-t border-border/60 pt-2 pl-3">
-                  {SUBS_RENDA_FIXA.map((sub) => {
-                    const id = `alvo-sub-${sub.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-                    return (
-                      <div key={sub} className="flex items-center justify-between gap-3">
-                        <Label htmlFor={id} className="text-xs leading-tight font-normal text-muted-foreground">
-                          ↳ {sub} <span className="text-[10px]">(sub-classe)</span>
-                        </Label>
-                        <div className="flex shrink-0 items-center gap-1.5">
-                          <Input
-                            id={id}
-                            inputMode="decimal"
-                            aria-invalid={subsInvalidos.has(sub)}
-                            value={subValores[sub] ?? ""}
-                            onChange={(e) =>
-                              setSubValores((v) => ({ ...v, [sub]: sanitizar(e.target.value) }))
-                            }
-                            className="h-9 w-20 text-right text-sm tabular-nums"
-                          />
-                          <span className="text-xs text-muted-foreground">%</span>
-                        </div>
+              <div className="mt-2.5 grid gap-x-6 gap-y-2 border-t border-border/60 pt-2.5 sm:grid-cols-2">
+                {SUBS_RENDA_FIXA.map((sub) => {
+                  const id = `alvo-sub-${sub.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+                  return (
+                    <div key={sub} className="flex items-center justify-between gap-3">
+                      <Label htmlFor={id} className="min-w-0 truncate text-xs font-normal text-muted-foreground">
+                        ↳ {sub}
+                      </Label>
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <Input
+                          id={id}
+                          inputMode="decimal"
+                          aria-invalid={subsInvalidos.has(sub)}
+                          value={subValores[sub] ?? ""}
+                          onChange={(e) => setSubValores((v) => ({ ...v, [sub]: sanitizar(e.target.value) }))}
+                          className="h-9 w-20 text-right text-sm tabular-nums"
+                        />
+                        <span className="text-xs text-muted-foreground">%</span>
                       </div>
-                    );
-                  })}
-                  <p className={`mt-1 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}>
-                    Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% (máx.{" "}
-                    {alvoRendaFixa.toFixed(1).replace(".", ",")}% da Renda Fixa).
-                  </p>
-                </div>
-              )}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className={`mt-2 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}>
+                Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% (máx.{" "}
+                {alvoRendaFixa.toFixed(1).replace(".", ",")}% da Renda Fixa).
+              </p>
             </div>
-          ))}
+          )}
+
+          <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+            {Object.keys(alvo)
+              .filter((classe) => classe !== CLASSE_POS_FIXADO)
+              .map((classe) => (
+                <div
+                  key={classe}
+                  className="flex items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/20 px-3 py-2"
+                >
+                  <Label htmlFor={`alvo-${classe}`} className="min-w-0 truncate text-xs font-medium">
+                    {classe}
+                  </Label>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <Input
+                      id={`alvo-${classe}`}
+                      inputMode="decimal"
+                      aria-invalid={camposInvalidos.has(classe)}
+                      value={valores[classe] ?? ""}
+                      onKeyDown={aoTeclar(classe)}
+                      onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
+                      className="h-9 w-20 text-right text-sm tabular-nums"
+                    />
+                    <span className="text-xs text-muted-foreground">%</span>
+                  </div>
+                </div>
+              ))}
+          </div>
         </div>
 
 
