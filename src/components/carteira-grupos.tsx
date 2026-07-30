@@ -114,11 +114,14 @@ export function CarteiraGrupos({
   ativos,
   onEditar,
   onExcluir,
+  onMover,
   minimal = false,
 }: {
   ativos: Ativo[];
   onEditar?: (a: Ativo) => void;
   onExcluir?: (a: Ativo) => void;
+  /** Abre o fluxo de realocação do ativo para outra categoria. */
+  onMover?: (a: Ativo) => void;
   /** Modo enxuto: sem barra de ferramentas, densidade compacta e grupos recolhidos. */
   minimal?: boolean;
 }) {
