@@ -127,7 +127,7 @@ interface Grupo {
   variacao: number;
   participacao: number;
   ideal: number;
-  /** Média das variações (%) dos ativos do grupo — soma da coluna dividida pelo nº de ativos. */
+  /** Soma das variações (%) dos ativos do grupo. */
   variacaoPct: number;
 }
 
