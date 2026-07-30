@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BuscaAtivo } from "@/components/busca-ativo";
 import {
