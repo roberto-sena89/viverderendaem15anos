@@ -198,8 +198,8 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                 variant="ghost"
                 size="sm"
                 className="h-9 gap-1.5 border border-border text-xs"
-                disabled={!texto.trim()}
-                onClick={() => aplicar("")}
+                disabled={aporte === 0 && !erro}
+                onClick={() => aplicar("0,00")}
               >
                 <Eraser className="size-3.5" />
                 Zerar
