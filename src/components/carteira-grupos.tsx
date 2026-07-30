@@ -165,9 +165,7 @@ export function CarteiraGrupos({
 
   return (
     <div className={compacto ? "space-y-2" : "space-y-4"}>
-
       {grupos.map((g) => {
-
         const aberto = fechados[g.classe] === undefined ? !minimal : !fechados[g.classe];
         const cor = corClasse(g.classe);
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
