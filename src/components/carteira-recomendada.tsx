@@ -28,7 +28,7 @@ const BLOCOS: Bloco[] = [
     grupo: "Renda Fixa",
     risco: "Baixo",
     linhas: [
-      { indexador: "Pós-fixado (CDI ou Selic)", prazo: "Liquidez imediata", alvo: 30 },
+      { indexador: "Tesouro\u00a0 SELIC (CDI)", prazo: "Liquidez imediata", alvo: 30 },
       { indexador: "IPCA+", prazo: "Prazo maior que 5 anos", alvo: 15 },
       { indexador: "Pré-fixado", prazo: "Prazo maior que 5 anos", alvo: 5 },
     ],
