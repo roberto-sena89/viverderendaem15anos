@@ -428,76 +428,119 @@ export function HistoricoMensalAportes() {
                                   const emEdicao = editando === a.id;
                                   return (
                                     <tr key={a.id} className="bg-muted/30">
-                                      <td className="py-1.5 pr-2">
+                                      <td className="py-1.5 pr-2 align-top">
                                         {emEdicao ? (
-                                          <Input
-                                            type="date"
-                                            value={form.data}
-                                            onChange={(e) => setForm({ ...form, data: e.target.value })}
-                                            className="h-7 w-32 text-xs"
-                                          />
+                                          <>
+                                            <Input
+                                              type="date"
+                                              min="1990-01-01"
+                                              max={new Date().toISOString().slice(0, 10)}
+                                              value={form.data}
+                                              aria-invalid={!!erros.data}
+                                              aria-label="Data do lançamento"
+                                              onChange={(e) => setForm({ ...form, data: e.target.value })}
+                                              className="h-7 w-32 text-xs"
+                                            />
+                                            <ErroCampo msg={erros.data} />
+                                          </>
                                         ) : (
                                           <span className="num text-muted-foreground">{dataCurta(a.data)}</span>
                                         )}
                                       </td>
-                                      <td className="py-1.5 pr-2">
+                                      <td className="py-1.5 pr-2 align-top">
                                         {emEdicao ? (
-                                          <Input
-                                            value={form.ticker}
-                                            onChange={(e) => setForm({ ...form, ticker: e.target.value })}
-                                            className="h-7 w-28 text-xs"
-                                          />
+                                          <>
+                                            <Input
+                                              value={form.ticker}
+                                              maxLength={12}
+                                              aria-invalid={!!erros.ticker}
+                                              aria-label="Ticker do ativo"
+                                              onChange={(e) =>
+                                                setForm({ ...form, ticker: mascaraTicker(e.target.value) })
+                                              }
+                                              className="h-7 w-28 text-xs"
+                                            />
+                                            <ErroCampo msg={erros.ticker} />
+                                          </>
                                         ) : (
                                           a.ticker
                                         )}
                                       </td>
-                                      <td className="py-1.5 pr-2 text-muted-foreground">
+                                      <td className="py-1.5 pr-2 align-top text-muted-foreground">
                                         {a.categoria.replace(/\n/g, " · ")}
                                       </td>
-                                      <td className="py-1.5 pr-2">
+                                      <td className="py-1.5 pr-2 align-top">
                                         {emEdicao ? (
-                                          <Input
-                                            value={form.corretora}
-                                            onChange={(e) => setForm({ ...form, corretora: e.target.value })}
-                                            className="h-7 w-32 text-xs"
-                                          />
+                                          <>
+                                            <Input
+                                              value={form.corretora}
+                                              maxLength={60}
+                                              aria-invalid={!!erros.corretora}
+                                              aria-label="Corretora"
+                                              onChange={(e) => setForm({ ...form, corretora: e.target.value })}
+                                              className="h-7 w-32 text-xs"
+                                            />
+                                            <ErroCampo msg={erros.corretora} />
+                                          </>
                                         ) : (
                                           <span className="text-muted-foreground">{a.corretora || "—"}</span>
                                         )}
                                       </td>
-                                      <td className="py-1.5 pr-2 text-right">
+                                      <td className="py-1.5 pr-2 text-right align-top">
                                         {emEdicao ? (
-                                          <Input
-                                            inputMode="decimal"
-                                            value={form.quantidade}
-                                            onChange={(e) => setForm({ ...form, quantidade: e.target.value })}
-                                            className="num h-7 w-20 text-right text-xs"
-                                          />
+                                          <>
+                                            <Input
+                                              inputMode="decimal"
+                                              value={form.quantidade}
+                                              aria-invalid={!!erros.quantidade}
+                                              aria-label="Quantidade"
+                                              onChange={(e) =>
+                                                setForm({ ...form, quantidade: mascaraDecimal(e.target.value) })
+                                              }
+                                              className="num h-7 w-20 text-right text-xs"
+                                            />
+                                            <ErroCampo msg={erros.quantidade} />
+                                          </>
                                         ) : (
                                           <span className="num">{a.quantidade.toLocaleString("pt-BR")}</span>
                                         )}
                                       </td>
-                                      <td className="py-1.5 pr-2 text-right">
+                                      <td className="py-1.5 pr-2 text-right align-top">
                                         {emEdicao ? (
-                                          <Input
-                                            inputMode="decimal"
-                                            value={form.preco}
-                                            onChange={(e) => setForm({ ...form, preco: e.target.value })}
-                                            className="num h-7 w-24 text-right text-xs"
-                                          />
+                                          <>
+                                            <Input
+                                              inputMode="decimal"
+                                              value={form.preco}
+                                              aria-invalid={!!erros.preco}
+                                              aria-label="Preço unitário"
+                                              onChange={(e) =>
+                                                setForm({ ...form, preco: mascaraDecimal(e.target.value) })
+                                              }
+                                              className="num h-7 w-24 text-right text-xs"
+                                            />
+                                            <ErroCampo msg={erros.preco} />
+                                          </>
                                         ) : (
                                           <span className="num">{brl(a.preco, 2)}</span>
                                         )}
                                       </td>
-                                      <td className="py-1.5 pr-2 text-right">
+                                      <td className="py-1.5 pr-2 text-right align-top">
                                         {emEdicao ? (
-                                          <Input
-                                            inputMode="decimal"
-                                            value={form.taxas}
-                                            onChange={(e) => setForm({ ...form, taxas: e.target.value })}
-                                            className="num h-7 w-20 text-right text-xs"
-                                          />
+                                          <>
+                                            <Input
+                                              inputMode="decimal"
+                                              value={form.taxas}
+                                              aria-invalid={!!erros.taxas}
+                                              aria-label="Taxas"
+                                              onChange={(e) =>
+                                                setForm({ ...form, taxas: mascaraDecimal(e.target.value) })
+                                              }
+                                              className="num h-7 w-20 text-right text-xs"
+                                            />
+                                            <ErroCampo msg={erros.taxas} />
+                                          </>
                                         ) : (
+
                                           <span className="num text-muted-foreground">{brl(a.taxas, 2)}</span>
                                         )}
                                       </td>
