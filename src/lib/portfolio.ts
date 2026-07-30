@@ -90,7 +90,7 @@ export const planoPadrao: PlanoConfig = {
 };
 
 export const alocacaoIdeal: Record<string, number> = {
-  "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)": 50,
+  "Renda Fixa (Tesouro SELIC, IPCA+,Prefixado)\u00a0CDB, LCI, LCA": 50,
   "ETFs - Brasil": 20,
   "ETFs - Global": 20,
   FIIs: 10,
@@ -102,7 +102,7 @@ export const alocacaoIdeal: Record<string, number> = {
   Stocks: 0,
 };
 
-export const CLASSE_POS_FIXADO = "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)";
+export const CLASSE_POS_FIXADO = "Renda Fixa (Tesouro SELIC, IPCA+,Prefixado)\u00a0CDB, LCI, LCA";
 
 /** Toda renda fixa (Tesouro Direto, CDB, CDI, LCI, LCA, prefixado, IPCA+) usa uma única janela. */
 
@@ -290,7 +290,7 @@ export const rotuloCategoria: Record<string, string> = {
   "ETF (Exterior)": "ETFs - Global",
   Fiagro: "Fiagro",
   "Fundos de Investimentos": "Fundos de Investimentos",
-  "Renda Fixa": "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)",
+  "Renda Fixa": "Renda Fixa (Tesouro SELIC, IPCA+,Prefixado)\u00a0CDB, LCI, LCA",
   Stocks: "Stocks",
   REITs: "REITs",
   Criptomoedas: "Criptomoedas",
