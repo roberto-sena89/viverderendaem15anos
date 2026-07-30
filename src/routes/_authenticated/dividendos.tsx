@@ -119,7 +119,7 @@ function DividendosPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="valor">Valor (R$)</Label>
-                <Input id="valor" name="valor" type="number" step="any" min="0" required />
+                <InputNumeroBR id="valor" name="valor" prefixo="R$" required />
               </div>
               <DialogFooter className="sm:col-span-2">
                 <Button type="submit" disabled={criar.isPending}>
