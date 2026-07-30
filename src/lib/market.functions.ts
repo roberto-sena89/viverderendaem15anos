@@ -203,7 +203,11 @@ export const procurarAtivos = createServerFn({ method: "GET" })
     if (!categoria || CATEGORIAS_TESOURO.includes(categoria) || alvo.startsWith("TESOURO")) {
       try {
         const { listarTesouroDireto } = await import("@/lib/tesouro.server");
-        const titulos = await listarTesouroDireto();
+        const hoje = new Date().toISOString().slice(0, 10);
+        const titulos = (await listarTesouroDireto())
+          // apenas títulos ainda disponíveis (não vencidos), do vencimento mais próximo ao mais distante
+          .filter((t) => !t.vencimento || t.vencimento >= hoje)
+          .sort((a, b) => (a.vencimento ?? "").localeCompare(b.vencimento ?? ""));
         for (const t of titulos) {
           const nome = t.nome;
           const normal = nome
