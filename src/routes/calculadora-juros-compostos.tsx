@@ -149,7 +149,7 @@ function CalculadoraPage() {
           ano.
         </p>
 
-        <section className="mt-10 grid gap-6 lg:grid-cols-[320px_1fr]">
+        <section className="mt-10 grid gap-6 lg:grid-cols-[320px_1fr] [&>*]:min-w-0">
           <form
             className="space-y-4 rounded-2xl border border-border bg-card p-5"
             onSubmit={(e) => e.preventDefault()}

@@ -121,9 +121,9 @@
   --accent: oklch(0.95 0.025 158);
   --accent-foreground: oklch(0.32 0.06 158);
 
-  --destructive: oklch(0.55 0.2 25);
+  --destructive: oklch(0.485 0.19 25);
   --destructive-foreground: oklch(0.99 0.005 150);
-  --success: oklch(0.55 0.13 155);
+  --success: oklch(0.47 0.12 155);
   --success-foreground: oklch(0.99 0.005 150);
   --warning: oklch(0.75 0.15 78);
   --warning-foreground: oklch(0.2 0.03 78);
@@ -182,9 +182,9 @@
   --accent: oklch(0.28 0.035 158);
   --accent-foreground: oklch(0.9 0.03 158);
 
-  --destructive: oklch(0.62 0.18 25);
+  --destructive: oklch(0.74 0.16 25);
   --destructive-foreground: oklch(0.98 0.005 150);
-  --success: oklch(0.68 0.14 158);
+  --success: oklch(0.75 0.14 158);
   --success-foreground: oklch(0.14 0.02 160);
   --warning: oklch(0.78 0.14 78);
   --warning-foreground: oklch(0.18 0.03 78);
@@ -352,7 +352,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--color-success);
+  color: color-mix(in oklab, var(--color-success) 70%, var(--color-foreground));
   background-color: color-mix(in oklab, var(--color-success) 14%, transparent);
 }
 
@@ -365,7 +365,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--color-destructive);
+  color: color-mix(in oklab, var(--color-destructive) 70%, var(--color-foreground));
   background-color: color-mix(in oklab, var(--color-destructive) 14%, transparent);
 }
 

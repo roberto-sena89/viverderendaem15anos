@@ -270,7 +270,7 @@ function Dashboard() {
             </p>
           ) : (
             <div className="flex flex-wrap items-center gap-5">
-              <div className="relative h-56 min-w-[13rem] flex-1">
+              <div className="relative h-56 min-w-[13rem] flex-1" aria-hidden="true" inert>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie

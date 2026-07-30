@@ -77,7 +77,7 @@ function Planejador() {
 
   return (
     <AppShell title="Planejador da Independência Financeira" description="Simule cenários e descubra sua data de liberdade">
-      <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
+      <div className="grid gap-4 lg:grid-cols-[340px_1fr] [&>*]:min-w-0">
         <div className="surface-card space-y-5 p-6">
           <NumberField label="Idade atual" value={input.idadeAtual} onChange={set("idadeAtual")} />
           <NumberField label="Idade da aposentadoria" value={input.idadeAposentadoria} onChange={set("idadeAposentadoria")} />
@@ -167,7 +167,7 @@ function Planejador() {
 
           <ComparadorCenarios input={input} objetivoRenda={objetivoRenda} />
 
-          <div className="surface-card max-h-96 overflow-auto">
+          <div className="surface-card max-h-96 w-full min-w-0 max-w-full overflow-auto" tabIndex={0} role="region" aria-label="Projeção ano a ano">
 
             <Table>
               <TableHeader>

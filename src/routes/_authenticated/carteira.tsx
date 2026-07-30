@@ -88,7 +88,7 @@ function CarteiraPage() {
                   type="button"
                   onClick={() => setFiltro(f)}
                   aria-pressed={ativo}
-                  className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors ${
+                  className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors sm:min-h-9 ${
                     ativo
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"

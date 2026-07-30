@@ -56,7 +56,7 @@ function CartaoResumo({
         <p className="min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] text-balance text-muted-foreground uppercase">
           {titulo}
         </p>
-        <span className="shrink-0 text-[0.85rem] text-muted-foreground/70">detalhes</span>
+        <span className="shrink-0 text-[0.85rem] text-muted-foreground">detalhes</span>
       </div>
 
       <div className="mt-3">{children}</div>

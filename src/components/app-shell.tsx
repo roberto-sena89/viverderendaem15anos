@@ -149,7 +149,7 @@ export function AppShell({
                       key={to}
                       to={to}
                       aria-current={active ? "page" : undefined}
-                      className={`group relative flex items-center gap-3 rounded-lg py-2.5 pr-3 pl-4 text-[0.875rem] leading-none transition-colors ${
+                      className={`group relative flex min-h-11 items-center gap-3 rounded-lg py-2.5 pr-3 pl-4 text-[0.875rem] leading-none transition-colors lg:min-h-10 ${
                         active
                           ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
                           : "font-medium text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
@@ -247,12 +247,12 @@ export function AppShell({
             </div>
           </div>
 
-          <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
+          <nav className="flex max-w-full min-w-0 gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
             {nav.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
-                className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs transition-colors ${
+                className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-xs transition-colors ${
                   pathname === to
                     ? "bg-accent font-medium text-accent-foreground"
                     : "text-muted-foreground hover:bg-muted"

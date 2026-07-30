@@ -144,7 +144,7 @@ export function CarteiraRecomendada() {
       }
       bodyClassName="p-0"
     >
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Carteira recomendada">
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <thead>
             <tr className="bg-muted/40 text-[0.875rem] tracking-wider text-muted-foreground uppercase">
@@ -158,7 +158,7 @@ export function CarteiraRecomendada() {
             {BLOCOS.map((bloco) =>
               bloco.linhas.map((linha, i) => (
                 <tr
-                  key={`${bloco.grupo}-${linha.prazo}`}
+                  key={`${bloco.grupo}-${linha.indexador}-${linha.prazo}-${i}`}
                   className="border-t border-border transition-colors hover:bg-muted/30"
                 >
                   {i === 0 ? (
