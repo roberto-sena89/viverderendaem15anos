@@ -224,7 +224,7 @@ export function CarteiraRecomendada() {
                 </div>
               </div>
 
-              <div className="max-h-72 overflow-y-auto rounded-lg border border-border">
+              <div className="rounded-lg border border-border">
                 <table className="w-full border-collapse text-sm">
                   <thead>
                     <tr className="bg-muted/40 text-[0.875rem] tracking-wider text-muted-foreground uppercase">
@@ -285,7 +285,7 @@ export function CarteiraRecomendada() {
                     Nenhuma ordem necessária — a carteira já está próxima da recomendação.
                   </p>
                 ) : (
-                  <div className="max-h-72 overflow-auto">
+                  <div className="overflow-x-auto">
                     <table className="w-full min-w-[560px] border-collapse text-sm">
                       <thead>
                         <tr className="bg-muted/20 text-[0.875rem] tracking-wider text-muted-foreground uppercase">

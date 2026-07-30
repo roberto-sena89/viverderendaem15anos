@@ -339,7 +339,7 @@ function MercadoAoVivo() {
                 <Resumo rotulo="Drawdown máximo" valor={historico.data.resumo.drawdownMaximoPercent} />
               </div>
 
-              <div className="max-h-72 overflow-auto rounded-xl border border-border">
+              <div className="overflow-x-auto rounded-xl border border-border">
                 <Table>
                   <TableHeader>
                     <TableRow>
