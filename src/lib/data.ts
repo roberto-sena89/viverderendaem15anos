@@ -460,10 +460,8 @@ export function useAtualizarAporte() {
       const tickers = new Set([ticker, anterior?.ticker?.toUpperCase()].filter(Boolean) as string[]);
       for (const t of tickers) await recalcularAtivo(t);
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.aportes });
-      qc.invalidateQueries({ queryKey: qk.ativos });
-    },
+    onSuccess: () => sincronizarCarteira(qc),
+
   });
 }
 
