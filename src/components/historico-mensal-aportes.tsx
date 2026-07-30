@@ -335,8 +335,47 @@ export function HistoricoMensalAportes() {
 
           <GraficoAportesMensais meses={meses} />
 
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
+              <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={busca}
+                onChange={(e) => {
+                  setBusca(e.target.value);
+                  setPagina(0);
+                  setExpandido(null);
+                }}
+                placeholder="Buscar período (julho, 2026, 07/2026)"
+                aria-label="Buscar aportes por mês ou ano"
+                className="h-8 pl-8 text-xs"
+              />
+            </div>
+            {busca.trim() && (
+              <>
+                <span className="num text-[0.85rem] text-muted-foreground">
+                  {mesesFiltrados.length} {mesesFiltrados.length === 1 ? "mês" : "meses"}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 text-xs"
+                  onClick={() => {
+                    setBusca("");
+                    setPagina(0);
+                  }}
+                >
+                  Limpar
+                </Button>
+              </>
+            )}
+          </div>
 
           <div className="mt-3 divide-y divide-border">
+            {mesesFiltrados.length === 0 && meses.length > 0 && (
+              <p className="py-6 text-center text-xs text-muted-foreground">
+                Nenhum mês encontrado para “{busca}”.
+              </p>
+            )}
             {mesesPagina.map((m, i) => {
               const idx = inicio + i;
               const aberta = expandido === m.chave;
