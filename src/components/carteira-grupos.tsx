@@ -146,6 +146,12 @@ export function CarteiraGrupos({
         const total = lista.reduce((s, a) => s + valorAtual(a), 0);
         const investido = lista.reduce((s, a) => s + valorInvestido(a), 0);
         const somaVariacoes = lista.reduce((s, a) => s + variacaoAtivo(a), 0);
+        // Soma os mesmos valores arredondados exibidos em cada linha da tabela,
+        // garantindo que o cabeçalho nunca divirja das linhas visíveis.
+        const rentabilidadeReais = lista.reduce(
+          (s, a) => s + Math.round((valorAtual(a) - valorInvestido(a)) * 100) / 100,
+          0,
+        );
         return {
           variacaoPct: somaVariacoes,
           classe,
@@ -153,7 +159,8 @@ export function CarteiraGrupos({
           total,
           investido,
           rentabilidade: investido > 0 ? ((total - investido) / investido) * 100 : 0,
-          variacao: total - investido,
+          variacao: rentabilidadeReais,
+
           participacao: totalCarteira > 0 ? (total / totalCarteira) * 100 : 0,
           ideal: alvo[classe] ?? 0,
         };
