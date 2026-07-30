@@ -425,11 +425,8 @@ export function useImportarB3() {
 
       return { aportes: aportes.length, dividendos: dividendos.length };
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.ativos });
-      qc.invalidateQueries({ queryKey: qk.aportes });
-      qc.invalidateQueries({ queryKey: qk.dividendos });
-    },
+    onSuccess: () => sincronizarCarteira(qc),
+
   });
 }
 
