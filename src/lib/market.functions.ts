@@ -160,3 +160,96 @@ export const panoramaMercado = createServerFn({ method: "GET" })
     const mercado = await import("@/lib/market.server");
     return mercado.buscarPanoramaMercado(data.periodo);
   });
+
+export interface SugestaoAtivo {
+  ticker: string;
+  nome: string;
+  fonte: "B3" | "Tesouro Transparente" | "Exterior";
+  detalhe?: string | null;
+  preco?: number | null;
+}
+
+/** Categorias negociadas na B3 (sufixo .SA no Yahoo). */
+const CATEGORIAS_B3 = [
+  "Ações",
+  "Fundos Imobiliários",
+  "BDR",
+  "ETF Brasil",
+  "Fiagro",
+];
+const CATEGORIAS_TESOURO = ["Tesouro Direto", "Renda Fixa"];
+
+/**
+ * Autocomplete de ativos: títulos do Tesouro Transparente e papéis listados na
+ * B3 / exterior (Yahoo Finance), filtrados pela categoria escolhida.
+ */
+export const procurarAtivos = createServerFn({ method: "GET" })
+  .inputValidator((d: { termo: string; categoria?: string }) => ({
+    termo: String(d.termo ?? "").trim().slice(0, 40),
+    categoria: String(d.categoria ?? "").slice(0, 40),
+  }))
+  .handler(async ({ data }): Promise<SugestaoAtivo[]> => {
+    const termo = data.termo;
+    if (termo.length < 1) return [];
+    const categoria = data.categoria;
+    const alvo = termo
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
+
+    const sugestoes: SugestaoAtivo[] = [];
+
+    // 1) Tesouro Transparente
+    if (!categoria || CATEGORIAS_TESOURO.includes(categoria) || alvo.startsWith("TESOURO")) {
+      try {
+        const { listarTesouroDireto } = await import("@/lib/tesouro.server");
+        const titulos = await listarTesouroDireto();
+        for (const t of titulos) {
+          const nome = t.nome;
+          const normal = nome
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toUpperCase();
+          if (!normal.includes(alvo) && !"TESOURO".startsWith(alvo)) continue;
+          sugestoes.push({
+            ticker: nome.toUpperCase(),
+            nome,
+            fonte: "Tesouro Transparente",
+            detalhe: t.vencimento ? `Vencimento ${t.vencimento.split("-").reverse().join("/")}` : null,
+            preco: t.precoCompra ?? t.precoVenda ?? null,
+          });
+          if (sugestoes.length >= 12) break;
+        }
+      } catch {
+        /* fonte indisponível: segue com a B3 */
+      }
+    }
+
+    // 2) B3 / exterior via Yahoo Finance
+    if (!CATEGORIAS_TESOURO.includes(categoria)) {
+      try {
+        const mercado = await import("@/lib/market.server");
+        const brasileiro = !categoria || CATEGORIAS_B3.includes(categoria);
+        const encontrados = await mercado.procurarAtivo(termo);
+        for (const a of encontrados) {
+          const ehSA = a.simbolo.endsWith(".SA");
+          if (categoria === "Criptomoedas" && !/-(BRL|USD)$/.test(a.simbolo)) continue;
+          if (categoria && categoria !== "Criptomoedas") {
+            if (brasileiro && !ehSA) continue;
+            if (!brasileiro && ehSA) continue;
+          }
+          sugestoes.push({
+            ticker: a.simbolo.replace(/\.SA$/, ""),
+            nome: a.nome ?? a.simbolo,
+            fonte: ehSA ? "B3" : "Exterior",
+            detalhe: a.bolsa,
+          });
+        }
+      } catch {
+        /* fonte indisponível */
+      }
+    }
+
+    const vistos = new Set<string>();
+    return sugestoes.filter((s) => !vistos.has(s.ticker) && vistos.add(s.ticker)).slice(0, 12);
+  });
