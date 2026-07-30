@@ -105,6 +105,7 @@ export function HistoricoMensalAportes() {
         item.datas.push(a.data);
         item.categoria = categoria;
         if (a.corretora && !item.corretoras.includes(a.corretora)) item.corretoras.push(a.corretora);
+        item.registros.push(a);
       } else {
         m.itens.push({
           ticker,
@@ -116,6 +117,7 @@ export function HistoricoMensalAportes() {
           taxas: a.taxas,
           total,
           lancamentos: 1,
+          registros: [a],
         });
       }
     }
