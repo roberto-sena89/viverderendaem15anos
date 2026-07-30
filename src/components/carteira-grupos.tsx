@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   BarChart3,
   ChevronDown,
   CircleCheck,
   CircleSlash,
-  Columns3,
   MoreHorizontal,
   Pencil,
-  Rows3,
   Trash2,
 } from "lucide-react";
 
@@ -15,11 +13,8 @@ import { TickerMark } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -40,19 +35,6 @@ type ColunaId =
   | "ideal"
   | "comprar";
 
-const COLUNAS: { id: ColunaId; label: string }[] = [
-  { id: "quantidade", label: "Quant." },
-  { id: "precoMedio", label: "Preço médio" },
-  { id: "precoAtual", label: "Preço atual" },
-  { id: "variacao", label: "Variação (%)" },
-  { id: "rentabilidade", label: "Rentabilidade (R$)" },
-  { id: "saldo", label: "Saldo" },
-  { id: "nota", label: "Nota" },
-  { id: "participacao", label: "% Carteira" },
-  { id: "ideal", label: "% Ideal" },
-  { id: "comprar", label: "Comprar?" },
-];
-
 const PADRAO: Record<ColunaId, boolean> = {
   quantidade: true,
   precoMedio: true,
@@ -65,58 +47,6 @@ const PADRAO: Record<ColunaId, boolean> = {
   ideal: true,
   comprar: true,
 };
-
-const CHAVE_COLUNAS = "carteira:colunas";
-const CHAVE_COMPACTO = "carteira:compacto";
-
-function usePreferenciasTabela() {
-  const [colunas, setColunas] = useState<Record<ColunaId, boolean>>(PADRAO);
-  const [compacto, setCompacto] = useState(false);
-
-  useEffect(() => {
-    try {
-      const c = localStorage.getItem(CHAVE_COLUNAS);
-      if (c) setColunas({ ...PADRAO, ...(JSON.parse(c) as Record<ColunaId, boolean>) });
-      setCompacto(localStorage.getItem(CHAVE_COMPACTO) === "1");
-    } catch {
-      /* preferências opcionais */
-    }
-  }, []);
-
-  const alternarColuna = (id: ColunaId) =>
-    setColunas((atual) => {
-      const proximo = { ...atual, [id]: !atual[id] };
-      if (!Object.values(proximo).some(Boolean)) return atual; // mantém ao menos uma coluna
-      try {
-        localStorage.setItem(CHAVE_COLUNAS, JSON.stringify(proximo));
-      } catch {
-        /* ignora */
-      }
-      return proximo;
-    });
-
-  const alternarCompacto = () =>
-    setCompacto((v) => {
-      try {
-        localStorage.setItem(CHAVE_COMPACTO, v ? "0" : "1");
-      } catch {
-        /* ignora */
-      }
-      return !v;
-    });
-
-  const restaurar = () => {
-    setColunas(PADRAO);
-    try {
-      localStorage.setItem(CHAVE_COLUNAS, JSON.stringify(PADRAO));
-    } catch {
-      /* ignora */
-    }
-  };
-
-  return { colunas, compacto, alternarColuna, alternarCompacto, restaurar };
-}
-
 
 interface Grupo {
   classe: string;
@@ -193,17 +123,9 @@ export function CarteiraGrupos({
 }) {
   const { alvo } = useAlocacaoAlvo();
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
-  const {
-    colunas,
-    compacto: compactoPref,
-    alternarColuna,
-    alternarCompacto,
-    restaurar,
-  } = usePreferenciasTabela();
-  const compacto = compactoPref || minimal;
+  const colunas = PADRAO;
+  const compacto = minimal;
   const cel = compacto ? "py-1.5 text-xs" : "";
-
-
 
   const { grupos, totalCarteira } = useMemo(() => {
     const totalCarteira = ativos.reduce((s, a) => s + valorAtual(a), 0);
@@ -241,15 +163,9 @@ export function CarteiraGrupos({
     );
   }
 
-  const visiveis = COLUNAS.filter((c) => colunas[c.id]).length;
-
   return (
     <div className={compacto ? "space-y-2" : "space-y-4"}>
-
-
-
       {grupos.map((g) => {
-
         const aberto = fechados[g.classe] === undefined ? !minimal : !fechados[g.classe];
         const cor = corClasse(g.classe);
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
@@ -350,7 +266,6 @@ export function CarteiraGrupos({
                 </Button>
               </header>
             )}
-
 
             {aberto ? (
               <>
