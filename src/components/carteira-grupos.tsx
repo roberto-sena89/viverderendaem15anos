@@ -385,7 +385,7 @@ export function CarteiraGrupos({
                 <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className={compacto ? "min-w-40" : "min-w-56"}>Ativo</TableHead>
+                        <TableHead className={compacto ? "min-w-48" : "min-w-64"}>Ticker / Nome do ativo</TableHead>
                         {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
                         {colunas.precoMedio && <TableHead className="text-right">Preço médio</TableHead>}
                         {colunas.precoAtual && <TableHead className="text-right">Preço atual</TableHead>}
@@ -419,11 +419,12 @@ export function CarteiraGrupos({
                                 {compacto ? null : <TickerMark ticker={a.ticker} />}
                                 <div className="min-w-0">
                                   <p className="font-display leading-tight font-bold">{a.ticker}</p>
-                                  {compacto ? null : (
-                                    <p className="max-w-48 truncate text-xs text-muted-foreground">
-                                      {a.nome || a.categoria}
-                                    </p>
-                                  )}
+                                  <p
+                                    className={`truncate text-xs text-muted-foreground ${compacto ? "max-w-40" : "max-w-56"}`}
+                                    title={a.nome || a.categoria}
+                                  >
+                                    {a.nome || a.categoria}
+                                  </p>
                                 </div>
                               </div>
                             </TableCell>
