@@ -487,7 +487,49 @@ export function CarteiraGrupos({
                           </TableRow>
                         );
                       })}
+                      {(() => {
+                        const qtd = g.ativos.reduce((s, a) => s + a.quantidade, 0);
+                        const pmMedio = qtd > 0 ? g.investido / qtd : 0;
+                        const paMedio = qtd > 0 ? g.total / qtd : 0;
+                        return (
+                          <TableRow className="border-t-2 bg-muted/40 font-semibold hover:bg-muted/40">
+                            <TableCell className={cel}>Total do grupo</TableCell>
+                            {colunas.quantidade && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{num(qtd)}</TableCell>
+                            )}
+                            {colunas.precoMedio && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{brl(pmMedio, 2)}</TableCell>
+                            )}
+                            {colunas.precoAtual && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{brl(paMedio, 2)}</TableCell>
+                            )}
+                            {colunas.variacao && (
+                              <TableCell className={`text-right ${cel}`}>
+                                <Variacao value={g.rentabilidade} />
+                              </TableCell>
+                            )}
+                            {colunas.rentabilidade && (
+                              <TableCell className={`text-right ${cel}`}>
+                                <Variacao value={g.variacao} suffix="" />
+                              </TableCell>
+                            )}
+                            {colunas.saldo && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{brl(g.total)}</TableCell>
+                            )}
+                            {colunas.nota && <TableCell className={cel} />}
+                            {colunas.participacao && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{pct(g.participacao)}</TableCell>
+                            )}
+                            {colunas.ideal && (
+                              <TableCell className={`text-right tabular-nums ${cel}`}>{pct(g.ideal)}</TableCell>
+                            )}
+                            {colunas.comprar && <TableCell className={cel} />}
+                            {onEditar && onExcluir ? <TableCell className={cel} /> : null}
+                          </TableRow>
+                        );
+                      })()}
                 </TableBody>
+
                 </Table>
                 </div>
 
