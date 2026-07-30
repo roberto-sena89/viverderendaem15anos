@@ -53,6 +53,23 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   const [aberto, setAberto] = useState(false);
   const [texto, setTexto] = useState("1000");
   const [tocado, setTocado] = useState(false);
+  const [historico, setHistorico] = useState<string[]>([]);
+
+  /** Aplica um novo valor guardando o anterior para permitir desfazer. */
+  const aplicar = (novo: string) => {
+    setHistorico((h) => [...h, texto]);
+    setTocado(false);
+    setTexto(novo);
+  };
+
+  const desfazer = () => {
+    setHistorico((h) => {
+      if (h.length === 0) return h;
+      setTexto(h[h.length - 1]);
+      setTocado(false);
+      return h.slice(0, -1);
+    });
+  };
 
   const { valor: aporte, erro } = validarAporte(texto);
   const mostrarErro = tocado && Boolean(erro);
