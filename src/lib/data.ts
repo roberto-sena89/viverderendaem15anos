@@ -238,12 +238,17 @@ async function recalcularAtivo(ticker: string) {
     return;
   }
 
+  // Mantém o preço atual coerente: se ainda não houver cotação sincronizada,
+  // usa o preço médio recalculado para o saldo não ficar zerado.
+  const precoAtual = Number(ativo.preco_atual) > 0 ? Number(ativo.preco_atual) : precoMedio;
+
   const { error: upErr } = await supabase
     .from("ativos")
-    .update({ quantidade: qtd, preco_medio: precoMedio })
+    .update({ quantidade: qtd, preco_medio: precoMedio, preco_atual: precoAtual })
     .eq("id", ativo.id);
   if (upErr) throw upErr;
 }
+
 
 export interface AporteInput {
   data: string;
