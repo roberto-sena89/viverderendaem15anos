@@ -3,8 +3,8 @@ import { CalendarRange, Check, ChevronDown, ChevronRight, Pencil, Trash2, Trendi
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAportes, useAtivos, useAtualizarAporte, useExcluirAporte, type Aporte } from "@/lib/data";
-import { brl } from "@/lib/portfolio";
+import { useAportes, useAtivos, useAtualizarAporte, useExcluirAporte } from "@/lib/data";
+import { brl, type Aporte } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 
 type Item = {
