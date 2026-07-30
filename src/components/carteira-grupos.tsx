@@ -211,39 +211,51 @@ export function CarteiraGrupos({
               </header>
             ) : (
               <header
-                className={`flex flex-wrap items-center gap-4 border-l-4 sm:px-6 ${compacto ? "px-4 py-2" : "px-4 py-4"}`}
+                className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 border-l-4 sm:px-6 lg:grid-cols-[minmax(14rem,1fr)_minmax(0,3fr)_auto] ${compacto ? "px-4 py-2" : "px-4 py-4"}`}
                 style={{ borderColor: cor }}
               >
-                <div className="flex min-w-48 flex-1 items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
                   <span
                     className={`grid shrink-0 place-items-center rounded-xl ${compacto ? "size-8" : "size-10"}`}
                     style={{ backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`, color: cor }}
                   >
                     <BarChart3 className={compacto ? "size-4" : "size-5"} />
                   </span>
-                  <h2
-                    className={`font-display leading-tight font-bold whitespace-pre-line ${compacto ? "text-sm" : "text-lg"}`}
-                  >
-                    {g.classe}
-                  </h2>
+                  <div className="min-w-0">
+                    <h2
+                      className={`font-display leading-tight font-bold ${compacto ? "text-sm" : "text-base lg:text-lg"}`}
+                    >
+                      {g.classe.replace(/\n/g, " ").split("(")[0].trim()}
+                    </h2>
+                    {g.classe.includes("(") ? (
+                      <p className="mt-0.5 text-[0.78rem] leading-snug text-muted-foreground">
+                        {g.classe
+                          .replace(/\n/g, " ")
+                          .slice(g.classe.replace(/\n/g, " ").indexOf("(") + 1)
+                          .replace(/\)/g, "")
+                          .replace(/,\s*/g, ", ")
+                          .trim()}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
 
-                <dl className="grid flex-[3] grid-cols-2 gap-x-6 gap-y-3 text-right sm:grid-cols-5">
-                  <div>
+                <dl className="col-span-2 grid grid-cols-2 gap-x-6 gap-y-3 text-right sm:grid-cols-3 lg:col-span-1 lg:grid-cols-5">
+                  <div className="min-w-0">
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Ativos</dt>
                     <dd className="font-semibold tabular-nums">{g.ativos.length}</dd>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Valor total</dt>
                     <dd className="font-semibold tabular-nums">{brl(g.total, 2)}</dd>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Variação (%)</dt>
                     <dd>
                       <Variacao value={g.variacaoPct} />
                     </dd>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">
                       Rentabilidade (R$)
                     </dt>
@@ -251,7 +263,7 @@ export function CarteiraGrupos({
                       <Variacao value={g.variacao} suffix="" />
                     </dd>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">% na carteira</dt>
                     <dd className="font-semibold tabular-nums">
                       {pct(g.participacao)} <span className="text-muted-foreground">/ {pct(g.ideal)}</span>
@@ -260,6 +272,7 @@ export function CarteiraGrupos({
                 </dl>
 
                 <Button
+                  className="shrink-0 justify-self-end"
                   size="icon"
                   variant="ghost"
                   aria-expanded={aberto}
@@ -269,6 +282,7 @@ export function CarteiraGrupos({
                   <ChevronDown className={`size-5 transition-transform ${aberto ? "rotate-180" : ""}`} />
                 </Button>
               </header>
+
             )}
 
             {aberto ? (
