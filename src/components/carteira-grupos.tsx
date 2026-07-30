@@ -170,7 +170,7 @@ function Variacao({ value, suffix = "%" }: { value: number; suffix?: string }) {
   const seguro = Object.is(arredondado, -0) ? 0 : arredondado;
   const cor = seguro > 0 ? "text-success" : seguro < 0 ? "text-destructive" : "text-muted-foreground";
   const sinal = seguro > 0 ? "+" : seguro < 0 ? "−" : "";
-  const corpo = suffix === "%" ? `${num(Math.abs(seguro))}%` : brl(Math.abs(seguro));
+  const corpo = suffix === "%" ? `${num(Math.abs(seguro))}%` : brl(Math.abs(seguro), 2);
   return (
     <span className={`font-semibold tabular-nums ${cor}`}>
       {sinal}
@@ -310,7 +310,7 @@ export function CarteiraGrupos({
                 </button>
 
                 <div className="flex shrink-0 flex-col items-end leading-tight">
-                  <span className="text-sm font-semibold tabular-nums">{brl(g.total)}</span>
+                  <span className="text-sm font-semibold tabular-nums">{brl(g.total, 2)}</span>
                   <span className="text-xs">
                     <Variacao value={g.rentabilidade} />
                   </span>
@@ -342,7 +342,7 @@ export function CarteiraGrupos({
                   </div>
                   <div>
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Valor total</dt>
-                    <dd className="font-semibold tabular-nums">{brl(g.total)}</dd>
+                    <dd className="font-semibold tabular-nums">{brl(g.total, 2)}</dd>
                   </div>
                   <div>
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Variação (%)</dt>
@@ -449,7 +449,7 @@ export function CarteiraGrupos({
                               </TableCell>
                             )}
                             {colunas.saldo && (
-                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>{brl(saldo)}</TableCell>
+                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>{brl(saldo, 2)}</TableCell>
                             )}
                             {colunas.nota && (
                               <TableCell className={`text-center ${cel}`}>
@@ -516,7 +516,7 @@ export function CarteiraGrupos({
 
                 <footer className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/30 px-4 py-3 sm:px-6">
                   <p className="text-xs text-muted-foreground">
-                    {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} · {brl(g.total)} ·{" "}
+                    {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} · {brl(g.total, 2)} ·{" "}
                     {g.participacao >= g.ideal
                       ? "acima ou no alvo desta classe"
                       : `faltam ${pct(g.ideal - g.participacao)} para o alvo`}
