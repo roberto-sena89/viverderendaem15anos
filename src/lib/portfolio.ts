@@ -90,7 +90,7 @@ export const planoPadrao: PlanoConfig = {
 };
 
 export const alocacaoIdeal: Record<string, number> = {
-  "Renda Fixa\nPós-fixado\nCDI/SELIC": 30,
+  "Renda Fixa -CDI/SELIC\n(PÓS)": 30,
   "Renda Fixa\nIPCA+": 15,
   "Renda Fixa\nPré-fixado": 5,
   "ETF (Brasil)": 20,
@@ -104,7 +104,7 @@ export const alocacaoIdeal: Record<string, number> = {
   Stocks: 0,
 };
 
-export const CLASSE_POS_FIXADO = "Renda Fixa\nPós-fixado\nCDI/SELIC";
+export const CLASSE_POS_FIXADO = "Renda Fixa -CDI/SELIC\n(PÓS)";
 
 /** Detecta o indexador da renda fixa pelo ticker/nome (Selic, CDI, IPCA, pré). */
 const indexadorRendaFixa = (a: Ativo): string | null => {
