@@ -1,13 +1,15 @@
+import writeXlsxFile, { type Row, type Cell, type CellObject } from "write-excel-file/browser";
+
 import {
   FORMATO_MOEDA,
   FORMATO_PERCENTUAL,
   FORMATO_QUANTIDADE,
 } from "./formatadores";
-import type { DadosExportacao } from "./tipos";
+import type { DadosExportacao, LinhaCarteira } from "./tipos";
 
 interface DefColuna {
   header: string;
-  key: string;
+  key: keyof LinhaCarteira;
   width: number;
   formato?: string;
   /** Colore verde/vermelho conforme o sinal do valor. */
@@ -32,65 +34,47 @@ const COLUNAS: DefColuna[] = [
   { header: "Última Atualização", key: "atualizadoEm", width: 19 },
 ];
 
-const VERDE = "FF0F7A3D";
-const VERMELHO = "FFC02626";
-const HEADER_BG = "FF006B3C";
+const VERDE = "#0F7A3D";
+const VERMELHO = "#C02626";
+const HEADER_BG = "#006B3C";
+const BRANCO = "#FFFFFF";
+
+const celulaCabecalho = (value: string): CellObject => ({
+  value,
+  fontWeight: "bold",
+  textColor: BRANCO,
+  backgroundColor: HEADER_BG,
+  align: "center",
+  alignVertical: "center",
+  wrap: true,
+});
+
+const celulaNumero = (valor: number, formato?: string, sinal?: boolean): CellObject => ({
+  type: Number,
+  value: Number.isFinite(valor) ? valor : 0,
+  format: formato,
+  ...(sinal ? { fontWeight: "bold" as const, textColor: valor < 0 ? VERMELHO : VERDE } : {}),
+});
 
 /**
  * Gera a planilha .xlsx com as abas "Carteira" e "Resumo".
- * O ExcelJS é carregado sob demanda para não pesar no bundle inicial.
+ * A biblioteca é carregada sob demanda para não pesar no bundle inicial.
  */
 export async function gerarXlsxCarteira({ linhas, resumo }: DadosExportacao): Promise<Blob> {
-  const { Workbook } = await import("exceljs");
-  const wb = new Workbook();
-  wb.creator = "Viver de Renda em 15 Anos";
-  wb.created = new Date();
-
   // ---------- Aba Carteira ----------
-  const ws = wb.addWorksheet("Carteira", {
-    views: [{ state: "frozen", ySplit: 1 }],
-  });
-  ws.columns = COLUNAS.map((c) => ({ header: c.header, key: c.key, width: c.width }));
-
-  const cabecalho = ws.getRow(1);
-  cabecalho.height = 24;
-  cabecalho.eachCell((cell) => {
-    cell.font = { bold: true, color: { argb: "FFFFFFFF" }, size: 11 };
-    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: HEADER_BG } };
-    cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
-  });
-
-  for (const l of linhas) {
-    const row = ws.addRow(l as unknown as Record<string, unknown>);
-    COLUNAS.forEach((c, i) => {
-      const cell = row.getCell(i + 1);
-      if (c.formato) cell.numFmt = c.formato;
-      if (c.sinal) {
-        const v = Number(cell.value ?? 0);
-        cell.font = { color: { argb: v < 0 ? VERMELHO : VERDE }, bold: true };
-      }
-    });
-  }
-
-  ws.autoFilter = {
-    from: { row: 1, column: 1 },
-    to: { row: 1, column: COLUNAS.length },
-  };
+  const abaCarteira: Row[] = [
+    COLUNAS.map((c) => celulaCabecalho(c.header)),
+    ...linhas.map((l) =>
+      COLUNAS.map((c): Cell => {
+        const valor = l[c.key];
+        return typeof valor === "number"
+          ? celulaNumero(valor, c.formato, c.sinal)
+          : { type: String, value: valor == null ? "" : String(valor) };
+      }),
+    ),
+  ];
 
   // ---------- Aba Resumo ----------
-  const rs = wb.addWorksheet("Resumo");
-  rs.columns = [
-    { header: "Indicador", key: "indicador", width: 32 },
-    { header: "Valor", key: "valor", width: 22 },
-  ];
-  const cabResumo = rs.getRow(1);
-  cabResumo.height = 22;
-  cabResumo.eachCell((cell) => {
-    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
-    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: HEADER_BG } };
-    cell.alignment = { vertical: "middle", horizontal: "center" };
-  });
-
   const indicadores: [string, number, string | undefined, boolean?][] = [
     ["Patrimônio total", resumo.patrimonioTotal, FORMATO_MOEDA],
     ["Total investido", resumo.totalInvestido, FORMATO_MOEDA],
@@ -101,37 +85,36 @@ export async function gerarXlsxCarteira({ linhas, resumo }: DadosExportacao): Pr
     ["Número de ativos", resumo.numeroAtivos, "0"],
   ];
 
-  for (const [indicador, valor, formato, sinal] of indicadores) {
-    const row = rs.addRow({ indicador, valor });
-    row.getCell(1).font = { bold: true };
-    const cell = row.getCell(2);
-    if (formato) cell.numFmt = formato;
-    if (sinal) cell.font = { bold: true, color: { argb: valor < 0 ? VERMELHO : VERDE } };
-  }
+  const abaResumo: Row[] = [
+    [celulaCabecalho("Indicador"), celulaCabecalho("Valor")],
+    ...indicadores.map(([indicador, valor, formato, sinal]): Row => [
+      { type: String, value: indicador, fontWeight: "bold" },
+      celulaNumero(valor, formato, sinal),
+    ]),
+    [],
+    [{ type: String, value: "Distribuição por classe de ativos", fontWeight: "bold", fontSize: 12 }],
+    [celulaCabecalho("Classe"), celulaCabecalho("Valor atual"), celulaCabecalho("Participação (%)")],
+    ...resumo.distribuicao.map((d): Row => [
+      { type: String, value: d.classe },
+      celulaNumero(d.valor, FORMATO_MOEDA),
+      celulaNumero(d.participacao, FORMATO_PERCENTUAL),
+    ]),
+  ];
 
-  rs.addRow({});
-  const tituloDist = rs.addRow({ indicador: "Distribuição por classe de ativos" });
-  tituloDist.getCell(1).font = { bold: true, size: 12 };
+  const saida = await writeXlsxFile([
+    {
+      sheet: "Carteira",
+      data: abaCarteira,
+      columns: COLUNAS.map((c) => ({ width: c.width })),
+      stickyRowsCount: 1,
+    },
+    {
+      sheet: "Resumo",
+      data: abaResumo,
+      columns: [{ width: 32 }, { width: 22 }, { width: 18 }],
+      stickyRowsCount: 1,
+    },
+  ]);
 
-  const cabDist = rs.addRow({ indicador: "Classe", valor: "Valor atual" });
-  cabDist.getCell(3).value = "Participação (%)";
-  [1, 2, 3].forEach((c) => {
-    const cell = cabDist.getCell(c);
-    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
-    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: HEADER_BG } };
-  });
-  rs.getColumn(3).width = 18;
-
-  for (const d of resumo.distribuicao) {
-    const row = rs.addRow({ indicador: d.classe, valor: d.valor });
-    row.getCell(2).numFmt = FORMATO_MOEDA;
-    const p = row.getCell(3);
-    p.value = d.participacao;
-    p.numFmt = FORMATO_PERCENTUAL;
-  }
-
-  const buffer = await wb.xlsx.writeBuffer();
-  return new Blob([buffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
+  return saida.toBlob();
 }
