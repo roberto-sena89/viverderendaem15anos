@@ -202,7 +202,7 @@ export function CarteiraGrupos({
           0,
         );
         return {
-          variacaoPct: lista.length > 0 ? somaVariacoes / lista.length : 0,
+          variacaoPct: somaVariacoes,
           classe,
           ativos: [...lista].sort((x, y) => valorAtual(y) - valorAtual(x)),
           total,
