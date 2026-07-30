@@ -19,7 +19,7 @@ export const COR_CLASSE: Record<string, string> = {
   Stocks: "var(--color-chart-2)",
   REITs: "var(--color-chart-10)",
   Criptomoedas: "var(--color-chart-4)",
-  "Fundos de Investimentos": "var(--color-chart-7)",
+  "Fundos de Investimentos": "var(--color-chart-15)",
 };
 
 /** Categorias da carteira mapeadas para a mesma cor da sua classe de estratégia. */
