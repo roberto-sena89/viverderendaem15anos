@@ -12,7 +12,7 @@ export const COR_CLASSE: Record<string, string> = {
   "ETFs - Brasil": "var(--color-chart-11)",
   "ETF (Exterior)": "var(--color-chart-12)",
   "ETFs - Global": "var(--color-chart-12)",
-  [CLASSE_POS_FIXADO]: "var(--color-chart-6)",
+  [CLASSE_POS_FIXADO]: "var(--color-chart-16)",
   "Renda Fixa - IPCA+": "var(--color-chart-7)",
   "Renda Fixa - Prefixado": "var(--color-chart-8)",
   BDRs: "var(--color-chart-9)",
