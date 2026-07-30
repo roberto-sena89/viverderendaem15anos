@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BuscaAtivo } from "@/components/busca-ativo";
+import type { SugestaoAtivo } from "@/lib/market.functions";
 import {
   Dialog,
   DialogContent,
@@ -86,6 +87,7 @@ export function DialogTransacao({
   const [categoria, setCategoria] = useState<Categoria | "">("");
   const [ticker, setTicker] = useState("");
   const [nomeAtivo, setNomeAtivo] = useState("");
+  const [ativoSel, setAtivoSel] = useState<SugestaoAtivo | null>(null);
   const [data, setData] = useState(() => new Date().toISOString().slice(0, 10));
   const [preco, setPreco] = useState("");
   const [quantidade, setQuantidade] = useState("");
@@ -118,6 +120,7 @@ export function DialogTransacao({
     setCategoria("");
     setTicker("");
     setNomeAtivo("");
+    setAtivoSel(null);
     setData(new Date().toISOString().slice(0, 10));
     setPreco("");
     setQuantidade("");
@@ -312,6 +315,7 @@ export function DialogTransacao({
                 onChange={(v) => {
                   setTicker(v);
                   setNomeAtivo("");
+                  setAtivoSel(null);
                   limparErro("ticker");
                 }}
                 onSelecionar={(s) => {
