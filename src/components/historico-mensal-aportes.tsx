@@ -287,11 +287,16 @@ export function HistoricoMensalAportes() {
                               <th className="py-1.5 pr-2 text-right font-semibold">Qtd.</th>
                               <th className="py-1.5 pr-2 text-right font-semibold">Preço médio</th>
                               <th className="py-1.5 pr-2 text-right font-semibold">Taxas</th>
-                              <th className="py-1.5 text-right font-semibold">Valor aplicado</th>
+                              <th className="py-1.5 pr-2 text-right font-semibold">Valor aplicado</th>
+                              <th className="py-1.5 text-right font-semibold">Editar</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-border/60">
-                            {m.itens.map((i) => (
+                            {m.itens.map((i) => {
+                              const chaveLinha = `${m.chave}:${i.ticker}`;
+                              const linhaAbertaAtual = linhaAberta === chaveLinha;
+                              return (
+                              <>
                               <tr key={i.ticker}>
                                 <td className="num py-1.5 pr-2 whitespace-nowrap text-muted-foreground">
                                   {intervalo(i.datas)}
@@ -319,8 +324,164 @@ export function HistoricoMensalAportes() {
                                 </td>
                                 <td className="num py-1.5 pr-2 text-right text-muted-foreground">{brl(i.taxas, 2)}</td>
                                 <td className="num py-1.5 text-right font-semibold">{brl(i.total)}</td>
+                                <td className="py-1.5 pl-2 text-right">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    aria-label={`Editar lançamentos de ${i.ticker}`}
+                                    aria-expanded={linhaAbertaAtual}
+                                    onClick={() => {
+                                      setEditando(null);
+                                      setLinhaAberta(linhaAbertaAtual ? null : chaveLinha);
+                                    }}
+                                    className="h-7 gap-1 px-2 text-[0.78rem]"
+                                  >
+                                    <Pencil className="size-3.5" />
+                                    Editar
+                                  </Button>
+                                </td>
                               </tr>
-                            ))}
+                              {linhaAbertaAtual &&
+                                i.registros.map((a) => {
+                                  const emEdicao = editando === a.id;
+                                  return (
+                                    <tr key={a.id} className="bg-muted/30">
+                                      <td className="py-1.5 pr-2">
+                                        {emEdicao ? (
+                                          <Input
+                                            type="date"
+                                            value={form.data}
+                                            onChange={(e) => setForm({ ...form, data: e.target.value })}
+                                            className="h-7 w-32 text-xs"
+                                          />
+                                        ) : (
+                                          <span className="num text-muted-foreground">{dataCurta(a.data)}</span>
+                                        )}
+                                      </td>
+                                      <td className="py-1.5 pr-2">
+                                        {emEdicao ? (
+                                          <Input
+                                            value={form.ticker}
+                                            onChange={(e) => setForm({ ...form, ticker: e.target.value })}
+                                            className="h-7 w-28 text-xs"
+                                          />
+                                        ) : (
+                                          a.ticker
+                                        )}
+                                      </td>
+                                      <td className="py-1.5 pr-2 text-muted-foreground">
+                                        {a.categoria.replace(/\n/g, " · ")}
+                                      </td>
+                                      <td className="py-1.5 pr-2">
+                                        {emEdicao ? (
+                                          <Input
+                                            value={form.corretora}
+                                            onChange={(e) => setForm({ ...form, corretora: e.target.value })}
+                                            className="h-7 w-32 text-xs"
+                                          />
+                                        ) : (
+                                          <span className="text-muted-foreground">{a.corretora || "—"}</span>
+                                        )}
+                                      </td>
+                                      <td className="py-1.5 pr-2 text-right">
+                                        {emEdicao ? (
+                                          <Input
+                                            inputMode="decimal"
+                                            value={form.quantidade}
+                                            onChange={(e) => setForm({ ...form, quantidade: e.target.value })}
+                                            className="num h-7 w-20 text-right text-xs"
+                                          />
+                                        ) : (
+                                          <span className="num">{a.quantidade.toLocaleString("pt-BR")}</span>
+                                        )}
+                                      </td>
+                                      <td className="py-1.5 pr-2 text-right">
+                                        {emEdicao ? (
+                                          <Input
+                                            inputMode="decimal"
+                                            value={form.preco}
+                                            onChange={(e) => setForm({ ...form, preco: e.target.value })}
+                                            className="num h-7 w-24 text-right text-xs"
+                                          />
+                                        ) : (
+                                          <span className="num">{brl(a.preco, 2)}</span>
+                                        )}
+                                      </td>
+                                      <td className="py-1.5 pr-2 text-right">
+                                        {emEdicao ? (
+                                          <Input
+                                            inputMode="decimal"
+                                            value={form.taxas}
+                                            onChange={(e) => setForm({ ...form, taxas: e.target.value })}
+                                            className="num h-7 w-20 text-right text-xs"
+                                          />
+                                        ) : (
+                                          <span className="num text-muted-foreground">{brl(a.taxas, 2)}</span>
+                                        )}
+                                      </td>
+                                      <td className="num py-1.5 text-right font-semibold">
+                                        {brl(a.quantidade * a.preco + a.taxas, 2)}
+                                      </td>
+                                      <td className="py-1.5 pl-2">
+                                        <div className="flex justify-end gap-1">
+                                          {emEdicao ? (
+                                            <>
+                                              <Button
+                                                type="button"
+                                                size="icon"
+                                                variant="default"
+                                                aria-label="Salvar lançamento"
+                                                disabled={atualizar.isPending}
+                                                onClick={() => salvar(a)}
+                                                className="size-7"
+                                              >
+                                                <Check className="size-3.5" />
+                                              </Button>
+                                              <Button
+                                                type="button"
+                                                size="icon"
+                                                variant="ghost"
+                                                aria-label="Cancelar edição"
+                                                onClick={() => setEditando(null)}
+                                                className="size-7"
+                                              >
+                                                <X className="size-3.5" />
+                                              </Button>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Button
+                                                type="button"
+                                                size="icon"
+                                                variant="outline"
+                                                aria-label="Editar este lançamento"
+                                                onClick={() => iniciarEdicao(a)}
+                                                className="size-7"
+                                              >
+                                                <Pencil className="size-3.5" />
+                                              </Button>
+                                              <Button
+                                                type="button"
+                                                size="icon"
+                                                variant="ghost"
+                                                aria-label="Excluir este lançamento"
+                                                disabled={excluir.isPending}
+                                                onClick={() => remover(a)}
+                                                className="size-7 text-destructive"
+                                              >
+                                                <Trash2 className="size-3.5" />
+                                              </Button>
+                                            </>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </>
+                              );
+                            })}
                           </tbody>
                           <tfoot>
                             <tr className="border-t border-border text-[0.875rem]">
@@ -333,7 +494,9 @@ export function HistoricoMensalAportes() {
                               <td className="num py-1.5 pr-2 text-right text-muted-foreground">{brl(m.bruto)}</td>
                               <td className="num py-1.5 pr-2 text-right text-muted-foreground">{brl(m.taxas, 2)}</td>
                               <td className="num py-1.5 text-right font-bold">{brl(m.total)}</td>
+                              <td />
                             </tr>
+
                           </tfoot>
                         </table>
                       </div>
