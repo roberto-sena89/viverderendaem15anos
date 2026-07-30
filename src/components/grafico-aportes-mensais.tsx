@@ -63,10 +63,10 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
       <div className="mt-2 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={dados} margin={{ top: 6, right: 6, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="color-mix(in oklab, var(--foreground) 18%, transparent)" vertical={false} />
             <XAxis
               dataKey="rotulo"
-              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+              tick={{ fontSize: 12, fill: "var(--foreground)", fontWeight: 500 }}
               tickLine={false}
               axisLine={false}
               minTickGap={12}
@@ -74,7 +74,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
             <YAxis
               yAxisId="esq"
               tickFormatter={compacto}
-              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+              tick={{ fontSize: 12, fill: "var(--foreground)", fontWeight: 500 }}
               tickLine={false}
               axisLine={false}
               width={44}
@@ -83,7 +83,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               yAxisId="dir"
               orientation="right"
               tickFormatter={compacto}
-              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+              tick={{ fontSize: 12, fill: "var(--foreground)", fontWeight: 500 }}
               tickLine={false}
               axisLine={false}
               width={48}
@@ -115,8 +115,9 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               dataKey="acumulado"
               name="acumulado"
               stroke="var(--chart-3)"
-              strokeWidth={2}
-              dot={false}
+              strokeWidth={2.5}
+              dot={{ r: 2.5, fill: "var(--chart-3)", strokeWidth: 0 }}
+              activeDot={{ r: 4.5 }}
             />
           </ComposedChart>
         </ResponsiveContainer>
