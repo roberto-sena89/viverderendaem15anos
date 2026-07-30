@@ -162,7 +162,7 @@ function Dashboard() {
     .map((c) => {
       if (c === "Renda Fixa") {
         return {
-          name: c,
+          name: "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)",
           value: soma(["Renda Fixa", ...SUBCATEGORIAS_RF]),
           subs: [{ name: "Tesouro Direto", value: soma(SUBCATEGORIAS_RF) }].filter((s) => s.value > 0),
         };

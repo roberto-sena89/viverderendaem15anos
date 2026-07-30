@@ -42,7 +42,10 @@ export const COR_CATEGORIA: Record<string, string> = {
 const FALLBACK = "var(--color-muted-foreground)";
 
 /** Cor fixa de uma categoria da carteira. */
-export const corCategoria = (categoria: Categoria | string) => COR_CATEGORIA[categoria] ?? FALLBACK;
+export const corCategoria = (categoria: Categoria | string) => {
+  if (categoria === "Renda Fixa") return COR_CLASSE[CLASSE_POS_FIXADO];
+  return COR_CATEGORIA[categoria] ?? FALLBACK;
+};
 
 /** Cor fixa de uma classe de alocação (tabelas de rebalanceamento e alvos). */
 export const corClasse = (classe: string) => COR_CLASSE[classe] ?? FALLBACK;
