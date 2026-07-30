@@ -322,15 +322,17 @@ export function CarteiraGrupos({
                     <dd className="font-semibold tabular-nums">{brl(g.total)}</dd>
                   </div>
                   <div>
-                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Variação</dt>
+                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Variação (%)</dt>
                     <dd>
-                      <Variacao value={g.variacao} suffix="" />
+                      <Variacao value={g.rentabilidade} />
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Rentabilidade</dt>
+                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">
+                      Rentabilidade (R$)
+                    </dt>
                     <dd>
-                      <Variacao value={g.rentabilidade} />
+                      <Variacao value={g.variacao} suffix="" />
                     </dd>
                   </div>
                   <div>
