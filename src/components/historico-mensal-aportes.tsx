@@ -356,9 +356,9 @@ export function HistoricoMensalAportes() {
                   </button>
 
                   {aberta && (
-                    <div className="mt-2 space-y-2 pl-7">
+                    <div className="mt-2 space-y-2 pl-1 sm:pl-3">
                       <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
+                        <table className="w-full table-auto text-xs">
                           <thead>
                             <tr className="border-b border-border text-[0.85rem] tracking-[0.06em] text-muted-foreground uppercase">
                               <th className="py-1.5 pr-2 text-left font-semibold">DATA</th>
