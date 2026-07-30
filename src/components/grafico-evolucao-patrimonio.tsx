@@ -100,7 +100,7 @@ export function GraficoEvolucaoPatrimonio() {
   const dados = evolucaoFiltrada.map((m) => {
     const aplicado = Math.min(m.patrimonio, resumo.totalInvestido || m.patrimonio);
     return {
-      mes: m.mes,
+      mes: `${m.mes}/${m.chave.slice(2, 4)}`,
       aplicado: Math.round(aplicado),
       ganho: Math.round(resumo.lucroTotal * (aplicado / aplicadoFinal)),
     };
