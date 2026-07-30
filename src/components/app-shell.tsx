@@ -265,7 +265,12 @@ export function AppShell({
           </nav>
         </header>
 
-        <main id="conteudo" className="animate-rise flex-1 space-y-6 px-5 py-6 lg:px-8 lg:py-8">{children}</main>
+        <main
+          id="conteudo"
+          className="animate-rise mx-auto w-full min-w-0 max-w-[1600px] flex-1 space-y-6 px-4 py-6 sm:px-5 lg:px-8 lg:py-8"
+        >
+          {children}
+        </main>
       </div>
     </div>
   );
