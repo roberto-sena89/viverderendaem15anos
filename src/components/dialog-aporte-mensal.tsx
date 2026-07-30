@@ -38,6 +38,7 @@ function validarAporte(entrada: string): { valor: number; erro: string | null } 
   const valor = Number(normalizado);
 
   if (!Number.isFinite(valor)) return { valor: 0, erro: "Valor inválido." };
+  if (valor === 0) return { valor: 0, erro: null }; // zerado: sem cálculo e sem erro
   if (valor < MIN_APORTE) return { valor: 0, erro: `O aporte mínimo é ${brl(MIN_APORTE)}.` };
   if (valor > MAX_APORTE) return { valor: 0, erro: `O aporte máximo é ${brl(MAX_APORTE)}.` };
 
