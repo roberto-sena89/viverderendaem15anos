@@ -125,7 +125,59 @@ export function HistoricoMensalAportes() {
       .sort((a, b) => (a.chave < b.chave ? 1 : -1))
       .map((m) => ({ ...m, itens: m.itens.sort((a, b) => b.total - a.total) }));
   }, [aportes, categoriaPorTicker]);
+  const atualizar = useAtualizarAporte();
+  const excluir = useExcluirAporte();
+  const [linhaAberta, setLinhaAberta] = useState<string | null>(null);
+  const [editando, setEditando] = useState<string | null>(null);
+  const [form, setForm] = useState({ data: "", corretora: "", ticker: "", quantidade: "", preco: "", taxas: "" });
 
+  function iniciarEdicao(a: Aporte) {
+    setEditando(a.id);
+    setForm({
+      data: a.data,
+      corretora: a.corretora ?? "",
+      ticker: a.ticker,
+      quantidade: String(a.quantidade),
+      preco: String(a.preco),
+      taxas: String(a.taxas),
+    });
+  }
+
+  async function salvar(a: Aporte) {
+    const quantidade = Number(form.quantidade.replace(",", "."));
+    const preco = Number(form.preco.replace(",", "."));
+    const taxas = Number(form.taxas.replace(",", ".")) || 0;
+    if (!form.ticker.trim() || !form.data || !Number.isFinite(quantidade) || !Number.isFinite(preco)) {
+      toast.error("Preencha ticker, data, quantidade e preço válidos.");
+      return;
+    }
+    try {
+      await atualizar.mutateAsync({
+        id: a.id,
+        data: form.data,
+        corretora: form.corretora.trim(),
+        ticker: form.ticker.trim().toUpperCase(),
+        categoria: a.categoria,
+        quantidade,
+        preco,
+        taxas,
+        observacoes: a.observacoes ?? undefined,
+      });
+      setEditando(null);
+      toast.success("Lançamento atualizado.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível salvar.");
+    }
+  }
+
+  async function remover(a: Aporte) {
+    try {
+      await excluir.mutateAsync(a.id);
+      toast.success("Lançamento excluído.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível excluir.");
+    }
+  }
 
   const maior = Math.max(1, ...meses.map((m) => m.total));
   const totalGeral = meses.reduce((s, m) => s + m.total, 0);
