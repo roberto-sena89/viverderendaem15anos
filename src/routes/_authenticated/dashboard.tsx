@@ -181,7 +181,7 @@ function Dashboard() {
 
 
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 text-[12px] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel
           title="Evolução do Patrimônio"
           action={
@@ -331,7 +331,7 @@ function Dashboard() {
       </div>
 
 
-      <section className="panel overflow-hidden">
+      <section className="panel overflow-hidden text-[12px]">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
           <h2 className="min-w-0 truncate font-display text-sm font-bold tracking-wide uppercase">
             Meus ativos <span className="text-muted-foreground normal-case">({ativos.length})</span>
