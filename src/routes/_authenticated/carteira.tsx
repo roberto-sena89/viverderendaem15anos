@@ -154,54 +154,19 @@ function CarteiraPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="quantidade">Quantidade</Label>
-              <Input
-                id="quantidade"
-                name="quantidade"
-                type="number"
-                step="0.01"
-                min="0"
-                inputMode="decimal"
-                defaultValue={(editando?.quantidade ?? 0).toFixed(2)}
-                required
-              />
+              <InputNumeroBR key={`qtd-${editando?.id ?? "novo"}`} id="quantidade" name="quantidade" defaultValue={editando?.quantidade ?? 0} required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="precoMedio">Preço médio (R$)</Label>
-              <div className="relative">
-                <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
-                <Input
-                  id="precoMedio"
-                  name="precoMedio"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  inputMode="decimal"
-                  className="pl-10"
-                  defaultValue={(editando?.precoMedio ?? 0).toFixed(2)}
-                  required
-                />
-              </div>
+              <InputNumeroBR key={`pm-${editando?.id ?? "novo"}`} id="precoMedio" name="precoMedio" prefixo="R$" defaultValue={editando?.precoMedio ?? 0} required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="precoAtual">Preço atual (R$)</Label>
-              <div className="relative">
-                <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
-                <Input
-                  id="precoAtual"
-                  name="precoAtual"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  inputMode="decimal"
-                  className="pl-10"
-                  defaultValue={(editando?.precoAtual ?? 0).toFixed(2)}
-                  required
-                />
-              </div>
+              <InputNumeroBR key={`pa-${editando?.id ?? "novo"}`} id="precoAtual" name="precoAtual" prefixo="R$" defaultValue={editando?.precoAtual ?? 0} required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="dy">Dividend yield (%)</Label>
-              <Input id="dy" name="dy" type="number" step="any" min="0" defaultValue={editando?.dy ?? 0} />
+              <InputNumeroBR key={`dy-${editando?.id ?? "novo"}`} id="dy" name="dy" defaultValue={editando?.dy ?? 0} />
             </div>
             <DialogFooter className="sm:col-span-2">
               <Button type="submit" disabled={salvar.isPending}>
