@@ -98,7 +98,7 @@ function Rebalanceamento() {
                 </span>
               </div>
             </div>
-            <Progress value={l.idealPct > 0 ? Math.min(100, (l.atualPct / l.idealPct) * 100) : 0} className="mt-3 h-2" />
+            <Progress aria-label={`Progresso da alocação de ${l.classe ?? l.nome ?? "classe"}`} value={l.idealPct > 0 ? Math.min(100, (l.atualPct / l.idealPct) * 100) : 0} className="mt-3 h-2" />
           </div>
         ))}
       </div>
