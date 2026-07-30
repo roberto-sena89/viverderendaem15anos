@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 import { corClasse } from "@/lib/cores-ativos";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
