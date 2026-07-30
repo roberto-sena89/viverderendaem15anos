@@ -134,6 +134,7 @@ export function HistoricoMensalAportes() {
   const { data: carteira = [] } = useAtivos();
   const [aberto, setAberto] = useState(false);
   const [expandido, setExpandido] = useState<string | null>(null);
+  const [pagina, setPagina] = useState(0);
 
   /** Categoria oficial de cada ticker vem da aba Carteira (fonte única). */
   const categoriaPorTicker = useMemo(() => {
