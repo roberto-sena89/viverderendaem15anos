@@ -47,9 +47,17 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
         <p className="text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
           Evolução dos aportes
         </p>
-        <p className="num text-[0.8rem] text-muted-foreground">
-          Barras: aporte do mês · Linha: total acumulado
-        </p>
+        <div className="flex items-center gap-4 text-[0.8rem] text-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block size-2.5 rounded-[2px] bg-chart-1" aria-hidden />
+            Aporte do mês
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block h-0.5 w-4 rounded bg-chart-3" aria-hidden />
+            Total acumulado
+          </span>
+        </div>
+
       </div>
 
       <div className="mt-2 h-56 w-full">
