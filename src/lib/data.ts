@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { emitirCarteiraAlterada } from "@/lib/broadcast-carteira";
 import {
   planoPadrao,
   type Aporte,
@@ -21,12 +22,14 @@ export const qk = {
 /**
  * Revalida (e aguarda o refetch de) tudo que depende da carteira, incluindo
  * queries montadas em outras abas/telas, para a UI refletir o novo aporte
- * imediatamente — sem recarregar a página.
+ * imediatamente — sem recarregar a página. Também avisa as demais abas do
+ * navegador via BroadcastChannel.
  */
 async function sincronizarCarteira(
   qc: ReturnType<typeof useQueryClient>,
   chaves: readonly (readonly string[])[] = [qk.ativos, qk.aportes, qk.dividendos],
 ) {
+  emitirCarteiraAlterada(chaves);
   await Promise.all(
     chaves.map((queryKey) =>
       qc.invalidateQueries({ queryKey, refetchType: "all" }),
@@ -163,7 +166,7 @@ export function useSalvarPlano() {
       );
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.plano }),
+    onSuccess: () => sincronizarCarteira(qc, [qk.plano]),
   });
 }
 
@@ -338,7 +341,7 @@ export function useCriarDividendo() {
         .insert({ ...d, ticker: d.ticker.toUpperCase() });
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.dividendos }),
+    onSuccess: () => sincronizarCarteira(qc, [qk.dividendos]),
   });
 }
 
@@ -349,7 +352,7 @@ export function useCriarMeta() {
       const { error } = await supabase.from("metas").insert(m);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.metas }),
+    onSuccess: () => sincronizarCarteira(qc, [qk.metas]),
   });
 }
 
