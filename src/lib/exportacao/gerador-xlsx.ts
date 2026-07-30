@@ -1,4 +1,4 @@
-import writeXlsxFile, { type Row, type Cell } from "write-excel-file/browser";
+import writeXlsxFile, { type Row, type Cell, type CellObject } from "write-excel-file/browser";
 
 import {
   FORMATO_MOEDA,
@@ -39,7 +39,7 @@ const VERMELHO = "#C02626";
 const HEADER_BG = "#006B3C";
 const BRANCO = "#FFFFFF";
 
-const celulaCabecalho = (value: string): Cell => ({
+const celulaCabecalho = (value: string): CellObject => ({
   value,
   fontWeight: "bold",
   color: BRANCO,
@@ -49,7 +49,7 @@ const celulaCabecalho = (value: string): Cell => ({
   wrap: true,
 });
 
-const celulaNumero = (valor: number, formato?: string, sinal?: boolean): Cell => ({
+const celulaNumero = (valor: number, formato?: string, sinal?: boolean): CellObject => ({
   type: Number,
   value: Number.isFinite(valor) ? valor : 0,
   format: formato,
@@ -103,13 +103,13 @@ export async function gerarXlsxCarteira({ linhas, resumo }: DadosExportacao): Pr
 
   return writeXlsxFile([
     {
-      name: "Carteira",
+      sheet: "Carteira",
       data: abaCarteira,
       columns: COLUNAS.map((c) => ({ width: c.width })),
       stickyRowsCount: 1,
     },
     {
-      name: "Resumo",
+      sheet: "Resumo",
       data: abaResumo,
       columns: [{ width: 32 }, { width: 22 }, { width: 18 }],
       stickyRowsCount: 1,
