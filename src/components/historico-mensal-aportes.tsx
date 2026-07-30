@@ -484,20 +484,26 @@ export function HistoricoMensalAportes() {
                             })}
                           </tbody>
                           <tfoot>
-                            <tr className="border-t border-border text-[0.875rem]">
-                              <td className="py-1.5 pr-2 font-semibold" colSpan={4}>
-                                Total do mês
-                              </td>
-                              <td className="num py-1.5 pr-2 text-right text-muted-foreground">
-                                {m.itens.reduce((s, i) => s + i.quantidade, 0).toLocaleString("pt-BR")}
-                              </td>
-                              <td className="num py-1.5 pr-2 text-right text-muted-foreground">{brl(m.bruto)}</td>
-                              <td className="num py-1.5 pr-2 text-right text-muted-foreground">{brl(m.taxas, 2)}</td>
-                              <td className="num py-1.5 text-right font-bold">{brl(m.total)}</td>
-                              <td />
-                            </tr>
-
+                            {(() => {
+                              const qtdTotal = m.itens.reduce((s, i) => s + i.quantidade, 0);
+                              const pmTotal = qtdTotal ? m.bruto / qtdTotal : 0;
+                              return (
+                                <tr className="border-t-2 border-border bg-muted/40 text-[0.875rem]">
+                                  <td className="py-1.5 pr-2 font-semibold" colSpan={4}>
+                                    Totais do mês · {m.lancamentos} {m.lancamentos === 1 ? "lançamento" : "lançamentos"}
+                                  </td>
+                                  <td className="num py-1.5 pr-2 text-right font-semibold">
+                                    {qtdTotal.toLocaleString("pt-BR")}
+                                  </td>
+                                  <td className="num py-1.5 pr-2 text-right font-semibold">{brl(pmTotal, 2)}</td>
+                                  <td className="num py-1.5 pr-2 text-right font-semibold">{brl(m.taxas, 2)}</td>
+                                  <td className="num py-1.5 text-right font-bold">{brl(m.total, 2)}</td>
+                                  <td />
+                                </tr>
+                              );
+                            })()}
                           </tfoot>
+
                         </table>
                       </div>
 
