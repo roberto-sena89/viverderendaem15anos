@@ -298,6 +298,14 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   height: 100%;
 }
 
+/* Oculta a barra de rolagem mantendo o scroll funcional (abas de filtro) */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 
 
 @utility text-gradient-brand {
