@@ -77,7 +77,7 @@ function Planejador() {
 
   return (
     <AppShell title="Planejador da Independência Financeira" description="Simule cenários e descubra sua data de liberdade">
-      <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
+      <div className="grid gap-4 lg:grid-cols-[340px_1fr] [&>*]:min-w-0">
         <div className="surface-card space-y-5 p-6">
           <NumberField label="Idade atual" value={input.idadeAtual} onChange={set("idadeAtual")} />
           <NumberField label="Idade da aposentadoria" value={input.idadeAposentadoria} onChange={set("idadeAposentadoria")} />
