@@ -38,6 +38,7 @@ function validarAporte(entrada: string): { valor: number; erro: string | null } 
   const valor = Number(normalizado);
 
   if (!Number.isFinite(valor)) return { valor: 0, erro: "Valor inválido." };
+  if (valor === 0) return { valor: 0, erro: null }; // zerado: sem cálculo e sem erro
   if (valor < MIN_APORTE) return { valor: 0, erro: `O aporte mínimo é ${brl(MIN_APORTE)}.` };
   if (valor > MAX_APORTE) return { valor: 0, erro: `O aporte máximo é ${brl(MAX_APORTE)}.` };
 
@@ -197,8 +198,8 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                 variant="ghost"
                 size="sm"
                 className="h-9 gap-1.5 border border-border text-xs"
-                disabled={!texto.trim()}
-                onClick={() => aplicar("")}
+                disabled={aporte === 0 && !erro}
+                onClick={() => aplicar("0,00")}
               >
                 <Eraser className="size-3.5" />
                 Zerar
