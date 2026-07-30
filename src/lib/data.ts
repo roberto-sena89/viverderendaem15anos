@@ -18,6 +18,23 @@ export const qk = {
   plano: ["plano"] as const,
 };
 
+/**
+ * Revalida (e aguarda o refetch de) tudo que depende da carteira, incluindo
+ * queries montadas em outras abas/telas, para a UI refletir o novo aporte
+ * imediatamente — sem recarregar a página.
+ */
+async function sincronizarCarteira(
+  qc: ReturnType<typeof useQueryClient>,
+  chaves: readonly (readonly string[])[] = [qk.ativos, qk.aportes, qk.dividendos],
+) {
+  await Promise.all(
+    chaves.map((queryKey) =>
+      qc.invalidateQueries({ queryKey, refetchType: "all" }),
+    ),
+  );
+}
+
+
 export function useAtivos() {
   return useQuery({
     queryKey: qk.ativos,
