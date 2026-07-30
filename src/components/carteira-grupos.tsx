@@ -269,11 +269,11 @@ export function CarteiraGrupos({
 
             {aberto ? (
               <>
-                <div className="overflow-x-auto border-t">
-                <Table>
+                <div className="border-t">
+                <Table wrapperClassName="overflow-x-visible" className="w-full table-fixed">
                     <TableHeader>
                       <TableRow>
-                        <TableHead className={compacto ? "min-w-48" : "min-w-64"}>Ticker / Nome do ativo</TableHead>
+                        <TableHead className="w-[22%] min-w-0">Ticker / Nome do ativo</TableHead>
                         {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
                         {colunas.precoMedio && <TableHead className="text-right">Preço médio</TableHead>}
                         {colunas.precoAtual && <TableHead className="text-right">Preço atual</TableHead>}
