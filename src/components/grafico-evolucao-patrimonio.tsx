@@ -96,7 +96,7 @@ export function GraficoEvolucaoPatrimonio() {
         : evolucao.slice(-Number(periodo));
 
   const aplicadoFinal = Math.max(resumo.totalInvestido, 1);
-  const rentabilidade = resumo.totalInvestido > 0 ? (resumo.lucroTotal / resumo.totalInvestido) * 100 : 0;
+  
   const dados = evolucaoFiltrada.map((m) => {
     const aplicado = Math.min(m.patrimonio, resumo.totalInvestido || m.patrimonio);
     return {
