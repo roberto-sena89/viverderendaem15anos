@@ -101,7 +101,7 @@ export async function gerarXlsxCarteira({ linhas, resumo }: DadosExportacao): Pr
     ]),
   ];
 
-  return writeXlsxFile([
+  const saida = await writeXlsxFile([
     {
       sheet: "Carteira",
       data: abaCarteira,
@@ -114,5 +114,7 @@ export async function gerarXlsxCarteira({ linhas, resumo }: DadosExportacao): Pr
       columns: [{ width: 32 }, { width: 22 }, { width: 18 }],
       stickyRowsCount: 1,
     },
-  ]) as unknown as Promise<Blob>;
+  ]);
+
+  return saida.toBlob();
 }
