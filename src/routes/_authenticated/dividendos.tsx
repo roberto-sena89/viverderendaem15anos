@@ -212,7 +212,9 @@ function DividendosPage() {
                 <TableHead>Ativo</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead className="text-right">Valor</TableHead>
-                <TableHead />
+                <TableHead>
+                  <span className="sr-only">Ações</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

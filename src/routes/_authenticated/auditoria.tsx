@@ -157,7 +157,13 @@ function Auditoria() {
         </div>
 
         <Panel title="Histórico de execuções">
-          <div className="overflow-x-auto">
+          <div
+            className="overflow-x-auto"
+            data-scroll-region
+            tabIndex={0}
+            role="region"
+            aria-label="Histórico de execuções de sincronização (rolável)"
+          >
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
