@@ -154,7 +154,16 @@ function CarteiraPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="quantidade">Quantidade</Label>
-              <Input id="quantidade" name="quantidade" type="number" step="any" min="0" defaultValue={editando?.quantidade ?? 0} required />
+              <Input
+                id="quantidade"
+                name="quantidade"
+                type="number"
+                step="0.01"
+                min="0"
+                inputMode="decimal"
+                defaultValue={(editando?.quantidade ?? 0).toFixed(2)}
+                required
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="precoMedio">Preço médio (R$)</Label>
