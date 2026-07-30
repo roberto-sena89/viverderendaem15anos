@@ -312,7 +312,8 @@ export function HistoricoMensalAportes() {
           </dl>
 
           <div className="mt-3 divide-y divide-border">
-            {meses.map((m, idx) => {
+            {mesesPagina.map((m, i) => {
+              const idx = inicio + i;
               const aberta = expandido === m.chave;
               const anterior = meses[idx + 1];
               const variacao = anterior && anterior.total > 0 ? (m.total / anterior.total - 1) * 100 : null;
