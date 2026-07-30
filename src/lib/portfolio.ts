@@ -90,9 +90,7 @@ export const planoPadrao: PlanoConfig = {
 };
 
 export const alocacaoIdeal: Record<string, number> = {
-  "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)": 30,
-  "Renda Fixa - IPCA+": 15,
-  "Renda Fixa - Prefixado": 5,
+  "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)": 50,
   "ETFs - Brasil": 20,
   "ETFs - Global": 20,
   FIIs: 10,
