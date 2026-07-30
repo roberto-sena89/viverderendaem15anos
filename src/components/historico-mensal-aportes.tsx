@@ -50,16 +50,27 @@ function intervalo(datas: string[]) {
 /** Painel discreto e detalhado com o histórico mês a mês dos aportes. */
 export function HistoricoMensalAportes() {
   const { data: aportes = [] } = useAportes();
+  const { data: carteira = [] } = useAtivos();
   const [aberto, setAberto] = useState(false);
   const [expandido, setExpandido] = useState<string | null>(null);
+
+  /** Categoria oficial de cada ticker vem da aba Carteira (fonte única). */
+  const categoriaPorTicker = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const a of carteira) m.set(a.ticker.toUpperCase(), a.categoria);
+    return m;
+  }, [carteira]);
 
   const meses = useMemo<Mes[]>(() => {
     const mapa = new Map<string, Mes>();
     for (const a of aportes) {
+      const ticker = a.ticker.toUpperCase();
+      const categoria = categoriaPorTicker.get(ticker) ?? a.categoria;
       const chave = a.data.slice(0, 7);
       const bruto = a.quantidade * a.preco;
       const total = bruto + a.taxas;
       let m = mapa.get(chave);
+
       if (!m) {
         m = {
           chave,
