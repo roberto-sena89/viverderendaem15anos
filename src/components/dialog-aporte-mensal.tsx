@@ -268,7 +268,25 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                       <span className="num order-4 text-right text-xs text-muted-foreground sm:order-none">
                         {pct(l.depoisPct)}
                       </span>
+
+                      {l.classe === CLASSE_POS_FIXADO && subsRendaFixa.length > 0 && (
+                        <ul className="order-5 col-span-full mt-1 space-y-1 border-t border-border/60 pt-1.5 pl-4 sm:order-none">
+                          {subsRendaFixa.map((s) => (
+                            <li
+                              key={s.nome}
+                              className="grid grid-cols-[minmax(0,1fr)_5rem_6.5rem] items-center gap-3 text-xs text-muted-foreground"
+                            >
+                              <span className="min-w-0 truncate">↳ {s.nome}</span>
+                              <span className="num text-right">{pct(s.alvoPct)}</span>
+                              <span className="num text-right font-semibold text-foreground">
+                                {brl(l.valor * s.fracao, 2)}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
+
                   ))}
               </ul>
             </div>
