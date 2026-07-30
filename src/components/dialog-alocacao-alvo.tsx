@@ -64,13 +64,21 @@ export function DialogAlocacaoAlvo() {
   const restante = 100 - total;
   const somaOk = Math.abs(restante) < 0.01;
 
-  const subNumero = subValor.trim() === "" ? 0 : Math.max(0, paraNumero(subValor) || 0);
+  const subNumeros = Object.fromEntries(
+    SUBS_RENDA_FIXA.map((s) => {
+      const v = subValores[s] ?? "";
+      return [s, v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0)];
+    }),
+  ) as Record<string, number>;
   const alvoRendaFixa = numeros[CLASSE_POS_FIXADO] ?? 0;
-  const subInvalido =
-    subValor.trim() === "" ||
-    !Number.isFinite(paraNumero(subValor)) ||
-    subNumero < 0 ||
-    subNumero > alvoRendaFixa + 0.001;
+  const somaSubs = Object.values(subNumeros).reduce((s, v) => s + v, 0);
+  const subsInvalidos = new Set(
+    SUBS_RENDA_FIXA.filter((s) => {
+      const v = subValores[s] ?? "";
+      return v.trim() === "" || !Number.isFinite(paraNumero(v)) || subNumeros[s] < 0;
+    }) as string[],
+  );
+  const subInvalido = subsInvalidos.size > 0 || somaSubs > alvoRendaFixa + 0.001;
 
   const valido = somaOk && camposInvalidos.size === 0 && !subInvalido;
 
