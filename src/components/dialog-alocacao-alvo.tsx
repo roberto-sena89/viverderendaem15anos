@@ -134,28 +134,33 @@ export function DialogAlocacaoAlvo() {
               </div>
 
               {classe === CLASSE_POS_FIXADO && (
-                <div className="mt-2 border-t border-border/60 pt-2 pl-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <Label
-                      htmlFor="alvo-sub-tesouro-selic"
-                      className="text-xs leading-tight font-normal text-muted-foreground"
-                    >
-                      ↳ {SUB_RENDA_FIXA} <span className="text-[10px]">(sub-classe)</span>
-                    </Label>
-                    <div className="flex shrink-0 items-center gap-1.5">
-                      <Input
-                        id="alvo-sub-tesouro-selic"
-                        inputMode="decimal"
-                        aria-invalid={subInvalido}
-                        value={subValor}
-                        onChange={(e) => setSubValor(sanitizar(e.target.value))}
-                        className="h-9 w-20 text-right text-sm tabular-nums"
-                      />
-                      <span className="text-xs text-muted-foreground">%</span>
-                    </div>
-                  </div>
+                <div className="mt-2 space-y-2 border-t border-border/60 pt-2 pl-3">
+                  {SUBS_RENDA_FIXA.map((sub) => {
+                    const id = `alvo-sub-${sub.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+                    return (
+                      <div key={sub} className="flex items-center justify-between gap-3">
+                        <Label htmlFor={id} className="text-xs leading-tight font-normal text-muted-foreground">
+                          ↳ {sub} <span className="text-[10px]">(sub-classe)</span>
+                        </Label>
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          <Input
+                            id={id}
+                            inputMode="decimal"
+                            aria-invalid={subsInvalidos.has(sub)}
+                            value={subValores[sub] ?? ""}
+                            onChange={(e) =>
+                              setSubValores((v) => ({ ...v, [sub]: sanitizar(e.target.value) }))
+                            }
+                            className="h-9 w-20 text-right text-sm tabular-nums"
+                          />
+                          <span className="text-xs text-muted-foreground">%</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                   <p className={`mt-1 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}>
-                    Parte da Renda Fixa destinada ao Tesouro SELIC (máx. {alvoRendaFixa.toFixed(1).replace(".", ",")}%).
+                    Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% (máx.{" "}
+                    {alvoRendaFixa.toFixed(1).replace(".", ",")}% da Renda Fixa).
                   </p>
                 </div>
               )}
