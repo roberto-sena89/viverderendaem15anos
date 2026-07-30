@@ -152,12 +152,25 @@ function Dashboard() {
   const ativosComposicao =
     tipoComposicao === "todos" ? ativos : ativos.filter((a) => a.categoria === tipoComposicao);
   const totalComposicao = ativosComposicao.reduce((s, a) => s + valorAtual(a), 0);
+  // "Renda Fixa" é a categoria principal; "Tesouro Direto" entra como sub-categoria dela.
+  const SUBCATEGORIAS_RF = ["Tesouro Direto", "Tesouro"];
+  const soma = (cats: string[]) =>
+    ativosComposicao.filter((a) => cats.includes(a.categoria)).reduce((s, a) => s + valorAtual(a), 0);
+
   const porCategoria = categorias
-    .map((c) => ({
-      name: c,
-      value: ativosComposicao.filter((a) => a.categoria === c).reduce((s, a) => s + valorAtual(a), 0),
-    }))
+    .filter((c) => !SUBCATEGORIAS_RF.includes(c))
+    .map((c) => {
+      if (c === "Renda Fixa") {
+        return {
+          name: c,
+          value: soma(["Renda Fixa", ...SUBCATEGORIAS_RF]),
+          subs: [{ name: "Tesouro Direto", value: soma(SUBCATEGORIAS_RF) }].filter((s) => s.value > 0),
+        };
+      }
+      return { name: c, value: soma([c]), subs: [] as { name: string; value: number }[] };
+    })
     .filter((c) => c.value > 0);
+
 
   const carteiraVazia = !isLoading && ativos.length === 0;
 
