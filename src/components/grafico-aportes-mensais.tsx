@@ -47,18 +47,26 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
         <p className="text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
           Evolução dos aportes
         </p>
-        <p className="num text-[0.8rem] text-muted-foreground">
-          Barras: aporte do mês · Linha: total acumulado
-        </p>
+        <div className="flex items-center gap-4 text-[0.8rem] text-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block size-2.5 rounded-[2px] bg-chart-1" aria-hidden />
+            Aporte do mês
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block h-0.5 w-4 rounded bg-chart-3" aria-hidden />
+            Total acumulado
+          </span>
+        </div>
+
       </div>
 
       <div className="mt-2 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={dados} margin={{ top: 6, right: 6, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="color-mix(in oklab, var(--foreground) 18%, transparent)" vertical={false} />
             <XAxis
               dataKey="rotulo"
-              tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+              tick={{ fontSize: 12, fill: "var(--foreground)", fontWeight: 500 }}
               tickLine={false}
               axisLine={false}
               minTickGap={12}
@@ -66,7 +74,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
             <YAxis
               yAxisId="esq"
               tickFormatter={compacto}
-              tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+              tick={{ fontSize: 12, fill: "var(--foreground)", fontWeight: 500 }}
               tickLine={false}
               axisLine={false}
               width={44}
@@ -75,16 +83,16 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               yAxisId="dir"
               orientation="right"
               tickFormatter={compacto}
-              tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+              tick={{ fontSize: 12, fill: "var(--foreground)", fontWeight: 500 }}
               tickLine={false}
               axisLine={false}
               width={48}
             />
             <Tooltip
-              cursor={{ fill: "hsl(var(--muted) / 0.4)" }}
+              cursor={{ fill: "color-mix(in oklab, var(--muted) 55%, transparent)" }}
               contentStyle={{
-                background: "hsl(var(--popover))",
-                border: "1px solid hsl(var(--border))",
+                background: "var(--popover)",
+                border: "1px solid var(--border)",
                 borderRadius: 8,
                 fontSize: 12,
               }}
@@ -97,7 +105,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               yAxisId="esq"
               dataKey="aporte"
               name="aporte"
-              fill="hsl(var(--primary))"
+              fill="var(--chart-1)"
               radius={[3, 3, 0, 0]}
               maxBarSize={28}
             />
@@ -106,9 +114,10 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               type="monotone"
               dataKey="acumulado"
               name="acumulado"
-              stroke="hsl(var(--chart-2, var(--foreground)))"
-              strokeWidth={2}
-              dot={false}
+              stroke="var(--chart-3)"
+              strokeWidth={2.5}
+              dot={{ r: 2.5, fill: "var(--chart-3)", strokeWidth: 0 }}
+              activeDot={{ r: 4.5 }}
             />
           </ComposedChart>
         </ResponsiveContainer>
