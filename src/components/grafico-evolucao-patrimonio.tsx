@@ -96,6 +96,7 @@ export function GraficoEvolucaoPatrimonio() {
         : evolucao.slice(-Number(periodo));
 
   const aplicadoFinal = Math.max(resumo.totalInvestido, 1);
+  const rentabilidade = resumo.totalInvestido > 0 ? (resumo.lucroTotal / resumo.totalInvestido) * 100 : 0;
   const dados = evolucaoFiltrada.map((m) => {
     const aplicado = Math.min(m.patrimonio, resumo.totalInvestido || m.patrimonio);
     return {
@@ -146,35 +147,73 @@ export function GraficoEvolucaoPatrimonio() {
         </div>
       }
     >
-      <div className="mb-3 flex items-center justify-center gap-5 text-xs text-muted-foreground">
+      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { rotulo: "Patrimônio atual", valor: brl(resumo.totalAtual, 2), cor: "text-foreground" },
+          { rotulo: "Valor aplicado", valor: brl(resumo.totalInvestido, 2), cor: "text-foreground" },
+          {
+            rotulo: "Ganho de capital",
+            valor: `${resumo.lucroTotal >= 0 ? "+" : "-"}${brl(Math.abs(resumo.lucroTotal), 2)}`,
+            cor: resumo.lucroTotal >= 0 ? "text-primary" : "text-destructive",
+          },
+          {
+            rotulo: "Rentabilidade",
+            valor: `${rentabilidade >= 0 ? "+" : ""}${rentabilidade.toFixed(2)}%`,
+            cor: rentabilidade >= 0 ? "text-primary" : "text-destructive",
+          },
+        ].map((k) => (
+          <div key={k.rotulo} className="rounded-lg border border-border bg-muted/20 px-3 py-2">
+            <p className="text-[0.7rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
+              {k.rotulo}
+            </p>
+            <p className={`num mt-0.5 text-sm font-bold ${k.cor}`}>{k.valor}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mb-3 flex flex-wrap items-center gap-4 text-xs text-foreground">
         <span className="flex items-center gap-2">
           <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: "var(--color-chart-1)" }} />
           Valor aplicado
         </span>
         <span className="flex items-center gap-2">
           <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: "var(--color-chart-2)" }} />
-          Ganho de Capital
+          Ganho de capital
+        </span>
+        <span className="ml-auto text-muted-foreground">
+          Cada barra mostra quanto do patrimônio veio de aportes e quanto veio de valorização.
         </span>
       </div>
+      {dados.length === 0 ? (
+        <p className="py-14 text-center text-sm text-muted-foreground">
+          Nenhum dado no período selecionado. Ajuste o filtro de período ou registre um aporte.
+        </p>
+      ) : (
       <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={dados} margin={{ left: 12, right: 8, top: 4 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-            <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="color-mix(in oklab, var(--color-foreground) 16%, transparent)" vertical={false} />
+            <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-foreground)" />
             <YAxis
-              tickFormatter={(v: number) => brl(v, 2)}
+              tickFormatter={(v: number) => brl(v, 0)}
               tickLine={false}
               axisLine={false}
               width={92}
               fontSize={13}
-              stroke="var(--color-muted-foreground)"
+              stroke="var(--color-foreground)"
             />
-            <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} cursor={{ fill: "var(--color-muted)" }} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              labelFormatter={(l: string) => `Mês: ${l}`}
+              formatter={(v: number, n: string) => [brl(v, 2), n]}
+              cursor={{ fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" }}
+            />
             <Bar dataKey="aplicado" stackId="p" fill="var(--color-chart-1)" name="Valor aplicado" />
-            <Bar dataKey="ganho" stackId="p" fill="var(--color-chart-2)" name="Ganho de Capital" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="ganho" stackId="p" fill="var(--color-chart-2)" name="Ganho de capital" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
+      )}
     </Panel>
   );
 }
