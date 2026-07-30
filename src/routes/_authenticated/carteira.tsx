@@ -6,6 +6,7 @@ import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 import { CarteiraRecomendada } from "@/components/carteira-recomendada";
+import { DialogMoverCategoria } from "@/components/dialog-mover-categoria";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
 import { InputNumeroBR } from "@/components/input-numero-br";
@@ -13,7 +14,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAtivos, useExcluir, useSalvarAtivo } from "@/lib/data";
-import { brl, categorias, resumoCarteira, type Ativo, type Categoria } from "@/lib/portfolio";
+import { brl, categorias, resumoCarteira, rotuloCategoria, type Ativo, type Categoria } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira")({
   head: () => ({
