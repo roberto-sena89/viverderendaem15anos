@@ -44,12 +44,22 @@ export function useCarteiraRealtime() {
       channel = ch;
     });
 
+    // Sincronização entre abas do mesmo navegador.
+    const pararBroadcast = ouvirCarteiraAlterada((chaves) => {
+      if (!ativo) return;
+      const alvos = chaves.length ? chaves.map((c) => [c] as const) : [qk.ativos, qk.aportes, qk.dividendos];
+      void Promise.all(
+        alvos.map((queryKey) => qc.invalidateQueries({ queryKey, refetchType: "all" })),
+      );
+    });
+
     const intervalo = window.setInterval(() => {
       if (document.visibilityState === "visible") revalidar();
     }, 20_000);
 
     return () => {
       ativo = false;
+      pararBroadcast();
       window.clearInterval(intervalo);
       if (channel) supabase.removeChannel(channel);
     };
