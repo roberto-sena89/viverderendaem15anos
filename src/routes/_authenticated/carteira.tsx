@@ -6,6 +6,7 @@ import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 import { CarteiraRecomendada } from "@/components/carteira-recomendada";
+import { DialogMoverCategoria } from "@/components/dialog-mover-categoria";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
 import { InputNumeroBR } from "@/components/input-numero-br";
@@ -13,7 +14,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAtivos, useExcluir, useSalvarAtivo } from "@/lib/data";
-import { brl, categorias, resumoCarteira, type Ativo, type Categoria } from "@/lib/portfolio";
+import { brl, categorias, resumoCarteira, rotuloCategoria, type Ativo, type Categoria } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira")({
   head: () => ({
@@ -34,6 +35,7 @@ const filtros = ["Todos", ...categorias] as const;
 function CarteiraPage() {
   const [filtro, setFiltro] = useState<string>("Todos");
   const [editando, setEditando] = useState<Ativo | null>(null);
+  const [movendo, setMovendo] = useState<Ativo | null>(null);
   const [open, setOpen] = useState(false);
 
   const { data: carteira = [], isLoading } = useAtivos();
@@ -112,6 +114,7 @@ function CarteiraPage() {
         <CarteiraGrupos
           ativos={ativos}
           onEditar={abrir}
+          onMover={setMovendo}
           onExcluir={(a) =>
             excluir.mutate(a.id, {
               onSuccess: () => toast.success(`${a.ticker} removido.`),
@@ -148,10 +151,13 @@ function CarteiraPage() {
               >
                 {categorias.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {rotuloCategoria[c] ?? c}
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-muted-foreground">
+                Alterar a categoria realoca o ativo para o grupo correspondente da carteira.
+              </p>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="quantidade">Quantidade</Label>
@@ -177,6 +183,8 @@ function CarteiraPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <DialogMoverCategoria ativo={movendo} onOpenChange={(aberto) => !aberto && setMovendo(null)} />
     </AppShell>
   );
 }

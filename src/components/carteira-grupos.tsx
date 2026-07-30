@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import {
+  ArrowLeftRight,
   BarChart3,
   ChevronDown,
   CircleCheck,
@@ -113,11 +114,14 @@ export function CarteiraGrupos({
   ativos,
   onEditar,
   onExcluir,
+  onMover,
   minimal = false,
 }: {
   ativos: Ativo[];
   onEditar?: (a: Ativo) => void;
   onExcluir?: (a: Ativo) => void;
+  /** Abre o fluxo de realocação do ativo para outra categoria. */
+  onMover?: (a: Ativo) => void;
   /** Modo enxuto: sem barra de ferramentas, densidade compacta e grupos recolhidos. */
   minimal?: boolean;
 }) {
@@ -384,6 +388,11 @@ export function CarteiraGrupos({
                                     <DropdownMenuItem onSelect={() => onEditar?.(a)}>
                                       <Pencil className="size-4" /> Editar ativo
                                     </DropdownMenuItem>
+                                    {onMover ? (
+                                      <DropdownMenuItem onSelect={() => onMover(a)}>
+                                        <ArrowLeftRight className="size-4" /> Mudar categoria
+                                      </DropdownMenuItem>
+                                    ) : null}
                                     <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir?.(a)}>
                                       <Trash2 className="size-4" /> Excluir ativo
                                     </DropdownMenuItem>
