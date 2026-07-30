@@ -98,7 +98,7 @@ export const alocacaoIdeal: Record<string, number> = {
   FIIs: 10,
   "Ações": 0,
   BDRs: 0,
-  "Fundos de\nInvestimentos": 0,
+  "Fundos de Investimentos": 0,
   Criptomoedas: 0,
   REITs: 0,
   Stocks: 0,
@@ -131,7 +131,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "Renda Fixa":
       return indexadorRendaFixa(a) ?? CLASSE_POS_FIXADO;
     case "Fundos de Investimentos":
-      return "Fundos de\nInvestimentos";
+      return "Fundos de Investimentos";
     case "Ações":
       return "Ações";
     case "ETF Brasil":
