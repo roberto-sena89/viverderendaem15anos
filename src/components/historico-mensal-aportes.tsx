@@ -280,7 +280,7 @@ export function HistoricoMensalAportes() {
       </Button>
 
       {aberto && (
-        <div className="panel max-w-4xl p-4">
+        <div className="panel w-full p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <p className="text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
               Detalhamento mensal dos aportes
