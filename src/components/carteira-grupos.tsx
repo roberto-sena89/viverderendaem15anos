@@ -270,7 +270,7 @@ export function CarteiraGrupos({
             {aberto ? (
               <>
                 <div className="border-t">
-                <Table wrapperClassName="overflow-x-visible" className="w-full table-fixed">
+                <Table wrapperClassName="overflow-x-visible" className="w-full table-fixed [&_th]:px-2 [&_td]:px-2 [&_th]:leading-tight [&_th]:whitespace-normal [&_th]:break-words">
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-[22%] min-w-0">Ticker / Nome do ativo</TableHead>
