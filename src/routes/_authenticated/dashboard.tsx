@@ -318,28 +318,58 @@ function Dashboard() {
                 </div>
               </div>
               <ul className="min-w-[15rem] flex-1 space-y-1.5 text-xs">
-                {porCategoria.map((c, i) => {
+                {porCategoria.map((c) => {
                   const cor = corCategoria(c.name);
                   const percentual = totalComposicao > 0 ? (c.value / totalComposicao) * 100 : 0;
                   return (
-                    <li
-                      key={c.name}
-                      className="flex items-center gap-3 rounded-md border border-transparent bg-muted/40 px-2.5 py-2 transition-colors hover:border-border hover:bg-muted"
-                      style={{ borderLeft: `3px solid ${cor}` }}
-                    >
-                      <span className="flex min-w-0 items-center gap-2 font-medium text-foreground">
-                        <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: cor }} />
-                        <span className="truncate whitespace-pre-line">{c.name}</span>
-                      </span>
-                      <span className="ml-auto flex shrink-0 items-baseline gap-2">
-                        <span className="num text-[0.875rem] text-muted-foreground">{brl(c.value, 2)}</span>
-                        <span className="num w-12 text-right font-semibold" style={{ color: cor }}>
-                          {pct(percentual)}
+                    <li key={c.name} className="space-y-1.5">
+                      <div
+                        className="flex items-center gap-3 rounded-md border border-transparent bg-muted/40 px-2.5 py-2 transition-colors hover:border-border hover:bg-muted"
+                        style={{ borderLeft: `3px solid ${cor}` }}
+                      >
+                        <span className="flex min-w-0 items-center gap-2 font-medium text-foreground">
+                          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: cor }} />
+                          <span className="truncate whitespace-pre-line">{c.name}</span>
                         </span>
-                      </span>
+                        <span className="ml-auto flex shrink-0 items-baseline gap-2">
+                          <span className="num text-[0.875rem] text-muted-foreground">{brl(c.value, 2)}</span>
+                          <span className="num w-12 text-right font-semibold" style={{ color: cor }}>
+                            {pct(percentual)}
+                          </span>
+                        </span>
+                      </div>
+                      {c.subs.length > 0 && (
+                        <ul className="ml-4 space-y-1.5 border-l border-border pl-3">
+                          {c.subs.map((s) => {
+                            const corSub = corCategoria(s.name);
+                            const pctSub = totalComposicao > 0 ? (s.value / totalComposicao) * 100 : 0;
+                            return (
+                              <li
+                                key={s.name}
+                                className="flex items-center gap-3 rounded-md bg-muted/20 px-2.5 py-1.5"
+                              >
+                                <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                                  <span
+                                    className="size-2 shrink-0 rounded-full"
+                                    style={{ backgroundColor: corSub }}
+                                  />
+                                  <span className="truncate">{s.name}</span>
+                                </span>
+                                <span className="ml-auto flex shrink-0 items-baseline gap-2">
+                                  <span className="num text-[0.8rem] text-muted-foreground">{brl(s.value, 2)}</span>
+                                  <span className="num w-12 text-right font-semibold" style={{ color: corSub }}>
+                                    {pct(pctSub)}
+                                  </span>
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
                     </li>
                   );
                 })}
+
               </ul>
             </div>
           )}
