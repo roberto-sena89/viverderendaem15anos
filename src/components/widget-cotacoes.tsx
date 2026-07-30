@@ -47,13 +47,13 @@ function LinhaCotacao({
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold">{nome}</span>
           {descricao ? (
-            <span className="block truncate text-[0.7rem] text-muted-foreground">{descricao}</span>
+            <span className="block truncate text-[0.82rem] text-muted-foreground">{descricao}</span>
           ) : null}
         </span>
         <span className="shrink-0 text-right">
           <span className="num block text-sm font-semibold">{preco(valor, moeda)}</span>
           <span
-            className={`flex items-center justify-end gap-1 text-[0.7rem] font-medium ${
+            className={`flex items-center justify-end gap-1 text-[0.82rem] font-medium ${
               positivo ? "text-success" : "text-destructive"
             }`}
           >

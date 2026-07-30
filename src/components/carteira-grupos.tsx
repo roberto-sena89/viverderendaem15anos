@@ -278,7 +278,7 @@ export function CarteiraGrupos({
                     <span className="block truncate text-sm font-semibold whitespace-pre-line sm:whitespace-normal">
                       {g.classe.replace(/\n/g, " · ")}
                     </span>
-                    <span className="block text-[0.7rem] text-muted-foreground">
+                    <span className="block text-[0.82rem] text-muted-foreground">
                       {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} ·{" "}
                       <span className="tabular-nums">{pct(g.participacao)}</span> de{" "}
                       <span className="tabular-nums">{pct(g.ideal)}</span>
@@ -314,27 +314,27 @@ export function CarteiraGrupos({
 
                 <dl className="grid flex-[3] grid-cols-2 gap-x-6 gap-y-3 text-right sm:grid-cols-5">
                   <div>
-                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Ativos</dt>
+                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Ativos</dt>
                     <dd className="font-semibold tabular-nums">{g.ativos.length}</dd>
                   </div>
                   <div>
-                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Valor total</dt>
+                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Valor total</dt>
                     <dd className="font-semibold tabular-nums">{brl(g.total)}</dd>
                   </div>
                   <div>
-                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Variação</dt>
+                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Variação</dt>
                     <dd>
                       <Variacao value={g.variacao} suffix="" />
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">Rentabilidade</dt>
+                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Rentabilidade</dt>
                     <dd>
                       <Variacao value={g.rentabilidade} />
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">% na carteira</dt>
+                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">% na carteira</dt>
                     <dd className="font-semibold tabular-nums">
                       {pct(g.participacao)} <span className="text-muted-foreground">/ {pct(g.ideal)}</span>
                     </dd>

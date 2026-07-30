@@ -131,7 +131,7 @@ export function HistoricoMensalAportes() {
       {aberto && (
         <div className="panel max-w-4xl p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <p className="text-[0.7rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
+            <p className="text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
               Detalhamento mensal dos aportes
             </p>
             <p className="num text-xs text-muted-foreground">
@@ -147,7 +147,7 @@ export function HistoricoMensalAportes() {
               { r: "Média por mês", v: brl(mediaMensal) },
             ].map((k) => (
               <div key={k.r} className="rounded-md border border-border bg-muted/30 px-3 py-2">
-                <dt className="text-[0.6rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">{k.r}</dt>
+                <dt className="text-[0.85rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">{k.r}</dt>
                 <dd className="num mt-0.5 text-sm font-semibold">{k.v}</dd>
               </div>
             ))}
@@ -174,7 +174,7 @@ export function HistoricoMensalAportes() {
                     )}
                     <span className="w-36 shrink-0 truncate">
                       <span className="block text-sm font-medium">{m.rotulo}</span>
-                      <span className="block truncate text-[0.65rem] text-muted-foreground">
+                      <span className="block truncate text-[0.78rem] text-muted-foreground">
                         {topo ? `${topo[0].replace(/\n/g, " · ")}` : "—"}
                       </span>
                     </span>
@@ -186,7 +186,7 @@ export function HistoricoMensalAportes() {
                     </span>
                     {variacao !== null && (
                       <span
-                        className={`num hidden items-center gap-1 text-[0.68rem] font-semibold sm:flex ${
+                        className={`num hidden items-center gap-1 text-[0.875rem] font-semibold sm:flex ${
                           variacao >= 0 ? "text-primary" : "text-destructive"
                         }`}
                       >
@@ -197,7 +197,7 @@ export function HistoricoMensalAportes() {
                     )}
                     <span className="ml-auto text-right">
                       <span className="num block text-sm font-semibold">{brl(m.total)}</span>
-                      <span className="block text-[0.65rem] text-muted-foreground">
+                      <span className="block text-[0.78rem] text-muted-foreground">
                         {m.lancamentos} {m.lancamentos === 1 ? "lançamento" : "lançamentos"} · {m.itens.length}{" "}
                         {m.itens.length === 1 ? "ativo" : "ativos"}
                       </span>
@@ -209,7 +209,7 @@ export function HistoricoMensalAportes() {
                       <div className="overflow-x-auto">
                         <table className="w-full text-xs">
                           <thead>
-                            <tr className="border-b border-border text-[0.6rem] tracking-[0.06em] text-muted-foreground uppercase">
+                            <tr className="border-b border-border text-[0.85rem] tracking-[0.06em] text-muted-foreground uppercase">
                               <th className="py-1.5 pr-2 text-left font-semibold">DATA</th>
                               <th className="py-1.5 pr-2 text-left font-semibold">Ativo</th>
                               <th className="py-1.5 pr-2 text-left font-semibold">Categoria</th>
@@ -253,7 +253,7 @@ export function HistoricoMensalAportes() {
                             ))}
                           </tbody>
                           <tfoot>
-                            <tr className="border-t border-border text-[0.68rem]">
+                            <tr className="border-t border-border text-[0.875rem]">
                               <td className="py-1.5 pr-2 font-semibold" colSpan={4}>
                                 Total do mês
                               </td>
@@ -274,7 +274,7 @@ export function HistoricoMensalAportes() {
                           .map(([cat, valor]) => (
                             <span
                               key={cat}
-                              className="flex items-center gap-1.5 rounded-full border border-border bg-muted/30 px-2 py-0.5 text-[0.62rem] text-muted-foreground"
+                              className="flex items-center gap-1.5 rounded-full border border-border bg-muted/30 px-2 py-0.5 text-[0.85rem] text-muted-foreground"
                             >
                               <span
                                 className="size-1.5 rounded-full"

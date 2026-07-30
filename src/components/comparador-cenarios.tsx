@@ -85,7 +85,7 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
         <TableCell key={r.cenario.id} className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}>
           <span className="font-medium">{valor(i)}</span>
           {comparando && numero ? (
-            <span className={cn("block text-[11px] font-semibold", i === 0 ? "text-muted-foreground" : corDelta(diff))}>
+            <span className={cn("block text-[13px] font-semibold", i === 0 ? "text-muted-foreground" : corDelta(diff))}>
               {i === 0 ? "base" : delta(diff)}
             </span>
           ) : null}
@@ -156,12 +156,12 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={serie}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="ano" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
+                <XAxis dataKey="ano" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
                 <YAxis
                   tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}M`}
                   tickLine={false}
                   axisLine={false}
-                  fontSize={12}
+                  fontSize={13}
                   stroke="var(--color-muted-foreground)"
                 />
                 <Tooltip
@@ -169,11 +169,11 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                     backgroundColor: "var(--color-popover)",
                     border: "1px solid var(--color-border)",
                     borderRadius: "12px",
-                    fontSize: "12px",
+                    fontSize: "13px",
                   }}
                   formatter={(v: number) => brl(v)}
                 />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 13 }} />
                 {resumos.map((r, i) => (
                   <Line
                     key={r.cenario.id}
@@ -208,7 +208,7 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                         />
                         {r.cenario.nome}
                         {i === vencedor && comparando ? (
-                          <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-primary-foreground">
+                          <span className="rounded-full bg-primary px-2 py-0.5 text-[12px] font-bold uppercase text-primary-foreground">
                             Vencedor
                           </span>
                         ) : null}
@@ -324,7 +324,7 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                             className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}
                           >
                             <span className="font-medium">{v.patrimonio === null ? "—" : brl(v.patrimonio)}</span>
-                            <span className="block text-[11px]">
+                            <span className="block text-[13px]">
                               {comparando ? (
                                 <span className={cn("font-semibold", i === 0 ? "text-muted-foreground" : corDelta(v.variacao))}>
                                   {i === 0 ? "base" : delta(v.variacao)}

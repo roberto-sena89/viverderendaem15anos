@@ -165,7 +165,7 @@ export function PainelPanoramaMercado() {
                     dataKey="rotulo"
                     tickLine={false}
                     axisLine={false}
-                    fontSize={11}
+                    fontSize={13}
                     minTickGap={24}
                     stroke="var(--color-muted-foreground)"
                   />
@@ -173,7 +173,7 @@ export function PainelPanoramaMercado() {
                     domain={["auto", "auto"]}
                     tickLine={false}
                     axisLine={false}
-                    fontSize={11}
+                    fontSize={13}
                     width={54}
                     stroke="var(--color-muted-foreground)"
                     tickFormatter={(v: number) => num(v / 1000, 1) + "K"}
@@ -183,7 +183,7 @@ export function PainelPanoramaMercado() {
                       backgroundColor: "var(--color-popover)",
                       border: "1px solid var(--color-border)",
                       borderRadius: "12px",
-                      fontSize: "12px",
+                      fontSize: "13px",
                     }}
                     formatter={(v: number) => [`${num(v)} pts`, "Ibovespa"]}
                   />

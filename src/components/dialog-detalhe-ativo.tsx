@@ -34,7 +34,7 @@ function pctFmt(v: number | null | undefined) {
 function Indicador({ rotulo, valor, tom }: { rotulo: string; valor: string; tom?: "alta" | "baixa" }) {
   return (
     <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
-      <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">{rotulo}</p>
+      <p className="text-[0.78rem] uppercase tracking-wide text-muted-foreground">{rotulo}</p>
       <p
         className={`num text-sm font-semibold ${
           tom === "alta" ? "text-success" : tom === "baixa" ? "text-destructive" : ""
@@ -156,13 +156,13 @@ export function DialogDetalheAtivo({
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="data" tickLine={false} axisLine={false} fontSize={11} minTickGap={28} stroke="var(--color-muted-foreground)" />
+                <XAxis dataKey="data" tickLine={false} axisLine={false} fontSize={13} minTickGap={28} stroke="var(--color-muted-foreground)" />
                 <YAxis
                   tickFormatter={(v: number) => moedaFmt(v, moeda)}
                   tickLine={false}
                   axisLine={false}
                   width={86}
-                  fontSize={11}
+                  fontSize={13}
                   stroke="var(--color-muted-foreground)"
                 />
                 <Tooltip
@@ -171,7 +171,7 @@ export function DialogDetalheAtivo({
                     border: "1px solid var(--color-border)",
                     borderRadius: "12px",
                     color: "var(--color-popover-foreground)",
-                    fontSize: "12px",
+                    fontSize: "13px",
                   }}
                   formatter={(v: number) => moedaFmt(v, moeda)}
                 />
@@ -212,7 +212,7 @@ export function DialogDetalheAtivo({
         </div>
 
         {c?.bolsa ? (
-          <p className="text-[0.7rem] text-muted-foreground">
+          <p className="text-[0.82rem] text-muted-foreground">
             Fonte de mercado · {c.bolsa}
             {c.atualizadoEm
               ? ` · atualizado em ${new Date(c.atualizadoEm).toLocaleString("pt-BR")}`

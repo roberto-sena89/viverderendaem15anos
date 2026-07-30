@@ -138,7 +138,7 @@ export function AppShell({
         <nav className="flex flex-1 flex-col gap-6 overflow-y-auto pr-1">
           {grupos.map((grupo, i) => (
             <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-5" : ""}>
-              <p className="mb-2 px-3 text-[0.7rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground/80 uppercase">
+              <p className="mb-2 px-3 text-[0.82rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground/80 uppercase">
                 {grupo.titulo}
               </p>
               <div className="flex flex-col gap-0.5">
@@ -203,7 +203,7 @@ export function AppShell({
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4 lg:px-8 lg:py-5">
             <div className="min-w-0 space-y-1">
               <nav aria-label="Trilha de navegação">
-                <ol className="flex min-w-0 items-center gap-1.5 text-[0.65rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+                <ol className="flex min-w-0 items-center gap-1.5 text-[0.78rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
                   <li className="hidden sm:block">
                     <Link to="/" className="transition-colors hover:text-foreground">
                       Início

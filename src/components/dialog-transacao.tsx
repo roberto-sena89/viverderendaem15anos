@@ -66,7 +66,7 @@ type Erros = Partial<
 function MensagemErro({ id, texto }: { id: string; texto?: string }) {
   if (!texto) return null;
   return (
-    <p id={id} role="alert" className="text-[0.75rem] font-medium text-destructive">
+    <p id={id} role="alert" className="text-[0.85rem] font-medium text-destructive">
       {texto}
     </p>
   );
@@ -478,7 +478,7 @@ export function DialogTransacao({
             />
             <div className="flex items-center justify-between gap-3">
               <MensagemErro id="erro-descricao" texto={erros.descricao} />
-              <span className="ml-auto text-[0.7rem] text-muted-foreground">{descricao.length}/200</span>
+              <span className="ml-auto text-[0.82rem] text-muted-foreground">{descricao.length}/200</span>
             </div>
           </div>
 

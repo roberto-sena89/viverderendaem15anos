@@ -59,7 +59,7 @@ const tooltipStyle = {
   border: "1px solid var(--color-border)",
   borderRadius: "12px",
   color: "var(--color-popover-foreground)",
-  fontSize: "12px",
+  fontSize: "13px",
 };
 
 
@@ -235,13 +235,13 @@ function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dadosEvolucao} margin={{ left: 12, right: 8, top: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
+                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
                 <YAxis
                   tickFormatter={(v: number) => brl(v, 2)}
                   tickLine={false}
                   axisLine={false}
                   width={92}
-                  fontSize={11}
+                  fontSize={13}
                   stroke="var(--color-muted-foreground)"
                 />
                 <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} cursor={{ fill: "var(--color-muted)" }} />
@@ -293,7 +293,7 @@ function Dashboard() {
                 </ResponsiveContainer>
                 <div className="pointer-events-none absolute inset-0 grid place-items-center">
                   <div className="text-center">
-                    <p className="text-[0.6rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                    <p className="text-[0.85rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
                       Total
                     </p>
                     <p className="num font-display text-base font-bold">{brl(totalComposicao, 2)}</p>
@@ -315,7 +315,7 @@ function Dashboard() {
                         <span className="truncate whitespace-pre-line">{c.name}</span>
                       </span>
                       <span className="ml-auto flex shrink-0 items-baseline gap-2">
-                        <span className="num text-[0.68rem] text-muted-foreground">{brl(c.value, 2)}</span>
+                        <span className="num text-[0.875rem] text-muted-foreground">{brl(c.value, 2)}</span>
                         <span className="num w-12 text-right font-semibold" style={{ color: cor }}>
                           {pct(percentual)}
                         </span>

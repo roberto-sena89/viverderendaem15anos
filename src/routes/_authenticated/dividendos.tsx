@@ -157,15 +157,15 @@ function DividendosPage() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={grafico}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-              <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
-              <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
+              <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
+              <YAxis tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
               <Tooltip
                 cursor={{ fill: "var(--color-muted)" }}
                 contentStyle={{
                   backgroundColor: "var(--color-popover)",
                   border: "1px solid var(--color-border)",
                   borderRadius: "12px",
-                  fontSize: "12px",
+                  fontSize: "13px",
                 }}
                 formatter={(v: number) => brl(v)}
               />
@@ -852,15 +852,15 @@ function PainelProventos({
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={serie}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
-                <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
+                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
+                <YAxis tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
                 <Tooltip
                   cursor={{ fill: "var(--color-muted)" }}
                   contentStyle={{
                     backgroundColor: "var(--color-popover)",
                     border: "1px solid var(--color-border)",
                     borderRadius: "12px",
-                    fontSize: "12px",
+                    fontSize: "13px",
                   }}
                   formatter={(v: number) => brl(v, 2)}
                 />
