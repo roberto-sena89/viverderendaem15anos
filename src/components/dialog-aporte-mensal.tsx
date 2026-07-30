@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { corClasse } from "@/lib/cores-ativos";
+import { formatarNumeroBR } from "@/lib/formato-numero";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
@@ -157,7 +158,7 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                   className="h-9 w-full justify-center px-1 text-xs tabular-nums"
                   onClick={() => {
                     setTocado(false);
-                    setTexto(String(v));
+                    setTexto(formatarNumeroBR(Math.min((erro ? 0 : aporte) + v, MAX_APORTE)));
                   }}
                 >
                   {brl(v)}
