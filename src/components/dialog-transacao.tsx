@@ -317,16 +317,51 @@ export function DialogTransacao({
                 onSelecionar={(s) => {
                   setTicker(s.ticker);
                   setNomeAtivo(s.nome);
+                  setAtivoSel(s);
                   limparErro("ticker");
                   if (!preco.trim() && s.preco) setPreco(formatarMoeda(String(s.preco).replace(".", ",")));
                 }}
               />
-              {nomeAtivo && (
-                <p className="truncate text-xs text-muted-foreground">{nomeAtivo}</p>
-              )}
               <MensagemErro id="erro-ticker" texto={erros.ticker} />
             </div>
           </div>
+
+          {ativoSel && (
+            <section
+              aria-label="Resumo do ativo selecionado"
+              className="rounded-lg border bg-muted/40 p-3"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-display text-sm font-semibold uppercase tracking-wide">
+                    {ativoSel.ticker}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{ativoSel.nome}</p>
+                </div>
+                <span className="rounded-full border px-2 py-0.5 text-[0.7rem] uppercase tracking-wide text-muted-foreground">
+                  {ativoSel.fonte}
+                </span>
+              </div>
+              <dl className="mt-2 grid gap-x-4 gap-y-1 text-xs sm:grid-cols-3">
+                <div className="flex justify-between gap-2 sm:block">
+                  <dt className="text-muted-foreground">Tipo</dt>
+                  <dd className="font-medium">{categoria || "—"}</dd>
+                </div>
+                {ativoSel.detalhe && (
+                  <div className="flex justify-between gap-2 sm:block">
+                    <dt className="text-muted-foreground">Vencimento / bolsa</dt>
+                    <dd className="font-medium">{ativoSel.detalhe.replace("Vencimento ", "")}</dd>
+                  </div>
+                )}
+                {ativoSel.preco != null && (
+                  <div className="flex justify-between gap-2 sm:block">
+                    <dt className="text-muted-foreground">Preço de referência</dt>
+                    <dd className="font-medium">{brl(ativoSel.preco, 2)}</dd>
+                  </div>
+                )}
+              </dl>
+            </section>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
