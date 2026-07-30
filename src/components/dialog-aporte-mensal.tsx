@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Calculator } from "lucide-react";
+import { Calculator, Eraser, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -53,6 +53,23 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   const [aberto, setAberto] = useState(false);
   const [texto, setTexto] = useState("1000");
   const [tocado, setTocado] = useState(false);
+  const [historico, setHistorico] = useState<string[]>([]);
+
+  /** Aplica um novo valor guardando o anterior para permitir desfazer. */
+  const aplicar = (novo: string) => {
+    setHistorico((h) => [...h, texto]);
+    setTocado(false);
+    setTexto(novo);
+  };
+
+  const desfazer = () => {
+    setHistorico((h) => {
+      if (h.length === 0) return h;
+      setTexto(h[h.length - 1]);
+      setTocado(false);
+      return h.slice(0, -1);
+    });
+  };
 
   const { valor: aporte, erro } = validarAporte(texto);
   const mostrarErro = tocado && Boolean(erro);
@@ -156,15 +173,38 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                   variant="outline"
                   size="sm"
                   className="h-9 w-full justify-center px-1 text-xs tabular-nums"
-                  onClick={() => {
-                    setTocado(false);
-                    setTexto(formatarNumeroBR(Math.min((erro ? 0 : aporte) + v, MAX_APORTE)));
-                  }}
+                  onClick={() => aplicar(formatarNumeroBR(Math.min((erro ? 0 : aporte) + v, MAX_APORTE)))}
                 >
                   {brl(v)}
                 </Button>
               ))}
             </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-9 gap-1.5 border border-border text-xs"
+                disabled={historico.length === 0}
+                onClick={desfazer}
+              >
+                <Undo2 className="size-3.5" />
+                Desfazer
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-9 gap-1.5 border border-border text-xs"
+                disabled={!texto.trim()}
+                onClick={() => aplicar("")}
+              >
+                <Eraser className="size-3.5" />
+                Zerar
+              </Button>
+            </div>
+
 
             <dl className="space-y-2 border-t border-border pt-3 text-xs">
               <div className="flex items-baseline justify-between gap-2">
