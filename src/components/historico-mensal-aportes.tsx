@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { CalendarRange, ChevronDown, ChevronRight, TrendingDown, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAportes } from "@/lib/data";
+import { useAportes, useAtivos } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 
@@ -50,16 +50,27 @@ function intervalo(datas: string[]) {
 /** Painel discreto e detalhado com o histórico mês a mês dos aportes. */
 export function HistoricoMensalAportes() {
   const { data: aportes = [] } = useAportes();
+  const { data: carteira = [] } = useAtivos();
   const [aberto, setAberto] = useState(false);
   const [expandido, setExpandido] = useState<string | null>(null);
+
+  /** Categoria oficial de cada ticker vem da aba Carteira (fonte única). */
+  const categoriaPorTicker = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const a of carteira) m.set(a.ticker.toUpperCase(), a.categoria);
+    return m;
+  }, [carteira]);
 
   const meses = useMemo<Mes[]>(() => {
     const mapa = new Map<string, Mes>();
     for (const a of aportes) {
+      const ticker = a.ticker.toUpperCase();
+      const categoria = categoriaPorTicker.get(ticker) ?? a.categoria;
       const chave = a.data.slice(0, 7);
       const bruto = a.quantidade * a.preco;
       const total = bruto + a.taxas;
       let m = mapa.get(chave);
+
       if (!m) {
         m = {
           chave,
@@ -78,10 +89,10 @@ export function HistoricoMensalAportes() {
       m.taxas += a.taxas;
       m.total += total;
       m.lancamentos += 1;
-      m.categorias.set(a.categoria, (m.categorias.get(a.categoria) ?? 0) + total);
+      m.categorias.set(categoria, (m.categorias.get(categoria) ?? 0) + total);
       if (a.corretora) m.corretoras.add(a.corretora);
 
-      const item = m.itens.find((i) => i.ticker === a.ticker);
+      const item = m.itens.find((i) => i.ticker === ticker);
       if (item) {
         item.quantidade += a.quantidade;
         item.bruto += bruto;
@@ -89,11 +100,12 @@ export function HistoricoMensalAportes() {
         item.total += total;
         item.lancamentos += 1;
         item.datas.push(a.data);
+        item.categoria = categoria;
         if (a.corretora && !item.corretoras.includes(a.corretora)) item.corretoras.push(a.corretora);
       } else {
         m.itens.push({
-          ticker: a.ticker,
-          categoria: a.categoria,
+          ticker,
+          categoria,
           corretoras: a.corretora ? [a.corretora] : [],
           datas: [a.data],
           quantidade: a.quantidade,
@@ -107,7 +119,8 @@ export function HistoricoMensalAportes() {
     return [...mapa.values()]
       .sort((a, b) => (a.chave < b.chave ? 1 : -1))
       .map((m) => ({ ...m, itens: m.itens.sort((a, b) => b.total - a.total) }));
-  }, [aportes]);
+  }, [aportes, categoriaPorTicker]);
+
 
   const maior = Math.max(1, ...meses.map((m) => m.total));
   const totalGeral = meses.reduce((s, m) => s + m.total, 0);
