@@ -140,7 +140,7 @@ function Dashboard() {
   const dadosEvolucao = evolucaoFiltrada.map((m) => {
     const aplicado = Math.min(m.patrimonio, resumoEvolucao.totalInvestido || m.patrimonio);
     return {
-      mes: m.mes,
+      mes: `${m.mes}/${m.chave.slice(2, 4)}`,
       aplicado: Math.round(aplicado),
       ganho: Math.round(resumoEvolucao.lucroTotal * (aplicado / aplicadoFinal)),
     };
