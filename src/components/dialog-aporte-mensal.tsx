@@ -274,12 +274,13 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
             </p>
           </div>
 
-          {aporte <= 0 ? (
+          {mostrarErro ? (
             <p className="grid min-h-40 place-items-center rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-              {erro ? "Corrija o valor informado para ver a distribuição." : "Informe um valor para ver a distribuição."}
+              Corrija o valor informado para ver a distribuição.
             </p>
           ) : (
             <div className="min-w-0 space-y-3">
+
               <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2">
                 <div className="text-[11px] leading-tight text-muted-foreground">
                   <p className="font-semibold text-foreground">Aporte manual por classe</p>
@@ -316,7 +317,6 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
               <ul className="space-y-1.5">
 
                 {linhas
-                  .filter((l) => l.valor > 0 || l.alvoPct > 0)
                   .map((l) => (
                     <li
                       key={l.classe}
