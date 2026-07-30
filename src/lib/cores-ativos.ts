@@ -7,7 +7,7 @@ import { CLASSE_POS_FIXADO, classeDoAtivo, type Ativo, type Categoria } from "@/
  */
 export const COR_CLASSE: Record<string, string> = {
   "Ações": "var(--color-chart-14)",
-  FIIs: "var(--color-chart-13)",
+  FIIs: "var(--color-chart-1)",
   "ETF (Brasil)": "var(--color-chart-11)",
   "ETFs - Brasil": "var(--color-chart-11)",
   "ETF (Exterior)": "var(--color-chart-12)",
