@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { corClasse } from "@/lib/cores-ativos";
-import { formatarNumeroBR } from "@/lib/formato-numero";
+import { formatarNumeroBR, numeroBR } from "@/lib/formato-numero";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
 import { brl, classeDoAtivo, CLASSE_POS_FIXADO, pct, valorAtual } from "@/lib/portfolio";
