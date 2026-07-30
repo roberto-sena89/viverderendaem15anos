@@ -397,10 +397,8 @@ export function HistoricoMensalAportes() {
                     )}
                     <span className="w-36 shrink-0 truncate">
                       <span className="block text-sm font-medium">{m.rotulo}</span>
-                      <span className="block truncate text-[0.78rem] text-muted-foreground">
-                        {topo ? `${topo[0].replace(/\n/g, " · ")}` : "—"}
-                      </span>
                     </span>
+
                     <span className="hidden h-1.5 flex-1 overflow-hidden rounded-full bg-muted sm:block">
                       <span
                         className="block h-full rounded-full bg-primary"
