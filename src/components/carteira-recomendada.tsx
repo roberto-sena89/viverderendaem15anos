@@ -37,7 +37,7 @@ const BLOCOS: Bloco[] = [
     grupo: "Renda Variável",
     risco: "Alto",
     linhas: [
-      { indexador: "Bolsa Brasileira", prazo: "BOVA11 ou Trend Bolsa Brasileira", alvo: 20 },
+      { indexador: "ETF - Brasil", prazo: "BOVA11 ou Trend Bolsa Brasileira", alvo: 20 },
       { indexador: "Bolsa Americana", prazo: "IVVB11 ou Trend Bolsa Americana (sem o dólar)", alvo: 20 },
       { indexador: "FIIS (Fundos Imobiliários)", prazo: "MCRE11 (Mauá Capital Real Estate)", alvo: 2 },
       { indexador: "FIIS (Fundos Imobiliários)", prazo: "TRXF11 (TRX Real Estate)", alvo: 2 },
