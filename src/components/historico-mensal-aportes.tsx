@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useAportes, useAtivos, useAtualizarAporte, useExcluirAporte } from "@/lib/data";
 import { brl, type Aporte } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
+import { GraficoAportesMensais } from "@/components/grafico-aportes-mensais";
 
 type Item = {
   ticker: string;
@@ -310,6 +311,9 @@ export function HistoricoMensalAportes() {
               </div>
             ))}
           </dl>
+
+          <GraficoAportesMensais meses={meses} />
+
 
           <div className="mt-3 divide-y divide-border">
             {mesesPagina.map((m, i) => {
