@@ -127,7 +127,13 @@ function Rebalanceamento() {
                 <TableCell className="text-center">{brl(l.valor)}</TableCell>
                 <TableCell className="text-center">{pct(l.atualPct)}</TableCell>
                 <TableCell className="text-center">{pct(l.idealPct)}</TableCell>
-                <TableCell className={`text-center ${l.diff < 0 ? "text-success" : "text-destructive"}`}>{pct(l.diff)}</TableCell>
+                <TableCell
+                  className={`text-center font-semibold ${
+                    l.diff > 0 ? "text-success" : l.diff < 0 ? "text-destructive" : "text-muted-foreground"
+                  }`}
+                >
+                  {l.diff > 0 ? `+${pct(l.diff)}` : pct(l.diff)}
+                </TableCell>
                 <TableCell className="text-center">{brl(Math.abs(l.idealValor - l.valor))}</TableCell>
               </TableRow>
             ))}
