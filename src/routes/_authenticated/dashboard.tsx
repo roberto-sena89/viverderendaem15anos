@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAportes, useAtivos, useDividendos } from "@/lib/data";
+import { classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import type { Ativo } from "@/lib/portfolio";
 import {
@@ -122,7 +123,9 @@ function Dashboard() {
 
   const ativosEvolucao = tipoEvolucao === "todos" ? ativos : ativos.filter((a) => a.categoria === tipoEvolucao);
   const resumo = resumoCarteira(ativos);
-  const categoriasComAtivos = categorias.filter((c) => ativos.some((a) => a.categoria === c));
+  // mesma classificação usada na aba "Carteira" (CarteiraGrupos), para os dois painéis
+  // exibirem sempre a mesma contagem de classes e o mesmo patrimônio.
+  const categoriasComAtivos = [...new Set(ativos.map((a) => classeDoAtivo(a)))];
   const resumoEvolucao = resumoCarteira(ativosEvolucao);
   const evolucao = evolucaoPatrimonio(aportes, resumoEvolucao.totalAtual);
 
