@@ -1,5 +1,12 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { useCarteiraRealtime } from "@/lib/realtime-carteira";
+
+function LayoutAutenticado() {
+  useCarteiraRealtime();
+  return <Outlet />;
+}
+
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
