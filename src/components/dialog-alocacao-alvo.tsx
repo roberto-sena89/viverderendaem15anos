@@ -129,18 +129,18 @@ export function DialogAlocacaoAlvo() {
                 <div className="flex shrink-0 items-center gap-1.5">
                   <Input
                     id={`alvo-${CLASSE_POS_FIXADO}`}
-                    inputMode="decimal"
-                    aria-invalid={camposInvalidos.has(CLASSE_POS_FIXADO)}
-                    value={valores[CLASSE_POS_FIXADO] ?? ""}
-                    onKeyDown={aoTeclar(CLASSE_POS_FIXADO)}
-                    onChange={(e) =>
-                      setValores((v) => ({ ...v, [CLASSE_POS_FIXADO]: sanitizar(e.target.value) }))
-                    }
-                    className="h-9 w-20 text-right text-sm tabular-nums"
+                    readOnly
+                    tabIndex={-1}
+                    aria-describedby="alvo-renda-fixa-ajuda"
+                    value={textoRendaFixa}
+                    className="h-9 w-20 cursor-default bg-muted/60 text-right text-sm font-semibold tabular-nums"
                   />
                   <span className="text-xs text-muted-foreground">%</span>
                 </div>
               </div>
+              <p id="alvo-renda-fixa-ajuda" className="mt-1 text-[11px] text-muted-foreground">
+                Calculado automaticamente: soma das sub-classes abaixo.
+              </p>
 
               <div className="mt-2.5 grid gap-x-6 gap-y-2 border-t border-border/60 pt-2.5 sm:grid-cols-2">
                 {SUBS_RENDA_FIXA.map((sub) => {
