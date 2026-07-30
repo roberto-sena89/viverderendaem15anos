@@ -129,6 +129,15 @@ function ErroCampo({ msg }: { msg?: string }) {
   );
 }
 
+/** Texto sem acentos e em minúsculas, para buscas tolerantes. */
+function normalizar(v: string) {
+  return v
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 /** Painel discreto e detalhado com o histórico mês a mês dos aportes. */
 export function HistoricoMensalAportes() {
   const { data: aportes = [] } = useAportes();
