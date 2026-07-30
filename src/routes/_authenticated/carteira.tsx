@@ -183,6 +183,8 @@ function CarteiraPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <DialogMoverCategoria ativo={movendo} onOpenChange={(aberto) => !aberto && setMovendo(null)} />
     </AppShell>
   );
 }
