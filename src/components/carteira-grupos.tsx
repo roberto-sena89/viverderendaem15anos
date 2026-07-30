@@ -304,20 +304,23 @@ export function CarteiraGrupos({
             {aberto ? (
               <>
                 <div className="border-t">
-                <Table wrapperClassName="overflow-x-visible" className="w-full table-fixed [&_th]:px-2 [&_td]:px-2 [&_th]:leading-tight [&_th]:whitespace-normal">
+                <Table
+                  wrapperClassName="overflow-visible"
+                  className="w-full table-fixed [&_th]:px-2 [&_td]:px-2 [&_th]:leading-tight [&_th]:whitespace-normal"
+                >
                     <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[20%] min-w-0">Ticker / Ativo</TableHead>
+                      <TableRow className="bg-muted/40">
+                        <TableHead className="w-[22%] min-w-0">Ticker / Ativo</TableHead>
                         {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
-                        {colunas.precoMedio && <TableHead className="text-right">P. médio</TableHead>}
+                        {colunas.precoMedio && <TableHead className={`text-right ${colMd}`}>P. médio</TableHead>}
                         {colunas.precoAtual && <TableHead className="text-right">P. atual</TableHead>}
-                        {colunas.variacao && <TableHead className="text-right">Var. (%)</TableHead>}
-                        {colunas.rentabilidade && <TableHead className="text-right">Rent. (R$)</TableHead>}
+                        {colunas.variacao && <TableHead className={`text-right ${colLg}`}>Var. (%)</TableHead>}
+                        {colunas.rentabilidade && <TableHead className={`text-right ${colMd}`}>Rent. (R$)</TableHead>}
                         {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
-                        {colunas.nota && <TableHead className="text-center">Nota</TableHead>}
+                        {colunas.nota && <TableHead className={`text-center ${colLg}`}>Nota</TableHead>}
                         {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
-                        {colunas.ideal && <TableHead className="text-right">% Ideal</TableHead>}
-                        {colunas.comprar && <TableHead className="text-center">Comprar</TableHead>}
+                        {colunas.ideal && <TableHead className={`text-right ${colLg}`}>% Ideal</TableHead>}
+                        {colunas.comprar && <TableHead className={`text-center ${colLg}`}>Comprar</TableHead>}
                         {onEditar && onExcluir ? <TableHead className="text-center">Opções</TableHead> : null}
                       </TableRow>
                     </TableHeader>
