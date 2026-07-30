@@ -88,8 +88,10 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
                 borderRadius: 8,
                 fontSize: 12,
               }}
-              labelFormatter={(_l, p) => p?.[0]?.payload?.completo ?? ""}
-              formatter={(v: number, n) => [brl(v, 2), n === "aporte" ? "Aporte do mês" : "Total acumulado"]}
+              labelFormatter={(_l: unknown, p: readonly { payload?: { completo?: string } }[] = []) =>
+                p?.[0]?.payload?.completo ?? ""
+              }
+              formatter={(v, n) => [brl(Number(v), 2), n === "aporte" ? "Aporte do mês" : "Total acumulado"]}
             />
             <Bar
               yAxisId="esq"
