@@ -18,6 +18,23 @@ export const qk = {
   plano: ["plano"] as const,
 };
 
+/**
+ * Revalida (e aguarda o refetch de) tudo que depende da carteira, incluindo
+ * queries montadas em outras abas/telas, para a UI refletir o novo aporte
+ * imediatamente — sem recarregar a página.
+ */
+async function sincronizarCarteira(
+  qc: ReturnType<typeof useQueryClient>,
+  chaves: readonly (readonly string[])[] = [qk.ativos, qk.aportes, qk.dividendos],
+) {
+  await Promise.all(
+    chaves.map((queryKey) =>
+      qc.invalidateQueries({ queryKey, refetchType: "all" }),
+    ),
+  );
+}
+
+
 export function useAtivos() {
   return useQuery({
     queryKey: qk.ativos,
@@ -178,7 +195,7 @@ export function useSalvarAtivo() {
         : await supabase.from("ativos").insert(row);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.ativos }),
+    onSuccess: () => sincronizarCarteira(qc, [qk.ativos]),
   });
 }
 
@@ -189,12 +206,14 @@ export function useExcluir(tabela: "ativos" | "aportes" | "dividendos" | "metas"
       const { error } = await supabase.from(tabela).delete().eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [tabela] });
-      if (tabela === "aportes") qc.invalidateQueries({ queryKey: qk.ativos });
-    },
+    onSuccess: () =>
+      sincronizarCarteira(
+        qc,
+        tabela === "aportes" ? [qk.aportes, qk.ativos] : [[tabela] as const],
+      ),
   });
 }
+
 
 /**
  * Recalcula quantidade e preço médio do ativo a partir de TODO o histórico de
@@ -304,12 +323,9 @@ export function useCriarAporte() {
       // Fonte única de verdade: soma TODO o histórico do ticker (aportes + vendas)
       // e regrava quantidade, preço médio e preço atual do ativo.
       await recalcularAtivo(ticker);
+    },
+    onSuccess: () => sincronizarCarteira(qc),
 
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.aportes });
-      qc.invalidateQueries({ queryKey: qk.ativos });
-    },
   });
 }
 
@@ -409,11 +425,8 @@ export function useImportarB3() {
 
       return { aportes: aportes.length, dividendos: dividendos.length };
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.ativos });
-      qc.invalidateQueries({ queryKey: qk.aportes });
-      qc.invalidateQueries({ queryKey: qk.dividendos });
-    },
+    onSuccess: () => sincronizarCarteira(qc),
+
   });
 }
 
@@ -447,10 +460,8 @@ export function useAtualizarAporte() {
       const tickers = new Set([ticker, anterior?.ticker?.toUpperCase()].filter(Boolean) as string[]);
       for (const t of tickers) await recalcularAtivo(t);
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.aportes });
-      qc.invalidateQueries({ queryKey: qk.ativos });
-    },
+    onSuccess: () => sincronizarCarteira(qc),
+
   });
 }
 
@@ -468,9 +479,7 @@ export function useExcluirAporte() {
       if (error) throw error;
       if (linha?.ticker) await recalcularAtivo(linha.ticker);
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.aportes });
-      qc.invalidateQueries({ queryKey: qk.ativos });
-    },
+    onSuccess: () => sincronizarCarteira(qc),
+
   });
 }
