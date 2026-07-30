@@ -261,10 +261,10 @@ export function CarteiraGrupos({
 
                   <div className="flex shrink-0 flex-col items-end leading-tight">
                     <span className="text-base font-bold tabular-nums lg:text-lg">{brl(g.total, 2)}</span>
-                    <span className="text-xs">
-                      <Variacao value={g.variacao} suffix="" /> ·{" "}
-                      <Variacao value={g.rentabilidade} />
+                    <span className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      Saldo atual
                     </span>
+
                   </div>
                 </div>
 
