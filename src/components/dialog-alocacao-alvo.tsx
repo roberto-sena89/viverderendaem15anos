@@ -186,6 +186,7 @@ export function DialogAlocacaoAlvo() {
             size="sm"
             onClick={() => {
               restaurar();
+              restaurarSub();
               setAberto(false);
               toast.success("Alocação ideal restaurada ao padrão.");
             }}
@@ -197,6 +198,7 @@ export function DialogAlocacaoAlvo() {
             disabled={!valido}
             onClick={() => {
               salvar(numeros);
+              salvarSub({ [SUB_RENDA_FIXA]: subNumero });
               setAberto(false);
               toast.success("Alocação ideal atualizada.");
             }}
