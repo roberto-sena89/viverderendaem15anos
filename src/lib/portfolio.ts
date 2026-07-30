@@ -296,3 +296,19 @@ export const metasPadrao = [
   { nome: "2 milhões", alvo: 2000000 },
   { nome: "3 milhões", alvo: 3000000 },
 ];
+
+/** Rótulos exibidos para cada categoria, alinhados às classes da carteira. */
+export const rotuloCategoria: Record<string, string> = {
+  "Ações": "Ações",
+  "Fundos Imobiliários": "FIIs (Fundos Imobiliários)",
+  "Tesouro Direto": "Tesouro Direto (Renda Fixa)",
+  BDR: "BDRs",
+  "ETF Brasil": "ETFs - Brasil",
+  "ETF (Exterior)": "ETFs - Global",
+  Fiagro: "Fiagro",
+  "Fundos de Investimentos": "Fundos de Investimentos",
+  "Renda Fixa": "Renda Fixa - CDI/SELIC / IPCA+ / Prefixado",
+  Stocks: "Stocks",
+  REITs: "REITs",
+  Criptomoedas: "Criptomoedas",
+};
