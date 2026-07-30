@@ -417,7 +417,8 @@ table td {
   text-transform: uppercase;
   color: var(--color-muted-foreground);
   background-color: color-mix(in oklab, var(--color-muted) 55%, transparent);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .surface-card table tbody td,
