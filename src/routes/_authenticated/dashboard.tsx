@@ -181,7 +181,7 @@ function Dashboard() {
 
 
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 text-[12px] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel
           title="Evolução do Patrimônio"
           action={
