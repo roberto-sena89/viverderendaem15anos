@@ -149,7 +149,7 @@ export function AppShell({
                       key={to}
                       to={to}
                       aria-current={active ? "page" : undefined}
-                      className={`group relative flex items-center gap-3 rounded-lg py-2.5 pr-3 pl-4 text-[0.875rem] leading-none transition-colors ${
+                      className={`group relative flex min-h-11 items-center gap-3 rounded-lg py-2.5 pr-3 pl-4 text-[0.875rem] leading-none transition-colors lg:min-h-10 ${
                         active
                           ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
                           : "font-medium text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
