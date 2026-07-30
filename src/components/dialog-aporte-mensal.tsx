@@ -280,6 +280,32 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
             </p>
           ) : (
             <div className="min-w-0 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2">
+                <div className="text-[11px] leading-tight text-muted-foreground">
+                  <p className="font-semibold text-foreground">Aporte manual por classe</p>
+                  <p>
+                    Travado: <span className="num font-semibold text-foreground">{brl(somaManual, 2)}</span> · Restante
+                    distribuído: <span className="num font-semibold text-foreground">{brl(restante, 2)}</span>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 border border-border text-xs"
+                    disabled={Object.keys(manuais).length === 0 && Object.keys(rascunho).length === 0}
+                    onClick={limparManuais}
+                  >
+                    Limpar manuais
+                  </Button>
+                  <Button type="button" size="sm" className="h-8 gap-1.5 text-xs" onClick={recalcular}>
+                    <RefreshCw className="size-3.5" />
+                    Recalcular
+                  </Button>
+                </div>
+              </div>
+
               <div className="hidden grid-cols-[minmax(0,1fr)_5rem_6.5rem_5rem] gap-3 px-3 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase sm:grid">
                 <span>Classe</span>
                 <span className="text-right">Alvo / Atual</span>
@@ -288,6 +314,7 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
               </div>
 
               <ul className="space-y-1.5">
+
                 {linhas
                   .filter((l) => l.valor > 0 || l.alvoPct > 0)
                   .map((l) => (
