@@ -309,11 +309,13 @@ export function useCriarAporte() {
         .eq("ticker", ticker)
         .maybeSingle();
 
+      const nomeOficial = a.nome?.trim();
+
       if (!existente) {
         // Primeiro aporte do ticker: cria o ativo com os dados da transação.
         const { error: insErr } = await supabase.from("ativos").insert({
           ticker,
-          nome: ticker,
+          nome: nomeOficial || ticker,
           categoria: a.categoria,
           quantidade: a.quantidade,
           preco_medio: a.preco,
@@ -321,8 +323,14 @@ export function useCriarAporte() {
           dy: 0,
         });
         if (insErr) throw insErr;
-      } else if (!existente.categoria && a.categoria) {
-        await supabase.from("ativos").update({ categoria: a.categoria }).eq("id", existente.id);
+      } else {
+        const patch: { categoria?: Categoria; nome?: string } = {};
+        if (!existente.categoria && a.categoria) patch.categoria = a.categoria;
+        // Completa o nome quando ainda é apenas o código do ativo.
+        if (nomeOficial && (!existente.nome || existente.nome === ticker)) patch.nome = nomeOficial;
+        if (Object.keys(patch).length > 0) {
+          await supabase.from("ativos").update(patch).eq("id", existente.id);
+        }
       }
 
       // Fonte única de verdade: soma TODO o histórico do ticker (aportes + vendas)
