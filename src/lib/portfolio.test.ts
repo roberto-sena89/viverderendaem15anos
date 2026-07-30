@@ -43,9 +43,9 @@ describe("classeDoAtivo · Tesouro Direto e Renda Fixa", () => {
 describe("classeDoAtivo · demais categorias", () => {
   const mapa: [Categoria, string][] = [
     ["Ações", "Ações"],
-    ["ETF Brasil", "ETF (Brasil)"],
-    ["ETF EUA", "ETF (Exterior)"],
-    ["ETF (Exterior)", "ETF (Exterior)"],
+    ["ETF Brasil", "ETFs - Brasil"],
+    ["ETF EUA", "ETFs - Global"],
+    ["ETF (Exterior)", "ETFs - Global"],
     ["BDR", "BDRs"],
     ["Stocks", "Stocks"],
     ["REITs", "REITs"],
@@ -64,7 +64,7 @@ describe("classeDoAtivo · demais categorias", () => {
 
   it("ticker com palavra de renda fixa não muda a classe de categorias de variável", () => {
     expect(classeDoAtivo(ativo({ ticker: "SELIC11", nome: "ETF Selic", categoria: "ETF Brasil" }))).toBe(
-      "ETF (Brasil)",
+      "ETFs - Brasil",
     );
   });
 });
