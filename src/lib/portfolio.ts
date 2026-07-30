@@ -19,7 +19,7 @@ export type Categoria =
 export const categorias: Categoria[] = [
   "Ações",
   "Fundos Imobiliários",
-  "Tesouro Direto",
+  
   "BDR",
   "ETF Brasil",
   "ETF (Exterior)",
