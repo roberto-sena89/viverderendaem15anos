@@ -298,7 +298,7 @@ export function HistoricoMensalAportes() {
   return (
     <div className="space-y-3">
         <div className="panel w-full p-4">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_17rem]">
+        <div className="grid gap-4 lg:grid-cols-[17rem_minmax(0,1fr)]">
         <div className="min-w-0">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <p className="text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
@@ -774,7 +774,7 @@ export function HistoricoMensalAportes() {
 
         <aside
           aria-label="Resumo da carteira"
-          className="h-fit rounded-lg border border-border bg-muted/20 p-3 lg:sticky lg:top-4"
+          className="h-fit rounded-lg border border-border bg-muted/20 p-3 lg:sticky lg:top-4 lg:order-first"
         >
           <p className="text-[0.78rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
             Resumo da carteira
