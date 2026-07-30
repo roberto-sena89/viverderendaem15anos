@@ -57,6 +57,10 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   const [texto, setTexto] = useState("1000");
   const [tocado, setTocado] = useState(false);
   const [historico, setHistorico] = useState<string[]>([]);
+  /** Valores digitados manualmente por classe (rascunho, antes de recalcular). */
+  const [rascunho, setRascunho] = useState<Record<string, string>>({});
+  /** Valores manuais efetivamente aplicados no cálculo. */
+  const [manuais, setManuais] = useState<Record<string, number>>({});
 
   /** Aplica um novo valor guardando o anterior para permitir desfazer. */
   const aplicar = (novo: string) => {
@@ -74,11 +78,25 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
     });
   };
 
+  /** Converte o rascunho em valores manuais aplicados. */
+  const recalcular = () => {
+    const novos: Record<string, number> = {};
+    for (const [classe, valor] of Object.entries(rascunho)) {
+      const n = numeroBR(valor);
+      if (valor.trim() !== "" && Number.isFinite(n) && n > 0) novos[classe] = n;
+    }
+    setManuais(novos);
+  };
+
+  const limparManuais = () => {
+    setRascunho({});
+    setManuais({});
+  };
+
   const { valor: aporte, erro } = validarAporte(texto);
   const mostrarErro = tocado && Boolean(erro);
 
-
-  const { linhas, totalAtual, totalFuturo } = useMemo(() => {
+  const { linhas, totalAtual, totalFuturo, somaManual, restante } = useMemo(() => {
     const atualPorClasse: Record<string, number> = {};
     for (const classe of Object.keys(alvo)) atualPorClasse[classe] = 0;
     for (const a of carteira) atualPorClasse[classeDoAtivo(a)] = (atualPorClasse[classeDoAtivo(a)] ?? 0) + valorAtual(a);
@@ -91,18 +109,31 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
       return { classe, alvoPct, atual, deficit: Math.max((futuro * alvoPct) / 100 - atual, 0) };
     });
 
-    const somaDeficit = base.reduce((s, b) => s + b.deficit, 0);
-    const somaAlvo = base.reduce((s, b) => s + b.alvoPct, 0) || 100;
+    // Valores travados manualmente (limitados ao aporte total).
+    const travados: Record<string, number> = {};
+    let usado = 0;
+    for (const b of base) {
+      const m = manuais[b.classe];
+      if (m === undefined) continue;
+      const v = Math.max(0, Math.min(m, Math.max(aporte - usado, 0)));
+      travados[b.classe] = v;
+      usado += v;
+    }
+    const sobra = Math.max(aporte - usado, 0);
+
+    const livres = base.filter((b) => travados[b.classe] === undefined);
+    const somaDeficit = livres.reduce((s, b) => s + b.deficit, 0);
+    const somaAlvo = livres.reduce((s, b) => s + b.alvoPct, 0) || 100;
 
     const resultado = base.map((b) => {
-      let valor = 0;
-      if (aporte > 0) {
+      let valor = travados[b.classe] ?? 0;
+      if (travados[b.classe] === undefined && sobra > 0) {
         if (somaDeficit <= 0) {
-          valor = (aporte * b.alvoPct) / somaAlvo; // já equilibrada: segue o alvo
-        } else if (aporte <= somaDeficit) {
-          valor = (aporte * b.deficit) / somaDeficit; // cobre os gaps proporcionalmente
+          valor = (sobra * b.alvoPct) / somaAlvo; // já equilibrada: segue o alvo
+        } else if (sobra <= somaDeficit) {
+          valor = (sobra * b.deficit) / somaDeficit; // cobre os gaps proporcionalmente
         } else {
-          valor = b.deficit + ((aporte - somaDeficit) * b.alvoPct) / somaAlvo; // zera gaps e distribui o resto
+          valor = b.deficit + ((sobra - somaDeficit) * b.alvoPct) / somaAlvo; // zera gaps e distribui o resto
         }
       }
       const depois = b.atual + valor;
@@ -111,6 +142,7 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
         alvoPct: b.alvoPct,
         atualPct: total > 0 ? (b.atual / total) * 100 : 0,
         valor,
+        manual: travados[b.classe] !== undefined,
         parte: aporte > 0 ? (valor / aporte) * 100 : 0,
         depoisPct: futuro > 0 ? (depois / futuro) * 100 : 0,
       };
@@ -120,8 +152,11 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
       linhas: resultado.sort((a, b) => b.valor - a.valor),
       totalAtual: total,
       totalFuturo: futuro,
+      somaManual: usado,
+      restante: sobra,
     };
-  }, [carteira, alvo, aporte]);
+  }, [carteira, alvo, aporte, manuais]);
+
 
   /** Sub-classes da Renda Fixa com alvo definido e sua fatia do aporte da classe. */
   const subsRendaFixa = useMemo(() => {
