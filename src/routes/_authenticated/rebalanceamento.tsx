@@ -140,7 +140,13 @@ function Rebalanceamento() {
                 >
                   {l.diff > 0 ? `+${pct(l.diff)}` : pct(l.diff)}
                 </TableCell>
-                <TableCell className="text-center">{brl(Math.abs(l.idealValor - l.valor))}</TableCell>
+                <TableCell
+                  className={`text-center font-semibold ${
+                    l.valor > l.idealValor ? "text-success" : l.valor < l.idealValor ? "text-destructive" : "text-muted-foreground"
+                  }`}
+                >
+                  {brl(Math.abs(l.idealValor - l.valor))}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
