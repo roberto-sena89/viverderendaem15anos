@@ -8,6 +8,7 @@ export type SubAlocacaoAlvo = Record<string, number>;
 /** Sub-classes dentro de uma classe principal (percentuais sobre a carteira total). */
 export const subalocacaoIdeal: SubAlocacaoAlvo = {
   "Tesouro SELIC": 0,
+  "Tesouro IPCA+": 0,
 };
 
 const listeners = new Set<() => void>();
