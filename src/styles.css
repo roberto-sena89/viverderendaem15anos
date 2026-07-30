@@ -276,6 +276,18 @@
   box-shadow: var(--shadow-soft);
 }
 
+/* Layout padrão das abas: sem overflow horizontal e cartões de altura uniforme */
+main#conteudo > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data-slot="card"]) {
+  height: 100%;
+}
+
+
+
 @utility text-gradient-brand {
   background-image: var(--gradient-brand);
   -webkit-background-clip: text;
