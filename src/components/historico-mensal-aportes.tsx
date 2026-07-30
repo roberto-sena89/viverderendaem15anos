@@ -749,7 +749,8 @@ export function HistoricoMensalAportes() {
               className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3"
             >
               <p className="num text-[0.85rem] text-muted-foreground">
-                Meses {inicio + 1}–{Math.min(inicio + POR_PAGINA, meses.length)} de {meses.length}
+                Meses {inicio + 1}–{Math.min(inicio + POR_PAGINA, mesesFiltrados.length)} de{" "}
+                {mesesFiltrados.length}
               </p>
               <div className="flex items-center gap-2">
                 <Button
