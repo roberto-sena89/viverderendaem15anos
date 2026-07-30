@@ -423,8 +423,7 @@ export function CarteiraGrupos({
                                       aria-label={`Ações de ${a.ticker}: editar ou excluir`}
                                       className="mx-auto h-7 gap-1 rounded-md px-1.5 text-[0.7rem] leading-none font-semibold"
                                     >
-                                      <Settings2 className="size-3" />
-                                      <span className="hidden lg:inline">Ações</span>
+                                      <Settings2 className="size-3.5" />
                                       <ChevronDown className="size-3 opacity-60" />
                                     </Button>
                                   </DropdownMenuTrigger>
