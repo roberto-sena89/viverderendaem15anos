@@ -90,7 +90,7 @@ export const planoPadrao: PlanoConfig = {
 };
 
 export const alocacaoIdeal: Record<string, number> = {
-  "Renda Fixa - CDI/SELIC": 30,
+  "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)": 30,
   "Renda Fixa - IPCA+": 15,
   "Renda Fixa - Prefixado": 5,
   "ETFs - Brasil": 20,
@@ -104,7 +104,7 @@ export const alocacaoIdeal: Record<string, number> = {
   Stocks: 0,
 };
 
-export const CLASSE_POS_FIXADO = "Renda Fixa - CDI/SELIC";
+export const CLASSE_POS_FIXADO = "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)";
 
 /** Detecta o indexador da renda fixa pelo ticker/nome (Selic, CDI, IPCA, pré). */
 const indexadorRendaFixa = (a: Ativo): string | null => {
@@ -307,7 +307,7 @@ export const rotuloCategoria: Record<string, string> = {
   "ETF (Exterior)": "ETFs - Global",
   Fiagro: "Fiagro",
   "Fundos de Investimentos": "Fundos de Investimentos",
-  "Renda Fixa": "Renda Fixa - CDI/SELIC / IPCA+ / Prefixado",
+  "Renda Fixa": "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)",
   Stocks: "Stocks",
   REITs: "REITs",
   Criptomoedas: "Criptomoedas",
