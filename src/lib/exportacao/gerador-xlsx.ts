@@ -1,4 +1,4 @@
-import writeXlsxFile, { type Row, type Cell } from "write-excel-file";
+import writeXlsxFile, { type Row, type Cell } from "write-excel-file/browser";
 
 import {
   FORMATO_MOEDA,
@@ -101,12 +101,18 @@ export async function gerarXlsxCarteira({ linhas, resumo }: DadosExportacao): Pr
     ]),
   ];
 
-  return writeXlsxFile([abaCarteira, abaResumo], {
-    sheets: ["Carteira", "Resumo"],
-    columns: [
-      COLUNAS.map((c) => ({ width: c.width })),
-      [{ width: 32 }, { width: 22 }, { width: 18 }],
-    ],
-    stickyRowsCount: 1,
-  }) as unknown as Promise<Blob>;
+  return writeXlsxFile([
+    {
+      name: "Carteira",
+      data: abaCarteira,
+      columns: COLUNAS.map((c) => ({ width: c.width })),
+      stickyRowsCount: 1,
+    },
+    {
+      name: "Resumo",
+      data: abaResumo,
+      columns: [{ width: 32 }, { width: 22 }, { width: 18 }],
+      stickyRowsCount: 1,
+    },
+  ]) as unknown as Promise<Blob>;
 }
