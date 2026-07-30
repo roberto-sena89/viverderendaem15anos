@@ -267,11 +267,22 @@ export function HistoricoMensalAportes() {
   const taxasGerais = meses.reduce((s, m) => s + m.taxas, 0);
   const mediaMensal = meses.length ? totalGeral / meses.length : 0;
 
+  /** Busca por período: aceita "julho", "2026", "07/2026", "2026-07". */
+  const termo = normalizar(busca);
+  const mesesFiltrados = termo
+    ? meses.filter((m) => {
+        const [ano, mes] = m.chave.split("-");
+        const alvos = [normalizar(m.rotulo), m.chave, `${mes}/${ano}`, `${mes}-${ano}`, ano, mes];
+        return alvos.some((a) => a.includes(termo));
+      })
+    : meses;
+
   const POR_PAGINA = 12;
-  const totalPaginas = Math.max(1, Math.ceil(meses.length / POR_PAGINA));
+  const totalPaginas = Math.max(1, Math.ceil(mesesFiltrados.length / POR_PAGINA));
   const paginaAtual = Math.min(pagina, totalPaginas - 1);
   const inicio = paginaAtual * POR_PAGINA;
-  const mesesPagina = meses.slice(inicio, inicio + POR_PAGINA);
+  const mesesPagina = mesesFiltrados.slice(inicio, inicio + POR_PAGINA);
+
 
   return (
     <div className="space-y-3">
