@@ -29,7 +29,7 @@ const BLOCOS: Bloco[] = [
     risco: "Baixo",
     linhas: [
       { indexador: "Tesouro\u00a0 SELIC (CDI)", prazo: "Liquidez imediata", alvo: 30 },
-      { indexador: "IPCA+", prazo: "Prazo maior que 5 anos", alvo: 15 },
+      { indexador: "Tesouro\u00a0\u00a0IPCA+", prazo: "Prazo maior que 5 anos", alvo: 15 },
       { indexador: "Pré-fixado", prazo: "Prazo maior que 5 anos", alvo: 5 },
     ],
   },
