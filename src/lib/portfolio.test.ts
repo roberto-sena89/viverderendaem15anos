@@ -50,7 +50,7 @@ describe("classeDoAtivo · demais categorias", () => {
     ["Stocks", "Stocks"],
     ["REITs", "REITs"],
     ["Criptomoedas", "Criptomoedas"],
-    ["Fundos de Investimentos", "Fundos de\nInvestimentos"],
+    ["Fundos de Investimentos", "Fundos de Investimentos"],
     ["Fundos Imobiliários", "FIIs"],
     ["FIIs", "FIIs"],
     ["Fiagro", "FIIs"],
