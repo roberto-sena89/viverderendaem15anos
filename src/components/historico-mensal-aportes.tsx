@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { CalendarRange, Check, ChevronDown, ChevronRight, Pencil, Trash2, TrendingDown, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -296,8 +296,8 @@ export function HistoricoMensalAportes() {
                               const chaveLinha = `${m.chave}:${i.ticker}`;
                               const linhaAbertaAtual = linhaAberta === chaveLinha;
                               return (
-                              <>
-                              <tr key={i.ticker}>
+                              <Fragment key={chaveLinha}>
+                              <tr>
                                 <td className="num py-1.5 pr-2 whitespace-nowrap text-muted-foreground">
                                   {intervalo(i.datas)}
                                 </td>
@@ -479,7 +479,7 @@ export function HistoricoMensalAportes() {
                                     </tr>
                                   );
                                 })}
-                              </>
+                              </Fragment>
                               );
                             })}
                           </tbody>
