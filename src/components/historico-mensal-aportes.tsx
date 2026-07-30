@@ -678,6 +678,46 @@ export function HistoricoMensalAportes() {
               <p className="py-6 text-center text-xs text-muted-foreground">Nenhum aporte registrado ainda.</p>
             )}
           </div>
+
+          {totalPaginas > 1 && (
+            <nav
+              aria-label="Paginação dos meses"
+              className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3"
+            >
+              <p className="num text-[0.85rem] text-muted-foreground">
+                Meses {inicio + 1}–{Math.min(inicio + POR_PAGINA, meses.length)} de {meses.length}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  disabled={paginaAtual === 0}
+                  onClick={() => {
+                    setExpandido(null);
+                    setPagina(paginaAtual - 1);
+                  }}
+                >
+                  Anterior
+                </Button>
+                <span className="num text-[0.85rem] text-muted-foreground">
+                  {paginaAtual + 1} / {totalPaginas}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  disabled={paginaAtual >= totalPaginas - 1}
+                  onClick={() => {
+                    setExpandido(null);
+                    setPagina(paginaAtual + 1);
+                  }}
+                >
+                  Próximo
+                </Button>
+              </div>
+            </nav>
+          )}
         </div>
       )}
     </div>
