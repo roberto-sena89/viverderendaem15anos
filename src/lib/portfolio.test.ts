@@ -95,10 +95,9 @@ describe("integridade das janelas de rebalanceamento", () => {
     }
   });
 
-  it("os três indexadores de renda fixa têm janela própria", () => {
-    for (const c of [CLASSE_POS_FIXADO, "Renda Fixa\nIPCA+", "Renda Fixa\nPré-fixado"]) {
-      expect(alocacaoIdeal).toHaveProperty(c);
-    }
+  it("renda fixa tem uma única janela", () => {
+    expect(alocacaoIdeal).toHaveProperty(CLASSE_POS_FIXADO);
+    expect(Object.keys(alocacaoIdeal).filter((c) => c.startsWith("Renda Fixa"))).toHaveLength(1);
   });
 
   it("a alocação-alvo padrão soma 100%", () => {
