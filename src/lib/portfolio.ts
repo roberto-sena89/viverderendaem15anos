@@ -92,7 +92,7 @@ export const planoPadrao: PlanoConfig = {
 export const alocacaoIdeal: Record<string, number> = {
   "Renda Fixa -CDI/SELIC\n(PÓS)": 30,
   "Renda Fixa - IPCA+": 15,
-  "Renda Fixa\nPré-fixado": 5,
+  "Renda Fixa - Prefixado": 5,
   "ETFs - Brasil": 20,
   "ETFs - Global": 20,
   FIIs: 10,
@@ -114,7 +114,7 @@ const indexadorRendaFixa = (a: Ativo): string | null => {
     .toUpperCase();
 
   // Pré-fixado: "TESOURO PREFIXADO 2029", "TESOURO PRE-2032", LTN, NTN-F
-  if (/(PRE[- ]?FIXAD|PREFIXAD|\bPREF?\b|\bPRE[- ]?\d{4}|\bLTN\b|NTN[- ]?F)/.test(texto)) return "Renda Fixa\nPré-fixado";
+  if (/(PRE[- ]?FIXAD|PREFIXAD|\bPREF?\b|\bPRE[- ]?\d{4}|\bLTN\b|NTN[- ]?F)/.test(texto)) return "Renda Fixa - Prefixado";
   // IPCA+: "TESOURO IPCA+ 2035", NTN-B, "B-2035"
   if (/(IPCA|NTN[- ]?B|INFLAC|\bB[- ]?\d{4})/.test(texto)) return "Renda Fixa - IPCA+";
   // Pós-fixado: Selic / CDI / CDB / LCI / LCA / LFT
