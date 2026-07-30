@@ -131,6 +131,9 @@ export function HistoricoMensalAportes() {
   const [editando, setEditando] = useState<string | null>(null);
   const [form, setForm] = useState({ data: "", corretora: "", ticker: "", quantidade: "", preco: "", taxas: "" });
 
+  const erros = useMemo(() => validarEdicao(form), [form]);
+  const formValido = Object.keys(erros).length === 0;
+
   function iniciarEdicao(a: Aporte) {
     setEditando(a.id);
     setForm({
@@ -144,11 +147,10 @@ export function HistoricoMensalAportes() {
   }
 
   async function salvar(a: Aporte) {
-    const quantidade = Number(form.quantidade.replace(",", "."));
-    const preco = Number(form.preco.replace(",", "."));
-    const taxas = Number(form.taxas.replace(",", ".")) || 0;
-    if (!form.ticker.trim() || !form.data || !Number.isFinite(quantidade) || !Number.isFinite(preco)) {
-      toast.error("Preencha ticker, data, quantidade e preço válidos.");
+    const problemas = validarEdicao(form);
+    const primeiro = Object.values(problemas)[0];
+    if (primeiro) {
+      toast.error(primeiro);
       return;
     }
     try {
@@ -158,9 +160,9 @@ export function HistoricoMensalAportes() {
         corretora: form.corretora.trim(),
         ticker: form.ticker.trim().toUpperCase(),
         categoria: a.categoria,
-        quantidade,
-        preco,
-        taxas,
+        quantidade: paraNumero(form.quantidade),
+        preco: paraNumero(form.preco),
+        taxas: form.taxas.trim() ? paraNumero(form.taxas) : 0,
         observacoes: a.observacoes ?? undefined,
       });
       setEditando(null);
@@ -169,6 +171,7 @@ export function HistoricoMensalAportes() {
       toast.error(e instanceof Error ? e.message : "Não foi possível salvar.");
     }
   }
+
 
   async function remover(a: Aporte) {
     try {
