@@ -323,12 +323,9 @@ export function useCriarAporte() {
       // Fonte única de verdade: soma TODO o histórico do ticker (aportes + vendas)
       // e regrava quantidade, preço médio e preço atual do ativo.
       await recalcularAtivo(ticker);
+    },
+    onSuccess: () => sincronizarCarteira(qc),
 
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.aportes });
-      qc.invalidateQueries({ queryKey: qk.ativos });
-    },
   });
 }
 
