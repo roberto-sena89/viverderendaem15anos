@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { CalendarRange, ChevronDown, ChevronRight, TrendingDown, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAportes } from "@/lib/data";
+import { useAportes, useAtivos } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 
