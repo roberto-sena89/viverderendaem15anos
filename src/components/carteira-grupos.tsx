@@ -407,7 +407,7 @@ export function CarteiraGrupos({
                       {g.ativos.map((a) => {
                         const saldo = valorAtual(a);
                         const investido = valorInvestido(a);
-                        const variacao = a.precoMedio > 0 ? ((a.precoAtual - a.precoMedio) / a.precoMedio) * 100 : 0;
+                        const variacao = variacaoAtivo(a);
                         const rent = investido > 0 ? ((saldo - investido) / investido) * 100 : 0;
                         const participacao = totalCarteira > 0 ? (saldo / totalCarteira) * 100 : 0;
                         const comprar = participacao < idealAtivo;
