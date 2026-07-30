@@ -21,12 +21,14 @@ export const qk = {
 /**
  * Revalida (e aguarda o refetch de) tudo que depende da carteira, incluindo
  * queries montadas em outras abas/telas, para a UI refletir o novo aporte
- * imediatamente — sem recarregar a página.
+ * imediatamente — sem recarregar a página. Também avisa as demais abas do
+ * navegador via BroadcastChannel.
  */
 async function sincronizarCarteira(
   qc: ReturnType<typeof useQueryClient>,
   chaves: readonly (readonly string[])[] = [qk.ativos, qk.aportes, qk.dividendos],
 ) {
+  emitirCarteiraAlterada(chaves);
   await Promise.all(
     chaves.map((queryKey) =>
       qc.invalidateQueries({ queryKey, refetchType: "all" }),
