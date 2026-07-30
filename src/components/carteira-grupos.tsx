@@ -269,25 +269,21 @@ export function CarteiraGrupos({
 
             {aberto ? (
               <>
-                <div className="overflow-x-auto border-t">
-                <Table>
+                <div className="border-t">
+                <Table wrapperClassName="overflow-x-visible" className="w-full table-fixed [&_th]:px-2 [&_td]:px-2 [&_th]:leading-tight [&_th]:whitespace-normal">
                     <TableHeader>
                       <TableRow>
-                        <TableHead className={compacto ? "min-w-48" : "min-w-64"}>Ticker / Nome do ativo</TableHead>
+                        <TableHead className="w-[20%] min-w-0">Ticker / Ativo</TableHead>
                         {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
-                        {colunas.precoMedio && <TableHead className="text-right">Preço médio</TableHead>}
-                        {colunas.precoAtual && <TableHead className="text-right">Preço atual</TableHead>}
-                        {colunas.variacao && (
-                          <TableHead className="text-right whitespace-pre-line">VARIAÇÃO{"\n"}(%)</TableHead>
-                        )}
-                        {colunas.rentabilidade && (
-                          <TableHead className="text-right whitespace-pre-line">RENTABILIDADE{"\n"}(R$)</TableHead>
-                        )}
+                        {colunas.precoMedio && <TableHead className="text-right">P. médio</TableHead>}
+                        {colunas.precoAtual && <TableHead className="text-right">P. atual</TableHead>}
+                        {colunas.variacao && <TableHead className="text-right">Var. (%)</TableHead>}
+                        {colunas.rentabilidade && <TableHead className="text-right">Rent. (R$)</TableHead>}
                         {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
                         {colunas.nota && <TableHead className="text-center">Nota</TableHead>}
-                        {colunas.participacao && <TableHead className="text-right">% Carteira</TableHead>}
+                        {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
                         {colunas.ideal && <TableHead className="text-right">% Ideal</TableHead>}
-                        {colunas.comprar && <TableHead className="text-center">Comprar?</TableHead>}
+                        {colunas.comprar && <TableHead className="text-center">Comprar</TableHead>}
                         {onEditar && onExcluir ? <TableHead className="text-center">Opções</TableHead> : null}
                       </TableRow>
                     </TableHeader>
