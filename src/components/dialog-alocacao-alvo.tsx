@@ -49,11 +49,25 @@ export function DialogAlocacaoAlvo() {
     return Number.isFinite(n) ? n : Number.NaN;
   };
 
+  const subNumeros = Object.fromEntries(
+    SUBS_RENDA_FIXA.map((s) => {
+      const v = subValores[s] ?? "";
+      return [s, v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0)];
+    }),
+  ) as Record<string, number>;
+  const somaSubs = Math.round(Object.values(subNumeros).reduce((s, v) => s + v, 0) * 100) / 100;
+  /** Renda Fixa é sempre a soma das sub-classes. */
+  const textoRendaFixa = somaSubs.toFixed(2).replace(".", ",");
+
   const numeros = Object.fromEntries(
-    Object.entries(valores).map(([c, v]) => [c, v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0)]),
+    Object.entries(valores).map(([c, v]) => [
+      c,
+      c === CLASSE_POS_FIXADO ? somaSubs : v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0),
+    ]),
   );
 
-  const invalidos = Object.entries(valores).filter(([, v]) => {
+  const invalidos = Object.entries(valores).filter(([c, v]) => {
+    if (c === CLASSE_POS_FIXADO) return false;
     if (v.trim() === "") return true;
     const n = paraNumero(v);
     return !Number.isFinite(n) || n < 0 || n > 100;
@@ -64,21 +78,13 @@ export function DialogAlocacaoAlvo() {
   const restante = 100 - total;
   const somaOk = Math.abs(restante) < 0.01;
 
-  const subNumeros = Object.fromEntries(
-    SUBS_RENDA_FIXA.map((s) => {
-      const v = subValores[s] ?? "";
-      return [s, v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0)];
-    }),
-  ) as Record<string, number>;
-  const alvoRendaFixa = numeros[CLASSE_POS_FIXADO] ?? 0;
-  const somaSubs = Object.values(subNumeros).reduce((s, v) => s + v, 0);
   const subsInvalidos = new Set(
     SUBS_RENDA_FIXA.filter((s) => {
       const v = subValores[s] ?? "";
       return v.trim() === "" || !Number.isFinite(paraNumero(v)) || subNumeros[s] < 0;
     }) as string[],
   );
-  const subInvalido = subsInvalidos.size > 0 || somaSubs > alvoRendaFixa + 0.001;
+  const subInvalido = subsInvalidos.size > 0 || somaSubs > 100.001;
 
   const valido = somaOk && camposInvalidos.size === 0 && !subInvalido;
 
@@ -122,18 +128,18 @@ export function DialogAlocacaoAlvo() {
                 <div className="flex shrink-0 items-center gap-1.5">
                   <Input
                     id={`alvo-${CLASSE_POS_FIXADO}`}
-                    inputMode="decimal"
-                    aria-invalid={camposInvalidos.has(CLASSE_POS_FIXADO)}
-                    value={valores[CLASSE_POS_FIXADO] ?? ""}
-                    onKeyDown={aoTeclar(CLASSE_POS_FIXADO)}
-                    onChange={(e) =>
-                      setValores((v) => ({ ...v, [CLASSE_POS_FIXADO]: sanitizar(e.target.value) }))
-                    }
-                    className="h-9 w-20 text-right text-sm tabular-nums"
+                    readOnly
+                    tabIndex={-1}
+                    aria-describedby="alvo-renda-fixa-ajuda"
+                    value={textoRendaFixa}
+                    className="h-9 w-20 cursor-default bg-muted/60 text-right text-sm font-semibold tabular-nums"
                   />
                   <span className="text-xs text-muted-foreground">%</span>
                 </div>
               </div>
+              <p id="alvo-renda-fixa-ajuda" className="mt-1 text-[11px] text-muted-foreground">
+                Calculado automaticamente: soma das sub-classes abaixo.
+              </p>
 
               <div className="mt-2.5 grid gap-x-6 gap-y-2 border-t border-border/60 pt-2.5 sm:grid-cols-2">
                 {SUBS_RENDA_FIXA.map((sub) => {
@@ -159,8 +165,7 @@ export function DialogAlocacaoAlvo() {
                 })}
               </div>
               <p className={`mt-2 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}>
-                Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% (máx.{" "}
-                {alvoRendaFixa.toFixed(1).replace(".", ",")}% da Renda Fixa).
+                Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% = total da Renda Fixa.
               </p>
             </div>
           )}
