@@ -35,6 +35,7 @@ const filtros = ["Todos", ...categorias] as const;
 function CarteiraPage() {
   const [filtro, setFiltro] = useState<string>("Todos");
   const [editando, setEditando] = useState<Ativo | null>(null);
+  const [movendo, setMovendo] = useState<Ativo | null>(null);
   const [open, setOpen] = useState(false);
 
   const { data: carteira = [], isLoading } = useAtivos();
@@ -113,6 +114,7 @@ function CarteiraPage() {
         <CarteiraGrupos
           ativos={ativos}
           onEditar={abrir}
+          onMover={setMovendo}
           onExcluir={(a) =>
             excluir.mutate(a.id, {
               onSuccess: () => toast.success(`${a.ticker} removido.`),
@@ -149,10 +151,13 @@ function CarteiraPage() {
               >
                 {categorias.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {rotuloCategoria[c] ?? c}
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-muted-foreground">
+                Alterar a categoria realoca o ativo para o grupo correspondente da carteira.
+              </p>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="quantidade">Quantidade</Label>
