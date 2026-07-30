@@ -82,7 +82,8 @@ export function BuscaAtivo({
           mostrarLista && sugestoes[destaque] ? `${listaId}-${destaque}` : undefined
         }
         autoComplete="off"
-        className="pl-9 uppercase"
+        className="pl-9"
+        maxLength={40}
         placeholder={categoria ? "Digite a 1ª letra: BBAS3, Tesouro..." : "Selecione uma categoria"}
         disabled={desabilitado}
         value={valor}

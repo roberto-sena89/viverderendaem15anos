@@ -164,8 +164,7 @@ export function DialogTransacao({
     const t = ticker.trim();
     if (!t) e.ticker = "Informe o nome ou código do ativo.";
     else if (t.length < 2) e.ticker = "Use ao menos 2 caracteres.";
-    else if (t.length > 20) e.ticker = "Máximo de 20 caracteres.";
-    else if (!/^[A-Za-z0-9À-ÿ.\-\s]+$/.test(t)) e.ticker = "Use apenas letras, números, ponto e hífen.";
+    else if (t.length > 40) e.ticker = "Máximo de 40 caracteres.";
 
     if (!preco.trim()) e.preco = "Informe o preço.";
     else if (!monetarioValido(preco)) e.preco = "Formato inválido. Use 1.234,56.";
@@ -214,7 +213,7 @@ export function DialogTransacao({
     const payload = {
       data,
       corretora: instituicao.trim(),
-      ticker: ticker.trim().toUpperCase(),
+      ticker: ticker.trim(),
       nome: nomeAtivo.trim() || undefined,
       categoria: categoria as Categoria,
       quantidade: tipo === "venda" ? -numero(quantidade) : numero(quantidade),
