@@ -50,6 +50,83 @@ function intervalo(datas: string[]) {
   return ini === fim ? ini : `${ini} – ${fim}`;
 }
 
+/** Máscara numérica: mantém dígitos e uma única vírgula decimal (padrão pt-BR). */
+function mascaraDecimal(valor: string) {
+  const limpo = valor.replace(/\./g, ",").replace(/[^\d,]/g, "");
+  const [inteiro, ...resto] = limpo.split(",");
+  const decimais = resto.join("").slice(0, 6);
+  return resto.length ? `${inteiro.slice(0, 12)},${decimais}` : inteiro.slice(0, 12);
+}
+
+/** Máscara de ticker: letras e números em maiúsculas. */
+function mascaraTicker(valor: string) {
+  return valor.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 12);
+}
+
+function paraNumero(valor: string) {
+  return Number(valor.replace(",", "."));
+}
+
+const formEdicaoSchema = z.object({
+  data: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Informe uma data válida (dd/mm/aaaa).")
+    .refine((d) => !Number.isNaN(new Date(`${d}T12:00`).getTime()), "Data inexistente.")
+    .refine((d) => d >= "1990-01-01", "A data não pode ser anterior a 1990.")
+    .refine((d) => d <= new Date().toISOString().slice(0, 10), "A data não pode ser futura."),
+  ticker: z
+    .string()
+    .trim()
+    .min(2, "Informe o ativo (mín. 2 caracteres).")
+    .max(12, "Ticker muito longo (máx. 12).")
+    .regex(/^[A-Z0-9]+$/, "Use apenas letras e números no ticker."),
+  corretora: z.string().trim().max(60, "Corretora deve ter no máximo 60 caracteres."),
+  quantidade: z
+    .string()
+    .trim()
+    .min(1, "Informe a quantidade.")
+    .refine((v) => Number.isFinite(paraNumero(v)), "Quantidade inválida.")
+    .refine((v) => paraNumero(v) > 0, "A quantidade deve ser maior que zero.")
+    .refine((v) => paraNumero(v) <= 1_000_000_000, "Quantidade acima do limite permitido."),
+  preco: z
+    .string()
+    .trim()
+    .min(1, "Informe o preço.")
+    .refine((v) => Number.isFinite(paraNumero(v)), "Preço inválido.")
+    .refine((v) => paraNumero(v) > 0, "O preço deve ser maior que zero.")
+    .refine((v) => paraNumero(v) <= 10_000_000, "Preço acima do limite permitido."),
+  taxas: z
+    .string()
+    .trim()
+    .refine((v) => v === "" || Number.isFinite(paraNumero(v)), "Taxas inválidas.")
+    .refine((v) => v === "" || paraNumero(v) >= 0, "As taxas não podem ser negativas.")
+    .refine((v) => v === "" || paraNumero(v) <= 1_000_000, "Taxas acima do limite permitido."),
+});
+
+type CampoEdicao = keyof z.infer<typeof formEdicaoSchema>;
+
+/** Retorna a primeira mensagem de erro por campo (objeto vazio = válido). */
+function validarEdicao(form: Record<CampoEdicao, string>): Partial<Record<CampoEdicao, string>> {
+  const r = formEdicaoSchema.safeParse(form);
+  if (r.success) return {};
+  const out: Partial<Record<CampoEdicao, string>> = {};
+  for (const issue of r.error.issues) {
+    const campo = issue.path[0] as CampoEdicao;
+    if (campo && !out[campo]) out[campo] = issue.message;
+  }
+  return out;
+}
+
+/** Mensagem de erro inline abaixo do campo. */
+function ErroCampo({ msg }: { msg?: string }) {
+  if (!msg) return null;
+  return (
+    <span role="alert" className="mt-0.5 block text-[0.72rem] leading-tight font-medium text-destructive">
+      {msg}
+    </span>
+  );
+}
+
 /** Painel discreto e detalhado com o histórico mês a mês dos aportes. */
 export function HistoricoMensalAportes() {
   const { data: aportes = [] } = useAportes();
