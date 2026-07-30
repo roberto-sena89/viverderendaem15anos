@@ -252,7 +252,7 @@ export function AppShell({
               <Link
                 key={to}
                 to={to}
-                className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs transition-colors ${
+                className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-xs transition-colors ${
                   pathname === to
                     ? "bg-accent font-medium text-accent-foreground"
                     : "text-muted-foreground hover:bg-muted"
