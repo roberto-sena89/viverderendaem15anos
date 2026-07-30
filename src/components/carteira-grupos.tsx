@@ -356,7 +356,7 @@ export function CarteiraGrupos({
                               <TableCell className={`text-right tabular-nums ${cel}`}>{num(a.quantidade)}</TableCell>
                             )}
                             {colunas.precoMedio && (
-                              <TableCell className={`text-right tabular-nums ${cel}`}>{brl(a.precoMedio, 2)}</TableCell>
+                              <TableCell className={`text-right tabular-nums ${colMd} ${cel}`}>{brl(a.precoMedio, 2)}</TableCell>
                             )}
                             {colunas.precoAtual && (
                               <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>
@@ -364,12 +364,12 @@ export function CarteiraGrupos({
                               </TableCell>
                             )}
                             {colunas.variacao && (
-                              <TableCell className={`text-right ${cel}`}>
+                              <TableCell className={`text-right ${colLg} ${cel}`}>
                                 <Variacao value={variacao} />
                               </TableCell>
                             )}
                             {colunas.rentabilidade && (
-                              <TableCell className={`text-right ${cel}`}>
+                              <TableCell className={`text-right ${colMd} ${cel}`}>
                                 <Variacao value={saldo - investido} suffix="" />
                               </TableCell>
                             )}
@@ -377,7 +377,7 @@ export function CarteiraGrupos({
                               <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>{brl(saldo, 2)}</TableCell>
                             )}
                             {colunas.nota && (
-                              <TableCell className={`text-center ${cel}`}>
+                              <TableCell className={`text-center ${colLg} ${cel}`}>
                                 <span
                                   title="Nota de aderência ao alvo e desempenho"
                                   className={`inline-grid place-items-center rounded-md bg-foreground font-bold text-background tabular-nums ${
@@ -392,12 +392,12 @@ export function CarteiraGrupos({
                               <TableCell className={`text-right tabular-nums ${cel}`}>{pct(participacao)}</TableCell>
                             )}
                             {colunas.ideal && (
-                              <TableCell className={`text-right text-muted-foreground tabular-nums ${cel}`}>
+                              <TableCell className={`text-right text-muted-foreground tabular-nums ${colLg} ${cel}`}>
                                 {pct(idealAtivo)}
                               </TableCell>
                             )}
                             {colunas.comprar && (
-                              <TableCell className={`text-center ${cel}`}>
+                              <TableCell className={`text-center ${colLg} ${cel}`}>
                                 <span
                                   className={`inline-flex items-center gap-1.5 rounded-full border text-xs font-semibold ${
                                     compacto ? "px-2 py-0.5" : "px-2.5 py-1"
