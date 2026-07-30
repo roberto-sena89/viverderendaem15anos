@@ -80,12 +80,14 @@ function Rebalanceamento() {
               </p>
               <Badge
                 className={
-                  l.status === "verde"
-                    ? "bg-success text-success-foreground font-semibold tracking-wide"
-                    : "bg-destructive text-destructive-foreground font-semibold tracking-wide"
+                  l.status === "cinza"
+                    ? "bg-muted text-muted-foreground font-semibold tracking-wide"
+                    : l.status === "verde"
+                      ? "bg-success text-success-foreground font-semibold tracking-wide"
+                      : "bg-destructive text-destructive-foreground font-semibold tracking-wide"
                 }
               >
-                {l.status === "verde" ? "IDEAL" : "DESBALANCEADO"}
+                {l.status === "cinza" ? "SEM APORTE" : l.status === "verde" ? "IDEAL" : "DESBALANCEADO"}
               </Badge>
             </div>
             <div className="mt-4 space-y-1 text-xs text-muted-foreground">
