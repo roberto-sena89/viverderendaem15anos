@@ -103,26 +103,56 @@ export function DialogAlocacaoAlvo() {
           {Object.keys(alvo).map((classe) => (
             <div
               key={classe}
-              className="flex items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/20 px-3 py-2"
+              className="rounded-md border border-border/60 bg-muted/20 px-3 py-2"
             >
-              <Label htmlFor={`alvo-${classe}`} className="text-xs leading-tight font-medium whitespace-pre-line">
-                {classe}
-              </Label>
-              <div className="flex shrink-0 items-center gap-1.5">
-                <Input
-                  id={`alvo-${classe}`}
-                  inputMode="decimal"
-                  aria-invalid={camposInvalidos.has(classe)}
-                  value={valores[classe] ?? ""}
-                  onKeyDown={aoTeclar(classe)}
-                  onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
-                  className="h-9 w-20 text-right text-sm tabular-nums"
-                />
-                <span className="text-xs text-muted-foreground">%</span>
+              <div className="flex items-center justify-between gap-3">
+                <Label htmlFor={`alvo-${classe}`} className="text-xs leading-tight font-medium whitespace-pre-line">
+                  {classe}
+                </Label>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <Input
+                    id={`alvo-${classe}`}
+                    inputMode="decimal"
+                    aria-invalid={camposInvalidos.has(classe)}
+                    value={valores[classe] ?? ""}
+                    onKeyDown={aoTeclar(classe)}
+                    onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
+                    className="h-9 w-20 text-right text-sm tabular-nums"
+                  />
+                  <span className="text-xs text-muted-foreground">%</span>
+                </div>
               </div>
+
+              {classe === CLASSE_POS_FIXADO && (
+                <div className="mt-2 border-t border-border/60 pt-2 pl-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <Label
+                      htmlFor="alvo-sub-tesouro-selic"
+                      className="text-xs leading-tight font-normal text-muted-foreground"
+                    >
+                      ↳ {SUB_RENDA_FIXA} <span className="text-[10px]">(sub-classe)</span>
+                    </Label>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <Input
+                        id="alvo-sub-tesouro-selic"
+                        inputMode="decimal"
+                        aria-invalid={subInvalido}
+                        value={subValor}
+                        onChange={(e) => setSubValor(sanitizar(e.target.value))}
+                        className="h-9 w-20 text-right text-sm tabular-nums"
+                      />
+                      <span className="text-xs text-muted-foreground">%</span>
+                    </div>
+                  </div>
+                  <p className={`mt-1 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}>
+                    Parte da Renda Fixa destinada ao Tesouro SELIC (máx. {alvoRendaFixa.toFixed(1).replace(".", ",")}%).
+                  </p>
+                </div>
+              )}
             </div>
           ))}
         </div>
+
 
         <div className="space-y-2 rounded-md border border-border/60 bg-muted/30 px-3 py-2.5">
           <div className="flex items-center justify-between text-xs font-semibold">
