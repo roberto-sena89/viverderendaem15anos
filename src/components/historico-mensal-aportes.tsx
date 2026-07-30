@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useState } from "react";
-import { CalendarRange, Check, ChevronDown, ChevronRight, Pencil, Search, Trash2, TrendingDown, TrendingUp, X } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, Pencil, Search, Trash2, TrendingDown, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -142,7 +142,6 @@ function normalizar(v: string) {
 export function HistoricoMensalAportes() {
   const { data: aportes = [] } = useAportes();
   const { data: carteira = [] } = useAtivos();
-  const [aberto, setAberto] = useState(false);
   const [expandido, setExpandido] = useState<string | null>(null);
   const [pagina, setPagina] = useState(0);
   const [busca, setBusca] = useState("");
@@ -296,19 +295,6 @@ export function HistoricoMensalAportes() {
 
   return (
     <div className="space-y-3">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setAberto((v) => !v)}
-        aria-expanded={aberto}
-        className="gap-2 text-xs font-semibold tracking-[0.04em] uppercase"
-      >
-        <CalendarRange className="size-4" />
-        Aportes mês a mês
-        <ChevronDown className={`size-4 transition-transform ${aberto ? "rotate-180" : ""}`} />
-      </Button>
-
-      {aberto && (
         <div className="panel w-full p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <p className="text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
@@ -781,7 +767,6 @@ export function HistoricoMensalAportes() {
             </nav>
           )}
         </div>
-      )}
     </div>
   );
 }
