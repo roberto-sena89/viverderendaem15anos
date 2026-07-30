@@ -297,22 +297,28 @@ export function DialogTransacao({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="ticker">Nome ou código do ativo *</Label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="ticker"
-                  className="pl-9 uppercase"
-                  placeholder={categoria ? "Ex.: BBAS3" : "Selecione uma categoria"}
-                  disabled={!categoria}
-                  value={ticker}
-                  aria-invalid={!!erros.ticker}
-                  aria-describedby={erros.ticker ? "erro-ticker" : undefined}
-                  onChange={(e) => {
-                    setTicker(e.target.value);
-                    limparErro("ticker");
-                  }}
-                />
-              </div>
+              <BuscaAtivo
+                id="ticker"
+                valor={ticker}
+                categoria={categoria}
+                desabilitado={!categoria}
+                invalido={!!erros.ticker}
+                descreveErro={erros.ticker ? "erro-ticker" : undefined}
+                onChange={(v) => {
+                  setTicker(v);
+                  setNomeAtivo("");
+                  limparErro("ticker");
+                }}
+                onSelecionar={(s) => {
+                  setTicker(s.ticker);
+                  setNomeAtivo(s.nome);
+                  limparErro("ticker");
+                  if (!preco.trim() && s.preco) setPreco(formatarMoeda(String(s.preco).replace(".", ",")));
+                }}
+              />
+              {nomeAtivo && (
+                <p className="truncate text-xs text-muted-foreground">{nomeAtivo}</p>
+              )}
               <MensagemErro id="erro-ticker" texto={erros.ticker} />
             </div>
           </div>
