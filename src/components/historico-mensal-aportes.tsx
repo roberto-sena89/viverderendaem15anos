@@ -89,10 +89,10 @@ export function HistoricoMensalAportes() {
       m.taxas += a.taxas;
       m.total += total;
       m.lancamentos += 1;
-      m.categorias.set(a.categoria, (m.categorias.get(a.categoria) ?? 0) + total);
+      m.categorias.set(categoria, (m.categorias.get(categoria) ?? 0) + total);
       if (a.corretora) m.corretoras.add(a.corretora);
 
-      const item = m.itens.find((i) => i.ticker === a.ticker);
+      const item = m.itens.find((i) => i.ticker === ticker);
       if (item) {
         item.quantidade += a.quantidade;
         item.bruto += bruto;
@@ -100,11 +100,12 @@ export function HistoricoMensalAportes() {
         item.total += total;
         item.lancamentos += 1;
         item.datas.push(a.data);
+        item.categoria = categoria;
         if (a.corretora && !item.corretoras.includes(a.corretora)) item.corretoras.push(a.corretora);
       } else {
         m.itens.push({
-          ticker: a.ticker,
-          categoria: a.categoria,
+          ticker,
+          categoria,
           corretoras: a.corretora ? [a.corretora] : [],
           datas: [a.data],
           quantidade: a.quantidade,
@@ -118,7 +119,8 @@ export function HistoricoMensalAportes() {
     return [...mapa.values()]
       .sort((a, b) => (a.chave < b.chave ? 1 : -1))
       .map((m) => ({ ...m, itens: m.itens.sort((a, b) => b.total - a.total) }));
-  }, [aportes]);
+  }, [aportes, categoriaPorTicker]);
+
 
   const maior = Math.max(1, ...meses.map((m) => m.total));
   const totalGeral = meses.reduce((s, m) => s + m.total, 0);
