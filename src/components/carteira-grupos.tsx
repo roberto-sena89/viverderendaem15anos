@@ -331,7 +331,7 @@ export function CarteiraGrupos({
                   <div>
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Variação (%)</dt>
                     <dd>
-                      <Variacao value={g.rentabilidade} />
+                      <Variacao value={g.variacaoPct} />
                     </dd>
                   </div>
                   <div>
