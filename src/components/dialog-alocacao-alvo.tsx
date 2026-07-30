@@ -49,11 +49,26 @@ export function DialogAlocacaoAlvo() {
     return Number.isFinite(n) ? n : Number.NaN;
   };
 
+  const subNumeros = Object.fromEntries(
+    SUBS_RENDA_FIXA.map((s) => {
+      const v = subValores[s] ?? "";
+      return [s, v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0)];
+    }),
+  ) as Record<string, number>;
+  const somaSubs = Math.round(Object.values(subNumeros).reduce((s, v) => s + v, 0) * 100) / 100;
+  /** Renda Fixa é sempre a soma das sub-classes. */
+  const alvoRendaFixa = somaSubs;
+  const textoRendaFixa = somaSubs.toFixed(2).replace(".", ",");
+
   const numeros = Object.fromEntries(
-    Object.entries(valores).map(([c, v]) => [c, v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0)]),
+    Object.entries(valores).map(([c, v]) => [
+      c,
+      c === CLASSE_POS_FIXADO ? somaSubs : v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0),
+    ]),
   );
 
-  const invalidos = Object.entries(valores).filter(([, v]) => {
+  const invalidos = Object.entries(valores).filter(([c, v]) => {
+    if (c === CLASSE_POS_FIXADO) return false;
     if (v.trim() === "") return true;
     const n = paraNumero(v);
     return !Number.isFinite(n) || n < 0 || n > 100;
@@ -64,21 +79,13 @@ export function DialogAlocacaoAlvo() {
   const restante = 100 - total;
   const somaOk = Math.abs(restante) < 0.01;
 
-  const subNumeros = Object.fromEntries(
-    SUBS_RENDA_FIXA.map((s) => {
-      const v = subValores[s] ?? "";
-      return [s, v.trim() === "" ? 0 : Math.max(0, paraNumero(v) || 0)];
-    }),
-  ) as Record<string, number>;
-  const alvoRendaFixa = numeros[CLASSE_POS_FIXADO] ?? 0;
-  const somaSubs = Object.values(subNumeros).reduce((s, v) => s + v, 0);
   const subsInvalidos = new Set(
     SUBS_RENDA_FIXA.filter((s) => {
       const v = subValores[s] ?? "";
       return v.trim() === "" || !Number.isFinite(paraNumero(v)) || subNumeros[s] < 0;
     }) as string[],
   );
-  const subInvalido = subsInvalidos.size > 0 || somaSubs > alvoRendaFixa + 0.001;
+  const subInvalido = subsInvalidos.size > 0 || somaSubs > 100.001;
 
   const valido = somaOk && camposInvalidos.size === 0 && !subInvalido;
 
