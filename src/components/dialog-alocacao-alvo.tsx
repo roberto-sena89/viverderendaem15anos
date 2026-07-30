@@ -1,5 +1,6 @@
 import { useEffect, useState, type KeyboardEvent } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { Info, SlidersHorizontal } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
