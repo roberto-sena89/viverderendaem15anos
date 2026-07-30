@@ -127,6 +127,8 @@ interface Grupo {
   variacao: number;
   participacao: number;
   ideal: number;
+  /** Média das variações (%) dos ativos do grupo — soma da coluna dividida pelo nº de ativos. */
+  variacaoPct: number;
 }
 
 /** Nota 0–10: aderência ao alvo (70%) + rentabilidade positiva (30%). */
@@ -195,7 +197,12 @@ export function CarteiraGrupos({
       .map(([classe, lista]) => {
         const total = lista.reduce((s, a) => s + valorAtual(a), 0);
         const investido = lista.reduce((s, a) => s + valorInvestido(a), 0);
+        const somaVariacoes = lista.reduce(
+          (s, a) => s + (a.precoMedio > 0 ? ((a.precoAtual - a.precoMedio) / a.precoMedio) * 100 : 0),
+          0,
+        );
         return {
+          variacaoPct: lista.length > 0 ? somaVariacoes / lista.length : 0,
           classe,
           ativos: [...lista].sort((x, y) => valorAtual(y) - valorAtual(x)),
           total,
@@ -324,7 +331,7 @@ export function CarteiraGrupos({
                   <div>
                     <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Variação (%)</dt>
                     <dd>
-                      <Variacao value={g.rentabilidade} />
+                      <Variacao value={g.variacaoPct} />
                     </dd>
                   </div>
                   <div>
