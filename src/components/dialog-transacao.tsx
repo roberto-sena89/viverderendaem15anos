@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useAtualizarAporte, useCriarAporte } from "@/lib/data";
-import { brl, categorias, type Aporte, type Categoria } from "@/lib/portfolio";
+import { brl, categorias, rotuloCategoria, type Aporte, type Categoria } from "@/lib/portfolio";
 
 const INSTITUICOES = [
   "Ágora Investimentos",
@@ -297,7 +297,7 @@ export function DialogTransacao({
                 <SelectContent>
                   {categorias.map((c) => (
                     <SelectItem key={c} value={c}>
-                      {c}
+                      {rotuloCategoria[c] ?? c}
                     </SelectItem>
                   ))}
                 </SelectContent>
