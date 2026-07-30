@@ -238,12 +238,17 @@ async function recalcularAtivo(ticker: string) {
     return;
   }
 
+  // Mantém o preço atual coerente: se ainda não houver cotação sincronizada,
+  // usa o preço médio recalculado para o saldo não ficar zerado.
+  const precoAtual = Number(ativo.preco_atual) > 0 ? Number(ativo.preco_atual) : precoMedio;
+
   const { error: upErr } = await supabase
     .from("ativos")
-    .update({ quantidade: qtd, preco_medio: precoMedio })
+    .update({ quantidade: qtd, preco_medio: precoMedio, preco_atual: precoAtual })
     .eq("id", ativo.id);
   if (upErr) throw upErr;
 }
+
 
 export interface AporteInput {
   data: string;
@@ -280,19 +285,8 @@ export function useCriarAporte() {
         .eq("ticker", ticker)
         .maybeSingle();
 
-      if (existente) {
-        const qtdAtual = Number(existente.quantidade);
-        const novaQtd = qtdAtual + a.quantidade;
-        const novoPM =
-          novaQtd > 0
-            ? (qtdAtual * Number(existente.preco_medio) + a.quantidade * a.preco) / novaQtd
-            : a.preco;
-        const { error: upErr } = await supabase
-          .from("ativos")
-          .update({ quantidade: novaQtd, preco_medio: novoPM })
-          .eq("id", existente.id);
-        if (upErr) throw upErr;
-      } else {
+      if (!existente) {
+        // Primeiro aporte do ticker: cria o ativo com os dados da transação.
         const { error: insErr } = await supabase.from("ativos").insert({
           ticker,
           nome: ticker,
@@ -303,7 +297,14 @@ export function useCriarAporte() {
           dy: 0,
         });
         if (insErr) throw insErr;
+      } else if (!existente.categoria && a.categoria) {
+        await supabase.from("ativos").update({ categoria: a.categoria }).eq("id", existente.id);
       }
+
+      // Fonte única de verdade: soma TODO o histórico do ticker (aportes + vendas)
+      // e regrava quantidade, preço médio e preço atual do ativo.
+      await recalcularAtivo(ticker);
+
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: qk.aportes });
