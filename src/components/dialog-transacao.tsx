@@ -297,7 +297,7 @@ export function DialogTransacao({
                 <SelectContent>
                   {categorias.map((c) => (
                     <SelectItem key={c} value={c}>
-                      {c}
+                      {rotuloCategoria[c] ?? c}
                     </SelectItem>
                   ))}
                 </SelectContent>
