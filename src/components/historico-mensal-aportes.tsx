@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useState } from "react";
-import { CalendarRange, Check, ChevronDown, ChevronRight, Pencil, Trash2, TrendingDown, TrendingUp, X } from "lucide-react";
+import { CalendarRange, Check, ChevronDown, ChevronRight, Pencil, Search, Trash2, TrendingDown, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -129,6 +129,15 @@ function ErroCampo({ msg }: { msg?: string }) {
   );
 }
 
+/** Texto sem acentos e em minúsculas, para buscas tolerantes. */
+function normalizar(v: string) {
+  return v
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 /** Painel discreto e detalhado com o histórico mês a mês dos aportes. */
 export function HistoricoMensalAportes() {
   const { data: aportes = [] } = useAportes();
@@ -136,6 +145,7 @@ export function HistoricoMensalAportes() {
   const [aberto, setAberto] = useState(false);
   const [expandido, setExpandido] = useState<string | null>(null);
   const [pagina, setPagina] = useState(0);
+  const [busca, setBusca] = useState("");
 
   /** Categoria oficial de cada ticker vem da aba Carteira (fonte única). */
   const categoriaPorTicker = useMemo(() => {
@@ -267,11 +277,22 @@ export function HistoricoMensalAportes() {
   const taxasGerais = meses.reduce((s, m) => s + m.taxas, 0);
   const mediaMensal = meses.length ? totalGeral / meses.length : 0;
 
+  /** Busca por período: aceita "julho", "2026", "07/2026", "2026-07". */
+  const termo = normalizar(busca);
+  const mesesFiltrados = termo
+    ? meses.filter((m) => {
+        const [ano, mes] = m.chave.split("-");
+        const alvos = [normalizar(m.rotulo), m.chave, `${mes}/${ano}`, `${mes}-${ano}`, ano, mes];
+        return alvos.some((a) => a.includes(termo));
+      })
+    : meses;
+
   const POR_PAGINA = 12;
-  const totalPaginas = Math.max(1, Math.ceil(meses.length / POR_PAGINA));
+  const totalPaginas = Math.max(1, Math.ceil(mesesFiltrados.length / POR_PAGINA));
   const paginaAtual = Math.min(pagina, totalPaginas - 1);
   const inicio = paginaAtual * POR_PAGINA;
-  const mesesPagina = meses.slice(inicio, inicio + POR_PAGINA);
+  const mesesPagina = mesesFiltrados.slice(inicio, inicio + POR_PAGINA);
+
 
   return (
     <div className="space-y-3">
@@ -314,8 +335,47 @@ export function HistoricoMensalAportes() {
 
           <GraficoAportesMensais meses={meses} />
 
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
+              <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={busca}
+                onChange={(e) => {
+                  setBusca(e.target.value);
+                  setPagina(0);
+                  setExpandido(null);
+                }}
+                placeholder="Buscar período (julho, 2026, 07/2026)"
+                aria-label="Buscar aportes por mês ou ano"
+                className="h-8 pl-8 text-xs"
+              />
+            </div>
+            {busca.trim() && (
+              <>
+                <span className="num text-[0.85rem] text-muted-foreground">
+                  {mesesFiltrados.length} {mesesFiltrados.length === 1 ? "mês" : "meses"}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 text-xs"
+                  onClick={() => {
+                    setBusca("");
+                    setPagina(0);
+                  }}
+                >
+                  Limpar
+                </Button>
+              </>
+            )}
+          </div>
 
           <div className="mt-3 divide-y divide-border">
+            {mesesFiltrados.length === 0 && meses.length > 0 && (
+              <p className="py-6 text-center text-xs text-muted-foreground">
+                Nenhum mês encontrado para “{busca}”.
+              </p>
+            )}
             {mesesPagina.map((m, i) => {
               const idx = inicio + i;
               const aberta = expandido === m.chave;
@@ -689,7 +749,8 @@ export function HistoricoMensalAportes() {
               className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3"
             >
               <p className="num text-[0.85rem] text-muted-foreground">
-                Meses {inicio + 1}–{Math.min(inicio + POR_PAGINA, meses.length)} de {meses.length}
+                Meses {inicio + 1}–{Math.min(inicio + POR_PAGINA, mesesFiltrados.length)} de{" "}
+                {mesesFiltrados.length}
               </p>
               <div className="flex items-center gap-2">
                 <Button
