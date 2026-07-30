@@ -342,6 +342,33 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                         {pct(l.depoisPct)}
                       </span>
 
+                      <div className="order-6 col-span-full flex items-center justify-end gap-2 sm:order-none">
+                        <Label htmlFor={`manual-${l.classe}`} className="text-[11px] text-muted-foreground">
+                          Manual R$
+                        </Label>
+                        <Input
+                          id={`manual-${l.classe}`}
+                          inputMode="decimal"
+                          placeholder="0,00"
+                          value={rascunho[l.classe] ?? ""}
+                          onChange={(e) => setRascunho((r) => ({ ...r, [l.classe]: e.target.value }))}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              recalcular();
+                            }
+                          }}
+                          className="h-8 w-28 text-right text-xs tabular-nums"
+                        />
+                        {l.manual && (
+                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                            travado
+                          </span>
+                        )}
+                      </div>
+
+
+
                       {l.classe === CLASSE_POS_FIXADO && subsRendaFixa.length > 0 && (
                         <ul className="order-5 col-span-full mt-1 space-y-1 border-t border-border/60 pt-1.5 pl-4 sm:order-none">
                           {subsRendaFixa.map((s) => (
