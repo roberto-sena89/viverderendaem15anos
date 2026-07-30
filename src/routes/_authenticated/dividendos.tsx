@@ -479,7 +479,7 @@ function FiltroAtivos({
           />
           <Search className="pointer-events-none absolute right-5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         </div>
-        <div className="max-h-64 overflow-y-auto border-t border-border py-1">
+        <div className="border-t border-border py-1">
           <OpcaoAtivo rotulo="Todos os ativos" ativo={valor === "todos"} onClick={() => onChange("todos")} />
           {lista.map((a) => (
             <OpcaoAtivo key={a} rotulo={a} ativo={valor === a} onClick={() => onChange(a)} />
