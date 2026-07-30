@@ -123,6 +123,17 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
     };
   }, [carteira, alvo, aporte]);
 
+  /** Sub-classes da Renda Fixa com alvo definido e sua fatia do aporte da classe. */
+  const subsRendaFixa = useMemo(() => {
+    const itens = Object.entries(subAlvo)
+      .map(([nome, alvoPct]) => ({ nome, alvoPct: Number(alvoPct) || 0 }))
+      .filter((s) => s.alvoPct > 0);
+    const soma = itens.reduce((s, i) => s + i.alvoPct, 0);
+    return itens.map((s) => ({ ...s, fracao: soma > 0 ? s.alvoPct / soma : 0 }));
+  }, [subAlvo]);
+
+
+
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
       <DialogTrigger asChild>
