@@ -9,7 +9,15 @@ import { CarteiraRecomendada } from "@/components/carteira-recomendada";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
 import { InputNumeroBR } from "@/components/input-numero-br";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAtivos, useExcluir, useSalvarAtivo } from "@/lib/data";
