@@ -77,19 +77,22 @@ export function DialogAlocacaoAlvo() {
           Editar alocação ideal
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Alocação ideal por classe</DialogTitle>
           <DialogDescription>Defina o percentual-alvo de cada classe. A soma precisa ser 100%.</DialogDescription>
         </DialogHeader>
 
-        <div className="max-h-[50vh] space-y-3 overflow-y-auto pr-1">
+        <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
           {Object.keys(alvo).map((classe) => (
-            <div key={classe} className="flex items-center justify-between gap-3">
-              <Label htmlFor={`alvo-${classe}`} className="text-sm whitespace-pre-line">
+            <div
+              key={classe}
+              className="flex items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/20 px-3 py-2"
+            >
+              <Label htmlFor={`alvo-${classe}`} className="text-xs leading-tight font-medium whitespace-pre-line">
                 {classe}
               </Label>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-1.5">
                 <Input
                   id={`alvo-${classe}`}
                   inputMode="decimal"
@@ -97,7 +100,7 @@ export function DialogAlocacaoAlvo() {
                   value={valores[classe] ?? ""}
                   onKeyDown={aoTeclar(classe)}
                   onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
-                  className="h-9 w-24 text-right text-sm"
+                  className="h-9 w-20 text-right text-sm tabular-nums"
                 />
                 <span className="text-xs text-muted-foreground">%</span>
               </div>
@@ -105,15 +108,30 @@ export function DialogAlocacaoAlvo() {
           ))}
         </div>
 
-        <div className="space-y-1">
-          <p className={`text-xs font-medium ${valido ? "text-muted-foreground" : "text-destructive"}`}>
-            Total: {total.toFixed(1).replace(".", ",")}%
-            {somaOk ? "" : ` — ${restante > 0 ? "faltam" : "excedem"} ${Math.abs(restante).toFixed(1).replace(".", ",")} pontos.`}
-          </p>
+        <div className="space-y-2 rounded-md border border-border/60 bg-muted/30 px-3 py-2.5">
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span className="text-muted-foreground uppercase tracking-wide">Total alocado</span>
+            <span className={`tabular-nums ${valido ? "text-success" : "text-destructive"}`}>
+              {total.toFixed(1).replace(".", ",")}%
+            </span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
+            <div
+              className={`h-full rounded-full transition-all ${valido ? "bg-success" : "bg-destructive"}`}
+              style={{ width: `${Math.min(100, total)}%` }}
+            />
+          </div>
+          {!somaOk && (
+            <p className="text-xs text-destructive">
+              {restante > 0 ? "Faltam" : "Excedem"} {Math.abs(restante).toFixed(1).replace(".", ",")} pontos para
+              fechar 100%.
+            </p>
+          )}
           {camposInvalidos.size > 0 && (
             <p className="text-xs text-destructive">Informe um número entre 0 e 100 em cada classe.</p>
           )}
         </div>
+
 
 
         <DialogFooter className="gap-2 sm:justify-between">
