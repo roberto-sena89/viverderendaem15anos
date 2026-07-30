@@ -111,7 +111,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         type: "font/woff2",
         href: manropeLatin,
         crossOrigin: "anonymous",
-        fetchpriority: "high",
+        fetchPriority: "high",
       },
       {
         rel: "preload",
