@@ -479,9 +479,7 @@ export function useExcluirAporte() {
       if (error) throw error;
       if (linha?.ticker) await recalcularAtivo(linha.ticker);
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.aportes });
-      qc.invalidateQueries({ queryKey: qk.ativos });
-    },
+    onSuccess: () => sincronizarCarteira(qc),
+
   });
 }
