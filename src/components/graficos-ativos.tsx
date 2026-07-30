@@ -128,7 +128,7 @@ export function GraficosAtivos() {
             type="button"
             onClick={() => setAtivo(s)}
             aria-pressed={ativo === s}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+            className={`min-h-11 rounded-full px-3.5 py-1 text-xs font-semibold transition-colors sm:min-h-9 ${
               ativo === s
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:bg-muted/70"
@@ -179,7 +179,7 @@ export function GraficosAtivos() {
               key={p.valor}
               type="button"
               onClick={() => setPeriodo(p.valor)}
-              className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+              className={`min-h-11 rounded-md px-3.5 py-1 text-xs font-medium transition-colors sm:min-h-9 ${
                 periodo === p.valor
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted"
