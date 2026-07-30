@@ -166,7 +166,7 @@ export function useSalvarPlano() {
       );
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.plano }),
+    onSuccess: () => sincronizarCarteira(qc, [qk.plano]),
   });
 }
 
@@ -341,7 +341,7 @@ export function useCriarDividendo() {
         .insert({ ...d, ticker: d.ticker.toUpperCase() });
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.dividendos }),
+    onSuccess: () => sincronizarCarteira(qc, [qk.dividendos]),
   });
 }
 
@@ -352,7 +352,7 @@ export function useCriarMeta() {
       const { error } = await supabase.from("metas").insert(m);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.metas }),
+    onSuccess: () => sincronizarCarteira(qc, [qk.metas]),
   });
 }
 
