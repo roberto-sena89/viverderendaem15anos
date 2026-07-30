@@ -6,6 +6,7 @@ import {
   CircleSlash,
   MoreHorizontal,
   Pencil,
+  Settings2,
   Trash2,
 } from "lucide-react";
 
@@ -15,6 +16,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
