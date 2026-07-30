@@ -10,6 +10,7 @@ export const subalocacaoIdeal: SubAlocacaoAlvo = {
   "Tesouro SELIC": 0,
   "Tesouro IPCA+": 0,
   "Tesouro Prefixado": 0,
+  CDB: 0,
 };
 
 const listeners = new Set<() => void>();

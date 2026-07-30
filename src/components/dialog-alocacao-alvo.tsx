@@ -17,7 +17,7 @@ import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
 import { CLASSE_POS_FIXADO } from "@/lib/portfolio";
 
-const SUBS_RENDA_FIXA = ["Tesouro SELIC", "Tesouro IPCA+", "Tesouro Prefixado"] as const;
+const SUBS_RENDA_FIXA = ["Tesouro SELIC", "Tesouro IPCA+", "Tesouro Prefixado", "CDB"] as const;
 
 /** Permite ajustar o percentual ideal de cada classe de ativo. */
 export function DialogAlocacaoAlvo() {
