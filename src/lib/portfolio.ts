@@ -91,7 +91,7 @@ export const planoPadrao: PlanoConfig = {
 
 export const alocacaoIdeal: Record<string, number> = {
   "Renda Fixa -CDI/SELIC\n(PÓS)": 30,
-  "Renda Fixa\nIPCA+": 15,
+  "Renda Fixa - IPCA+": 15,
   "Renda Fixa\nPré-fixado": 5,
   "ETFs - Brasil": 20,
   "ETFs - Global": 20,
@@ -116,7 +116,7 @@ const indexadorRendaFixa = (a: Ativo): string | null => {
   // Pré-fixado: "TESOURO PREFIXADO 2029", "TESOURO PRE-2032", LTN, NTN-F
   if (/(PRE[- ]?FIXAD|PREFIXAD|\bPREF?\b|\bPRE[- ]?\d{4}|\bLTN\b|NTN[- ]?F)/.test(texto)) return "Renda Fixa\nPré-fixado";
   // IPCA+: "TESOURO IPCA+ 2035", NTN-B, "B-2035"
-  if (/(IPCA|NTN[- ]?B|INFLAC|\bB[- ]?\d{4})/.test(texto)) return "Renda Fixa\nIPCA+";
+  if (/(IPCA|NTN[- ]?B|INFLAC|\bB[- ]?\d{4})/.test(texto)) return "Renda Fixa - IPCA+";
   // Pós-fixado: Selic / CDI / CDB / LCI / LCA / LFT
   if (/(SELIC|\bCDI\b|\bDI\b|\bCDB\b|\bLCI\b|\bLCA\b|\bLFT\b|POS[- ]?FIXAD)/.test(texto)) return CLASSE_POS_FIXADO;
   return null;
@@ -127,7 +127,7 @@ export const classeDoAtivo = (a: Ativo): string => {
   switch (a.categoria) {
     case "Tesouro":
     case "Tesouro Direto":
-      return indexadorRendaFixa(a) ?? "Renda Fixa\nIPCA+";
+      return indexadorRendaFixa(a) ?? "Renda Fixa - IPCA+";
     case "Renda Fixa":
       return indexadorRendaFixa(a) ?? CLASSE_POS_FIXADO;
     case "Fundos de Investimentos":
