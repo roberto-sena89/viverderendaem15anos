@@ -6,8 +6,8 @@ import { CLASSE_POS_FIXADO, classeDoAtivo, type Ativo, type Categoria } from "@/
  * Os valores apontam para tokens semânticos definidos em src/styles.css.
  */
 export const COR_CLASSE: Record<string, string> = {
-  "Ações": "var(--color-chart-1)",
-  FIIs: "var(--color-chart-3)",
+  "Ações": "var(--color-chart-14)",
+  FIIs: "var(--color-chart-13)",
   "ETF (Brasil)": "var(--color-chart-11)",
   "ETFs - Brasil": "var(--color-chart-11)",
   "ETF (Exterior)": "var(--color-chart-12)",
@@ -19,7 +19,7 @@ export const COR_CLASSE: Record<string, string> = {
   Stocks: "var(--color-chart-2)",
   REITs: "var(--color-chart-10)",
   Criptomoedas: "var(--color-chart-4)",
-  "Fundos de Investimentos": "var(--color-chart-7)",
+  "Fundos de Investimentos": "var(--color-chart-15)",
 };
 
 /** Categorias da carteira mapeadas para a mesma cor da sua classe de estratégia. */
