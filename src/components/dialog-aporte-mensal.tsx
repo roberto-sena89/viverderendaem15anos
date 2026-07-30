@@ -178,7 +178,7 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
         </Button>
 
       </DialogTrigger>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-4xl">
+      <DialogContent className="max-h-[92vh] overflow-hidden sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>Calculadora de aporte mensal</DialogTitle>
           <DialogDescription>
@@ -317,6 +317,7 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
               <ul className="space-y-1.5">
 
                 {linhas
+                  .filter((l) => l.alvoPct > 0 || l.atualPct > 0)
                   .map((l) => (
                     <li
                       key={l.classe}
