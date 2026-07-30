@@ -15,7 +15,8 @@ import { Label } from "@/components/ui/label";
 import { corClasse } from "@/lib/cores-ativos";
 import { formatarNumeroBR } from "@/lib/formato-numero";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
-import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
+import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
+import { brl, classeDoAtivo, CLASSE_POS_FIXADO, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
 
 const ATALHOS = [50, 100, 500, 1000, 2000, 5000];
