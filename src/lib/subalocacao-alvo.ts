@@ -9,6 +9,7 @@ export type SubAlocacaoAlvo = Record<string, number>;
 export const subalocacaoIdeal: SubAlocacaoAlvo = {
   "Tesouro SELIC": 0,
   "Tesouro IPCA+": 0,
+  "Tesouro Prefixado": 0,
 };
 
 const listeners = new Set<() => void>();
