@@ -51,13 +51,14 @@ function CartaoResumo({
       aria-label={`Ver detalhes e fórmulas de ${titulo}`}
       className="panel cursor-pointer p-4 text-left transition-colors hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-start gap-2">
         <Icone className="size-8! shrink-0 text-muted-foreground/70" />
-        <p className="truncate text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
+        <p className="min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] text-balance text-muted-foreground uppercase">
           {titulo}
         </p>
-        <span className="ml-auto text-[0.85rem] text-muted-foreground/70">detalhes</span>
+        <span className="shrink-0 text-[0.85rem] text-muted-foreground/70">detalhes</span>
       </div>
+
       <div className="mt-3">{children}</div>
     </button>
   );
