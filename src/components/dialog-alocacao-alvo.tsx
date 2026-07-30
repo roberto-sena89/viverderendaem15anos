@@ -1,5 +1,6 @@
 import { useEffect, useState, type KeyboardEvent } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { Info, SlidersHorizontal } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -118,25 +119,49 @@ export function DialogAlocacaoAlvo() {
         <div className="space-y-3">
           {Object.keys(alvo).includes(CLASSE_POS_FIXADO) && (
             <div className="rounded-md border border-border/60 bg-muted/20 px-3 py-2.5">
-              <div className="flex items-center justify-between gap-3">
-                <Label
-                  htmlFor={`alvo-${CLASSE_POS_FIXADO}`}
-                  className="text-xs leading-tight font-semibold whitespace-pre-line"
-                >
-                  {CLASSE_POS_FIXADO}
-                </Label>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  <Input
-                    id={`alvo-${CLASSE_POS_FIXADO}`}
-                    readOnly
-                    tabIndex={-1}
-                    aria-describedby="alvo-renda-fixa-ajuda"
-                    value={textoRendaFixa}
-                    className="h-9 w-20 cursor-default bg-muted/60 text-right text-sm font-semibold tabular-nums"
-                  />
-                  <span className="text-xs text-muted-foreground">%</span>
+              <TooltipProvider delayDuration={150}>
+                <div className="flex items-center justify-between gap-3">
+                  <Label
+                    htmlFor={`alvo-${CLASSE_POS_FIXADO}`}
+                    className="flex items-center gap-1.5 text-xs leading-tight font-semibold whitespace-pre-line"
+                  >
+                    {CLASSE_POS_FIXADO}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          aria-label="Como a Renda Fixa é calculada"
+                          className="text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        >
+                          <Info className="size-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-64 text-xs">
+                        A Renda Fixa é calculada automaticamente como a soma de Tesouro SELIC, Tesouro IPCA+, Tesouro
+                        Prefixado e CDB. Por isso o campo fica somente leitura — ajuste as sub-classes abaixo.
+                      </TooltipContent>
+                    </Tooltip>
+                  </Label>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Input
+                          id={`alvo-${CLASSE_POS_FIXADO}`}
+                          readOnly
+                          tabIndex={-1}
+                          aria-describedby="alvo-renda-fixa-ajuda"
+                          value={textoRendaFixa}
+                          className="h-9 w-20 cursor-default bg-muted/60 text-right text-sm font-semibold tabular-nums"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-64 text-xs">
+                        Campo somente leitura: soma de Tesouro SELIC, IPCA+, Prefixado e CDB.
+                      </TooltipContent>
+                    </Tooltip>
+                    <span className="text-xs text-muted-foreground">%</span>
+                  </div>
                 </div>
-              </div>
+              </TooltipProvider>
               <p id="alvo-renda-fixa-ajuda" className="mt-1 text-[11px] text-muted-foreground">
                 Calculado automaticamente: soma das sub-classes abaixo.
               </p>
