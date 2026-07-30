@@ -31,6 +31,9 @@ function Rebalanceamento() {
   const { totalAtual } = resumoCarteira(carteira);
   const { alvo: alocacaoIdeal } = useAlocacaoAlvo();
 
+  // Soma o valor atual por classe. Classes presentes na carteira mas ausentes
+  // da alocação-alvo também entram na tabela (alvo 0%), para que a análise
+  // reflita exatamente a aba "Carteira" a cada aporte/edição.
   const atual: Record<string, number> = {};
   for (const chave of Object.keys(alocacaoIdeal)) atual[chave] = 0;
   for (const a of carteira) {
@@ -38,8 +41,8 @@ function Rebalanceamento() {
     atual[classe] = (atual[classe] ?? 0) + valorAtual(a);
   }
 
-
-  const linhas = Object.entries(alocacaoIdeal).map(([classe, idealPct]) => {
+  const linhas = Object.keys(atual).map((classe) => {
+    const idealPct = alocacaoIdeal[classe] ?? 0;
     const valor = atual[classe] ?? 0;
     const atualPct = totalAtual > 0 ? (valor / totalAtual) * 100 : 0;
     const idealValor = (totalAtual * idealPct) / 100;
