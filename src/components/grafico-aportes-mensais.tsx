@@ -55,10 +55,10 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
       <div className="mt-2 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={dados} margin={{ top: 6, right: 6, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis
               dataKey="rotulo"
-              tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
               tickLine={false}
               axisLine={false}
               minTickGap={12}
@@ -66,7 +66,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
             <YAxis
               yAxisId="esq"
               tickFormatter={compacto}
-              tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
               tickLine={false}
               axisLine={false}
               width={44}
@@ -75,16 +75,16 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               yAxisId="dir"
               orientation="right"
               tickFormatter={compacto}
-              tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
               tickLine={false}
               axisLine={false}
               width={48}
             />
             <Tooltip
-              cursor={{ fill: "hsl(var(--muted) / 0.4)" }}
+              cursor={{ fill: "color-mix(in oklab, var(--muted) 55%, transparent)" }}
               contentStyle={{
-                background: "hsl(var(--popover))",
-                border: "1px solid hsl(var(--border))",
+                background: "var(--popover)",
+                border: "1px solid var(--border)",
                 borderRadius: 8,
                 fontSize: 12,
               }}
@@ -97,7 +97,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               yAxisId="esq"
               dataKey="aporte"
               name="aporte"
-              fill="hsl(var(--primary))"
+              fill="var(--chart-1)"
               radius={[3, 3, 0, 0]}
               maxBarSize={28}
             />
@@ -106,7 +106,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               type="monotone"
               dataKey="acumulado"
               name="acumulado"
-              stroke="hsl(var(--chart-2, var(--foreground)))"
+              stroke="var(--chart-3)"
               strokeWidth={2}
               dot={false}
             />
