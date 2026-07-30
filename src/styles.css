@@ -36,6 +36,13 @@
  */
 
 @theme inline {
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.15rem;
+  --text-sm: 0.9125rem;
+  --text-sm--line-height: 1.4rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.55rem;
+
   --font-sans: "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Manrope Variable", "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-brand: "Rethink Sans Variable", "Rethink Sans", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
@@ -313,7 +320,7 @@
   gap: 0.5rem;
   padding-left: 0.625rem;
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -342,7 +349,7 @@
   gap: 0.25rem;
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--color-success);
@@ -355,7 +362,7 @@
   gap: 0.25rem;
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--color-destructive);
@@ -365,7 +372,7 @@
 /* Tabelas de dados dentro de cards ganham cara de terminal financeiro */
 .surface-card table thead th,
 .panel table thead th {
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
