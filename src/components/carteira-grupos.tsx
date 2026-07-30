@@ -142,6 +142,25 @@ function nota(participacao: number, ideal: number, rentabilidade: number) {
 const num = (v: number, d = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 
+/** Converte valores possivelmente nulos/strings vindos da API em número finito. */
+function numeroSeguro(v: unknown): number {
+  if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+  if (typeof v === "string") {
+    const limpo = v.replace(/\s|R\$/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
+    const n = Number(limpo);
+    return Number.isFinite(n) ? n : 0;
+  }
+  return 0;
+}
+
+/** Variação percentual de um ativo, tolerante a dados ausentes ou em texto. */
+function variacaoAtivo(a: Ativo): number {
+  const medio = numeroSeguro(a.precoMedio);
+  const atual = numeroSeguro(a.precoAtual);
+  if (medio <= 0) return 0;
+  return ((atual - medio) / medio) * 100;
+}
+
 /**
  * Exibe um valor com sinal explícito (+/-) e arredondamento consistente (2 casas).
  * O sinal é definido a partir do valor JÁ arredondado, evitando "-0,00".
