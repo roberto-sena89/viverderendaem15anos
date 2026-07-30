@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { BuscaAtivo } from "@/components/busca-ativo";
 import {
   Dialog,
   DialogContent,
@@ -84,6 +84,7 @@ export function DialogTransacao({
   const [tipo, setTipo] = useState<"compra" | "venda">("compra");
   const [categoria, setCategoria] = useState<Categoria | "">("");
   const [ticker, setTicker] = useState("");
+  const [nomeAtivo, setNomeAtivo] = useState("");
   const [data, setData] = useState(() => new Date().toISOString().slice(0, 10));
   const [preco, setPreco] = useState("");
   const [quantidade, setQuantidade] = useState("");
@@ -115,6 +116,7 @@ export function DialogTransacao({
     setTipo("compra");
     setCategoria("");
     setTicker("");
+    setNomeAtivo("");
     setData(new Date().toISOString().slice(0, 10));
     setPreco("");
     setQuantidade("");
@@ -131,6 +133,7 @@ export function DialogTransacao({
     setTipo(aporte.quantidade < 0 ? "venda" : "compra");
     setCategoria(aporte.categoria);
     setTicker(aporte.ticker);
+    setNomeAtivo("");
     setData(aporte.data);
     setPreco(String(aporte.preco));
     setQuantidade(String(Math.abs(aporte.quantidade)));
@@ -207,6 +210,7 @@ export function DialogTransacao({
       data,
       corretora: instituicao.trim(),
       ticker: ticker.trim().toUpperCase(),
+      nome: nomeAtivo.trim() || undefined,
       categoria: categoria as Categoria,
       quantidade: tipo === "venda" ? -numero(quantidade) : numero(quantidade),
       preco: numero(preco),
