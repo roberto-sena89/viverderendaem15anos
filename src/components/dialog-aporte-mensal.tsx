@@ -17,7 +17,7 @@ import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
 import type { Ativo } from "@/lib/portfolio";
 
-const ATALHOS = [500, 1000, 2000, 5000];
+const ATALHOS = [50, 100, 500, 1000, 2000, 5000];
 const MIN_APORTE = 1;
 const MAX_APORTE = 10_000_000;
 
@@ -147,14 +147,14 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {ATALHOS.map((v) => (
                 <Button
                   key={v}
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="text-xs"
+                  className="h-9 w-full justify-center px-1 text-xs tabular-nums"
                   onClick={() => {
                     setTocado(false);
                     setTexto(String(v));
