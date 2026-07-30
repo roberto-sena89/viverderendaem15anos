@@ -134,6 +134,7 @@ export function HistoricoMensalAportes() {
   const { data: carteira = [] } = useAtivos();
   const [aberto, setAberto] = useState(false);
   const [expandido, setExpandido] = useState<string | null>(null);
+  const [pagina, setPagina] = useState(0);
 
   /** Categoria oficial de cada ticker vem da aba Carteira (fonte única). */
   const categoriaPorTicker = useMemo(() => {
@@ -265,6 +266,12 @@ export function HistoricoMensalAportes() {
   const taxasGerais = meses.reduce((s, m) => s + m.taxas, 0);
   const mediaMensal = meses.length ? totalGeral / meses.length : 0;
 
+  const POR_PAGINA = 12;
+  const totalPaginas = Math.max(1, Math.ceil(meses.length / POR_PAGINA));
+  const paginaAtual = Math.min(pagina, totalPaginas - 1);
+  const inicio = paginaAtual * POR_PAGINA;
+  const mesesPagina = meses.slice(inicio, inicio + POR_PAGINA);
+
   return (
     <div className="space-y-3">
       <Button
@@ -305,7 +312,8 @@ export function HistoricoMensalAportes() {
           </dl>
 
           <div className="mt-3 divide-y divide-border">
-            {meses.map((m, idx) => {
+            {mesesPagina.map((m, i) => {
+              const idx = inicio + i;
               const aberta = expandido === m.chave;
               const anterior = meses[idx + 1];
               const variacao = anterior && anterior.total > 0 ? (m.total / anterior.total - 1) * 100 : null;
@@ -670,6 +678,46 @@ export function HistoricoMensalAportes() {
               <p className="py-6 text-center text-xs text-muted-foreground">Nenhum aporte registrado ainda.</p>
             )}
           </div>
+
+          {totalPaginas > 1 && (
+            <nav
+              aria-label="Paginação dos meses"
+              className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3"
+            >
+              <p className="num text-[0.85rem] text-muted-foreground">
+                Meses {inicio + 1}–{Math.min(inicio + POR_PAGINA, meses.length)} de {meses.length}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  disabled={paginaAtual === 0}
+                  onClick={() => {
+                    setExpandido(null);
+                    setPagina(paginaAtual - 1);
+                  }}
+                >
+                  Anterior
+                </Button>
+                <span className="num text-[0.85rem] text-muted-foreground">
+                  {paginaAtual + 1} / {totalPaginas}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  disabled={paginaAtual >= totalPaginas - 1}
+                  onClick={() => {
+                    setExpandido(null);
+                    setPagina(paginaAtual + 1);
+                  }}
+                >
+                  Próximo
+                </Button>
+              </div>
+            </nav>
+          )}
         </div>
       )}
     </div>
