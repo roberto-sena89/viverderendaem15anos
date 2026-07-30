@@ -247,7 +247,7 @@ export function AppShell({
             </div>
           </div>
 
-          <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
+          <nav className="flex max-w-full min-w-0 gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
             {nav.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
