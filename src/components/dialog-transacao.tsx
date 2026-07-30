@@ -138,6 +138,7 @@ export function DialogTransacao({
     setCategoria(aporte.categoria);
     setTicker(aporte.ticker);
     setNomeAtivo("");
+    setAtivoSel(null);
     setData(aporte.data);
     setPreco(String(aporte.preco));
     setQuantidade(String(Math.abs(aporte.quantidade)));
