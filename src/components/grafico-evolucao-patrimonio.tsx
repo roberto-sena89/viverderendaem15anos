@@ -96,7 +96,7 @@ export function GraficoEvolucaoPatrimonio() {
         : evolucao.slice(-Number(periodo));
 
   const aplicadoFinal = Math.max(resumo.totalInvestido, 1);
-  const rentabilidade = resumo.totalInvestido > 0 ? (resumo.lucroTotal / resumo.totalInvestido) * 100 : 0;
+  
   const dados = evolucaoFiltrada.map((m) => {
     const aplicado = Math.min(m.patrimonio, resumo.totalInvestido || m.patrimonio);
     return {
@@ -147,29 +147,8 @@ export function GraficoEvolucaoPatrimonio() {
         </div>
       }
     >
-      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {[
-          { rotulo: "Patrimônio atual", valor: brl(resumo.totalAtual, 2), cor: "text-foreground" },
-          { rotulo: "Valor aplicado", valor: brl(resumo.totalInvestido, 2), cor: "text-foreground" },
-          {
-            rotulo: "Ganho de capital",
-            valor: `${resumo.lucroTotal >= 0 ? "+" : "-"}${brl(Math.abs(resumo.lucroTotal), 2)}`,
-            cor: resumo.lucroTotal >= 0 ? "text-primary" : "text-destructive",
-          },
-          {
-            rotulo: "Rentabilidade",
-            valor: `${rentabilidade >= 0 ? "+" : ""}${rentabilidade.toFixed(2)}%`,
-            cor: rentabilidade >= 0 ? "text-primary" : "text-destructive",
-          },
-        ].map((k) => (
-          <div key={k.rotulo} className="rounded-lg border border-border bg-muted/20 px-3 py-2">
-            <p className="text-[0.7rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase">
-              {k.rotulo}
-            </p>
-            <p className={`num mt-0.5 text-sm font-bold ${k.cor}`}>{k.valor}</p>
-          </div>
-        ))}
-      </div>
+
+
 
       <div className="mb-3 flex flex-wrap items-center gap-4 text-xs text-foreground">
         <span className="flex items-center gap-2">
