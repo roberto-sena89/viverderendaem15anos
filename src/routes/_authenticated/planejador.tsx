@@ -167,7 +167,7 @@ function Planejador() {
 
           <ComparadorCenarios input={input} objetivoRenda={objetivoRenda} />
 
-          <div className="surface-card max-h-96 overflow-auto">
+          <div className="surface-card max-h-96 overflow-auto" tabIndex={0} role="region" aria-label="Projeção ano a ano">
 
             <Table>
               <TableHeader>
