@@ -337,7 +337,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      recalcular_ativo: {
+        Args: { _ticker: string; _user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
