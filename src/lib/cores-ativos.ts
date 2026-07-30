@@ -17,7 +17,7 @@ export const COR_CLASSE: Record<string, string> = {
   "Renda Fixa - Prefixado": "var(--color-chart-8)",
   BDRs: "var(--color-chart-9)",
   Stocks: "var(--color-chart-2)",
-  REITs: "var(--color-chart-10)",
+  REITs: "var(--color-chart-17)",
   Criptomoedas: "var(--color-chart-4)",
   "Fundos de Investimentos": "var(--color-chart-15)",
 };
