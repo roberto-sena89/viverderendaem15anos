@@ -419,11 +419,12 @@ export function CarteiraGrupos({
                                 {compacto ? null : <TickerMark ticker={a.ticker} />}
                                 <div className="min-w-0">
                                   <p className="font-display leading-tight font-bold">{a.ticker}</p>
-                                  {compacto ? null : (
-                                    <p className="max-w-48 truncate text-xs text-muted-foreground">
-                                      {a.nome || a.categoria}
-                                    </p>
-                                  )}
+                                  <p
+                                    className={`truncate text-xs text-muted-foreground ${compacto ? "max-w-40" : "max-w-56"}`}
+                                    title={a.nome || a.categoria}
+                                  >
+                                    {a.nome || a.categoria}
+                                  </p>
                                 </div>
                               </div>
                             </TableCell>
