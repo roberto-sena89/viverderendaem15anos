@@ -197,10 +197,7 @@ export function CarteiraGrupos({
       .map(([classe, lista]) => {
         const total = lista.reduce((s, a) => s + valorAtual(a), 0);
         const investido = lista.reduce((s, a) => s + valorInvestido(a), 0);
-        const somaVariacoes = lista.reduce(
-          (s, a) => s + (a.precoMedio > 0 ? ((a.precoAtual - a.precoMedio) / a.precoMedio) * 100 : 0),
-          0,
-        );
+        const somaVariacoes = lista.reduce((s, a) => s + variacaoAtivo(a), 0);
         return {
           variacaoPct: somaVariacoes,
           classe,
