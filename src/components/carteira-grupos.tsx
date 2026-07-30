@@ -45,7 +45,7 @@ const COLUNAS: { id: ColunaId; label: string }[] = [
   { id: "precoMedio", label: "Preço médio" },
   { id: "precoAtual", label: "Preço atual" },
   { id: "variacao", label: "Variação (%)" },
-  { id: "rentabilidade", label: "Rentabilidade" },
+  { id: "rentabilidade", label: "Rentabilidade (R$)" },
   { id: "saldo", label: "Saldo" },
   { id: "nota", label: "Nota" },
   { id: "participacao", label: "% Carteira" },
@@ -367,7 +367,9 @@ export function CarteiraGrupos({
                         {colunas.variacao && (
                           <TableHead className="text-right whitespace-pre-line">VARIAÇÃO{"\n"}(%)</TableHead>
                         )}
-                        {colunas.rentabilidade && <TableHead className="text-right">Rentabilidade</TableHead>}
+                        {colunas.rentabilidade && (
+                          <TableHead className="text-right whitespace-pre-line">RENTABILIDADE{"\n"}(R$)</TableHead>
+                        )}
                         {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
                         {colunas.nota && <TableHead className="text-center">Nota</TableHead>}
                         {colunas.participacao && <TableHead className="text-right">% Carteira</TableHead>}
@@ -418,7 +420,7 @@ export function CarteiraGrupos({
                             )}
                             {colunas.rentabilidade && (
                               <TableCell className={`text-right ${cel}`}>
-                                <Variacao value={rent} />
+                                <Variacao value={saldo - investido} suffix="" />
                               </TableCell>
                             )}
                             {colunas.saldo && (
