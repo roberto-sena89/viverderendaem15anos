@@ -228,13 +228,13 @@ function CalculadoraPage() {
                     <XAxis
                       dataKey="ano"
                       tickFormatter={(v) => `${v}a`}
-                      fontSize={12}
+                      fontSize={13}
                       stroke="currentColor"
                       className="text-muted-foreground"
                     />
                     <YAxis
                       tickFormatter={(v) => `${Math.round(v / 1000)}k`}
-                      fontSize={12}
+                      fontSize={13}
                       stroke="currentColor"
                       className="text-muted-foreground"
                       width={48}

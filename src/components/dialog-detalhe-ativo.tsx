@@ -156,13 +156,13 @@ export function DialogDetalheAtivo({
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="data" tickLine={false} axisLine={false} fontSize={11} minTickGap={28} stroke="var(--color-muted-foreground)" />
+                <XAxis dataKey="data" tickLine={false} axisLine={false} fontSize={13} minTickGap={28} stroke="var(--color-muted-foreground)" />
                 <YAxis
                   tickFormatter={(v: number) => moedaFmt(v, moeda)}
                   tickLine={false}
                   axisLine={false}
                   width={86}
-                  fontSize={11}
+                  fontSize={13}
                   stroke="var(--color-muted-foreground)"
                 />
                 <Tooltip
@@ -171,7 +171,7 @@ export function DialogDetalheAtivo({
                     border: "1px solid var(--color-border)",
                     borderRadius: "12px",
                     color: "var(--color-popover-foreground)",
-                    fontSize: "12px",
+                    fontSize: "13px",
                   }}
                   formatter={(v: number) => moedaFmt(v, moeda)}
                 />

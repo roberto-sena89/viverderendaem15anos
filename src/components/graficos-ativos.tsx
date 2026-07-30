@@ -214,7 +214,7 @@ export function GraficosAtivos() {
                 dataKey="data"
                 tickLine={false}
                 axisLine={false}
-                fontSize={11}
+                fontSize={13}
                 minTickGap={28}
                 stroke="var(--color-muted-foreground)"
               />
@@ -223,7 +223,7 @@ export function GraficosAtivos() {
                 tickLine={false}
                 axisLine={false}
                 width={86}
-                fontSize={11}
+                fontSize={13}
                 stroke="var(--color-muted-foreground)"
               />
               <Tooltip
@@ -232,7 +232,7 @@ export function GraficosAtivos() {
                   border: "1px solid var(--color-border)",
                   borderRadius: "12px",
                   color: "var(--color-popover-foreground)",
-                  fontSize: "12px",
+                  fontSize: "13px",
                 }}
                 formatter={(v: number) => moedaFmt(v, moeda)}
               />

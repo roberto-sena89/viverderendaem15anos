@@ -318,8 +318,8 @@ function MercadoAoVivo() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
-                    <XAxis dataKey="data" tickFormatter={(v: string) => v.slice(0, 4)} minTickGap={40} fontSize={12} />
-                    <YAxis width={60} fontSize={12} tickFormatter={(v: number) => v.toFixed(0)} />
+                    <XAxis dataKey="data" tickFormatter={(v: string) => v.slice(0, 4)} minTickGap={40} fontSize={13} />
+                    <YAxis width={60} fontSize={13} tickFormatter={(v: number) => v.toFixed(0)} />
                     <ReTooltip formatter={(v: number) => brl(v, 2)} labelFormatter={(l) => `Data: ${l}`} />
                     <Area
                       type="monotone"

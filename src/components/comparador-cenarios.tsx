@@ -156,12 +156,12 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={serie}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="ano" tickLine={false} axisLine={false} fontSize={12} stroke="var(--color-muted-foreground)" />
+                <XAxis dataKey="ano" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
                 <YAxis
                   tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}M`}
                   tickLine={false}
                   axisLine={false}
-                  fontSize={12}
+                  fontSize={13}
                   stroke="var(--color-muted-foreground)"
                 />
                 <Tooltip
@@ -169,11 +169,11 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                     backgroundColor: "var(--color-popover)",
                     border: "1px solid var(--color-border)",
                     borderRadius: "12px",
-                    fontSize: "12px",
+                    fontSize: "13px",
                   }}
                   formatter={(v: number) => brl(v)}
                 />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 13 }} />
                 {resumos.map((r, i) => (
                   <Line
                     key={r.cenario.id}
