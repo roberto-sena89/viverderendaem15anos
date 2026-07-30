@@ -6,6 +6,7 @@ import {
   CircleSlash,
   MoreHorizontal,
   Pencil,
+  Settings2,
   Trash2,
 } from "lucide-react";
 
@@ -15,6 +16,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -391,21 +394,38 @@ export function CarteiraGrupos({
                               <TableCell className={`text-center ${cel}`}>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <Button size="icon" variant="ghost" aria-label={`Opções de ${a.ticker}`}>
-                                      <MoreHorizontal className="size-4" />
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      title={`Ações de ${a.ticker}`}
+                                      aria-label={`Ações de ${a.ticker}: editar ou excluir`}
+                                      className="h-8 gap-1.5 px-2.5 text-xs font-semibold"
+                                    >
+                                      <Settings2 className="size-3.5" />
+                                      <span className="hidden sm:inline">Ações</span>
+                                      <ChevronDown className="size-3.5 opacity-60" />
                                     </Button>
                                   </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
+                                  <DropdownMenuContent align="end" className="w-52">
+                                    <DropdownMenuLabel className="truncate text-xs text-muted-foreground">
+                                      {a.ticker}
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem onSelect={() => onEditar?.(a)}>
                                       <Pencil className="size-4" /> Editar ativo
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem className="text-destructive" onSelect={() => onExcluir?.(a)}>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      className="text-destructive focus:text-destructive"
+                                      onSelect={() => onExcluir?.(a)}
+                                    >
                                       <Trash2 className="size-4" /> Excluir ativo
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </TableCell>
                             ) : null}
+
 
                           </TableRow>
                         );
