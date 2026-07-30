@@ -544,10 +544,19 @@ export function HistoricoMensalAportes() {
                                           <span className="num text-muted-foreground">{brl(a.taxas, 2)}</span>
                                         )}
                                       </td>
-                                      <td className="num py-1.5 text-right font-semibold">
-                                        {brl(a.quantidade * a.preco + a.taxas, 2)}
+                                      <td className="num py-1.5 text-right align-top font-semibold">
+                                        {emEdicao
+                                          ? brl(
+                                              (Number.isFinite(paraNumero(form.quantidade)) ? paraNumero(form.quantidade) : 0) *
+                                                (Number.isFinite(paraNumero(form.preco)) ? paraNumero(form.preco) : 0) +
+                                                (form.taxas.trim() && Number.isFinite(paraNumero(form.taxas))
+                                                  ? paraNumero(form.taxas)
+                                                  : 0),
+                                              2,
+                                            )
+                                          : brl(a.quantidade * a.preco + a.taxas, 2)}
                                       </td>
-                                      <td className="py-1.5 pl-2">
+                                      <td className="py-1.5 pl-2 align-top">
                                         <div className="flex justify-end gap-1">
                                           {emEdicao ? (
                                             <>
@@ -556,10 +565,12 @@ export function HistoricoMensalAportes() {
                                                 size="icon"
                                                 variant="default"
                                                 aria-label="Salvar lançamento"
-                                                disabled={atualizar.isPending}
+                                                title={formValido ? "Salvar" : "Corrija os campos destacados"}
+                                                disabled={atualizar.isPending || !formValido}
                                                 onClick={() => salvar(a)}
                                                 className="size-7"
                                               >
+
                                                 <Check className="size-3.5" />
                                               </Button>
                                               <Button
