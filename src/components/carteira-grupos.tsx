@@ -261,7 +261,7 @@ export function CarteiraGrupos({
                   </div>
                 </div>
 
-                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
+                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-5">
                   <div className="min-w-0">
                     <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Ativos
@@ -282,6 +282,15 @@ export function CarteiraGrupos({
                       <Variacao value={g.variacaoPct} />
                     </dd>
                   </div>
+                  <div className="min-w-0">
+                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      Rentabilidade
+                    </dt>
+                    <dd className="text-sm">
+                      <Variacao value={g.variacao} suffix="" />
+                    </dd>
+                  </div>
+
                   <div className="min-w-0">
                     <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       % na carteira
