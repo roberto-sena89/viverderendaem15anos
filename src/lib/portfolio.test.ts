@@ -15,49 +15,42 @@ const ativo = (over: Partial<Ativo>): Ativo => ({
 });
 
 describe("classeDoAtivo · Tesouro Direto e Renda Fixa", () => {
-  const casos: [string, string, string][] = [
-    ["TESOURO PRE-2032", "TESOURO PRE-2032", "Renda Fixa\nPré-fixado"],
-    ["TESOURO PREFIXADO 2029", "", "Renda Fixa\nPré-fixado"],
-    ["LTN", "Tesouro Prefixado", "Renda Fixa\nPré-fixado"],
-    ["NTN-F", "", "Renda Fixa\nPré-fixado"],
-    ["TESOURO IPCA+ 2035", "", "Renda Fixa\nIPCA+"],
-    ["NTN-B", "Tesouro IPCA+ com juros", "Renda Fixa\nIPCA+"],
-    ["SELIC", "TESOURO SELIC 2031", CLASSE_POS_FIXADO],
-    ["LFT", "", CLASSE_POS_FIXADO],
+  const titulos = [
+    ["TESOURO PRE-2032", "TESOURO PRE-2032"],
+    ["TESOURO PREFIXADO 2029", ""],
+    ["LTN", "Tesouro Prefixado"],
+    ["NTN-F", ""],
+    ["TESOURO IPCA+ 2035", ""],
+    ["NTN-B", "Tesouro IPCA+ com juros"],
+    ["SELIC", "TESOURO SELIC 2031"],
+    ["LFT", ""],
+    ["TESOURO XPTO", ""],
   ];
 
-  it("classifica cada título no indexador correto", () => {
-    for (const [ticker, nome, esperado] of casos) {
-      expect(classeDoAtivo(ativo({ ticker, nome, categoria: "Tesouro Direto" }))).toBe(esperado);
+  it("todo título do Tesouro Direto cai na janela única de Renda Fixa", () => {
+    for (const [ticker, nome] of titulos) {
+      expect(classeDoAtivo(ativo({ ticker, nome, categoria: "Tesouro Direto" }))).toBe(CLASSE_POS_FIXADO);
     }
   });
 
-  it("CDB/LCI/LCA caem em pós-fixado", () => {
-    for (const t of ["CDB BANCO X", "LCI 2027", "LCA AGRO"]) {
+  it("CDB/CDI/LCI/LCA caem na mesma janela de Renda Fixa", () => {
+    for (const t of ["CDB BANCO X", "CDI PLUS", "LCI 2027", "LCA AGRO", "RF GENERICA"]) {
       expect(classeDoAtivo(ativo({ ticker: t, categoria: "Renda Fixa" }))).toBe(CLASSE_POS_FIXADO);
     }
-  });
-
-  it("renda fixa sem indexador identificável usa pós-fixado como padrão", () => {
-    expect(classeDoAtivo(ativo({ ticker: "RF GENERICA", categoria: "Renda Fixa" }))).toBe(CLASSE_POS_FIXADO);
-  });
-
-  it("Tesouro sem indexador identificável usa IPCA+ como padrão", () => {
-    expect(classeDoAtivo(ativo({ ticker: "TESOURO XPTO", categoria: "Tesouro Direto" }))).toBe("Renda Fixa\nIPCA+");
   });
 });
 
 describe("classeDoAtivo · demais categorias", () => {
   const mapa: [Categoria, string][] = [
     ["Ações", "Ações"],
-    ["ETF Brasil", "ETF (Brasil)"],
-    ["ETF EUA", "ETF (Exterior)"],
-    ["ETF (Exterior)", "ETF (Exterior)"],
+    ["ETF Brasil", "ETFs - Brasil"],
+    ["ETF EUA", "ETFs - Global"],
+    ["ETF (Exterior)", "ETFs - Global"],
     ["BDR", "BDRs"],
     ["Stocks", "Stocks"],
     ["REITs", "REITs"],
     ["Criptomoedas", "Criptomoedas"],
-    ["Fundos de Investimentos", "Fundos de\nInvestimentos"],
+    ["Fundos de Investimentos", "Fundos de Investimentos"],
     ["Fundos Imobiliários", "FIIs"],
     ["FIIs", "FIIs"],
     ["Fiagro", "FIIs"],
@@ -71,7 +64,7 @@ describe("classeDoAtivo · demais categorias", () => {
 
   it("ticker com palavra de renda fixa não muda a classe de categorias de variável", () => {
     expect(classeDoAtivo(ativo({ ticker: "SELIC11", nome: "ETF Selic", categoria: "ETF Brasil" }))).toBe(
-      "ETF (Brasil)",
+      "ETFs - Brasil",
     );
   });
 });
@@ -102,10 +95,9 @@ describe("integridade das janelas de rebalanceamento", () => {
     }
   });
 
-  it("os três indexadores de renda fixa têm janela própria", () => {
-    for (const c of [CLASSE_POS_FIXADO, "Renda Fixa\nIPCA+", "Renda Fixa\nPré-fixado"]) {
-      expect(alocacaoIdeal).toHaveProperty(c);
-    }
+  it("renda fixa tem uma única janela", () => {
+    expect(alocacaoIdeal).toHaveProperty(CLASSE_POS_FIXADO);
+    expect(Object.keys(alocacaoIdeal).filter((c) => c.startsWith("Renda Fixa"))).toHaveLength(1);
   });
 
   it("a alocação-alvo padrão soma 100%", () => {
