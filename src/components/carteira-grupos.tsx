@@ -211,78 +211,94 @@ export function CarteiraGrupos({
               </header>
             ) : (
               <header
-                className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 border-l-4 sm:px-6 lg:grid-cols-[minmax(14rem,1fr)_minmax(0,3fr)_auto] ${compacto ? "px-4 py-2" : "px-4 py-4"}`}
+                className={`border-l-4 ${compacto ? "px-4 py-3" : "px-4 py-4 sm:px-5"}`}
                 style={{ borderColor: cor }}
               >
-                <div className="flex min-w-0 items-center gap-3">
-                  <span
-                    className={`grid shrink-0 place-items-center rounded-xl ${compacto ? "size-8" : "size-10"}`}
-                    style={{ backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`, color: cor }}
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-3">
+                  <button
+                    type="button"
+                    aria-expanded={aberto}
+                    onClick={() => setFechados((f) => ({ ...f, [g.classe]: aberto }))}
+                    className="flex min-w-0 items-center gap-3 text-left"
                   >
-                    <BarChart3 className={compacto ? "size-4" : "size-5"} />
-                  </span>
-                  <div className="min-w-0">
-                    <h2
-                      className={`font-display leading-tight font-bold ${compacto ? "text-sm" : "text-base lg:text-lg"}`}
+                    <span
+                      className={`grid shrink-0 place-items-center rounded-xl ${compacto ? "size-8" : "size-10"}`}
+                      style={{ backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`, color: cor }}
                     >
-                      {g.classe.replace(/\n/g, " ").split("(")[0].trim()}
-                    </h2>
-                    {g.classe.includes("(") ? (
-                      <p className="mt-0.5 text-[0.78rem] leading-snug text-muted-foreground">
-                        {g.classe
-                          .replace(/\n/g, " ")
-                          .slice(g.classe.replace(/\n/g, " ").indexOf("(") + 1)
-                          .replace(/\)/g, "")
-                          .replace(/,\s*/g, ", ")
-                          .trim()}
-                      </p>
-                    ) : null}
+                      <BarChart3 className={compacto ? "size-4" : "size-5"} />
+                    </span>
+                    <span className="min-w-0">
+                      <span
+                        className={`block truncate font-display leading-tight font-bold ${compacto ? "text-sm" : "text-base lg:text-lg"}`}
+                      >
+                        {g.classe.replace(/\n/g, " ").split("(")[0].trim()}
+                      </span>
+                      {g.classe.includes("(") ? (
+                        <span className="mt-0.5 block truncate text-[0.78rem] leading-snug text-muted-foreground">
+                          {g.classe
+                            .replace(/\n/g, " ")
+                            .slice(g.classe.replace(/\n/g, " ").indexOf("(") + 1)
+                            .replace(/\)/g, "")
+                            .replace(/,\s*/g, ", ")
+                            .trim()}
+                        </span>
+                      ) : null}
+                    </span>
+                    <ChevronDown
+                      className={`size-5 shrink-0 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  <div className="flex shrink-0 flex-col items-end leading-tight">
+                    <span className="text-base font-bold tabular-nums lg:text-lg">{brl(g.total, 2)}</span>
+                    <span className="text-xs">
+                      <Variacao value={g.variacao} suffix="" /> ·{" "}
+                      <Variacao value={g.rentabilidade} />
+                    </span>
                   </div>
                 </div>
 
-                <dl className="col-span-2 grid grid-cols-2 gap-x-6 gap-y-3 text-right sm:grid-cols-3 lg:col-span-1 lg:grid-cols-5">
+                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
                   <div className="min-w-0">
-                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Ativos</dt>
-                    <dd className="font-semibold tabular-nums">{g.ativos.length}</dd>
+                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      Ativos
+                    </dt>
+                    <dd className="text-sm font-semibold tabular-nums">{g.ativos.length}</dd>
                   </div>
                   <div className="min-w-0">
-                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Valor total</dt>
-                    <dd className="font-semibold tabular-nums">{brl(g.total, 2)}</dd>
+                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      Investido
+                    </dt>
+                    <dd className="text-sm font-semibold tabular-nums">{brl(g.investido, 2)}</dd>
                   </div>
                   <div className="min-w-0">
-                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">Variação (%)</dt>
-                    <dd>
+                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      Variação (%)
+                    </dt>
+                    <dd className="text-sm">
                       <Variacao value={g.variacaoPct} />
                     </dd>
                   </div>
                   <div className="min-w-0">
-                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">
-                      Rentabilidade (R$)
+                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      % na carteira
                     </dt>
-                    <dd>
-                      <Variacao value={g.variacao} suffix="" />
-                    </dd>
-                  </div>
-                  <div className="min-w-0">
-                    <dt className="text-[0.82rem] tracking-wide text-muted-foreground uppercase">% na carteira</dt>
-                    <dd className="font-semibold tabular-nums">
+                    <dd className="text-sm font-semibold tabular-nums">
                       {pct(g.participacao)} <span className="text-muted-foreground">/ {pct(g.ideal)}</span>
                     </dd>
                   </div>
                 </dl>
 
-                <Button
-                  className="shrink-0 justify-self-end"
-                  size="icon"
-                  variant="ghost"
-                  aria-expanded={aberto}
-                  aria-label={`${aberto ? "Recolher" : "Expandir"} ${g.classe.replace(/\n/g, " ")}`}
-                  onClick={() => setFechados((f) => ({ ...f, [g.classe]: aberto }))}
-                >
-                  <ChevronDown className={`size-5 transition-transform ${aberto ? "rotate-180" : ""}`} />
-                </Button>
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${Math.max(2, Math.min(100, g.ideal > 0 ? (g.participacao / g.ideal) * 100 : g.participacao))}%`,
+                      backgroundColor: cor,
+                    }}
+                  />
+                </div>
               </header>
-
             )}
 
             {aberto ? (
