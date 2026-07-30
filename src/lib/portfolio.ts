@@ -104,30 +104,15 @@ export const alocacaoIdeal: Record<string, number> = {
 
 export const CLASSE_POS_FIXADO = "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)";
 
-/** Detecta o indexador da renda fixa pelo ticker/nome (Selic, CDI, IPCA, pré). */
-const indexadorRendaFixa = (a: Ativo): string | null => {
-  const texto = `${a.ticker ?? ""} ${a.nome ?? ""}`
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase();
-
-  // Pré-fixado: "TESOURO PREFIXADO 2029", "TESOURO PRE-2032", LTN, NTN-F
-  if (/(PRE[- ]?FIXAD|PREFIXAD|\bPREF?\b|\bPRE[- ]?\d{4}|\bLTN\b|NTN[- ]?F)/.test(texto)) return "Renda Fixa - Prefixado";
-  // IPCA+: "TESOURO IPCA+ 2035", NTN-B, "B-2035"
-  if (/(IPCA|NTN[- ]?B|INFLAC|\bB[- ]?\d{4})/.test(texto)) return "Renda Fixa - IPCA+";
-  // Pós-fixado: Selic / CDI / CDB / LCI / LCA / LFT
-  if (/(SELIC|\bCDI\b|\bDI\b|\bCDB\b|\bLCI\b|\bLCA\b|\bLFT\b|POS[- ]?FIXAD)/.test(texto)) return CLASSE_POS_FIXADO;
-  return null;
-};
+/** Toda renda fixa (Tesouro Direto, CDB, CDI, LCI, LCA, prefixado, IPCA+) usa uma única janela. */
 
 /** Mapeia categorias da carteira para as classes da estratégia de longo prazo. */
 export const classeDoAtivo = (a: Ativo): string => {
   switch (a.categoria) {
     case "Tesouro":
     case "Tesouro Direto":
-      return indexadorRendaFixa(a) ?? "Renda Fixa - IPCA+";
     case "Renda Fixa":
-      return indexadorRendaFixa(a) ?? CLASSE_POS_FIXADO;
+      return CLASSE_POS_FIXADO;
     case "Fundos de Investimentos":
       return "Fundos de Investimentos";
     case "Ações":
