@@ -158,7 +158,7 @@ export function CarteiraRecomendada() {
             {BLOCOS.map((bloco) =>
               bloco.linhas.map((linha, i) => (
                 <tr
-                  key={`${bloco.grupo}-${linha.prazo}`}
+                  key={`${bloco.grupo}-${linha.indexador}-${linha.prazo}-${i}`}
                   className="border-t border-border transition-colors hover:bg-muted/30"
                 >
                   {i === 0 ? (
