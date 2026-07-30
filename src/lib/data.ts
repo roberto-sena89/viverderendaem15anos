@@ -276,6 +276,8 @@ export interface AporteInput {
   data: string;
   corretora: string;
   ticker: string;
+  /** Nome oficial do ativo (B3 / Tesouro Transparente), quando conhecido. */
+  nome?: string;
   categoria: Categoria;
   quantidade: number;
   preco: number;
