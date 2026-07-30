@@ -50,7 +50,8 @@ function Rebalanceamento() {
     const diff = atualPct - idealPct;
     // Desvio relativo ao alvo da classe: 15% acima/abaixo do ideal = desbalanceado
     const desvioRelativo = idealPct > 0 ? Math.abs(diff / idealPct) * 100 : 0;
-    const status = desvioRelativo >= 15 ? "vermelho" : "verde";
+    const semPosicao = valor <= 0 && idealPct <= 0;
+    const status = semPosicao ? "cinza" : desvioRelativo >= 15 ? "vermelho" : "verde";
     return { classe, idealPct, atualPct, valor, idealValor, diff, status };
   });
 
