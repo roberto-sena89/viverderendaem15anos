@@ -381,7 +381,6 @@ export function HistoricoMensalAportes() {
               const aberta = expandido === m.chave;
               const anterior = meses[idx + 1];
               const variacao = anterior && anterior.total > 0 ? (m.total / anterior.total - 1) * 100 : null;
-              const topo = [...m.categorias.entries()].sort((a, b) => b[1] - a[1])[0];
               return (
                 <div key={m.chave} className="py-2">
                   <button
