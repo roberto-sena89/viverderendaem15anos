@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
-import { CalendarRange, ChevronDown, ChevronRight, TrendingDown, TrendingUp } from "lucide-react";
+import { CalendarRange, Check, ChevronDown, ChevronRight, Pencil, Trash2, TrendingDown, TrendingUp, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useAportes, useAtivos } from "@/lib/data";
+import { Input } from "@/components/ui/input";
+import { useAportes, useAtivos, useAtualizarAporte, useExcluirAporte, type Aporte } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 
@@ -15,6 +17,7 @@ type Item = {
   taxas: number;
   total: number;
   lancamentos: number;
+  registros: Aporte[];
 };
 
 type Mes = {
