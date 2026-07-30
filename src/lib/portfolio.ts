@@ -93,7 +93,7 @@ export const alocacaoIdeal: Record<string, number> = {
   "Renda Fixa -CDI/SELIC\n(PÓS)": 30,
   "Renda Fixa\nIPCA+": 15,
   "Renda Fixa\nPré-fixado": 5,
-  "ETF (Brasil)": 20,
+  "ETFs - BRASIL": 20,
   "ETF (Exterior)": 20,
   FIIs: 10,
   "Ações": 0,
@@ -135,7 +135,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "Ações":
       return "Ações";
     case "ETF Brasil":
-      return "ETF (Brasil)";
+      return "ETFs - BRASIL";
     case "ETF EUA":
     case "ETF (Exterior)":
       return "ETF (Exterior)";
