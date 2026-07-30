@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { qk } from "@/lib/data";
+import { ouvirCarteiraAlterada } from "@/lib/broadcast-carteira";
 
 const TABELAS = ["ativos", "aportes", "dividendos"] as const;
 
