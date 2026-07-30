@@ -369,10 +369,20 @@
   background-color: color-mix(in oklab, var(--color-destructive) 14%, transparent);
 }
 
+/* Padronização global: toda tabela do app usa 12px */
+table {
+  font-size: 12px;
+}
+
+table th,
+table td {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
 /* Tabelas de dados dentro de cards ganham cara de terminal financeiro */
 .surface-card table thead th,
 .panel table thead th {
-  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
