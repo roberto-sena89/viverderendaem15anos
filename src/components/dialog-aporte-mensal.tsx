@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Calculator, Eraser, Undo2 } from "lucide-react";
+import { Calculator, Eraser, RefreshCw, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { corClasse } from "@/lib/cores-ativos";
-import { formatarNumeroBR } from "@/lib/formato-numero";
+import { formatarNumeroBR, numeroBR } from "@/lib/formato-numero";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
 import { brl, classeDoAtivo, CLASSE_POS_FIXADO, pct, valorAtual } from "@/lib/portfolio";
@@ -57,6 +57,10 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   const [texto, setTexto] = useState("1000");
   const [tocado, setTocado] = useState(false);
   const [historico, setHistorico] = useState<string[]>([]);
+  /** Valores digitados manualmente por classe (rascunho, antes de recalcular). */
+  const [rascunho, setRascunho] = useState<Record<string, string>>({});
+  /** Valores manuais efetivamente aplicados no cálculo. */
+  const [manuais, setManuais] = useState<Record<string, number>>({});
 
   /** Aplica um novo valor guardando o anterior para permitir desfazer. */
   const aplicar = (novo: string) => {
@@ -74,11 +78,25 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
     });
   };
 
+  /** Converte o rascunho em valores manuais aplicados. */
+  const recalcular = () => {
+    const novos: Record<string, number> = {};
+    for (const [classe, valor] of Object.entries(rascunho)) {
+      const n = numeroBR(valor);
+      if (valor.trim() !== "" && Number.isFinite(n) && n > 0) novos[classe] = n;
+    }
+    setManuais(novos);
+  };
+
+  const limparManuais = () => {
+    setRascunho({});
+    setManuais({});
+  };
+
   const { valor: aporte, erro } = validarAporte(texto);
   const mostrarErro = tocado && Boolean(erro);
 
-
-  const { linhas, totalAtual, totalFuturo } = useMemo(() => {
+  const { linhas, totalAtual, totalFuturo, somaManual, restante } = useMemo(() => {
     const atualPorClasse: Record<string, number> = {};
     for (const classe of Object.keys(alvo)) atualPorClasse[classe] = 0;
     for (const a of carteira) atualPorClasse[classeDoAtivo(a)] = (atualPorClasse[classeDoAtivo(a)] ?? 0) + valorAtual(a);
@@ -91,18 +109,31 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
       return { classe, alvoPct, atual, deficit: Math.max((futuro * alvoPct) / 100 - atual, 0) };
     });
 
-    const somaDeficit = base.reduce((s, b) => s + b.deficit, 0);
-    const somaAlvo = base.reduce((s, b) => s + b.alvoPct, 0) || 100;
+    // Valores travados manualmente (limitados ao aporte total).
+    const travados: Record<string, number> = {};
+    let usado = 0;
+    for (const b of base) {
+      const m = manuais[b.classe];
+      if (m === undefined) continue;
+      const v = Math.max(0, Math.min(m, Math.max(aporte - usado, 0)));
+      travados[b.classe] = v;
+      usado += v;
+    }
+    const sobra = Math.max(aporte - usado, 0);
+
+    const livres = base.filter((b) => travados[b.classe] === undefined);
+    const somaDeficit = livres.reduce((s, b) => s + b.deficit, 0);
+    const somaAlvo = livres.reduce((s, b) => s + b.alvoPct, 0) || 100;
 
     const resultado = base.map((b) => {
-      let valor = 0;
-      if (aporte > 0) {
+      let valor = travados[b.classe] ?? 0;
+      if (travados[b.classe] === undefined && sobra > 0) {
         if (somaDeficit <= 0) {
-          valor = (aporte * b.alvoPct) / somaAlvo; // já equilibrada: segue o alvo
-        } else if (aporte <= somaDeficit) {
-          valor = (aporte * b.deficit) / somaDeficit; // cobre os gaps proporcionalmente
+          valor = (sobra * b.alvoPct) / somaAlvo; // já equilibrada: segue o alvo
+        } else if (sobra <= somaDeficit) {
+          valor = (sobra * b.deficit) / somaDeficit; // cobre os gaps proporcionalmente
         } else {
-          valor = b.deficit + ((aporte - somaDeficit) * b.alvoPct) / somaAlvo; // zera gaps e distribui o resto
+          valor = b.deficit + ((sobra - somaDeficit) * b.alvoPct) / somaAlvo; // zera gaps e distribui o resto
         }
       }
       const depois = b.atual + valor;
@@ -111,6 +142,7 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
         alvoPct: b.alvoPct,
         atualPct: total > 0 ? (b.atual / total) * 100 : 0,
         valor,
+        manual: travados[b.classe] !== undefined,
         parte: aporte > 0 ? (valor / aporte) * 100 : 0,
         depoisPct: futuro > 0 ? (depois / futuro) * 100 : 0,
       };
@@ -120,8 +152,11 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
       linhas: resultado.sort((a, b) => b.valor - a.valor),
       totalAtual: total,
       totalFuturo: futuro,
+      somaManual: usado,
+      restante: sobra,
     };
-  }, [carteira, alvo, aporte]);
+  }, [carteira, alvo, aporte, manuais]);
+
 
   /** Sub-classes da Renda Fixa com alvo definido e sua fatia do aporte da classe. */
   const subsRendaFixa = useMemo(() => {
@@ -245,6 +280,32 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
             </p>
           ) : (
             <div className="min-w-0 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2">
+                <div className="text-[11px] leading-tight text-muted-foreground">
+                  <p className="font-semibold text-foreground">Aporte manual por classe</p>
+                  <p>
+                    Travado: <span className="num font-semibold text-foreground">{brl(somaManual, 2)}</span> · Restante
+                    distribuído: <span className="num font-semibold text-foreground">{brl(restante, 2)}</span>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 border border-border text-xs"
+                    disabled={Object.keys(manuais).length === 0 && Object.keys(rascunho).length === 0}
+                    onClick={limparManuais}
+                  >
+                    Limpar manuais
+                  </Button>
+                  <Button type="button" size="sm" className="h-8 gap-1.5 text-xs" onClick={recalcular}>
+                    <RefreshCw className="size-3.5" />
+                    Recalcular
+                  </Button>
+                </div>
+              </div>
+
               <div className="hidden grid-cols-[minmax(0,1fr)_5rem_6.5rem_5rem] gap-3 px-3 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase sm:grid">
                 <span>Classe</span>
                 <span className="text-right">Alvo / Atual</span>
@@ -253,6 +314,7 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
               </div>
 
               <ul className="space-y-1.5">
+
                 {linhas
                   .filter((l) => l.valor > 0 || l.alvoPct > 0)
                   .map((l) => (
@@ -279,6 +341,33 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                       <span className="num order-4 text-right text-xs text-muted-foreground sm:order-none">
                         {pct(l.depoisPct)}
                       </span>
+
+                      <div className="order-6 col-span-full flex items-center justify-end gap-2 sm:order-none">
+                        <Label htmlFor={`manual-${l.classe}`} className="text-[11px] text-muted-foreground">
+                          Manual R$
+                        </Label>
+                        <Input
+                          id={`manual-${l.classe}`}
+                          inputMode="decimal"
+                          placeholder="0,00"
+                          value={rascunho[l.classe] ?? ""}
+                          onChange={(e) => setRascunho((r) => ({ ...r, [l.classe]: e.target.value }))}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              recalcular();
+                            }
+                          }}
+                          className="h-8 w-28 text-right text-xs tabular-nums"
+                        />
+                        {l.manual && (
+                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                            travado
+                          </span>
+                        )}
+                      </div>
+
+
 
                       {l.classe === CLASSE_POS_FIXADO && subsRendaFixa.length > 0 && (
                         <ul className="order-5 col-span-full mt-1 space-y-1 border-t border-border/60 pt-1.5 pl-4 sm:order-none">
