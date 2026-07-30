@@ -385,7 +385,7 @@ export function CarteiraGrupos({
                 <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className={compacto ? "min-w-40" : "min-w-56"}>Ativo</TableHead>
+                        <TableHead className={compacto ? "min-w-48" : "min-w-64"}>Ticker / Nome do ativo</TableHead>
                         {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
                         {colunas.precoMedio && <TableHead className="text-right">Preço médio</TableHead>}
                         {colunas.precoAtual && <TableHead className="text-right">Preço atual</TableHead>}
