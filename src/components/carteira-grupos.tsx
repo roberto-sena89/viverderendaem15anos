@@ -221,13 +221,14 @@ export function CarteiraGrupos({
               </header>
             ) : (
               <header
-                className={`border-l-4 ${compacto ? "px-4 py-3" : "px-4 py-4 sm:px-5"}`}
+                className={`relative border-l-4 ${compacto ? "px-4 py-3" : "px-4 py-4 sm:px-5"}`}
                 style={{ borderColor: cor }}
               >
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-3">
                   <button
                     type="button"
                     aria-expanded={aberto}
+                    aria-label={`${aberto ? "Recolher" : "Expandir"} ${g.classe.replace(/\n/g, " ")}`}
                     onClick={() => setFechados((f) => ({ ...f, [g.classe]: aberto }))}
                     className="flex min-w-0 items-center gap-3 text-left"
                   >
@@ -254,10 +255,17 @@ export function CarteiraGrupos({
                         </span>
                       ) : null}
                     </span>
-                    <ChevronDown
-                      className={`size-5 shrink-0 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
-                    />
+                    {/* Indicador centralizado na largura da janela do grupo. */}
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-1/2 -translate-x-1/2"
+                    >
+                      <ChevronDown
+                        className={`size-5 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
+                      />
+                    </span>
                   </button>
+
 
                   <div className="flex shrink-0 flex-col items-end leading-tight">
                     <span className="text-base font-bold tabular-nums lg:text-lg">{brl(g.total, 2)}</span>
