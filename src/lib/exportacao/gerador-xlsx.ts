@@ -42,7 +42,7 @@ const BRANCO = "#FFFFFF";
 const celulaCabecalho = (value: string): CellObject => ({
   value,
   fontWeight: "bold",
-  color: BRANCO,
+  textColor: BRANCO,
   backgroundColor: HEADER_BG,
   align: "center",
   alignVertical: "center",
@@ -53,7 +53,7 @@ const celulaNumero = (valor: number, formato?: string, sinal?: boolean): CellObj
   type: Number,
   value: Number.isFinite(valor) ? valor : 0,
   format: formato,
-  ...(sinal ? { fontWeight: "bold" as const, color: valor < 0 ? VERMELHO : VERDE } : {}),
+  ...(sinal ? { fontWeight: "bold" as const, textColor: valor < 0 ? VERMELHO : VERDE } : {}),
 });
 
 /**
