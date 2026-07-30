@@ -111,7 +111,7 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
         </Button>
 
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>Calculadora de aporte mensal</DialogTitle>
           <DialogDescription>
@@ -120,95 +120,116 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-2">
-          <Label htmlFor="aporte-mensal">Valor do aporte (R$)</Label>
-          <Input
-            id="aporte-mensal"
-            inputMode="decimal"
-            maxLength={15}
-            placeholder="1.000,00"
-            value={texto}
-            aria-invalid={mostrarErro}
-            aria-describedby="aporte-mensal-ajuda"
-            onChange={(e) => {
-              setTocado(true);
-              setTexto(e.target.value);
-            }}
-            onBlur={() => setTocado(true)}
-            className={`h-10 text-right ${mostrarErro ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
-          />
-          <p
-            id="aporte-mensal-ajuda"
-            className={`text-xs ${mostrarErro ? "text-destructive" : "text-muted-foreground"}`}
-          >
-            {mostrarErro ? erro : `Entre ${brl(MIN_APORTE)} e ${brl(MAX_APORTE)} · use vírgula para centavos.`}
-          </p>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {ATALHOS.map((v) => (
-              <Button
-                key={v}
-                type="button"
-                variant="outline"
-                size="sm"
-                className="text-xs"
-                onClick={() => {
-                  setTocado(false);
-                  setTexto(String(v));
+        <div className="grid gap-5 md:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] md:items-start">
+          <div className="space-y-4 rounded-xl border border-border bg-muted/30 p-4">
+            <div className="space-y-2">
+              <Label htmlFor="aporte-mensal">Valor do aporte (R$)</Label>
+              <Input
+                id="aporte-mensal"
+                inputMode="decimal"
+                maxLength={15}
+                placeholder="1.000,00"
+                value={texto}
+                aria-invalid={mostrarErro}
+                aria-describedby="aporte-mensal-ajuda"
+                onChange={(e) => {
+                  setTocado(true);
+                  setTexto(e.target.value);
                 }}
+                onBlur={() => setTocado(true)}
+                className={`h-11 text-right text-base font-semibold ${mostrarErro ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
+              />
+              <p
+                id="aporte-mensal-ajuda"
+                className={`text-xs ${mostrarErro ? "text-destructive" : "text-muted-foreground"}`}
               >
-                {brl(v)}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        {aporte <= 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">
-            {erro ? "Corrija o valor informado para ver a distribuição." : "Informe um valor para ver a distribuição."}
-          </p>
-        ) : (
-
-          <>
-            <div className="max-h-[45vh] overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Classe</TableHead>
-                    <TableHead className="text-right">Alvo</TableHead>
-                    <TableHead className="text-right">Atual</TableHead>
-                    <TableHead className="text-right">Aportar</TableHead>
-                    <TableHead className="text-right">% do aporte</TableHead>
-                    <TableHead className="text-right">Depois</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {linhas.map((l) => (
-                    <TableRow key={l.classe}>
-                      <TableCell className="font-medium whitespace-pre-line">
-                        <span className="inline-flex items-center gap-2">
-                          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(l.classe) }} />
-                          {l.classe}
-                        </span>
-                      </TableCell>
-                      <TableCell className="num text-right text-muted-foreground">{pct(l.alvoPct)}</TableCell>
-                      <TableCell className="num text-right text-muted-foreground">{pct(l.atualPct)}</TableCell>
-                      <TableCell className="num text-right font-semibold">{brl(l.valor, 2)}</TableCell>
-                      <TableCell className="num text-right">{pct(l.parte)}</TableCell>
-                      <TableCell className="num text-right text-muted-foreground">{pct(l.depoisPct)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                {mostrarErro ? erro : `Entre ${brl(MIN_APORTE)} e ${brl(MAX_APORTE)} · use vírgula para centavos.`}
+              </p>
             </div>
 
-            <p className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-              Carteira hoje: <strong className="text-foreground">{brl(totalAtual, 2)}</strong> · após o aporte:{" "}
-              <strong className="text-foreground">{brl(totalFuturo, 2)}</strong>. Os valores acima somam{" "}
-              <strong className="text-foreground">{brl(aporte, 2)}</strong> e consideram apenas compras — nada precisa
-              ser vendido.
+            <div className="grid grid-cols-2 gap-2">
+              {ATALHOS.map((v) => (
+                <Button
+                  key={v}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => {
+                    setTocado(false);
+                    setTexto(String(v));
+                  }}
+                >
+                  {brl(v)}
+                </Button>
+              ))}
+            </div>
+
+            <dl className="space-y-2 border-t border-border pt-3 text-xs">
+              <div className="flex items-baseline justify-between gap-2">
+                <dt className="text-muted-foreground">Carteira hoje</dt>
+                <dd className="num font-semibold">{brl(totalAtual, 2)}</dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-2">
+                <dt className="text-muted-foreground">Aporte</dt>
+                <dd className="num font-semibold text-primary">{brl(aporte, 2)}</dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-2">
+                <dt className="text-muted-foreground">Depois do aporte</dt>
+                <dd className="num font-semibold">{brl(totalFuturo, 2)}</dd>
+              </div>
+            </dl>
+            <p className="text-[11px] leading-snug text-muted-foreground">
+              Distribuição por compras — nada precisa ser vendido.
             </p>
-          </>
-        )}
+          </div>
+
+          {aporte <= 0 ? (
+            <p className="grid min-h-40 place-items-center rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+              {erro ? "Corrija o valor informado para ver a distribuição." : "Informe um valor para ver a distribuição."}
+            </p>
+          ) : (
+            <div className="min-w-0 space-y-3">
+              <div className="hidden grid-cols-[minmax(0,1fr)_5rem_6.5rem_5rem] gap-3 px-3 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase sm:grid">
+                <span>Classe</span>
+                <span className="text-right">Alvo / Atual</span>
+                <span className="text-right">Aportar</span>
+                <span className="text-right">Depois</span>
+              </div>
+
+              <ul className="space-y-1.5">
+                {linhas
+                  .filter((l) => l.valor > 0 || l.alvoPct > 0)
+                  .map((l) => (
+                    <li
+                      key={l.classe}
+                      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-lg border border-border/70 bg-card px-3 py-2 sm:grid-cols-[minmax(0,1fr)_5rem_6.5rem_5rem]"
+                    >
+                      <span className="flex min-w-0 items-center gap-2 text-sm font-medium">
+                        <span
+                          className="size-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: corClasse(l.classe) }}
+                        />
+                        <span className="min-w-0 truncate" title={l.classe}>
+                          {l.classe}
+                        </span>
+                      </span>
+                      <span className="num order-3 text-left text-xs text-muted-foreground sm:order-none sm:text-right">
+                        {pct(l.alvoPct)} / {pct(l.atualPct)}
+                      </span>
+                      <span className="num text-right text-sm font-semibold">
+                        {brl(l.valor, 2)}
+                        <span className="ml-1 text-[11px] font-normal text-muted-foreground">({pct(l.parte)})</span>
+                      </span>
+                      <span className="num order-4 text-right text-xs text-muted-foreground sm:order-none">
+                        {pct(l.depoisPct)}
+                      </span>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
