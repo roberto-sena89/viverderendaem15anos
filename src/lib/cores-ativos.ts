@@ -11,13 +11,13 @@ export const COR_CLASSE: Record<string, string> = {
   "ETF (Brasil)": "var(--color-chart-4)",
   "ETF (Exterior)": "var(--color-chart-5)",
   [CLASSE_POS_FIXADO]: "var(--color-chart-6)",
-  "Renda Fixa\nIPCA+": "var(--color-chart-7)",
-  "Renda Fixa\nPré-fixado": "var(--color-chart-8)",
+  "Renda Fixa - IPCA+": "var(--color-chart-7)",
+  "Renda Fixa - Prefixado": "var(--color-chart-8)",
   BDRs: "var(--color-chart-9)",
   Stocks: "var(--color-chart-2)",
   REITs: "var(--color-chart-10)",
   Criptomoedas: "var(--color-chart-4)",
-  "Fundos de\nInvestimentos": "var(--color-chart-7)",
+  "Fundos de Investimentos": "var(--color-chart-7)",
 };
 
 /** Categorias da carteira mapeadas para a mesma cor da sua classe de estratégia. */
@@ -26,14 +26,14 @@ export const COR_CATEGORIA: Record<string, string> = {
   "Fundos Imobiliários": COR_CLASSE.FIIs,
   FIIs: COR_CLASSE.FIIs,
   Fiagro: COR_CLASSE.FIIs,
-  "Tesouro Direto": COR_CLASSE["Renda Fixa\nIPCA+"],
-  Tesouro: COR_CLASSE["Renda Fixa\nIPCA+"],
+  "Tesouro Direto": COR_CLASSE["Renda Fixa - IPCA+"],
+  Tesouro: COR_CLASSE["Renda Fixa - IPCA+"],
   "Renda Fixa": COR_CLASSE[CLASSE_POS_FIXADO],
   BDR: COR_CLASSE.BDRs,
   "ETF Brasil": COR_CLASSE["ETF (Brasil)"],
   "ETF (Exterior)": COR_CLASSE["ETF (Exterior)"],
   "ETF EUA": COR_CLASSE["ETF (Exterior)"],
-  "Fundos de Investimentos": COR_CLASSE["Fundos de\nInvestimentos"],
+  "Fundos de Investimentos": COR_CLASSE["Fundos de Investimentos"],
   Stocks: COR_CLASSE.Stocks,
   REITs: COR_CLASSE.REITs,
   Criptomoedas: COR_CLASSE.Criptomoedas,
@@ -42,7 +42,10 @@ export const COR_CATEGORIA: Record<string, string> = {
 const FALLBACK = "var(--color-muted-foreground)";
 
 /** Cor fixa de uma categoria da carteira. */
-export const corCategoria = (categoria: Categoria | string) => COR_CATEGORIA[categoria] ?? FALLBACK;
+export const corCategoria = (categoria: Categoria | string) => {
+  if (categoria === "Renda Fixa") return COR_CLASSE[CLASSE_POS_FIXADO];
+  return COR_CATEGORIA[categoria] ?? FALLBACK;
+};
 
 /** Cor fixa de uma classe de alocação (tabelas de rebalanceamento e alvos). */
 export const corClasse = (classe: string) => COR_CLASSE[classe] ?? FALLBACK;
