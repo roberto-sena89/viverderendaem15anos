@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAportes, useAtivos, useAtualizarAporte, useExcluirAporte } from "@/lib/data";
-import { brl, type Aporte } from "@/lib/portfolio";
+import { brl, resumoCarteira, type Aporte } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { GraficoAportesMensais } from "@/components/grafico-aportes-mensais";
 
@@ -275,6 +275,8 @@ export function HistoricoMensalAportes() {
   const totalGeral = meses.reduce((s, m) => s + m.total, 0);
   const taxasGerais = meses.reduce((s, m) => s + m.taxas, 0);
   const mediaMensal = meses.length ? totalGeral / meses.length : 0;
+  const resumo = resumoCarteira(carteira);
+  const rentabilidade = resumo.totalInvestido > 0 ? (resumo.lucroTotal / resumo.totalInvestido) * 100 : 0;
 
   /** Busca por período: aceita "julho", "2026", "07/2026", "2026-07". */
   const termo = normalizar(busca);
@@ -296,6 +298,8 @@ export function HistoricoMensalAportes() {
   return (
     <div className="space-y-3">
         <div className="panel w-full p-4">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_17rem]">
+        <div className="min-w-0">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <p className="text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
               Detalhamento mensal dos aportes
@@ -766,6 +770,44 @@ export function HistoricoMensalAportes() {
               </div>
             </nav>
           )}
+        </div>
+
+        <aside
+          aria-label="Resumo da carteira"
+          className="h-fit rounded-lg border border-border bg-muted/20 p-3 lg:sticky lg:top-4"
+        >
+          <p className="text-[0.78rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
+            Resumo da carteira
+          </p>
+          <dl className="mt-3 space-y-3">
+            {[
+              { r: "Total aplicado", v: brl(resumo.totalInvestido, 2), c: "text-foreground" },
+              { r: "Patrimônio atual", v: brl(resumo.totalAtual, 2), c: "text-foreground" },
+              {
+                r: "Ganho de capital",
+                v: `${resumo.lucroTotal >= 0 ? "+" : "-"}${brl(Math.abs(resumo.lucroTotal), 2)}`,
+                c: resumo.lucroTotal >= 0 ? "text-primary" : "text-destructive",
+              },
+              {
+                r: "Rentabilidade",
+                v: `${rentabilidade >= 0 ? "+" : ""}${rentabilidade.toFixed(2)}%`,
+                c: rentabilidade >= 0 ? "text-primary" : "text-destructive",
+              },
+            ].map((k) => (
+              <div key={k.r} className="border-b border-border/60 pb-2 last:border-0 last:pb-0">
+                <dt className="text-[0.78rem] font-semibold tracking-[0.05em] text-muted-foreground uppercase">
+                  {k.r}
+                </dt>
+                <dd className={`num mt-0.5 text-base font-bold ${k.c}`}>{k.v}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-3 text-[0.75rem] leading-snug text-muted-foreground">
+            Aportes acumulados: {brl(totalGeral, 2)} em {meses.length}{" "}
+            {meses.length === 1 ? "mês" : "meses"} · taxas {brl(taxasGerais, 2)}.
+          </p>
+        </aside>
+        </div>
         </div>
     </div>
   );
