@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Calculator, Eraser, Undo2 } from "lucide-react";
+import { Calculator, Eraser, RefreshCw, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
