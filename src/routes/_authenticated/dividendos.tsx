@@ -6,6 +6,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
+import { InputNumeroBR } from "@/components/input-numero-br";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -119,7 +120,7 @@ function DividendosPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="valor">Valor (R$)</Label>
-                <Input id="valor" name="valor" type="number" step="any" min="0" required />
+                <InputNumeroBR id="valor" name="valor" prefixo="R$" required />
               </div>
               <DialogFooter className="sm:col-span-2">
                 <Button type="submit" disabled={criar.isPending}>

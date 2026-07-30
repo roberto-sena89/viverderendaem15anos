@@ -3,6 +3,7 @@ import { useState } from "react";
 import { CheckCircle2, Circle, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
+import { InputNumeroBR } from "@/components/input-numero-br";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -96,7 +97,7 @@ function MetasPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="alvo">Valor alvo (R$)</Label>
-                <Input id="alvo" name="alvo" type="number" step="any" min="0" required />
+                <InputNumeroBR id="alvo" name="alvo" prefixo="R$" required />
               </div>
               <DialogFooter>
                 <Button type="submit" disabled={criar.isPending}>
