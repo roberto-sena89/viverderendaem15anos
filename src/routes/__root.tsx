@@ -90,12 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Plataforma premium para controlar investimentos, dividendos e planejar sua independência financeira.",
       },
-      { property: "og:title", content: "Investidor em 15 Anos — Controle de Investimentos" },
-      {
-        property: "og:description",
-        content:
-          "Plataforma premium para controlar investimentos, dividendos e planejar sua independência financeira.",
-      },
+      { property: "og:site_name", content: "Viver de Renda em 15 Anos" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#006B3C" },
