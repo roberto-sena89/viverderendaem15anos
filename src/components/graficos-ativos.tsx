@@ -51,7 +51,7 @@ function rotulo(simbolo: string) {
 function Indicador({ label, valor, tom }: { label: string; valor: string; tom?: "alta" | "baixa" }) {
   return (
     <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
-      <p className="text-[0.65rem] tracking-wide text-muted-foreground uppercase">{label}</p>
+      <p className="text-[0.78rem] tracking-wide text-muted-foreground uppercase">{label}</p>
       <p
         className={`num text-sm font-semibold ${
           tom === "alta" ? "text-success" : tom === "baixa" ? "text-destructive" : ""

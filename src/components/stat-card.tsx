@@ -31,7 +31,7 @@ export function StatCard({
         className="absolute inset-x-0 top-0 h-px bg-gradient-brand opacity-0 transition-opacity group-hover:opacity-100"
       />
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-        <p className="truncate text-[0.68rem] font-bold tracking-[0.08em] text-muted-foreground uppercase">
+        <p className="truncate text-[0.875rem] font-bold tracking-[0.08em] text-muted-foreground uppercase">
           {label}
         </p>
         {Icon ? <Icon className="size-4 shrink-0 text-muted-foreground/70" /> : null}

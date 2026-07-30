@@ -27,7 +27,7 @@ function Indicador({
     tom === "positive" ? "text-success" : tom === "negative" ? "text-destructive" : "text-foreground";
   return (
     <div className="min-w-0">
-      <p className="truncate text-[0.68rem] text-muted-foreground">{rotulo}</p>
+      <p className="truncate text-[0.875rem] text-muted-foreground">{rotulo}</p>
       <p className={`num truncate text-sm font-semibold ${cor}`}>{valor}</p>
     </div>
   );
@@ -53,10 +53,10 @@ function CartaoResumo({
     >
       <div className="flex items-center gap-2">
         <Icone className="size-8! shrink-0 text-muted-foreground/70" />
-        <p className="truncate text-[0.7rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
+        <p className="truncate text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
           {titulo}
         </p>
-        <span className="ml-auto text-[0.62rem] text-muted-foreground/70">detalhes</span>
+        <span className="ml-auto text-[0.85rem] text-muted-foreground/70">detalhes</span>
       </div>
       <div className="mt-3">{children}</div>
     </button>
@@ -104,7 +104,7 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
                     </p>
                   </div>
                   {l.formula && (
-                    <p className="num mt-1 text-[0.7rem] break-words text-muted-foreground">{l.formula}</p>
+                    <p className="num mt-1 text-[0.82rem] break-words text-muted-foreground">{l.formula}</p>
                   )}
                 </div>
               ))}
@@ -312,7 +312,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         >
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-[0.68rem] text-muted-foreground">12 meses</p>
+              <p className="text-[0.875rem] text-muted-foreground">12 meses</p>
               <p
                 className={`num font-display text-xl font-bold ${
                   resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
@@ -322,7 +322,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
               </p>
             </div>
             <div className="border-l border-border pl-3">
-              <p className="text-[0.68rem] text-muted-foreground">Total</p>
+              <p className="text-[0.875rem] text-muted-foreground">Total</p>
               <p
                 className={`num font-display text-xl font-bold ${
                   resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
@@ -332,7 +332,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
               </p>
             </div>
           </div>
-          <p className="mt-3 text-[0.68rem] text-muted-foreground">
+          <p className="mt-3 text-[0.875rem] text-muted-foreground">
             DY da carteira: {pct(resumo.dyCarteira, 2)}
           </p>
         </CartaoResumo>

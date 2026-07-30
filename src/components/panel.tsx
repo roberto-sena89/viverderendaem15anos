@@ -53,7 +53,7 @@ export function TickerMark({ ticker, className }: { ticker: string; className?: 
   return (
     <span
       className={cn(
-        "grid size-8 shrink-0 place-items-center rounded-lg bg-primary-soft font-display text-[0.6rem] font-bold tracking-tight text-accent-foreground",
+        "grid size-8 shrink-0 place-items-center rounded-lg bg-primary-soft font-display text-[0.85rem] font-bold tracking-tight text-accent-foreground",
         className,
       )}
     >

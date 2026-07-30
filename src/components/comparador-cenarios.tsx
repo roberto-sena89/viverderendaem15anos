@@ -85,7 +85,7 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
         <TableCell key={r.cenario.id} className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}>
           <span className="font-medium">{valor(i)}</span>
           {comparando && numero ? (
-            <span className={cn("block text-[11px] font-semibold", i === 0 ? "text-muted-foreground" : corDelta(diff))}>
+            <span className={cn("block text-[13px] font-semibold", i === 0 ? "text-muted-foreground" : corDelta(diff))}>
               {i === 0 ? "base" : delta(diff)}
             </span>
           ) : null}
@@ -208,7 +208,7 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                         />
                         {r.cenario.nome}
                         {i === vencedor && comparando ? (
-                          <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-primary-foreground">
+                          <span className="rounded-full bg-primary px-2 py-0.5 text-[12px] font-bold uppercase text-primary-foreground">
                             Vencedor
                           </span>
                         ) : null}
@@ -324,7 +324,7 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                             className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}
                           >
                             <span className="font-medium">{v.patrimonio === null ? "—" : brl(v.patrimonio)}</span>
-                            <span className="block text-[11px]">
+                            <span className="block text-[13px]">
                               {comparando ? (
                                 <span className={cn("font-semibold", i === 0 ? "text-muted-foreground" : corDelta(v.variacao))}>
                                   {i === 0 ? "base" : delta(v.variacao)}

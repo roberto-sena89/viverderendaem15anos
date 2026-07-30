@@ -293,7 +293,7 @@ function Dashboard() {
                 </ResponsiveContainer>
                 <div className="pointer-events-none absolute inset-0 grid place-items-center">
                   <div className="text-center">
-                    <p className="text-[0.6rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                    <p className="text-[0.85rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
                       Total
                     </p>
                     <p className="num font-display text-base font-bold">{brl(totalComposicao, 2)}</p>
@@ -315,7 +315,7 @@ function Dashboard() {
                         <span className="truncate whitespace-pre-line">{c.name}</span>
                       </span>
                       <span className="ml-auto flex shrink-0 items-baseline gap-2">
-                        <span className="num text-[0.68rem] text-muted-foreground">{brl(c.value, 2)}</span>
+                        <span className="num text-[0.875rem] text-muted-foreground">{brl(c.value, 2)}</span>
                         <span className="num w-12 text-right font-semibold" style={{ color: cor }}>
                           {pct(percentual)}
                         </span>

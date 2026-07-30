@@ -147,7 +147,7 @@ export function CarteiraRecomendada() {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <thead>
-            <tr className="bg-muted/40 text-[0.68rem] tracking-wider text-muted-foreground uppercase">
+            <tr className="bg-muted/40 text-[0.875rem] tracking-wider text-muted-foreground uppercase">
               <th className="w-40 px-4 py-3 text-left font-semibold">Classe</th>
               <th className="px-4 py-3 text-left font-semibold">Indexador</th>
               <th className="px-4 py-3 text-left font-semibold">Prazo / veículo</th>
@@ -227,7 +227,7 @@ export function CarteiraRecomendada() {
               <div className="max-h-72 overflow-y-auto rounded-lg border border-border">
                 <table className="w-full border-collapse text-sm">
                   <thead>
-                    <tr className="bg-muted/40 text-[0.68rem] tracking-wider text-muted-foreground uppercase">
+                    <tr className="bg-muted/40 text-[0.875rem] tracking-wider text-muted-foreground uppercase">
                       <th className="px-3 py-2 text-left font-semibold">Classe</th>
                       <th className="px-3 py-2 text-right font-semibold">Atual</th>
                       <th className="px-3 py-2 text-right font-semibold">Alvo</th>
@@ -288,7 +288,7 @@ export function CarteiraRecomendada() {
                   <div className="max-h-72 overflow-auto">
                     <table className="w-full min-w-[560px] border-collapse text-sm">
                       <thead>
-                        <tr className="bg-muted/20 text-[0.68rem] tracking-wider text-muted-foreground uppercase">
+                        <tr className="bg-muted/20 text-[0.875rem] tracking-wider text-muted-foreground uppercase">
                           <th className="px-3 py-2 text-left font-semibold">Ativo</th>
                           <th className="px-3 py-2 text-left font-semibold">Ação</th>
                           <th className="px-3 py-2 text-right font-semibold">Qtd. estimada</th>

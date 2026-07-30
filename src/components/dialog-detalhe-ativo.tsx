@@ -34,7 +34,7 @@ function pctFmt(v: number | null | undefined) {
 function Indicador({ rotulo, valor, tom }: { rotulo: string; valor: string; tom?: "alta" | "baixa" }) {
   return (
     <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
-      <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">{rotulo}</p>
+      <p className="text-[0.78rem] uppercase tracking-wide text-muted-foreground">{rotulo}</p>
       <p
         className={`num text-sm font-semibold ${
           tom === "alta" ? "text-success" : tom === "baixa" ? "text-destructive" : ""
@@ -212,7 +212,7 @@ export function DialogDetalheAtivo({
         </div>
 
         {c?.bolsa ? (
-          <p className="text-[0.7rem] text-muted-foreground">
+          <p className="text-[0.82rem] text-muted-foreground">
             Fonte de mercado · {c.bolsa}
             {c.atualizadoEm
               ? ` · atualizado em ${new Date(c.atualizadoEm).toLocaleString("pt-BR")}`

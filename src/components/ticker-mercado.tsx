@@ -70,7 +70,7 @@ export function TickerMercado() {
           {sequencia.map((i, idx) => (
             <div
               key={`${i.simbolo}-${idx}`}
-              className="flex shrink-0 items-center gap-2 px-5 py-1.5 text-[0.72rem] tabular-nums"
+              className="flex shrink-0 items-center gap-2 px-5 py-1.5 text-[0.84rem] tabular-nums"
             >
               <span className="font-semibold text-sidebar-foreground">{i.nome}</span>
               <span className="text-muted-foreground">{fmt(i.preco, i.nome)}</span>
@@ -94,7 +94,7 @@ export function TickerMercado() {
         aria-live="polite"
         aria-label="Atualizar cotações"
         title={degradado ? "Sem conexão com a fonte — exibindo últimos dados" : "Atualizar cotações"}
-        className="flex shrink-0 items-center gap-1.5 border-l border-border px-3 py-1.5 text-[0.65rem] text-muted-foreground transition-colors hover:bg-sidebar-accent/60"
+        className="flex shrink-0 items-center gap-1.5 border-l border-border px-3 py-1.5 text-[0.78rem] text-muted-foreground transition-colors hover:bg-sidebar-accent/60"
       >
         {degradado ? (
           <WifiOff className="size-3 text-destructive" />
