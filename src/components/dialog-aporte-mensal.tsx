@@ -52,6 +52,7 @@ function validarAporte(entrada: string): { valor: number; erro: string | null } 
  */
 export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   const { alvo } = useAlocacaoAlvo();
+  const { subAlvo } = useSubAlocacaoAlvo();
   const [aberto, setAberto] = useState(false);
   const [texto, setTexto] = useState("1000");
   const [tocado, setTocado] = useState(false);
