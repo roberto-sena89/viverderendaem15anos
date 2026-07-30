@@ -324,7 +324,7 @@ export function CarteiraGrupos({
                         {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
                         {colunas.ideal && <TableHead className={`text-right ${colLg}`}>% Ideal</TableHead>}
                         {colunas.comprar && <TableHead className={`text-center ${colLg}`}>Comprar</TableHead>}
-                        {onEditar && onExcluir ? <TableHead className="text-center">Opções</TableHead> : null}
+                        {onEditar && onExcluir ? <TableHead className="w-[7%] text-center">Opções</TableHead> : null}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
