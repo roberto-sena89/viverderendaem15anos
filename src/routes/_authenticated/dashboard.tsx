@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 
 import { DialogTransacao } from "@/components/dialog-transacao";
@@ -331,14 +332,17 @@ function Dashboard() {
 
 
       <section className="panel overflow-hidden">
-        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
           <h2 className="min-w-0 truncate font-display text-sm font-bold tracking-wide uppercase">
             Meus ativos <span className="text-muted-foreground normal-case">({ativos.length})</span>
           </h2>
-          <p className="num shrink-0 text-right text-xs text-muted-foreground">
-            <span className="hidden sm:inline">{categoriasComAtivos.length} classes · </span>
-            {brl(resumo.totalAtual, 2)}
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="num shrink-0 text-right text-xs text-muted-foreground">
+              <span className="hidden sm:inline">{categoriasComAtivos.length} classes · </span>
+              {brl(resumo.totalAtual, 2)}
+            </p>
+            <BotaoExportarCarteira ativos={ativos} dividendos={proventos} />
+          </div>
         </header>
 
         {ativos.length === 0 ? (
