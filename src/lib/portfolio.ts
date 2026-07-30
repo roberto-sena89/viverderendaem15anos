@@ -135,7 +135,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "Fiagro":
       return "FIIs";
     default:
-      return indexadorRendaFixa(a) ?? CLASSE_POS_FIXADO;
+      return CLASSE_POS_FIXADO;
   }
 };
 
