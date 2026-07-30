@@ -324,7 +324,7 @@ export function CarteiraGrupos({
                         {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
                         {colunas.ideal && <TableHead className={`text-right ${colLg}`}>% Ideal</TableHead>}
                         {colunas.comprar && <TableHead className={`text-center ${colLg}`}>Comprar</TableHead>}
-                        {onEditar && onExcluir ? <TableHead className="text-center">Opções</TableHead> : null}
+                        {onEditar && onExcluir ? <TableHead className="w-[7%] text-center">Opções</TableHead> : null}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -421,11 +421,11 @@ export function CarteiraGrupos({
                                       variant="outline"
                                       title={`Ações de ${a.ticker}`}
                                       aria-label={`Ações de ${a.ticker}: editar ou excluir`}
-                                      className="h-8 gap-1.5 px-2.5 text-xs font-semibold"
+                                      className="mx-auto h-7 gap-1 rounded-md px-1.5 text-[0.7rem] leading-none font-semibold"
                                     >
-                                      <Settings2 className="size-3.5" />
-                                      <span className="hidden sm:inline">Ações</span>
-                                      <ChevronDown className="size-3.5 opacity-60" />
+                                      <Settings2 className="size-3" />
+                                      <span className="hidden lg:inline">Ações</span>
+                                      <ChevronDown className="size-3 opacity-60" />
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end" className="w-52">
