@@ -25,12 +25,14 @@ export function DialogAlocacaoAlvo() {
   const { subAlvo, salvarSub, restaurarSub } = useSubAlocacaoAlvo();
   const [aberto, setAberto] = useState(false);
   const [valores, setValores] = useState<Record<string, string>>({});
-  const [subValor, setSubValor] = useState("0");
+  const [subValores, setSubValores] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (aberto) {
       setValores(Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])));
-      setSubValor(String(subAlvo[SUB_RENDA_FIXA] ?? 0).replace(".", ","));
+      setSubValores(
+        Object.fromEntries(SUBS_RENDA_FIXA.map((s) => [s, String(subAlvo[s] ?? 0).replace(".", ",")])),
+      );
     }
   }, [aberto, alvo, subAlvo]);
 
