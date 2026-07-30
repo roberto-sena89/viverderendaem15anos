@@ -1,6 +1,7 @@
 import { Fragment, useMemo, useState } from "react";
 import { CalendarRange, Check, ChevronDown, ChevronRight, Pencil, Trash2, TrendingDown, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAportes, useAtivos, useAtualizarAporte, useExcluirAporte } from "@/lib/data";
