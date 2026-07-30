@@ -103,7 +103,7 @@ function ListaRanking({
                 >
                   <span
                     className={`num w-6 shrink-0 text-xs font-bold ${
-                      inicio + idx < 3 ? "text-primary" : "text-muted-foreground/60"
+                      inicio + idx < 3 ? "text-primary" : "text-muted-foreground"
                     }`}
                   >
                     #{inicio + idx + 1}
