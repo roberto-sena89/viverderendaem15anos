@@ -14,18 +14,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
+import { CLASSE_POS_FIXADO } from "@/lib/portfolio";
+
+const SUB_RENDA_FIXA = "Tesouro SELIC";
 
 /** Permite ajustar o percentual ideal de cada classe de ativo. */
 export function DialogAlocacaoAlvo() {
   const { alvo, salvar, restaurar } = useAlocacaoAlvo();
+  const { subAlvo, salvarSub, restaurarSub } = useSubAlocacaoAlvo();
   const [aberto, setAberto] = useState(false);
   const [valores, setValores] = useState<Record<string, string>>({});
+  const [subValor, setSubValor] = useState("0");
 
   useEffect(() => {
     if (aberto) {
       setValores(Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])));
+      setSubValor(String(subAlvo[SUB_RENDA_FIXA] ?? 0).replace(".", ","));
     }
-  }, [aberto, alvo]);
+  }, [aberto, alvo, subAlvo]);
 
   /** Mantém apenas dígitos e um separador decimal, com no máximo 2 casas. */
   const sanitizar = (bruto: string) => {
@@ -54,7 +61,16 @@ export function DialogAlocacaoAlvo() {
   const total = Object.values(numeros).reduce((s, v) => s + v, 0);
   const restante = 100 - total;
   const somaOk = Math.abs(restante) < 0.01;
-  const valido = somaOk && camposInvalidos.size === 0;
+
+  const subNumero = subValor.trim() === "" ? 0 : Math.max(0, paraNumero(subValor) || 0);
+  const alvoRendaFixa = numeros[CLASSE_POS_FIXADO] ?? 0;
+  const subInvalido =
+    subValor.trim() === "" ||
+    !Number.isFinite(paraNumero(subValor)) ||
+    subNumero < 0 ||
+    subNumero > alvoRendaFixa + 0.001;
+
+  const valido = somaOk && camposInvalidos.size === 0 && !subInvalido;
 
   /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
   const aoTeclar = (classe: string) => (e: KeyboardEvent<HTMLInputElement>) => {
@@ -87,26 +103,56 @@ export function DialogAlocacaoAlvo() {
           {Object.keys(alvo).map((classe) => (
             <div
               key={classe}
-              className="flex items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/20 px-3 py-2"
+              className="rounded-md border border-border/60 bg-muted/20 px-3 py-2"
             >
-              <Label htmlFor={`alvo-${classe}`} className="text-xs leading-tight font-medium whitespace-pre-line">
-                {classe}
-              </Label>
-              <div className="flex shrink-0 items-center gap-1.5">
-                <Input
-                  id={`alvo-${classe}`}
-                  inputMode="decimal"
-                  aria-invalid={camposInvalidos.has(classe)}
-                  value={valores[classe] ?? ""}
-                  onKeyDown={aoTeclar(classe)}
-                  onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
-                  className="h-9 w-20 text-right text-sm tabular-nums"
-                />
-                <span className="text-xs text-muted-foreground">%</span>
+              <div className="flex items-center justify-between gap-3">
+                <Label htmlFor={`alvo-${classe}`} className="text-xs leading-tight font-medium whitespace-pre-line">
+                  {classe}
+                </Label>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <Input
+                    id={`alvo-${classe}`}
+                    inputMode="decimal"
+                    aria-invalid={camposInvalidos.has(classe)}
+                    value={valores[classe] ?? ""}
+                    onKeyDown={aoTeclar(classe)}
+                    onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
+                    className="h-9 w-20 text-right text-sm tabular-nums"
+                  />
+                  <span className="text-xs text-muted-foreground">%</span>
+                </div>
               </div>
+
+              {classe === CLASSE_POS_FIXADO && (
+                <div className="mt-2 border-t border-border/60 pt-2 pl-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <Label
+                      htmlFor="alvo-sub-tesouro-selic"
+                      className="text-xs leading-tight font-normal text-muted-foreground"
+                    >
+                      ↳ {SUB_RENDA_FIXA} <span className="text-[10px]">(sub-classe)</span>
+                    </Label>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <Input
+                        id="alvo-sub-tesouro-selic"
+                        inputMode="decimal"
+                        aria-invalid={subInvalido}
+                        value={subValor}
+                        onChange={(e) => setSubValor(sanitizar(e.target.value))}
+                        className="h-9 w-20 text-right text-sm tabular-nums"
+                      />
+                      <span className="text-xs text-muted-foreground">%</span>
+                    </div>
+                  </div>
+                  <p className={`mt-1 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}>
+                    Parte da Renda Fixa destinada ao Tesouro SELIC (máx. {alvoRendaFixa.toFixed(1).replace(".", ",")}%).
+                  </p>
+                </div>
+              )}
             </div>
           ))}
         </div>
+
 
         <div className="space-y-2 rounded-md border border-border/60 bg-muted/30 px-3 py-2.5">
           <div className="flex items-center justify-between text-xs font-semibold">
@@ -140,6 +186,7 @@ export function DialogAlocacaoAlvo() {
             size="sm"
             onClick={() => {
               restaurar();
+              restaurarSub();
               setAberto(false);
               toast.success("Alocação ideal restaurada ao padrão.");
             }}
@@ -151,6 +198,7 @@ export function DialogAlocacaoAlvo() {
             disabled={!valido}
             onClick={() => {
               salvar(numeros);
+              salvarSub({ [SUB_RENDA_FIXA]: subNumero });
               setAberto(false);
               toast.success("Alocação ideal atualizada.");
             }}
