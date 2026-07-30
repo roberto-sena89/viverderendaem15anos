@@ -14,18 +14,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
+import { CLASSE_POS_FIXADO } from "@/lib/portfolio";
+
+const SUB_RENDA_FIXA = "Tesouro SELIC";
 
 /** Permite ajustar o percentual ideal de cada classe de ativo. */
 export function DialogAlocacaoAlvo() {
   const { alvo, salvar, restaurar } = useAlocacaoAlvo();
+  const { subAlvo, salvarSub, restaurarSub } = useSubAlocacaoAlvo();
   const [aberto, setAberto] = useState(false);
   const [valores, setValores] = useState<Record<string, string>>({});
+  const [subValor, setSubValor] = useState("0");
 
   useEffect(() => {
     if (aberto) {
       setValores(Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])));
+      setSubValor(String(subAlvo[SUB_RENDA_FIXA] ?? 0).replace(".", ","));
     }
-  }, [aberto, alvo]);
+  }, [aberto, alvo, subAlvo]);
 
   /** Mantém apenas dígitos e um separador decimal, com no máximo 2 casas. */
   const sanitizar = (bruto: string) => {
