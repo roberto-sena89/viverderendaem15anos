@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import investidorImg from "@/assets/investidor-computador.jpg";
-import logoIcone from "@/assets/logo-icone.png";
+import logoIcone from "@/assets/logo-icone.webp";
 
 
 const REDIRECT_KEY = "auth:redirect";

@@ -4,8 +4,8 @@ import { ArrowRight, LineChart, PiggyBank, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
 import { supabase } from "@/integrations/supabase/client";
-import logoIcone from "@/assets/logo-icone.png";
-import heroFundo from "@/assets/hero-mercado-fundo.jpg";
+import logoIcone from "@/assets/logo-icone.webp";
+import heroFundo from "@/assets/hero-mercado-fundo.webp";
 
 const TITLE = "Viver de Renda em 15 Anos — Carteira, Dividendos e Independência";
 const DESCRIPTION =

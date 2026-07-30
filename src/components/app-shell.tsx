@@ -25,7 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { SECOES, secaoPorRota } from "@/lib/navegacao";
-import logoIcone from "@/assets/logo-icone.png";
+import logoIcone from "@/assets/logo-icone.webp";
 
 
 
