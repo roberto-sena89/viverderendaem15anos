@@ -462,7 +462,7 @@ export function EvolucaoPatrimonio() {
       {/* 3. Gráfico principal */}
       <Panel
         title="Patrimônio x total aportado"
-        hint="Barras claras: patrimônio total. Barras escuras: dinheiro investido acumulado."
+        hint={"Barra Verde: Patrimônio Total\nBarra Azul: Dinheiro Investido Acumulado"}
       >
         <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-foreground">
