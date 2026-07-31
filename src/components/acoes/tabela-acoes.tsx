@@ -298,12 +298,14 @@ function Estrela({ ativo, aoClicar, ticker }: { ativo: boolean; aoClicar: () => 
 export function BadgeSetor({ linha }: { linha: LinhaAcao }) {
   return (
     <span
-      className={`inline-block rounded-full border px-2 py-0.5 text-[0.68rem] font-medium whitespace-nowrap ${COR_SETOR[linha.setor]}`}
+      title={linha.setor}
+      className={`inline-block max-w-full truncate rounded-full border px-2 py-0.5 align-middle text-[0.66rem] font-medium ${COR_SETOR[linha.setor]}`}
     >
       {linha.setor}
     </span>
   );
 }
+
 
 function BadgeNeutro({ texto }: { texto: string | null }) {
   if (!texto) return <span className="text-muted-foreground">—</span>;
