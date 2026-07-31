@@ -113,6 +113,68 @@ const tooltipStyle = {
   fontSize: "12px",
 };
 
+type SerieChave = "patrimonio" | "aportadoAcum" | "anterior";
+
+const CORES_SERIE: Record<SerieChave, string> = {
+  patrimonio: "var(--color-primary)",
+  aportadoAcum: "var(--color-chart-12)",
+  anterior: "var(--color-muted-foreground)",
+};
+
+/** Tooltip com destaque da série sob o cursor e sem sobreposição de rótulos. */
+function TooltipEvolucao({
+  active,
+  payload,
+  label,
+  destaque,
+}: {
+  active?: boolean;
+  payload?: Array<{ dataKey?: string | number; name?: string; value?: number }>;
+  label?: string;
+  destaque: SerieChave | null;
+}) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="pointer-events-none min-w-[11rem] rounded-xl border border-border bg-popover/95 p-3 shadow-lg backdrop-blur-sm">
+      <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+      <ul className="space-y-1.5">
+        {payload.map((item) => {
+          const chave = String(item.dataKey ?? "") as SerieChave;
+          const ativo = destaque === null || destaque === chave;
+          return (
+            <li
+              key={chave}
+              className={cn(
+                "flex items-center justify-between gap-4 rounded-md px-1.5 py-1 transition-colors",
+                destaque === chave && "bg-muted/60",
+                !ativo && "opacity-40",
+              )}
+            >
+              <span className="flex items-center gap-2 whitespace-nowrap text-[0.72rem] text-muted-foreground">
+                <span
+                  className="inline-block size-2.5 shrink-0 rounded-[2px]"
+                  style={{ backgroundColor: CORES_SERIE[chave] ?? "var(--color-muted-foreground)" }}
+                  aria-hidden
+                />
+                {item.name}
+              </span>
+              <span
+                className={cn(
+                  "whitespace-nowrap font-display text-[0.78rem] font-bold tabular-nums text-foreground",
+                  destaque === chave && "text-primary",
+                )}
+              >
+                {brl(Number(item.value ?? 0), 2)}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+
 function Kpi({ rotulo, valor, sub }: { rotulo: string; valor: string; sub?: string }) {
   return (
     <div className="rounded-xl border border-border bg-card/60 p-3 transition-colors hover:bg-muted/40">
@@ -148,6 +210,7 @@ export function EvolucaoPatrimonio() {
   const [granularidade, setGranularidade] = useState<"mensal" | "anual">("mensal");
   const [busca, setBusca] = useState("");
   const [comparar, setComparar] = useState(false);
+  const [destaque, setDestaque] = useState<SerieChave | null>(null);
   const [categoriaFiltro, setCategoriaFiltro] = useState<string | null>(null);
 
   const resumo = useMemo(() => resumoCarteira(ativos), [ativos]);
@@ -319,6 +382,9 @@ export function EvolucaoPatrimonio() {
     );
   }
 
+  /** Rótulos só cabem sem sobreposição quando há poucos períodos. */
+  const mostrarRotulos = dadosGrafico.length <= 12;
+
   return (
     <section className="space-y-4" aria-label="Evolução de Patrimônio">
       {/* 1. Cabeçalho de resumo */}
@@ -465,29 +531,59 @@ export function EvolucaoPatrimonio() {
         hint={"Barra Verde: Patrimônio Total\nBarra Azul: Dinheiro Investido Acumulado"}
       >
         <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-foreground">
-            <span className="inline-block size-2.5 rounded-[2px] bg-primary" aria-hidden />
-            Patrimônio
-          </span>
-          <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-muted-foreground">
-            <span className="inline-block size-2.5 rounded-[2px] bg-chart-12" aria-hidden />
-            Total investido
-          </span>
+          {([
+            { chave: "patrimonio" as const, rotulo: "Patrimônio", cor: "bg-primary" },
+            { chave: "aportadoAcum" as const, rotulo: "Total investido", cor: "bg-chart-12" },
+          ]).map((s) => (
+            <button
+              key={s.chave}
+              type="button"
+              onMouseEnter={() => setDestaque(s.chave)}
+              onMouseLeave={() => setDestaque(null)}
+              onFocus={() => setDestaque(s.chave)}
+              onBlur={() => setDestaque(null)}
+              onClick={() => setDestaque((d) => (d === s.chave ? null : s.chave))}
+              aria-pressed={destaque === s.chave}
+              className={cn(
+                "flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[0.7rem] font-medium transition-all",
+                destaque === s.chave
+                  ? "border-primary/60 bg-primary/10 text-foreground shadow-sm"
+                  : "border-border bg-muted/40 text-muted-foreground hover:bg-muted",
+                destaque && destaque !== s.chave && "opacity-50",
+              )}
+            >
+              <span className={cn("inline-block size-2.5 rounded-[2px]", s.cor)} aria-hidden />
+              {s.rotulo}
+            </button>
+          ))}
           {comparar ? (
-            <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-muted-foreground">
+            <button
+              type="button"
+              onMouseEnter={() => setDestaque("anterior")}
+              onMouseLeave={() => setDestaque(null)}
+              onClick={() => setDestaque((d) => (d === "anterior" ? null : "anterior"))}
+              aria-pressed={destaque === "anterior"}
+              className={cn(
+                "flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[0.7rem] font-medium transition-all",
+                destaque === "anterior"
+                  ? "border-primary/60 bg-primary/10 text-foreground shadow-sm"
+                  : "border-border bg-muted/40 text-muted-foreground hover:bg-muted",
+                destaque && destaque !== "anterior" && "opacity-50",
+              )}
+            >
               <HistoryIcon className="size-3.5" aria-hidden />
               Período anterior
-            </span>
+            </button>
           ) : null}
         </div>
 
         <div className="-mx-1 overflow-x-auto pb-1 sm:-mx-2 [scrollbar-width:thin]">
           <div
             className="h-[300px] sm:h-[380px] xl:h-[430px]"
-            style={{ minWidth: Math.max(320, dadosGrafico.length * 68) }}
+            style={{ minWidth: Math.max(320, dadosGrafico.length * 78) }}
           >
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 18, right: 8, left: 0, bottom: 18 }} barGap={0} barCategoryGap="28%" barSize={30}>
+            <ComposedChart data={dadosGrafico} margin={{ top: 26, right: 8, left: 0, bottom: 18 }} barGap={0} barCategoryGap="28%" barSize={30}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
@@ -511,22 +607,32 @@ export function EvolucaoPatrimonio() {
               />
               <Tooltip
                 cursor={{ fill: "var(--color-muted)", opacity: 0.35 }}
-                contentStyle={tooltipStyle}
-                formatter={(v: number, nome: string) => [brl(Number(v), 2), nome]}
-                labelFormatter={(l: string) => `Período: ${l}`}
+                wrapperStyle={{ outline: "none", zIndex: 30 }}
+                allowEscapeViewBox={{ x: false, y: true }}
+                offset={16}
+                content={<TooltipEvolucao destaque={destaque} />}
               />
               <Bar
                 dataKey="patrimonio"
                 name="Patrimônio"
                 fill="var(--color-primary)"
+                fillOpacity={destaque && destaque !== "patrimonio" ? 0.28 : 1}
                 radius={[3, 3, 0, 0]}
+                isAnimationActive={false}
+                onMouseEnter={() => setDestaque("patrimonio")}
+                onMouseLeave={() => setDestaque(null)}
               >
-                {dadosGrafico.length <= 14 ? (
+                {mostrarRotulos && destaque !== "aportadoAcum" && destaque !== "anterior" ? (
                 <LabelList
                   dataKey="patrimonio"
                   position="top"
+                  offset={14}
                   formatter={(v: number) => compacto(Number(v))}
-                  style={{ fontSize: 10, fill: "var(--color-muted-foreground)" }}
+                  style={{
+                    fontSize: 10,
+                    fontWeight: destaque === "patrimonio" ? 700 : 500,
+                    fill: destaque === "patrimonio" ? "var(--color-primary)" : "var(--color-muted-foreground)",
+                  }}
                 />
                 ) : null}
               </Bar>
@@ -534,17 +640,27 @@ export function EvolucaoPatrimonio() {
                 dataKey="aportadoAcum"
                 name="Total investido"
                 fill="var(--color-chart-12)"
+                fillOpacity={destaque && destaque !== "aportadoAcum" ? 0.28 : 1}
                 radius={[3, 3, 0, 0]}
+                isAnimationActive={false}
+                onMouseEnter={() => setDestaque("aportadoAcum")}
+                onMouseLeave={() => setDestaque(null)}
               >
-                {dadosGrafico.length <= 14 ? (
+                {mostrarRotulos && destaque !== "patrimonio" && destaque !== "anterior" ? (
                 <LabelList
                   dataKey="aportadoAcum"
                   position="top"
+                  offset={4}
                   formatter={(v: number) => compacto(Number(v))}
-                  style={{ fontSize: 10, fill: "var(--color-muted-foreground)" }}
+                  style={{
+                    fontSize: 10,
+                    fontWeight: destaque === "aportadoAcum" ? 700 : 500,
+                    fill: destaque === "aportadoAcum" ? "var(--color-chart-12)" : "var(--color-muted-foreground)",
+                  }}
                 />
                 ) : null}
               </Bar>
+
               {comparar ? (
                 <Line
                   type="monotone"
