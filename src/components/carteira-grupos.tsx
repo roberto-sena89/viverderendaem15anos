@@ -31,6 +31,7 @@ type ColunaId =
   | "quantidade"
   | "precoMedio"
   | "precoAtual"
+  | "variacaoDia"
   | "variacao"
   | "rentabilidade"
   | "saldo"
@@ -43,6 +44,7 @@ const PADRAO: Record<ColunaId, boolean> = {
   quantidade: true,
   precoMedio: true,
   precoAtual: true,
+  variacaoDia: true,
   variacao: true,
   rentabilidade: true,
   saldo: true,
@@ -50,6 +52,15 @@ const PADRAO: Record<ColunaId, boolean> = {
   participacao: true,
   ideal: true,
   comprar: true,
+};
+
+/** Hora local (HH:mm:ss) da última cotação recebida do provedor. */
+const horaCotacao = (iso?: string) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? null
+    : d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 };
 
 
