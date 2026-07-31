@@ -589,13 +589,14 @@ export function TabelaAcoes({
                       {visiveis.map((c) => (
                         <td
                           key={c.id}
-                          className={`px-3 py-2 whitespace-nowrap ${
+                          className={`truncate px-2 py-2 text-[0.82rem] whitespace-nowrap ${
                             ALINHA_ESQUERDA.includes(c.id) ? "text-left" : "text-right"
                           }`}
                         >
                           {celulaAcao(c.id, l, h)}
                         </td>
                       ))}
+
                     </tr>
                   );
                 })}
