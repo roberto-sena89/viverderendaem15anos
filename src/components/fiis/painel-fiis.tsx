@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Panel } from "@/components/panel";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ResumoFiis } from "@/components/fiis/resumo-fiis";
 import {
   FAIXAS_PADRAO,
@@ -275,6 +276,7 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
   );
 
   return (
+    <TooltipProvider delayDuration={150}>
     <div className="space-y-4 pb-20">
       <ResumoFiis
         ifix={grade.data?.ifix ?? null}
@@ -474,5 +476,6 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
         aoFechar={() => setDetalhe(null)}
       />
     </div>
+    </TooltipProvider>
   );
 }
