@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
+  AreaChart as AreaChartIcon,
   ArrowDownRight,
   ArrowUpRight,
   CalendarDays,
   ChevronRight,
   Download,
+  History as HistoryIcon,
+  LineChart as LineChartIcon,
   Search,
   TrendingUp,
 } from "lucide-react";
@@ -461,22 +464,23 @@ export function EvolucaoPatrimonio() {
         title="Patrimônio x total aportado"
         hint="Área verde: patrimônio total. Linha tracejada: dinheiro investido acumulado."
       >
-        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.72rem] text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-[3px] bg-primary" aria-hidden />
+        <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-foreground">
+            <AreaChartIcon className="size-3.5 text-primary" aria-hidden />
             Patrimônio
           </span>
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-0 w-4 border-t-2 border-dashed border-muted-foreground" aria-hidden />
+          <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-muted-foreground">
+            <LineChartIcon className="size-3.5" aria-hidden />
             Total investido
           </span>
           {comparar ? (
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block h-0.5 w-4 rounded bg-chart-12" aria-hidden />
+            <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-muted-foreground">
+              <HistoryIcon className="size-3.5 text-chart-12" aria-hidden />
               Período anterior
             </span>
           ) : null}
         </div>
+
         <div className="-mx-1 h-[260px] sm:-mx-2 sm:h-[340px] xl:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={dadosGrafico} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
