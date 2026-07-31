@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GradeCotacoes } from "@/components/cotacoes/grade-cotacoes";
 import { VisaoGeralMercado } from "@/components/cotacoes/visao-geral";
+import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
 
@@ -168,7 +169,11 @@ function Cotacoes() {
             <VisaoGeralMercado intervaloMs={intervalo} />
           </TabsContent>
 
-          {ABAS.filter((a) => a.categoria).map((a) => (
+          <TabsContent value="fiis" className="mt-4">
+            <PainelFiis intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+          </TabsContent>
+
+          {ABAS.filter((a) => a.categoria && a.id !== "fiis").map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
               <Panel title={a.rotulo} bodyClassName="p-0">
                 <GradeCotacoes
