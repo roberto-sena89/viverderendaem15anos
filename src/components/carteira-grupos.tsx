@@ -25,7 +25,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
-import { useDesempenho12m, type NotaDesempenho } from "@/lib/desempenho-12m";
 import { chaveBrapi, usePrecosBrapiCarteira } from "@/lib/carteira-brapi";
 import {
   chavePreco,
@@ -48,7 +47,6 @@ type ColunaId =
   | "variacao"
   | "rentabilidade"
   | "saldo"
-  | "nota"
   | "participacao"
   | "ideal"
   | "comprar";
@@ -61,7 +59,6 @@ const PADRAO: Record<ColunaId, boolean> = {
   variacao: true,
   rentabilidade: true,
   saldo: true,
-  nota: true,
   participacao: true,
   ideal: true,
   comprar: true,
@@ -92,14 +89,6 @@ interface Grupo {
   /** Variação do dia (%) ponderada pelo saldo, vinda das cotações ao vivo. */
   variacaoDiaPct: number | null;
 }
-
-/** Nota padrão enquanto o histórico de 12 meses não chega (ou não existe). */
-const SEM_DESEMPENHO: NotaDesempenho = {
-  nota: 5,
-  retorno12m: null,
-  excedente: null,
-  classificacao: "Sem histórico",
-};
 
 const num = (v: number, d = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -160,8 +149,6 @@ export function CarteiraGrupos({
   const brapi = usePrecosBrapiCarteira(tickers);
   /** Rede de segurança: último preço válido gravado no banco. */
   const salvos = useUltimosPrecosSalvos(tickers);
-  /** Retorno de 12 meses por ativo (Yahoo) + Ibovespa como referência da nota. */
-  const { porTicker: desempenho, benchmark: ibov12m } = useDesempenho12m(tickers);
 
   /** O servidor busca e grava o último preço destes tickers (máx. 1x/min). */
   usePersistirPrecos(tickers);
@@ -511,17 +498,6 @@ export function CarteiraGrupos({
                         {colunas.variacao && <TableHead className={`text-right ${colLg}`}>Var. (%)</TableHead>}
                         {colunas.rentabilidade && <TableHead className={`text-right ${colMd}`}>Rent. (R$)</TableHead>}
                         {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
-                        {colunas.nota && (
-                          <TableHead
-                            className={`text-center ${colLg}`}
-                            title={
-                              "Nota 0–10 pelo desempenho dos últimos 12 meses frente ao Ibovespa" +
-                              (ibov12m !== null ? ` (Ibovespa 12m: ${num(ibov12m, 1)}%)` : "")
-                            }
-                          >
-                            Nota 12m
-                          </TableHead>
-                        )}
                         {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
                         {colunas.ideal && <TableHead className={`text-right ${colLg}`}>% Ideal</TableHead>}
                         {colunas.comprar && <TableHead className={`text-center ${colLg}`}>Comprar</TableHead>}
@@ -538,8 +514,6 @@ export function CarteiraGrupos({
                         const rent = investido > 0 ? ((saldo - investido) / investido) * 100 : 0;
                         const participacao = totalCarteira > 0 ? (saldo / totalCarteira) * 100 : 0;
                         const comprar = participacao < idealAtivo;
-                        /** Nota reclassificada pelo desempenho dos últimos 12 meses. */
-                        const d = desempenho.get(a.ticker.toUpperCase()) ?? SEM_DESEMPENHO;
                         return (
                           <TableRow key={a.id}>
                             <TableCell className={cel}>
@@ -639,32 +613,6 @@ export function CarteiraGrupos({
                             )}
                             {colunas.saldo && (
                               <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>{brl(saldo, 2)}</TableCell>
-                            )}
-                            {colunas.nota && (
-                              <TableCell className={`text-center ${colLg} ${cel}`}>
-                                <span
-                                  title={
-                                    d.retorno12m === null
-                                      ? "Sem histórico de 12 meses para este ativo"
-                                      : `Desempenho 12m: ${num(d.retorno12m, 1)}%` +
-                                        (d.excedente !== null
-                                          ? ` · ${d.excedente >= 0 ? "+" : ""}${num(d.excedente, 1)} p.p. vs Ibovespa`
-                                          : "") +
-                                        ` · ${d.classificacao}`
-                                  }
-                                  className={`inline-grid place-items-center rounded-md font-bold tabular-nums ${
-                                    d.retorno12m === null
-                                      ? "bg-muted text-muted-foreground"
-                                      : d.nota >= 7
-                                        ? "bg-success text-success-foreground"
-                                        : d.nota >= 5
-                                          ? "bg-foreground text-background"
-                                          : "bg-destructive text-destructive-foreground"
-                                  } ${compacto ? "size-6 text-xs" : "size-8 text-sm"}`}
-                                >
-                                  {d.retorno12m === null ? "—" : d.nota.toFixed(0)}
-                                </span>
-                              </TableCell>
                             )}
 
                             {colunas.participacao && (
