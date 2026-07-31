@@ -229,12 +229,6 @@ export function PainelEtfs({ intervaloMs, busca, apenasFavoritos }: Props) {
     );
   }, []);
 
-  const aoSelecionar = useCallback((t: string) => {
-    setSelecionados((atual) =>
-      atual.includes(t) ? atual.filter((x) => x !== t) : atual.length >= 4 ? atual : [...atual, t],
-    );
-  }, []);
-
   const trocarRanking = (r: RankingEtf) => {
     setRanking(r);
     setOrdem(ORDEM_RANKING[r]);
