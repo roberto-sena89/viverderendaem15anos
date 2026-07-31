@@ -416,18 +416,29 @@ export function HistoricoMensalAportes() {
 
                   {aberta && (
                     <div className="mt-2 space-y-2 pl-1 sm:pl-3">
-                      <div className="overflow-x-auto">
-                        <table className="w-full table-auto text-xs">
+                      <div className="w-full min-w-0">
+                        <table className="w-full table-fixed text-xs">
+                          <colgroup>
+                            <col className="w-[5.5rem]" />
+                            <col />
+                            <col className="hidden lg:table-column lg:w-[9rem]" />
+                            <col className="hidden xl:table-column xl:w-[9rem]" />
+                            <col className="hidden sm:table-column sm:w-[4.5rem]" />
+                            <col className="hidden sm:table-column sm:w-[6.5rem]" />
+                            <col className="hidden md:table-column md:w-[5.5rem]" />
+                            <col className="w-[7rem]" />
+                            <col className="w-[5.5rem]" />
+                          </colgroup>
                           <thead>
                             <tr className="border-b border-border text-[0.85rem] tracking-[0.06em] text-muted-foreground uppercase">
-                              <th className="py-1.5 pr-2 text-left font-semibold">DATA</th>
+                              <th className="py-1.5 pr-2 text-left font-semibold">Data</th>
                               <th className="py-1.5 pr-2 text-left font-semibold">Ativo</th>
-                              <th className="py-1.5 pr-2 text-left font-semibold">Categoria</th>
-                              <th className="py-1.5 pr-2 text-left font-semibold">Corretora</th>
-                              <th className="py-1.5 pr-2 text-right font-semibold">Qtd.</th>
-                              <th className="py-1.5 pr-2 text-right font-semibold">Preço médio</th>
-                              <th className="py-1.5 pr-2 text-right font-semibold">Taxas</th>
-                              <th className="py-1.5 pr-2 text-right font-semibold">Valor aplicado</th>
+                              <th className="hidden py-1.5 pr-2 text-left font-semibold lg:table-cell">Categoria</th>
+                              <th className="hidden py-1.5 pr-2 text-left font-semibold xl:table-cell">Corretora</th>
+                              <th className="hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">Qtd.</th>
+                              <th className="hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">Preço médio</th>
+                              <th className="hidden py-1.5 pr-2 text-right font-semibold md:table-cell">Taxas</th>
+                              <th className="py-1.5 pr-2 text-right font-semibold">Valor</th>
                               <th className="py-1.5 text-right font-semibold">Editar</th>
                             </tr>
                           </thead>
