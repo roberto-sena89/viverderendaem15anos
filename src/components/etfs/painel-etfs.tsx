@@ -56,6 +56,7 @@ import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { mesclarPrecosEtfs, useEtfsAoVivo } from "@/lib/etfs-tempo-real";
+import { usePrecosBrapiEtfs } from "@/lib/etfs-brapi";
 
 const CHAVE_COLUNAS = "etfs:colunas";
 const COLUNAS_PADRAO: ColunaEtfId[] = [
