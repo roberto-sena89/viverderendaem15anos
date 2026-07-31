@@ -163,13 +163,22 @@ function Dashboard() {
       if (c === "Renda Fixa") {
         return {
           name: "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)",
+          cor: corCategoria("Renda Fixa"),
           value: soma(["Renda Fixa", ...SUBCATEGORIAS_RF]),
-          subs: [{ name: "Tesouro Direto", value: soma(SUBCATEGORIAS_RF) }].filter((s) => s.value > 0),
+          subs: [
+            { name: "Tesouro Direto", cor: corCategoria("Tesouro Direto"), value: soma(SUBCATEGORIAS_RF) },
+          ].filter((s) => s.value > 0),
         };
       }
-      return { name: c, value: soma([c]), subs: [] as { name: string; value: number }[] };
+      return {
+        name: c,
+        cor: corCategoria(c),
+        value: soma([c]),
+        subs: [] as { name: string; cor: string; value: number }[],
+      };
     })
     .filter((c) => c.value > 0);
+
 
 
 
