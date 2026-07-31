@@ -256,7 +256,25 @@ export const procurarAtivos = createServerFn({ method: "GET" })
       }
     }
 
-    // 2) B3 / exterior via Yahoo Finance
+    // 2) ETFs internacionais listados na B3 (catálogo local, sempre disponível)
+    const misto = CATEGORIAS_MISTAS.includes(categoria);
+    if (!categoria || misto || categoria === "ETF Brasil") {
+      for (const e of ETFS_GLOBAIS_B3) {
+        const normal = e.nome
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toUpperCase();
+        if (!e.ticker.startsWith(alvo) && !normal.includes(alvo)) continue;
+        sugestoes.push({
+          ticker: e.ticker,
+          nome: e.nome,
+          fonte: "B3",
+          detalhe: "ETF internacional negociado em reais",
+        });
+      }
+    }
+
+    // 3) B3 / exterior via Yahoo Finance
     if (!CATEGORIAS_TESOURO.includes(categoria)) {
       try {
         const mercado = await import("@/lib/market.server");
@@ -265,10 +283,11 @@ export const procurarAtivos = createServerFn({ method: "GET" })
         for (const a of encontrados) {
           const ehSA = a.simbolo.endsWith(".SA");
           if (categoria === "Criptomoedas" && !/-(BRL|USD)$/.test(a.simbolo)) continue;
-          if (categoria && categoria !== "Criptomoedas") {
+          if (categoria && categoria !== "Criptomoedas" && !misto) {
             if (brasileiro && !ehSA) continue;
             if (!brasileiro && ehSA) continue;
           }
+
           sugestoes.push({
             ticker: a.simbolo.replace(/\.SA$/, ""),
             nome: a.nome ?? a.simbolo,
