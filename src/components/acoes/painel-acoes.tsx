@@ -434,65 +434,68 @@ export function PainelAcoes({ intervaloMs, busca, apenasFavoritos }: Props) {
                 <DropdownMenuContent
                   align="end"
                   sideOffset={8}
-                  className="w-[min(94vw,44rem)] p-0"
+                  className="w-[min(94vw,52rem)] overflow-hidden p-0"
                 >
-                  <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
-                    <div className="min-w-0">
-                      <DropdownMenuLabel className="p-0 text-sm">Exibir indicadores</DropdownMenuLabel>
-                      <p className="text-xs text-muted-foreground">
-                        {colunas.length} de {COLUNAS_ACAO.length} colunas visíveis na tabela
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 text-xs"
+                  <div className="flex items-center justify-between gap-3 px-4 pt-3 pb-2">
+                    <DropdownMenuLabel className="p-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                      Indicadores · {colunas.length}/{COLUNAS_ACAO.length}
+                    </DropdownMenuLabel>
+                    <div className="flex shrink-0 gap-3 text-xs">
+                      <button
+                        type="button"
+                        className="text-muted-foreground transition-colors hover:text-foreground"
                         onClick={(e) => {
                           e.preventDefault();
                           setColunas(COLUNAS_PADRAO);
                         }}
                       >
                         Padrão
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 text-xs"
+                      </button>
+                      <button
+                        type="button"
+                        className="text-muted-foreground transition-colors hover:text-foreground"
                         onClick={(e) => {
                           e.preventDefault();
                           setColunas([]);
                         }}
                       >
                         Limpar
-                      </Button>
+                      </button>
                     </div>
                   </div>
 
-                  <div className="grid max-h-[60dvh] grid-cols-1 gap-x-6 gap-y-4 overflow-y-auto p-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {/* chips compactos: cabem sem qualquer rolagem */}
+                  <div className="flex flex-col gap-2 px-4 pt-1 pb-4">
                     {GRUPOS_COLUNA.map((grupo) => (
-                      <div key={grupo} className="min-w-0">
-                        <p className="mb-1 text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      <div key={grupo} className="flex flex-wrap items-center gap-1.5">
+                        <span className="w-24 shrink-0 truncate text-[0.65rem] tracking-wide text-muted-foreground uppercase">
                           {grupo}
-                        </p>
-                        <div className="space-y-0.5">
-                          {COLUNAS_ACAO.filter((c) => c.grupo === grupo).map((c) => (
-                            <label
+                        </span>
+                        {COLUNAS_ACAO.filter((c) => c.grupo === grupo).map((c) => {
+                          const on = colunas.includes(c.id);
+                          return (
+                            <button
                               key={c.id}
-                              className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+                              type="button"
+                              aria-pressed={on}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                alternarColuna(c.id);
+                              }}
+                              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                                on
+                                  ? "border-primary/40 bg-primary/15 text-primary"
+                                  : "border-border text-muted-foreground hover:bg-muted"
+                              }`}
                             >
-                              <Checkbox
-                                checked={colunas.includes(c.id)}
-                                onCheckedChange={() => alternarColuna(c.id)}
-                                aria-label={c.rotulo}
-                              />
-                              <span className="min-w-0 truncate">{c.rotulo}</span>
-                            </label>
-                          ))}
-                        </div>
+                              {c.rotulo}
+                            </button>
+                          );
+                        })}
                       </div>
                     ))}
                   </div>
+
                 </DropdownMenuContent>
 
               </DropdownMenu>
