@@ -17,7 +17,7 @@ const Slider = React.forwardRef<
     </SliderPrimitive.Track>
     <SliderPrimitive.Thumb
       aria-label={props["aria-label"] ?? "Valor"}
-      className="block size-5 rounded-full border border-primary/50 bg-background shadow transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+      className="block size-5 rounded-full border border-primary/50 bg-background shadow transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
     />
   </SliderPrimitive.Root>
 ));
