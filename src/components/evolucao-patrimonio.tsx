@@ -563,7 +563,7 @@ export function EvolucaoPatrimonio() {
                 aria-pressed={destaque === s.chave}
                 title={`Destacar ${s.rotulo}`}
                 className={cn(
-                  "flex shrink-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all",
+                  "flex min-w-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all sm:shrink-0",
                   destaque === s.chave
                     ? "border-primary/50 bg-card shadow-sm"
                     : "border-border bg-muted/30 hover:bg-muted/60",
