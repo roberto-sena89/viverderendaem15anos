@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Bell, Clock, RefreshCw, Settings2, Wifi, WifiOff } from "lucide-react";
+import { Bell, BellRing, Clock, RefreshCw, Settings2, Wifi, WifiOff } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { pedirPermissaoPush, permissaoPush } from "@/lib/alertas-historico";
 import { INTERVALOS, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+
 
 /** Tempo relativo curto ("há 12s", "às 14:32"). */
 export function tempoRelativo(ts: number | null): string {
@@ -35,6 +38,11 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
     const id = window.setInterval(() => setTick((t) => t + 1), 10_000);
     return () => window.clearInterval(id);
   }, []);
+
+  const [permissao, setPermissao] = useState<NotificationPermission | "indisponivel">("indisponivel");
+  useEffect(() => setPermissao(permissaoPush()), []);
+
+
 
   const rotulo =
     status === "atualizando"
@@ -168,7 +176,41 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
                 />
                 <span className="text-xs text-muted-foreground">% no dia</span>
               </div>
+
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <Label htmlFor="sync-push" className="flex items-center gap-1.5 text-sm">
+                  <BellRing className="size-3.5" /> Notificação push
+                </Label>
+                <Switch
+                  id="sync-push"
+                  disabled={!config.alertaAtivo || permissao === "indisponivel"}
+                  checked={config.pushAtivo && permissao === "granted"}
+                  onCheckedChange={async (v) => {
+                    if (!v) {
+                      salvarConfig({ pushAtivo: false });
+                      return;
+                    }
+                    const p = await pedirPermissaoPush();
+                    setPermissao(p);
+                    if (p === "granted") {
+                      salvarConfig({ pushAtivo: true });
+                      toast.success("Notificações push ativadas neste dispositivo.");
+                    } else {
+                      salvarConfig({ pushAtivo: false });
+                      toast.error("Permissão de notificações bloqueada no navegador.");
+                    }
+                  }}
+                />
+              </div>
+              <p className="text-[0.7rem] leading-snug text-muted-foreground">
+                {permissao === "indisponivel"
+                  ? "Este navegador não suporta notificações."
+                  : permissao === "denied"
+                    ? "Permissão bloqueada — libere nas configurações do navegador."
+                    : "Avisos do sistema quando um ativo passar do limite. O histórico fica no sino do cabeçalho."}
+              </p>
             </div>
+
           </PopoverContent>
         </Popover>
       </span>

@@ -18,7 +18,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import { SinoAlertas } from "@/components/sino-alertas";
 import { ThemeToggle } from "@/components/theme";
+
 
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -234,7 +236,9 @@ export function AppShell({
             </div>
 
             <div className="flex shrink-0 items-center gap-1 self-start sm:self-center">
+              <SinoAlertas />
               <ThemeToggle />
+
               <Button
                 variant="ghost"
                 size="icon"

@@ -11,9 +11,11 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { notificarPush, registrarAlerta } from "@/lib/alertas-historico";
 import { cotacoesCarteira, type CotacaoLive } from "@/lib/cotacoes.functions";
 import { useAtivos } from "@/lib/data";
 import type { Ativo } from "@/lib/portfolio";
+
 
 /* ---------------------------------------------------------------- *
  * Preferências do usuário (persistidas no navegador)
@@ -27,7 +29,10 @@ export interface ConfigSync {
   /** Alerta quando um ativo variar acima deste percentual no dia. */
   alertaAtivo: boolean;
   alertaPercent: number;
+  /** Também enviar notificação push nativa do navegador. */
+  pushAtivo: boolean;
 }
+
 
 export const INTERVALOS = [
   { ms: 15_000, rotulo: "15s" },
@@ -41,7 +46,9 @@ const CONFIG_PADRAO: ConfigSync = {
   intervaloMs: 30_000,
   alertaAtivo: false,
   alertaPercent: 5,
+  pushAtivo: false,
 };
+
 
 const CHAVE_CONFIG = "cotacoes:config";
 const CHAVE_CACHE = "cotacoes:cache";
@@ -211,11 +218,20 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
         const marca = `${chave}:${new Date().toISOString().slice(0, 10)}`;
         if (!alertados.current.has(marca)) {
           alertados.current.add(marca);
-          toast.info(
-            `${chave} variou ${c.variacaoPercent > 0 ? "+" : ""}${c.variacaoPercent.toFixed(2)}% hoje.`,
-          );
+          const sinal = c.variacaoPercent > 0 ? "+" : "";
+          const texto = `${chave} variou ${sinal}${c.variacaoPercent.toFixed(2)}% hoje.`;
+          toast.info(texto);
+          const push = config.pushAtivo && notificarPush("Alerta de variação", texto);
+          registrarAlerta({
+            ticker: chave,
+            variacaoPercent: c.variacaoPercent,
+            preco: c.preco,
+            limite: config.alertaPercent,
+            canais: push ? ["no app", "push"] : ["no app"],
+          });
         }
       }
+
     }
     if (Object.keys(novos).length === 0) return;
     setFlash((f) => ({ ...f, ...novos }));
@@ -227,7 +243,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
       });
     }, 1600);
     return () => window.clearTimeout(id);
-  }, [data, config.alertaAtivo, config.alertaPercent]);
+  }, [data, config.alertaAtivo, config.alertaPercent, config.pushAtivo]);
 
   const status: StatusSync = isFetching
     ? "atualizando"
