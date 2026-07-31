@@ -100,14 +100,14 @@ function CarteiraPage() {
                   type="button"
                   onClick={() => setFiltro(f)}
                   aria-pressed={ativo}
-                  className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors sm:min-h-9 ${
+                  className={`flex min-h-11 shrink-0 flex-col items-center justify-center gap-0 rounded-xl px-4 py-2 text-xs font-semibold whitespace-nowrap transition-colors sm:min-h-9 ${
                     ativo
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  {f}
-                  <span className={`tabular-nums ${ativo ? "opacity-80" : "opacity-60"}`}>{qtd}</span>
+                  <span>{f === "ETF (Global)" ? "ETF (Global)" : f}</span>
+                  <span className={`text-[10px] tabular-nums ${ativo ? "opacity-90" : "opacity-60"}`}>{qtd}</span>
                 </button>
               );
             })}

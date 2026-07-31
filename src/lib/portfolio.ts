@@ -4,7 +4,7 @@ export type Categoria =
   | "Tesouro Direto"
   | "BDR"
   | "ETF Brasil"
-  | "ETF (Exterior)"
+  | "ETF (Global)"
   | "Fiagro"
   | "Fundos de Investimentos"
   | "Renda Fixa"
@@ -22,7 +22,7 @@ export const categorias: Categoria[] = [
   
   "BDR",
   "ETF Brasil",
-  "ETF (Exterior)",
+  "ETF (Global)",
   "Fiagro",
   "Fundos de Investimentos",
   "Renda Fixa",
@@ -120,7 +120,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "ETF Brasil":
       return "ETFs - Brasil";
     case "ETF EUA":
-    case "ETF (Exterior)":
+    case "ETF (Global)":
       return "ETFs - Global";
     case "BDR":
       return "BDRs";
@@ -287,7 +287,7 @@ export const rotuloCategoria: Record<string, string> = {
   "Tesouro Direto": "Tesouro Direto (Renda Fixa)",
   BDR: "BDRs",
   "ETF Brasil": "ETFs - Brasil",
-  "ETF (Exterior)": "ETFs - Global",
+  "ETF (Global)": "ETF (Global)",
   Fiagro: "Fiagro",
   "Fundos de Investimentos": "Fundos de Investimentos",
   "Renda Fixa": "Renda Fixa (Tesouro SELIC, IPCA+,Prefixado)\u00a0CDB, LCI, LCA",
