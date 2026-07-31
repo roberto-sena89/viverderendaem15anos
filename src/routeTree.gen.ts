@@ -38,7 +38,6 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.melhores-livros-financas'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
-import { Route as ApiPublicDebugTickerRouteImport } from './routes/api/public/debug-ticker'
 import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
 import { Route as ApiPublicStreamCotacoesRouteImport } from './routes/api/public/stream/cotacoes'
@@ -195,11 +194,6 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicDebugTickerRoute = ApiPublicDebugTickerRouteImport.update({
-  id: '/api/public/debug-ticker',
-  path: '/api/public/debug-ticker',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicHooksAtualizarCotacoesRoute =
   ApiPublicHooksAtualizarCotacoesRouteImport.update({
     id: '/api/public/hooks/atualizar-cotacoes',
@@ -247,7 +241,6 @@ export interface FileRoutesByFullPath {
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/api/public/debug-ticker': typeof ApiPublicDebugTickerRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
@@ -281,7 +274,6 @@ export interface FileRoutesByTo {
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/api/public/debug-ticker': typeof ApiPublicDebugTickerRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
@@ -317,7 +309,6 @@ export interface FileRoutesById {
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/api/public/debug-ticker': typeof ApiPublicDebugTickerRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
@@ -353,7 +344,6 @@ export interface FileRouteTypes {
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/api/public/debug-ticker'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/stream/cotacoes'
@@ -387,7 +377,6 @@ export interface FileRouteTypes {
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/api/public/debug-ticker'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/stream/cotacoes'
@@ -422,7 +411,6 @@ export interface FileRouteTypes {
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
-    | '/api/public/debug-ticker'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/stream/cotacoes'
@@ -446,7 +434,6 @@ export interface RootRouteChildren {
   BlogMelhoresLivrosFinancasRoute: typeof BlogMelhoresLivrosFinancasRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  ApiPublicDebugTickerRoute: typeof ApiPublicDebugTickerRoute
   ApiPublicHooksAtualizarCotacoesRoute: typeof ApiPublicHooksAtualizarCotacoesRoute
   ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
   ApiPublicStreamCotacoesRoute: typeof ApiPublicStreamCotacoesRoute
@@ -657,13 +644,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/debug-ticker': {
-      id: '/api/public/debug-ticker'
-      path: '/api/public/debug-ticker'
-      fullPath: '/api/public/debug-ticker'
-      preLoaderRoute: typeof ApiPublicDebugTickerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/hooks/atualizar-cotacoes': {
       id: '/api/public/hooks/atualizar-cotacoes'
       path: '/api/public/hooks/atualizar-cotacoes'
@@ -740,7 +720,6 @@ const rootRouteChildren: RootRouteChildren = {
   BlogMelhoresLivrosFinancasRoute: BlogMelhoresLivrosFinancasRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  ApiPublicDebugTickerRoute: ApiPublicDebugTickerRoute,
   ApiPublicHooksAtualizarCotacoesRoute: ApiPublicHooksAtualizarCotacoesRoute,
   ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
   ApiPublicStreamCotacoesRoute: ApiPublicStreamCotacoesRoute,
