@@ -376,7 +376,10 @@ export function useCotacoesTempoReal(): ContextoCotacoes {
     carregando: false,
     config: CONFIG_PADRAO,
     salvarConfig: () => {},
+    streaming: false,
+    statusStream: "inativo",
   };
+
 }
 
 /** Aplica as cotações ao vivo sobre a lista de ativos vinda do banco. */
