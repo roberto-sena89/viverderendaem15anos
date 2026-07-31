@@ -481,19 +481,26 @@ export function EvolucaoPatrimonio() {
           ) : null}
         </div>
 
-        <div className="-mx-1 h-[280px] sm:-mx-2 sm:h-[360px] xl:h-[420px]">
+        <div className="-mx-1 overflow-x-auto pb-1 sm:-mx-2 [scrollbar-width:thin]">
+          <div
+            className="h-[300px] sm:h-[380px] xl:h-[430px]"
+            style={{ minWidth: Math.max(320, dadosGrafico.length * 68) }}
+          >
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 18, right: 8, left: 0, bottom: 0 }} barGap={2}>
+            <ComposedChart data={dadosGrafico} margin={{ top: 18, right: 8, left: 0, bottom: 18 }} barGap={2} barCategoryGap="22%">
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
                 axisLine={{ stroke: "var(--color-border)" }}
-                minTickGap={8}
-                interval="preserveStartEnd"
+                interval={0}
+                angle={granularidade === "mensal" && dadosGrafico.length > 10 ? -35 : 0}
+                textAnchor={granularidade === "mensal" && dadosGrafico.length > 10 ? "end" : "middle"}
+                height={granularidade === "mensal" && dadosGrafico.length > 10 ? 48 : 28}
                 tickMargin={8}
               />
+
               <YAxis
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
@@ -515,12 +522,14 @@ export function EvolucaoPatrimonio() {
                 radius={[3, 3, 0, 0]}
                 maxBarSize={38}
               >
+                {dadosGrafico.length <= 14 ? (
                 <LabelList
                   dataKey="patrimonio"
                   position="top"
                   formatter={(v: number) => compacto(Number(v))}
                   style={{ fontSize: 10, fill: "var(--color-muted-foreground)" }}
                 />
+                ) : null}
               </Bar>
               <Bar
                 dataKey="aportadoAcum"
@@ -529,12 +538,14 @@ export function EvolucaoPatrimonio() {
                 radius={[3, 3, 0, 0]}
                 maxBarSize={38}
               >
+                {dadosGrafico.length <= 14 ? (
                 <LabelList
                   dataKey="aportadoAcum"
                   position="top"
                   formatter={(v: number) => compacto(Number(v))}
                   style={{ fontSize: 10, fill: "var(--color-muted-foreground)" }}
                 />
+                ) : null}
               </Bar>
               {comparar ? (
                 <Line
@@ -550,7 +561,9 @@ export function EvolucaoPatrimonio() {
               ) : null}
             </ComposedChart>
           </ResponsiveContainer>
+          </div>
         </div>
+
       </Panel>
 
 
