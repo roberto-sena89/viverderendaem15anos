@@ -522,12 +522,14 @@ export function EvolucaoPatrimonio() {
                 radius={[3, 3, 0, 0]}
                 maxBarSize={38}
               >
+                {dadosGrafico.length <= 14 ? (
                 <LabelList
                   dataKey="patrimonio"
                   position="top"
                   formatter={(v: number) => compacto(Number(v))}
                   style={{ fontSize: 10, fill: "var(--color-muted-foreground)" }}
                 />
+                ) : null}
               </Bar>
               <Bar
                 dataKey="aportadoAcum"
@@ -536,12 +538,14 @@ export function EvolucaoPatrimonio() {
                 radius={[3, 3, 0, 0]}
                 maxBarSize={38}
               >
+                {dadosGrafico.length <= 14 ? (
                 <LabelList
                   dataKey="aportadoAcum"
                   position="top"
                   formatter={(v: number) => compacto(Number(v))}
                   style={{ fontSize: 10, fill: "var(--color-muted-foreground)" }}
                 />
+                ) : null}
               </Bar>
               {comparar ? (
                 <Line
