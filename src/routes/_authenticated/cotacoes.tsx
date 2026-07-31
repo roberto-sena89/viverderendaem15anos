@@ -28,6 +28,8 @@ function Cotacoes() {
       title="Cotações de mercado"
       description="Índices, moedas e ETFs atualizados, com busca por ativo"
     >
+      <p className="text-sm text-muted-foreground">Nenhum conteúdo nesta página no momento.</p>
+
     </AppShell>
   );
 }
