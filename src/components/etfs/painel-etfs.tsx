@@ -218,7 +218,18 @@ export function PainelEtfs({ intervaloMs, busca, apenasFavoritos }: Props) {
   const totalPaginas = Math.max(1, Math.ceil(ordenadas.length / porPagina));
   const paginaAtual = Math.min(pagina, totalPaginas - 1);
   const inicio = paginaAtual * porPagina;
-  const visiveis = ordenadas.slice(inicio, inicio + porPagina);
+  const paginaTickers = useMemo(
+    () => ordenadas.slice(inicio, inicio + porPagina).map((l) => l.ticker),
+    [ordenadas, inicio, porPagina],
+  );
+
+  // Cotações BRAPI dos ETFs visíveis, atualizadas a cada 5s.
+  const brapi = usePrecosBrapiEtfs(paginaTickers, pregao.aberto && intervaloMs > 0);
+
+  const visiveis = useMemo(
+    () => mesclarPrecosEtfs(ordenadas.slice(inicio, inicio + porPagina), brapi.precos),
+    [ordenadas, inicio, porPagina, brapi.precos],
+  );
 
   useEffect(() => {
     setPagina(0);
