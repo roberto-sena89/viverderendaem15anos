@@ -234,7 +234,9 @@ export function AppShell({
             </div>
 
             <div className="flex shrink-0 items-center gap-1 self-start sm:self-center">
+              <SinoAlertas />
               <ThemeToggle />
+
               <Button
                 variant="ghost"
                 size="icon"

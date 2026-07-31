@@ -39,6 +39,11 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
     return () => window.clearInterval(id);
   }, []);
 
+  const [permissao, setPermissao] = useState<NotificationPermission | "indisponivel">("indisponivel");
+  useEffect(() => setPermissao(permissaoPush()), []);
+
+
+
   const rotulo =
     status === "atualizando"
       ? "Atualizando cotações…"
