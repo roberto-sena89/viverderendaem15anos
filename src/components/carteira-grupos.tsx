@@ -439,12 +439,34 @@ export function CarteiraGrupos({
                                       : ""
                                 }`}
                                 title={
-                                  cotacoes.get(chaveTicker(a.ticker))
-                                    ? `Fonte: ${cotacoes.get(chaveTicker(a.ticker))!.fonte}`
-                                    : undefined
+                                  live
+                                    ? `Fonte: ${live.fonte}${horaCotacao(live.atualizadoEm) ? ` · ${horaCotacao(live.atualizadoEm)}` : ""}${live.erro ? ` · ${live.erro}` : ""}`
+                                    : "Aguardando cotação do provedor de mercado"
                                 }
                               >
                                 {brl(a.precoAtual, 2)}
+                              </TableCell>
+                            )}
+                            {colunas.variacaoDia && (
+                              <TableCell
+                                className={`text-right ${cel} ${
+                                  flash[chaveTicker(a.ticker)] === "alta"
+                                    ? "flash-alta"
+                                    : flash[chaveTicker(a.ticker)] === "baixa"
+                                      ? "flash-baixa"
+                                      : ""
+                                }`}
+                                title={
+                                  live
+                                    ? `Variação do dia · ${live.fonte}`
+                                    : "Aguardando cotação do provedor de mercado"
+                                }
+                              >
+                                {live?.variacaoPercent != null ? (
+                                  <Variacao value={live.variacaoPercent} />
+                                ) : (
+                                  <span className="text-muted-foreground">—</span>
+                                )}
                               </TableCell>
                             )}
                             {colunas.variacao && (
