@@ -202,7 +202,8 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         
         <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4 lg:px-8 lg:py-5">
+          <div className="container-app grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-4 sm:py-5">
+
             <div className="min-w-0 space-y-1">
               <nav aria-label="Trilha de navegação">
                 <ol className="flex min-w-0 items-center gap-1.5 text-[0.78rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
