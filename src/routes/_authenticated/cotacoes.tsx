@@ -9,6 +9,7 @@ import { PainelCategoria } from "@/components/cotacoes/painel-categoria";
 import { VisaoGeralMercado } from "@/components/cotacoes/visao-geral";
 import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { PainelAcoes } from "@/components/acoes/painel-acoes";
+import { PainelEtfs } from "@/components/etfs/painel-etfs";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
@@ -38,7 +39,7 @@ const ABAS: { id: string; rotulo: string; categoria?: CategoriaMercado }[] = [
   { id: "geral", rotulo: "Visão geral" },
   { id: "acoes", rotulo: "Ações", categoria: "acoes" },
   { id: "fiis", rotulo: "FIIs", categoria: "fiis" },
-  { id: "futuros", rotulo: "ETFS", categoria: "futuros" },
+  { id: "futuros", rotulo: "Futuros", categoria: "futuros" },
   { id: "commodities", rotulo: "Commodities", categoria: "commodities" },
   { id: "etfs", rotulo: "ETFs", categoria: "etfs" },
   { id: "cripto", rotulo: "Criptomoedas", categoria: "cripto" },
@@ -179,7 +180,11 @@ function Cotacoes() {
             <PainelAcoes intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
           </TabsContent>
 
-          {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes").map((a) => (
+          <TabsContent value="etfs" className="mt-4">
+            <PainelEtfs intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+          </TabsContent>
+
+          {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes" && a.id !== "etfs").map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
               <PainelCategoria
                 categoria={a.categoria as CategoriaMercado}
