@@ -276,10 +276,23 @@ async function brapiPagina(
   const params = new URLSearchParams(historicoBrapi);
   if (token) params.set("token", token);
   const url = `https://brapi.dev/api/quote/${tickers.join(",")}?${params}`;
-  const data = await json<{ results?: BrapiQuote[]; error?: boolean; code?: string; message?: string }>(
-    url,
-    120_000,
-  );
+  // A brapi devolve 4xx com corpo JSON descrevendo o limite do plano;
+  // por isso lemos o corpo mesmo em respostas de erro.
+  type Resposta = { results?: BrapiQuote[]; error?: boolean; code?: string; message?: string };
+  let data: Resposta | null = null;
+  const cache = memoria.get(url);
+  if (cache && cache.expira > Date.now()) {
+    data = cache.valor as Resposta;
+  } else {
+    try {
+      const res = await fetch(url, { headers: { Accept: "application/json" } });
+      data = (await res.json()) as Resposta;
+      if (res.ok) memoria.set(url, { valor: data, expira: Date.now() + 120_000 });
+    } catch {
+      data = null;
+    }
+  }
+
   if (data?.error) {
     if (data.code === "QUOTES_PER_REQUEST_EXCEEDED") {
       const permitido = Number(data.message?.match(/máximo\s+(\d+)/i)?.[1] ?? 1);
