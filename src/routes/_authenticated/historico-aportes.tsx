@@ -475,9 +475,9 @@ function HistoricoAportesPage() {
           </div>
           <Button variant="outline" size="sm" className="shrink-0" onClick={exportar}>
             <Download className="size-4" />
-            <span className="hidden xs:inline sm:inline">Exportar CSV</span>
-            <span className="xs:hidden sm:hidden">CSV</span>
+            <span className="hidden sm:inline">Exportar </span>CSV
           </Button>
+
         </div>
 
       </div>
