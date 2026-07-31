@@ -495,8 +495,10 @@ export function TabelaAcoes({
                       ordem={ordem}
                       aoOrdenar={aoOrdenar}
                       alinhamento={ALINHA_ESQUERDA.includes(c.id) ? "left" : "right"}
+                      largura={ALINHA_ESQUERDA.includes(c.id) ? "w-[12%]" : undefined}
                     />
                   ))}
+
                 </tr>
               </thead>
               <tbody>
