@@ -88,3 +88,38 @@ export function idadeMs(grade: RespostaGrade) {
   const t = Date.parse(grade.atualizadoEm);
   return Number.isNaN(t) ? Number.POSITIVE_INFINITY : Date.now() - t;
 }
+
+/** Buscas em andamento, para não duplicar chamadas simultâneas por categoria. */
+const emAndamento = new Map<string, Promise<RespostaGrade>>();
+
+async function buscarEGravar(categoria: CategoriaMercado): Promise<RespostaGrade> {
+  const existente = emAndamento.get(categoria);
+  if (existente) return existente;
+  const p = (async () => {
+    const { buscarGrade } = await import("@/lib/grade-mercado.server");
+    const grade = await buscarGrade(categoria);
+    await gravarCache(categoria, grade);
+    return grade;
+  })().finally(() => emAndamento.delete(categoria));
+  emAndamento.set(categoria, p);
+  return p;
+}
+
+/**
+ * Grade com cache: devolve o dado salvo quando ainda está fresco; se estiver
+ * velho, devolve o valor atual e dispara a atualização em background
+ * (stale-while-revalidate). Sem cache algum, busca na hora.
+ */
+export async function gradeComCache(
+  categoria: CategoriaMercado,
+  opcoes: { forcar?: boolean } = {},
+): Promise<RespostaGrade> {
+  if (opcoes.forcar) return buscarEGravar(categoria);
+  const cache = await lerCache(categoria);
+  if (!cache) return buscarEGravar(categoria);
+  const idade = idadeMs(cache);
+  if (idade <= frescorAtual() && !cache.parcial) return cache;
+  // Atualiza em segundo plano e responde imediatamente com o último valor.
+  void buscarEGravar(categoria).catch(() => undefined);
+  return cache;
+}
