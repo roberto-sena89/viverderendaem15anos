@@ -58,25 +58,68 @@ async function buscarBloco(tickers: string[]): Promise<PrecoBrapiEtf[]> {
   }
 }
 
-/** Cotações BRAPI dos tickers informados (com cache de 4s por ativo). */
+/** Requisições em andamento por ticker (deduplicação de chamadas simultâneas). */
+const emVoo = new Map<string, Promise<PrecoBrapiEtf | null>>();
+
+/** Limpa entradas antigas do cache para não crescer indefinidamente. */
+function podarCache(agora: number) {
+  if (cache.size < 500) return;
+  for (const [k, v] of cache) if (agora - v.em > TTL_MS * 30) cache.delete(k);
+}
+
+/**
+ * Cotações BRAPI dos tickers informados.
+ *
+ * - Cache por ativo (TTL 4s): tickers já atualizados não geram nova chamada.
+ * - Deduplicação: se o mesmo ticker já está sendo buscado, a chamada aguarda a
+ *   requisição em andamento em vez de disparar outra.
+ */
 export async function precosBrapiEtfs(tickers: string[]): Promise<PrecoBrapiEtf[]> {
   const agora = Date.now();
+  podarCache(agora);
   const limpos = [...new Set(tickers.map((t) => t.trim().toUpperCase()).filter(Boolean))];
 
   const prontos: PrecoBrapiEtf[] = [];
+  const aguardar: Array<Promise<PrecoBrapiEtf | null>> = [];
   const faltantes: string[] = [];
+
   for (const t of limpos) {
     const salvo = cache.get(t);
-    if (salvo && agora - salvo.em < TTL_MS) prontos.push(salvo.valor);
-    else faltantes.push(t);
+    if (salvo && agora - salvo.em < TTL_MS) {
+      prontos.push(salvo.valor);
+      continue;
+    }
+    const pendente = emVoo.get(t);
+    if (pendente) {
+      aguardar.push(pendente);
+      continue;
+    }
+    faltantes.push(t);
   }
 
-  const lotes = await Promise.all(blocos(faltantes, BLOCO).map((b) => buscarBloco(b)));
-  for (const lote of lotes) {
-    for (const p of lote) {
-      cache.set(p.ticker, { em: Date.now(), valor: p });
-      prontos.push(p);
+  for (const bloco of blocos(faltantes, BLOCO)) {
+    const requisicao = buscarBloco(bloco).then((lote) => {
+      const em = Date.now();
+      const porTicker = new Map(lote.map((p) => [p.ticker, p]));
+      for (const p of lote) cache.set(p.ticker, { em, valor: p });
+      for (const t of bloco) emVoo.delete(t);
+      return porTicker;
+    });
+    requisicao.catch(() => {
+      for (const t of bloco) emVoo.delete(t);
+    });
+    for (const t of bloco) {
+      const promessa = requisicao.then((m) => m.get(t) ?? null).catch(() => null);
+      emVoo.set(t, promessa);
+      aguardar.push(promessa);
     }
+
   }
-  return prontos;
+
+  const resolvidos = await Promise.all(aguardar);
+  for (const p of resolvidos) if (p) prontos.push(p);
+
+  const vistos = new Set<string>();
+  return prontos.filter((p) => (vistos.has(p.ticker) ? false : (vistos.add(p.ticker), true)));
 }
+
