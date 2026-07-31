@@ -123,6 +123,55 @@ const CORES_SERIE: Record<SerieChave, string> = {
   anterior: "var(--color-muted-foreground)",
 };
 
+/** Tooltip da rosca de distribuição: usa a cor da categoria e traz uma leitura em texto. */
+function TooltipCategoria({ active, payload }: { active?: boolean; payload?: any[] }) {
+  const item = payload?.[0]?.payload as
+    | { categoria: string; valor: number; parte: number; antes: number; cor: string }
+    | undefined;
+  if (!active || !item) return null;
+
+  const delta = item.parte - item.antes;
+  const frase =
+    item.antes === 0
+      ? "Nova posição desde o início do período."
+      : delta > 0.5
+        ? `Ganhou ${pct(delta)} de participação na carteira.`
+        : delta < -0.5
+          ? `Perdeu ${pct(Math.abs(delta))} de participação na carteira.`
+          : "Participação estável no período.";
+  const peso =
+    item.parte >= 40
+      ? "Concentração alta — avalie diversificar."
+      : item.parte >= 20
+        ? "Peso relevante na carteira."
+        : "Posição complementar.";
+
+  return (
+    <div
+      className="min-w-[13rem] max-w-[16rem] rounded-xl border bg-popover/95 p-3 shadow-lg backdrop-blur"
+      style={{ borderColor: item.cor, boxShadow: `0 8px 30px -12px ${item.cor}` }}
+    >
+      <div className="flex items-center gap-2">
+        <span className="size-2.5 shrink-0 rounded-full" style={{ background: item.cor }} aria-hidden />
+        <span className="min-w-0 flex-1 truncate text-xs font-semibold" style={{ color: item.cor }}>
+          {item.categoria}
+        </span>
+        <span className="shrink-0 text-xs font-bold tabular-nums" style={{ color: item.cor }}>
+          {pct(item.parte)}
+        </span>
+      </div>
+      <p className="mt-2 text-sm font-bold tabular-nums text-foreground">{brl(item.valor, 2)}</p>
+      <p className="mt-1 text-[0.7rem] leading-snug text-muted-foreground">
+        {pct(item.antes)} → {pct(item.parte)} · {frase}
+      </p>
+      <p className="mt-1 text-[0.7rem] font-medium leading-snug" style={{ color: item.cor }}>
+        {peso}
+      </p>
+    </div>
+  );
+}
+
+
 /** Tooltip com destaque da série sob o cursor e sem sobreposição de rótulos. */
 function TooltipEvolucao({
   active,
@@ -865,7 +914,7 @@ export function EvolucaoPatrimonio() {
                       />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(Number(v), 2)} />
+                  <Tooltip cursor={false} content={<TooltipCategoria />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
