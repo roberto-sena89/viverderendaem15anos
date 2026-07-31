@@ -265,13 +265,15 @@ type BrapiQuote = {
 
 /** Limite de tickers por requisição aprendido com a resposta da brapi. */
 let limiteBrapi = 0;
+/** Faixa/intervalo de histórico aceitos pelo plano da brapi (aprendido). */
+let historicoBrapi: { range: string; interval: string } = { range: "1d", interval: "30m" };
 
 async function brapiPagina(
   tickers: string[],
   token: string | undefined,
   mapa: Map<string, BrapiQuote>,
-): Promise<"ok" | "limite"> {
-  const params = new URLSearchParams({ range: "1d", interval: "30m" });
+): Promise<"ok" | "limite" | "intervalo"> {
+  const params = new URLSearchParams(historicoBrapi);
   if (token) params.set("token", token);
   const url = `https://brapi.dev/api/quote/${tickers.join(",")}?${params}`;
   const data = await json<{ results?: BrapiQuote[]; error?: boolean; code?: string; message?: string }>(
@@ -284,11 +286,16 @@ async function brapiPagina(
       limiteBrapi = Math.max(1, permitido);
       return "limite";
     }
+    if (data.code === "INVALID_INTERVAL" || data.code === "INVALID_RANGE") {
+      historicoBrapi = { range: "1mo", interval: "1d" };
+      return "intervalo";
+    }
     return "ok";
   }
   for (const r of data?.results ?? []) if (r.symbol) mapa.set(r.symbol.toUpperCase(), r);
   return "ok";
 }
+
 
 async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<LinhaCotacao[]> {
   const token = process.env.BRAPI_TOKEN;
