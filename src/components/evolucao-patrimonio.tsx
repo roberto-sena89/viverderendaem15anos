@@ -462,41 +462,35 @@ export function EvolucaoPatrimonio() {
       {/* 3. Gráfico principal */}
       <Panel
         title="Patrimônio x total aportado"
-        hint="Área verde: patrimônio total. Linha tracejada: dinheiro investido acumulado."
+        hint="Barras claras: patrimônio total. Barras escuras: dinheiro investido acumulado."
       >
         <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-foreground">
-            <AreaChartIcon className="size-3.5 text-primary" aria-hidden />
+            <span className="inline-block size-2.5 rounded-[2px] bg-primary" aria-hidden />
             Patrimônio
           </span>
           <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-muted-foreground">
-            <LineChartIcon className="size-3.5" aria-hidden />
+            <span className="inline-block size-2.5 rounded-[2px] bg-chart-12" aria-hidden />
             Total investido
           </span>
           {comparar ? (
             <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-muted-foreground">
-              <HistoryIcon className="size-3.5 text-chart-12" aria-hidden />
+              <HistoryIcon className="size-3.5" aria-hidden />
               Período anterior
             </span>
           ) : null}
         </div>
 
-        <div className="-mx-1 h-[260px] sm:-mx-2 sm:h-[340px] xl:h-[400px]">
+        <div className="-mx-1 h-[280px] sm:-mx-2 sm:h-[360px] xl:h-[420px]">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="gradPatrimonio" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.45} />
-                  <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
+            <ComposedChart data={dadosGrafico} margin={{ top: 18, right: 8, left: 0, bottom: 0 }} barGap={2}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
-                axisLine={false}
-                minTickGap={20}
+                axisLine={{ stroke: "var(--color-border)" }}
+                minTickGap={8}
                 interval="preserveStartEnd"
                 tickMargin={8}
               />
@@ -509,36 +503,47 @@ export function EvolucaoPatrimonio() {
                 tickFormatter={compacto}
               />
               <Tooltip
+                cursor={{ fill: "var(--color-muted)", opacity: 0.35 }}
                 contentStyle={tooltipStyle}
                 formatter={(v: number, nome: string) => [brl(Number(v), 2), nome]}
                 labelFormatter={(l: string) => `Período: ${l}`}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="patrimonio"
                 name="Patrimônio"
-                stroke="var(--color-primary)"
-                strokeWidth={2}
-                fill="url(#gradPatrimonio)"
-                dot={false}
-                activeDot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
+                fill="var(--color-primary)"
+                radius={[3, 3, 0, 0]}
+                maxBarSize={38}
+              >
+                <LabelList
+                  dataKey="patrimonio"
+                  position="top"
+                  formatter={(v: number) => compacto(Number(v))}
+                  style={{ fontSize: 10, fill: "var(--color-muted-foreground)" }}
+                />
+              </Bar>
+              <Bar
                 dataKey="aportadoAcum"
                 name="Total investido"
-                stroke="var(--color-muted-foreground)"
-                strokeWidth={1.5}
-                strokeDasharray="5 4"
-                dot={false}
-              />
+                fill="var(--color-chart-12)"
+                radius={[3, 3, 0, 0]}
+                maxBarSize={38}
+              >
+                <LabelList
+                  dataKey="aportadoAcum"
+                  position="top"
+                  formatter={(v: number) => compacto(Number(v))}
+                  style={{ fontSize: 10, fill: "var(--color-muted-foreground)" }}
+                />
+              </Bar>
               {comparar ? (
                 <Line
                   type="monotone"
                   dataKey="anterior"
                   name="Período anterior"
-                  stroke="var(--color-chart-12)"
+                  stroke="var(--color-muted-foreground)"
                   strokeWidth={1.5}
+                  strokeDasharray="5 4"
                   dot={false}
                   connectNulls
                 />
@@ -547,6 +552,7 @@ export function EvolucaoPatrimonio() {
           </ResponsiveContainer>
         </div>
       </Panel>
+
 
       {/* 4. Comparativo período a período */}
       <Panel title={granularidade === "mensal" ? "Comparativo mês a mês" : "Comparativo ano a ano"}>
