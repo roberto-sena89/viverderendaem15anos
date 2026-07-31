@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bell, BellRing, Clock, RefreshCw, Settings2, Wifi, WifiOff } from "lucide-react";
+import { Bell, BellRing, Clock, Radio, RefreshCw, Settings2, Wifi, WifiOff } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +30,9 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
     carregando,
     config,
     salvarConfig,
+    streaming,
   } = useCotacoesTempoReal();
+
 
   // Re-renderiza a cada 10s para manter o "há Xs" vivo.
   const [, setTick] = useState(0);
@@ -90,6 +92,17 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
         {pregaoAberto ? <Wifi className="size-3" /> : <WifiOff className="size-3" />}
         {pregaoAberto ? "Mercado aberto" : `Fechado · abre ${proximaAbertura}`}
       </span>
+
+      {streaming ? (
+        <span
+          className="flex items-center gap-1.5 rounded-full bg-primary/10 px-2 py-0.5 text-[0.7rem] font-semibold text-primary"
+          title="Ativos internacionais recebendo preços por streaming (sem polling)"
+        >
+          <Radio className="size-3" />
+          Streaming internacional
+        </span>
+      ) : null}
+
 
       <span className="ml-auto flex items-center gap-1.5">
         <Button

@@ -12,6 +12,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { notificarPush, registrarAlerta } from "@/lib/alertas-historico";
+import {
+  itensStreamaveis,
+  useCotacoesStream,
+  type StatusStream,
+} from "@/lib/cotacoes-stream";
 import { cotacoesCarteira, type CotacaoLive } from "@/lib/cotacoes.functions";
 import { useAtivos } from "@/lib/data";
 import type { Ativo } from "@/lib/portfolio";
@@ -142,9 +147,13 @@ interface ContextoCotacoes {
   carregando: boolean;
   config: ConfigSync;
   salvarConfig: (parcial: Partial<ConfigSync>) => void;
+  /** Streaming (SSE) ativo para os ativos internacionais da carteira. */
+  streaming: boolean;
+  statusStream: StatusStream;
 }
 
 const Ctx = createContext<ContextoCotacoes | null>(null);
+
 
 const chaveTicker = (t: string) => t.trim().toUpperCase().replace(/\.SA$/i, "");
 
@@ -208,7 +217,31 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
   const mercadoAtivo =
     pregao.aberto || cripto || (temInternacional && mercadoGlobal.aberto);
 
-  const intervalo = config.automatico ? (mercadoAtivo ? config.intervaloMs : false) : false;
+  // Ativos que a fonte consegue transmitir por streaming (SSE).
+  const itensStream = useMemo(() => itensStreamaveis(ativos), [ativos]);
+
+  const [streamCotacoes, setStreamCotacoes] = useState<CotacaoLive[]>([]);
+  const [streamEm, setStreamEm] = useState<number | null>(null);
+
+  const aoReceberStream = useCallback((cotacoes: CotacaoLive[]) => {
+    setStreamCotacoes((atual) => {
+      const m = new Map(atual.map((c) => [chaveTicker(c.ticker), c] as const));
+      for (const c of cotacoes) if (c.preco !== null) m.set(chaveTicker(c.ticker), c);
+      return [...m.values()];
+    });
+    setStreamEm(Date.now());
+  }, []);
+
+  const { status: statusStream, streaming } = useCotacoesStream(itensStream, {
+    habilitado: config.automatico,
+    aoReceber: aoReceberStream,
+  });
+
+  // Com streaming ativo, os internacionais já chegam empurrados: o polling
+  // só precisa cobrir os ativos da B3 (e cai para 5min fora do pregão dela).
+  const precisaPolling = pregao.aberto || (!streaming && mercadoAtivo);
+  const intervaloBase = streaming && !pregao.aberto ? 300_000 : config.intervaloMs;
+  const intervalo = config.automatico ? (precisaPolling ? intervaloBase : false) : false;
 
   const { data, isFetching, isError, dataUpdatedAt, refetch } = useQuery({
     queryKey: ["cotacoes-carteira", itens.map((i) => `${i.ticker}:${i.categoria}`).sort().join(",")],
@@ -237,56 +270,69 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     const m = new Map<string, CotacaoLive>();
     for (const c of cache) m.set(chaveTicker(c.ticker), c);
     for (const c of data?.cotacoes ?? []) if (c.preco !== null) m.set(chaveTicker(c.ticker), c);
+    // O streaming tem prioridade: é o dado mais recente disponível.
+    for (const c of streamCotacoes) if (c.preco !== null) m.set(chaveTicker(c.ticker), c);
     return m;
-  }, [cache, data]);
+  }, [cache, data, streamCotacoes]);
 
-  // Flash + alertas de variação.
-  useEffect(() => {
-    if (!data?.cotacoes?.length) return;
-    const novos: Record<string, "alta" | "baixa"> = {};
-    for (const c of data.cotacoes) {
-      if (c.preco === null) continue;
-      const chave = chaveTicker(c.ticker);
-      const anterior = precosAnteriores.current[chave];
-      if (anterior !== undefined && anterior !== c.preco) {
-        novos[chave] = c.preco > anterior ? "alta" : "baixa";
-      }
-      precosAnteriores.current[chave] = c.preco;
+  // Flash + alertas de variação (tanto para o polling quanto para o stream).
+  const processarCotacoes = useCallback(
+    (cotacoes: CotacaoLive[]) => {
+      const novos: Record<string, "alta" | "baixa"> = {};
+      for (const c of cotacoes) {
+        if (c.preco === null) continue;
+        const chave = chaveTicker(c.ticker);
+        const anterior = precosAnteriores.current[chave];
+        if (anterior !== undefined && anterior !== c.preco) {
+          novos[chave] = c.preco > anterior ? "alta" : "baixa";
+        }
+        precosAnteriores.current[chave] = c.preco;
 
-      if (
-        config.alertaAtivo &&
-        c.variacaoPercent !== null &&
-        Math.abs(c.variacaoPercent) >= config.alertaPercent
-      ) {
-        const marca = `${chave}:${new Date().toISOString().slice(0, 10)}`;
-        if (!alertados.current.has(marca)) {
-          alertados.current.add(marca);
-          const sinal = c.variacaoPercent > 0 ? "+" : "";
-          const texto = `${chave} variou ${sinal}${c.variacaoPercent.toFixed(2)}% hoje.`;
-          toast.info(texto);
-          const push = config.pushAtivo && notificarPush("Alerta de variação", texto);
-          registrarAlerta({
-            ticker: chave,
-            variacaoPercent: c.variacaoPercent,
-            preco: c.preco,
-            limite: config.alertaPercent,
-            canais: push ? ["no app", "push"] : ["no app"],
-          });
+        if (
+          config.alertaAtivo &&
+          c.variacaoPercent !== null &&
+          Math.abs(c.variacaoPercent) >= config.alertaPercent
+        ) {
+          const marca = `${chave}:${new Date().toISOString().slice(0, 10)}`;
+          if (!alertados.current.has(marca)) {
+            alertados.current.add(marca);
+            const sinal = c.variacaoPercent > 0 ? "+" : "";
+            const texto = `${chave} variou ${sinal}${c.variacaoPercent.toFixed(2)}% hoje.`;
+            toast.info(texto);
+            const push = config.pushAtivo && notificarPush("Alerta de variação", texto);
+            registrarAlerta({
+              ticker: chave,
+              variacaoPercent: c.variacaoPercent,
+              preco: c.preco,
+              limite: config.alertaPercent,
+              canais: push ? ["no app", "push"] : ["no app"],
+            });
+          }
         }
       }
+      if (Object.keys(novos).length === 0) return;
+      setFlash((f) => ({ ...f, ...novos }));
+      window.setTimeout(() => {
+        setFlash((f) => {
+          const copia = { ...f };
+          for (const k of Object.keys(novos)) delete copia[k];
+          return copia;
+        });
+      }, 1600);
+    },
+    [config.alertaAtivo, config.alertaPercent, config.pushAtivo],
+  );
 
-    }
-    if (Object.keys(novos).length === 0) return;
-    setFlash((f) => ({ ...f, ...novos }));
-    const id = window.setTimeout(() => {
-      setFlash((f) => {
-        const copia = { ...f };
-        for (const k of Object.keys(novos)) delete copia[k];
-        return copia;
-      });
-    }, 1600);
-    return () => window.clearTimeout(id);
-  }, [data, config.alertaAtivo, config.alertaPercent, config.pushAtivo]);
+  useEffect(() => {
+    if (data?.cotacoes?.length) processarCotacoes(data.cotacoes);
+  }, [data, processarCotacoes]);
+
+  useEffect(() => {
+    if (streamCotacoes.length) processarCotacoes(streamCotacoes);
+    // Reprocessa apenas quando chega um novo lote empurrado pela fonte.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [streamEm]);
+
 
   const status: StatusSync = isFetching
     ? "atualizando"
@@ -300,14 +346,17 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     mapa,
     flash,
     status,
-    atualizadoEm: dataUpdatedAt || null,
+    atualizadoEm: Math.max(dataUpdatedAt || 0, streamEm ?? 0) || null,
     pregaoAberto: pregao.aberto,
     proximaAbertura: pregao.proximaAbertura,
     atualizarAgora: () => void refetch(),
     carregando: isFetching,
     config,
     salvarConfig,
+    streaming,
+    statusStream,
   };
+
 
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>;
 }
@@ -327,7 +376,10 @@ export function useCotacoesTempoReal(): ContextoCotacoes {
     carregando: false,
     config: CONFIG_PADRAO,
     salvarConfig: () => {},
+    streaming: false,
+    statusStream: "inativo",
   };
+
 }
 
 /** Aplica as cotações ao vivo sobre a lista de ativos vinda do banco. */

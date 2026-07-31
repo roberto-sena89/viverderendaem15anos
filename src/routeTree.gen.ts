@@ -40,6 +40,7 @@ import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
+import { Route as ApiPublicStreamCotacoesRouteImport } from './routes/api/public/stream/cotacoes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -205,6 +206,11 @@ const ApiPublicHooksAtualizarPrecosRoute =
     path: '/api/public/hooks/atualizar-precos',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicStreamCotacoesRoute = ApiPublicStreamCotacoesRouteImport.update({
+  id: '/api/public/stream/cotacoes',
+  path: '/api/public/stream/cotacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -237,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
+  '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -269,6 +276,7 @@ export interface FileRoutesByTo {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
+  '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
+  '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -337,6 +346,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
+    | '/api/public/stream/cotacoes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -369,6 +379,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
+    | '/api/public/stream/cotacoes'
   id:
     | '__root__'
     | '/'
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
+    | '/api/public/stream/cotacoes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -424,6 +436,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicHooksAtualizarCotacoesRoute: typeof ApiPublicHooksAtualizarCotacoesRoute
   ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
+  ApiPublicStreamCotacoesRoute: typeof ApiPublicStreamCotacoesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -645,6 +658,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksAtualizarPrecosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stream/cotacoes': {
+      id: '/api/public/stream/cotacoes'
+      path: '/api/public/stream/cotacoes'
+      fullPath: '/api/public/stream/cotacoes'
+      preLoaderRoute: typeof ApiPublicStreamCotacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -702,6 +722,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicHooksAtualizarCotacoesRoute: ApiPublicHooksAtualizarCotacoesRoute,
   ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
+  ApiPublicStreamCotacoesRoute: ApiPublicStreamCotacoesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
