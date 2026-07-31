@@ -44,18 +44,8 @@ export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
         ))}
       </div>
 
-      {watchlist.length > 0 ? (
-        <Panel title="Minha watchlist" bodyClassName="p-0">
-          <ListaCompacta linhas={watchlist} />
-        </Panel>
-      ) : (
-        <Panel title="Minha watchlist">
-          <p className="text-sm text-muted-foreground">
-            Toque na <Star className="inline size-3.5" aria-hidden /> estrela ao lado de qualquer ativo para
-            acompanhá-lo aqui.
-          </p>
-        </Panel>
-      )}
+
+
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel
