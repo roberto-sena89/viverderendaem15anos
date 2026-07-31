@@ -219,17 +219,12 @@ function CarteiraRecomendadaPage() {
                 {itens.map((l) => (
                   <li
                     key={l.id}
-                    draggable
-                    onDragStart={() => setArrastando(l.id)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => soltar(l.id)}
-                    className={`grid gap-3 px-3 py-3 transition-colors sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,14rem)_auto] sm:items-center ${
-                      arrastando === l.id ? "bg-muted/50" : "hover:bg-muted/30"
-                    }`}
+                    className="grid gap-3 px-3 py-3 transition-colors hover:bg-muted/30 sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,14rem)_auto] sm:items-center"
                   >
-                    <span className="hidden cursor-grab text-muted-foreground sm:block" aria-hidden>
-                      <GripVertical className="size-4" />
+                    <span className="hidden text-muted-foreground/50 sm:block" aria-hidden>
+                      <Lock className="size-3.5" />
                     </span>
+
 
                     <div className="flex items-center gap-2">
                       <span
