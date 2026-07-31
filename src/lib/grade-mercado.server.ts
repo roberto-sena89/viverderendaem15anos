@@ -310,8 +310,9 @@ async function brapiPagina(
   if (tickers.length === 1 && data?.results?.length === 1) {
     mapa.set(tickers[0].toUpperCase(), data.results[0]);
   }
-
+  return "ok";
 }
+
 
 
 async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<LinhaCotacao[]> {
