@@ -12,6 +12,8 @@ export type PrecoBrapiEtf = {
   variacaoPercent: number | null;
   volume: number | null;
   atualizadoEm: string | null;
+  /** Moeda da cotação ("BRL", "USD", ...). Evita misturar preços de bolsas diferentes. */
+  moeda: string | null;
 };
 
 const TTL_MS = 4_000;
@@ -51,6 +53,8 @@ async function buscarBloco(tickers: string[]): Promise<PrecoBrapiEtf[]> {
         variacaoPercent: num(r.regularMarketChangePercent),
         volume: num(r.regularMarketVolume),
         atualizadoEm: (r.regularMarketTime as string) ?? new Date().toISOString(),
+        moeda: typeof r.currency === "string" ? r.currency.toUpperCase() : null,
+
       }))
       .filter((p) => p.ticker);
   } catch {

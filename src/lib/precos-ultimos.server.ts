@@ -88,7 +88,11 @@ export async function sincronizarPrecosDeFonte(tickers: string[]) {
     const { dentroDoPregao } = await import("@/lib/cotacoes-cache.server");
     const aoVivo = dentroDoPregao();
     const precos = (await precosBrapiEtfs(lista))
+      // Só preços em reais: tickers que resolvem para bolsas estrangeiras
+      // (ex.: "IVVB" nos EUA) devolvem USD e contaminariam a tabela.
+      .filter((p) => !p.moeda || p.moeda === "BRL")
       .filter((p) => p.preco !== null && Number.isFinite(p.preco) && (p.preco as number) > 0)
+
       .map((p) => ({
         ticker: p.ticker,
         preco: p.preco as number,
