@@ -179,19 +179,6 @@ function Dashboard() {
       <AbasCarteira />
 
 
-      {carteiraVazia ? (
-        <div className="surface-card flex flex-wrap items-center gap-3 p-4">
-          <PiggyBank className="size-8 shrink-0 text-muted-foreground" />
-          <DialogTransacao>
-            <Button
-              size="sm"
-              className="font-display text-[12px] font-semibold uppercase tracking-wide"
-            >
-              REGISTRAR INVESTIMENTO
-            </Button>
-          </DialogTransacao>
-        </div>
-      ) : null}
 
       <ResumoKpis />
 
