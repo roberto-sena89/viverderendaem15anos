@@ -48,6 +48,7 @@ import type { HistoricoFii, LinhaFii, TipoFii } from "@/lib/fiis-base";
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
+import { mesclarPrecos, useFiisAoVivo } from "@/lib/fiis-tempo-real";
 
 const CHAVE_COLUNAS = "fiis:colunas";
 const COLUNAS_PADRAO: ColunaId[] = ["patrimonio", "pvp", "dy12", "liquidez", "tipo", "var12m", "segmento"];
@@ -133,15 +134,23 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
     });
   };
 
+  // WebSocket (Supabase Realtime) como canal primário de preço/variação.
+  const aoVivo = useFiisAoVivo(intervaloMs > 0, pregao.aberto);
+
   const grade = useQuery({
     queryKey: ["fiis", "grade"],
     queryFn: () => gradeFiis({ data: {} }),
-    refetchInterval: intervaloMs > 0 ? (pregao.aberto ? intervaloMs : Math.max(intervaloMs, 300_000)) : false,
+    // Fallback: 15s no pregão quando o WebSocket não está disponível.
+    refetchInterval: aoVivo.intervaloPolling > 0 ? aoVivo.intervaloPolling : false,
     refetchOnWindowFocus: true,
     staleTime: 10_000,
   });
 
-  const linhas = useMemo(() => grade.data?.linhas ?? [], [grade.data]);
+  const linhas = useMemo(
+    () => mesclarPrecos(grade.data?.linhas ?? [], aoVivo.precos),
+    [grade.data, aoVivo.precos],
+  );
+
 
   const posicoes = useMemo(() => {
     const mapa = new Map<string, { precoMedio: number; quantidade: number }>();
@@ -352,6 +361,35 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            <span
+              title={
+                aoVivo.canal === "websocket"
+                  ? "Preços recebidos por WebSocket, sem recarregar a página"
+                  : aoVivo.canal === "conectando"
+                    ? "Conectando ao canal em tempo real…"
+                    : `Atualização periódica a cada ${Math.round(aoVivo.intervaloPolling / 1000)}s`
+              }
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
+                aoVivo.canal === "websocket"
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : "border-border bg-muted text-muted-foreground"
+              }`}
+            >
+              <span
+                className={`size-1.5 rounded-full ${
+                  aoVivo.canal === "websocket" ? "animate-pulse bg-primary" : "bg-muted-foreground"
+                }`}
+                aria-hidden
+              />
+              {aoVivo.canal === "websocket"
+                ? "Tempo real"
+                : aoVivo.canal === "conectando"
+                  ? "Conectando…"
+                  : aoVivo.intervaloPolling > 0
+                    ? `Atualiza ${Math.round(aoVivo.intervaloPolling / 1000)}s`
+                    : "Manual"}
+            </span>
+
             <Button
               variant="outline"
               size="sm"
@@ -362,6 +400,7 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
               <RefreshCw className={`size-4 ${grade.isFetching ? "animate-spin" : ""}`} />
               Atualizar
             </Button>
+
           </div>
         }
       >
