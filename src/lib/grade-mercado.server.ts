@@ -483,23 +483,47 @@ type YahooChart = {
   };
 };
 
+/**
+ * Fila global do Yahoo: a fonte pública derruba rajadas de requisições
+ * (HTTP 429), então limitamos a 2 chamadas simultâneas com espaçamento.
+ */
+let filaYahoo: Promise<unknown> = Promise.resolve();
+let ativosYahoo = 0;
+
+async function yahooJson(url: string, headers: Record<string, string>) {
+  while (ativosYahoo >= 2) await filaYahoo.catch(() => undefined);
+  ativosYahoo++;
+  const p = (async () => {
+    try {
+      return await json<YahooChart>(url, TTL, 12_000, headers);
+    } finally {
+      await dormir(150);
+      ativosYahoo--;
+    }
+  })();
+  filaYahoo = p.catch(() => undefined);
+  return p;
+}
+
 async function yahooLinha(d: Def, categoria: CategoriaMercado): Promise<LinhaCotacao> {
   const simbolo = d.simbolo ?? d.ticker;
-  // Tenta os dois hosts do Yahoo e, por último, com cabeçalhos de navegador
-  // (alguns contratos futuros/commodities só respondem dessa forma).
+  // Dois hosts, com e sem cabeçalhos de navegador, com espera crescente entre
+  // as tentativas — cobre bloqueios pontuais em futuros e commodities agrícolas.
   const tentativas: Array<[string, Record<string, string>]> = [
     ["query1.finance.yahoo.com", PADRAO],
     ["query2.finance.yahoo.com", PADRAO],
     ["query2.finance.yahoo.com", CABECALHOS],
     ["query1.finance.yahoo.com", CABECALHOS],
+    ["query2.finance.yahoo.com", CABECALHOS],
   ];
-  for (const [host, headers] of tentativas) {
-    const data = await json<YahooChart>(
+  for (let t = 0; t < tentativas.length; t++) {
+    const [host, headers] = tentativas[t];
+    if (t > 0) await dormir(250 * t);
+    const data = await yahooJson(
       `https://${host}/v8/finance/chart/${encodeURIComponent(simbolo)}?range=1d&interval=15m`,
-      TTL,
-      12_000,
       headers,
     );
+
     const r = data?.chart?.result?.[0];
     const preco = r?.meta?.regularMarketPrice;
     if (typeof preco !== "number") continue;
