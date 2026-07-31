@@ -481,26 +481,27 @@ export function CarteiraGrupos({
                 <div className="border-t">
                 <Table
                   wrapperClassName="w-full max-w-full overflow-x-auto"
-                  className="w-full table-auto [&_th]:px-2 [&_td]:px-2 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap"
+                  className="w-full table-auto [&_th]:px-2.5 [&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
                 >
                     <TableHeader>
                       <TableRow className="bg-muted/40">
-                        <TableHead className="w-full min-w-[9rem]">Ticker / Ativo</TableHead>
+                        {/* Coluna elástica: absorve todo o espaço livre para as colunas numéricas ficarem coladas à direita. */}
+                        <TableHead className="w-full min-w-[11rem]">Ticker / Ativo</TableHead>
 
-                        {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
-                        {colunas.precoMedio && <TableHead className={`text-right ${colMd}`}>P. médio</TableHead>}
-                        {colunas.precoAtual && <TableHead className="text-right">P. atual</TableHead>}
+                        {colunas.quantidade && <TableHead className="min-w-[5rem] text-right">Quant.</TableHead>}
+                        {colunas.precoMedio && <TableHead className={`min-w-[6rem] text-right ${colMd}`}>P. médio</TableHead>}
+                        {colunas.precoAtual && <TableHead className="min-w-[6.5rem] text-right">P. atual</TableHead>}
                         {colunas.variacaoDia && (
-                          <TableHead className="text-right" title="Variação do dia vinda das cotações ao vivo">
+                          <TableHead className="min-w-[5.5rem] text-right" title="Variação do dia vinda das cotações ao vivo">
                             Var. dia
                           </TableHead>
                         )}
-                        {colunas.variacao && <TableHead className={`text-right ${colLg}`}>Var. (%)</TableHead>}
-                        {colunas.rentabilidade && <TableHead className={`text-right ${colMd}`}>Rent. (R$)</TableHead>}
-                        {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
-                        {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
-                        {colunas.ideal && <TableHead className={`text-right ${colLg}`}>% Ideal</TableHead>}
-                        {colunas.comprar && <TableHead className={`text-center ${colLg}`}>Comprar</TableHead>}
+                        {colunas.variacao && <TableHead className={`min-w-[5.5rem] text-right ${colLg}`}>Var. (%)</TableHead>}
+                        {colunas.rentabilidade && <TableHead className={`min-w-[6.5rem] text-right ${colMd}`}>Rent. (R$)</TableHead>}
+                        {colunas.saldo && <TableHead className="min-w-[7rem] text-right">Saldo</TableHead>}
+                        {colunas.participacao && <TableHead className="min-w-[5rem] text-right">% Cart.</TableHead>}
+                        {colunas.ideal && <TableHead className={`min-w-[5rem] text-right ${colLg}`}>% Ideal</TableHead>}
+                        {colunas.comprar && <TableHead className={`min-w-[5.5rem] text-center ${colLg}`}>Comprar</TableHead>}
 
                         {onEditar && onExcluir ? <TableHead className="w-px text-center">Opções</TableHead> : null}
                       </TableRow>
