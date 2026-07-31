@@ -115,14 +115,6 @@ export function NavMobile({
           ))}
         </nav>
 
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
-
         <div className="flex items-center gap-3 border-t border-sidebar-border p-3">
           <Avatar className="size-9 shrink-0">
             {usuario?.avatar ? <AvatarImage src={usuario.avatar} alt="" /> : null}
