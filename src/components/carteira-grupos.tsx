@@ -527,8 +527,6 @@ export function CarteiraGrupos({
                         const rent = investido > 0 ? ((saldo - investido) / investido) * 100 : 0;
                         const participacao = totalCarteira > 0 ? (saldo / totalCarteira) * 100 : 0;
                         const comprar = participacao < idealAtivo;
-                        /** Nota reclassificada pelo desempenho dos últimos 12 meses. */
-                        const d = desempenho.get(a.ticker.toUpperCase()) ?? SEM_DESEMPENHO;
                         return (
                           <TableRow key={a.id}>
                             <TableCell className={cel}>
