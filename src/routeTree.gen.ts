@@ -9,49 +9,65 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CalculadoraJurosCompostosRouteImport } from './routes/calculadora-juros-compostos'
-import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
-import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as VerificarEmailRouteImport } from './routes/verificar-email'
-import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
-import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
-import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
-import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
-import { Route as AuthenticatedCotacoesRouteImport } from './routes/_authenticated/cotacoes'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedDividendosRouteImport } from './routes/_authenticated/dividendos'
-import { Route as AuthenticatedHistoricoAportesRouteImport } from './routes/_authenticated/historico-aportes'
-import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
-import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticated/noticias'
-import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
-import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
-import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
+import { Route as CalculadoraJurosCompostosRouteImport } from './routes/calculadora-juros-compostos'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.melhores-livros-financas'
-import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
+import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
+import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
+import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticated/noticias'
+import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
+import { Route as AuthenticatedHistoricoAportesRouteImport } from './routes/_authenticated/historico-aportes'
+import { Route as AuthenticatedDividendosRouteImport } from './routes/_authenticated/dividendos'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCotacoesRouteImport } from './routes/_authenticated/cotacoes'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
+import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
+import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
-import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
+import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const VerificarEmailRoute = VerificarEmailRouteImport.update({
+  id: '/verificar-email',
+  path: '/verificar-email',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
+  id: '/redefinir-senha',
+  path: '/redefinir-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
+  id: '/recuperar-senha',
+  path: '/recuperar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiaLiberdadeFinanceiraRoute = GuiaLiberdadeFinanceiraRouteImport.update({
+  id: '/guia-liberdade-financeira',
+  path: '/guia-liberdade-financeira',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalculadoraJurosCompostosRoute =
@@ -60,113 +76,18 @@ const CalculadoraJurosCompostosRoute =
     path: '/calculadora-juros-compostos',
     getParentRoute: () => rootRouteImport,
   } as any)
-const GuiaLiberdadeFinanceiraRoute = GuiaLiberdadeFinanceiraRouteImport.update({
-  id: '/guia-liberdade-financeira',
-  path: '/guia-liberdade-financeira',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
-  id: '/recuperar-senha',
-  path: '/recuperar-senha',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
-  id: '/redefinir-senha',
-  path: '/redefinir-senha',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VerificarEmailRoute = VerificarEmailRouteImport.update({
-  id: '/verificar-email',
-  path: '/verificar-email',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AuthenticatedAportesRoute = AuthenticatedAportesRouteImport.update({
-  id: '/aportes',
-  path: '/aportes',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
-  id: '/carteira',
-  path: '/carteira',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCotacoesRoute = AuthenticatedCotacoesRouteImport.update({
-  id: '/cotacoes',
-  path: '/cotacoes',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedDividendosRoute = AuthenticatedDividendosRouteImport.update({
-  id: '/dividendos',
-  path: '/dividendos',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedHistoricoAportesRoute =
-  AuthenticatedHistoricoAportesRouteImport.update({
-    id: '/historico-aportes',
-    path: '/historico-aportes',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedMetasRoute = AuthenticatedMetasRouteImport.update({
-  id: '/metas',
-  path: '/metas',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedNoticiasRoute = AuthenticatedNoticiasRouteImport.update({
-  id: '/noticias',
-  path: '/noticias',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPlanejadorRoute = AuthenticatedPlanejadorRouteImport.update({
-  id: '/planejador',
-  path: '/planejador',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedRankingsRoute = AuthenticatedRankingsRouteImport.update({
-  id: '/rankings',
-  path: '/rankings',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedRebalanceamentoRoute =
-  AuthenticatedRebalanceamentoRouteImport.update({
-    id: '/rebalanceamento',
-    path: '/rebalanceamento',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogMelhoresLivrosFinancasRoute =
@@ -175,27 +96,106 @@ const BlogMelhoresLivrosFinancasRoute =
     path: '/blog/melhores-livros-financas',
     getParentRoute: () => rootRouteImport,
   } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRebalanceamentoRoute =
+  AuthenticatedRebalanceamentoRouteImport.update({
+    id: '/rebalanceamento',
+    path: '/rebalanceamento',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRankingsRoute = AuthenticatedRankingsRouteImport.update({
+  id: '/rankings',
+  path: '/rankings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPlanejadorRoute = AuthenticatedPlanejadorRouteImport.update({
+  id: '/planejador',
+  path: '/planejador',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNoticiasRoute = AuthenticatedNoticiasRouteImport.update({
+  id: '/noticias',
+  path: '/noticias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMetasRoute = AuthenticatedMetasRouteImport.update({
+  id: '/metas',
+  path: '/metas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHistoricoAportesRoute =
+  AuthenticatedHistoricoAportesRouteImport.update({
+    id: '/historico-aportes',
+    path: '/historico-aportes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDividendosRoute = AuthenticatedDividendosRouteImport.update({
+  id: '/dividendos',
+  path: '/dividendos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCotacoesRoute = AuthenticatedCotacoesRouteImport.update({
+  id: '/cotacoes',
+  path: '/cotacoes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
+  id: '/carteira',
+  path: '/carteira',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAportesRoute = AuthenticatedAportesRouteImport.update({
+  id: '/aportes',
+  path: '/aportes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicHooksAtualizarCotacoesRoute =
-  ApiPublicHooksAtualizarCotacoesRouteImport.update({
-    id: '/api/public/hooks/atualizar-cotacoes',
-    path: '/api/public/hooks/atualizar-cotacoes',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksAtualizarPrecosRoute =
   ApiPublicHooksAtualizarPrecosRouteImport.update({
     id: '/api/public/hooks/atualizar-precos',
     path: '/api/public/hooks/atualizar-precos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksAtualizarCotacoesRoute =
+  ApiPublicHooksAtualizarCotacoesRouteImport.update({
+    id: '/api/public/hooks/atualizar-cotacoes',
+    path: '/api/public/hooks/atualizar-cotacoes',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -414,60 +414,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/calculadora-juros-compostos': {
-      id: '/calculadora-juros-compostos'
-      path: '/calculadora-juros-compostos'
-      fullPath: '/calculadora-juros-compostos'
-      preLoaderRoute: typeof CalculadoraJurosCompostosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guia-liberdade-financeira': {
-      id: '/guia-liberdade-financeira'
-      path: '/guia-liberdade-financeira'
-      fullPath: '/guia-liberdade-financeira'
-      preLoaderRoute: typeof GuiaLiberdadeFinanceiraRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recuperar-senha': {
-      id: '/recuperar-senha'
-      path: '/recuperar-senha'
-      fullPath: '/recuperar-senha'
-      preLoaderRoute: typeof RecuperarSenhaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/redefinir-senha': {
-      id: '/redefinir-senha'
-      path: '/redefinir-senha'
-      fullPath: '/redefinir-senha'
-      preLoaderRoute: typeof RedefinirSenhaRouteImport
+    '/verificar-email': {
+      id: '/verificar-email'
+      path: '/verificar-email'
+      fullPath: '/verificar-email'
+      preLoaderRoute: typeof VerificarEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -477,116 +428,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/verificar-email': {
-      id: '/verificar-email'
-      path: '/verificar-email'
-      fullPath: '/verificar-email'
-      preLoaderRoute: typeof VerificarEmailRouteImport
+    '/redefinir-senha': {
+      id: '/redefinir-senha'
+      path: '/redefinir-senha'
+      fullPath: '/redefinir-senha'
+      preLoaderRoute: typeof RedefinirSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.mcp/list-tools': {
-      id: '/.mcp/list-tools'
-      path: '/.mcp/list-tools'
-      fullPath: '/.mcp/list-tools'
-      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+    '/recuperar-senha': {
+      id: '/recuperar-senha'
+      path: '/recuperar-senha'
+      fullPath: '/recuperar-senha'
+      preLoaderRoute: typeof RecuperarSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/aportes': {
-      id: '/_authenticated/aportes'
-      path: '/aportes'
-      fullPath: '/aportes'
-      preLoaderRoute: typeof AuthenticatedAportesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/guia-liberdade-financeira': {
+      id: '/guia-liberdade-financeira'
+      path: '/guia-liberdade-financeira'
+      fullPath: '/guia-liberdade-financeira'
+      preLoaderRoute: typeof GuiaLiberdadeFinanceiraRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/carteira': {
-      id: '/_authenticated/carteira'
-      path: '/carteira'
-      fullPath: '/carteira'
-      preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/calculadora-juros-compostos': {
+      id: '/calculadora-juros-compostos'
+      path: '/calculadora-juros-compostos'
+      fullPath: '/calculadora-juros-compostos'
+      preLoaderRoute: typeof CalculadoraJurosCompostosRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/chat': {
-      id: '/_authenticated/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof AuthenticatedChatRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/cotacoes': {
-      id: '/_authenticated/cotacoes'
-      path: '/cotacoes'
-      fullPath: '/cotacoes'
-      preLoaderRoute: typeof AuthenticatedCotacoesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dividendos': {
-      id: '/_authenticated/dividendos'
-      path: '/dividendos'
-      fullPath: '/dividendos'
-      preLoaderRoute: typeof AuthenticatedDividendosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/historico-aportes': {
-      id: '/_authenticated/historico-aportes'
-      path: '/historico-aportes'
-      fullPath: '/historico-aportes'
-      preLoaderRoute: typeof AuthenticatedHistoricoAportesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/metas': {
-      id: '/_authenticated/metas'
-      path: '/metas'
-      fullPath: '/metas'
-      preLoaderRoute: typeof AuthenticatedMetasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/noticias': {
-      id: '/_authenticated/noticias'
-      path: '/noticias'
-      fullPath: '/noticias'
-      preLoaderRoute: typeof AuthenticatedNoticiasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/planejador': {
-      id: '/_authenticated/planejador'
-      path: '/planejador'
-      fullPath: '/planejador'
-      preLoaderRoute: typeof AuthenticatedPlanejadorRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/rankings': {
-      id: '/_authenticated/rankings'
-      path: '/rankings'
-      fullPath: '/rankings'
-      preLoaderRoute: typeof AuthenticatedRankingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/rebalanceamento': {
-      id: '/_authenticated/rebalanceamento'
-      path: '/rebalanceamento'
-      fullPath: '/rebalanceamento'
-      preLoaderRoute: typeof AuthenticatedRebalanceamentoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/melhores-livros-financas': {
@@ -596,11 +491,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogMelhoresLivrosFinancasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/rebalanceamento': {
+      id: '/_authenticated/rebalanceamento'
+      path: '/rebalanceamento'
+      fullPath: '/rebalanceamento'
+      preLoaderRoute: typeof AuthenticatedRebalanceamentoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rankings': {
+      id: '/_authenticated/rankings'
+      path: '/rankings'
+      fullPath: '/rankings'
+      preLoaderRoute: typeof AuthenticatedRankingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/planejador': {
+      id: '/_authenticated/planejador'
+      path: '/planejador'
+      fullPath: '/planejador'
+      preLoaderRoute: typeof AuthenticatedPlanejadorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/noticias': {
+      id: '/_authenticated/noticias'
+      path: '/noticias'
+      fullPath: '/noticias'
+      preLoaderRoute: typeof AuthenticatedNoticiasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/metas': {
+      id: '/_authenticated/metas'
+      path: '/metas'
+      fullPath: '/metas'
+      preLoaderRoute: typeof AuthenticatedMetasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/historico-aportes': {
+      id: '/_authenticated/historico-aportes'
+      path: '/historico-aportes'
+      fullPath: '/historico-aportes'
+      preLoaderRoute: typeof AuthenticatedHistoricoAportesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dividendos': {
+      id: '/_authenticated/dividendos'
+      path: '/dividendos'
+      fullPath: '/dividendos'
+      preLoaderRoute: typeof AuthenticatedDividendosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cotacoes': {
+      id: '/_authenticated/cotacoes'
+      path: '/cotacoes'
+      fullPath: '/cotacoes'
+      preLoaderRoute: typeof AuthenticatedCotacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/carteira': {
+      id: '/_authenticated/carteira'
+      path: '/carteira'
+      fullPath: '/carteira'
+      preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/aportes': {
+      id: '/_authenticated/aportes'
+      path: '/aportes'
+      fullPath: '/aportes'
+      preLoaderRoute: typeof AuthenticatedAportesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/invoke-tool/$tool': {
@@ -610,11 +603,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/hooks/atualizar-cotacoes': {
-      id: '/api/public/hooks/atualizar-cotacoes'
-      path: '/api/public/hooks/atualizar-cotacoes'
-      fullPath: '/api/public/hooks/atualizar-cotacoes'
-      preLoaderRoute: typeof ApiPublicHooksAtualizarCotacoesRouteImport
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/atualizar-precos': {
@@ -622,6 +615,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/atualizar-precos'
       fullPath: '/api/public/hooks/atualizar-precos'
       preLoaderRoute: typeof ApiPublicHooksAtualizarPrecosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/atualizar-cotacoes': {
+      id: '/api/public/hooks/atualizar-cotacoes'
+      path: '/api/public/hooks/atualizar-cotacoes'
+      fullPath: '/api/public/hooks/atualizar-cotacoes'
+      preLoaderRoute: typeof ApiPublicHooksAtualizarCotacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -684,13 +684,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -59,8 +59,24 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-cotacoes")({
             });
           } catch {
             resultados.push({ categoria, linhas: 0, parcial: true });
+        }
+
+        // Grade completa de FIIs: regravar o cache dispara o evento de tempo
+        // real (WebSocket) que atualiza preço e variação nos navegadores abertos.
+        if (alvo.includes("fiis")) {
+          try {
+            const { gradeFiisComCache } = await import("@/lib/fiis.server");
+            const g = await gradeFiisComCache(true);
+            resultados.push({
+              categoria: "fiis:grade",
+              linhas: g.linhas.filter((l) => l.preco !== null).length,
+              parcial: g.parcial,
+            });
+          } catch {
+            resultados.push({ categoria: "fiis:grade", linhas: 0, parcial: true });
           }
         }
+
 
         return Response.json({
           ok: true,
