@@ -103,6 +103,27 @@ export function estadoPregao(referencia = new Date()) {
   return { aberto, proximaAbertura };
 }
 
+/**
+ * Pregão de Nova York (NYSE/Nasdaq), em horário de Brasília.
+ * Cobre ETFs globais, stocks e REITs, que continuam negociando depois
+ * do fechamento da B3 — janela ampla (10h30–22h) para cobrir o horário
+ * de verão americano.
+ */
+export function estadoMercadoGlobal(referencia = new Date()) {
+  const fmt = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const partes = Object.fromEntries(fmt.formatToParts(referencia).map((p) => [p.type, p.value]));
+  const minutos = Number(partes.hour ?? 0) * 60 + Number(partes.minute ?? 0);
+  const dia = String(partes.weekday ?? "").toLowerCase();
+  const fimDeSemana = dia.startsWith("sáb") || dia.startsWith("sab") || dia.startsWith("dom");
+  return { aberto: !fimDeSemana && minutos >= 10 * 60 + 30 && minutos < 22 * 60 };
+}
+
 /* ---------------------------------------------------------------- *
  * Contexto
  * ---------------------------------------------------------------- */
@@ -135,6 +156,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
   const [flash, setFlash] = useState<Record<string, "alta" | "baixa">>({});
   const [cache, setCache] = useState<CotacaoLive[]>([]);
   const [pregao, setPregao] = useState(() => estadoPregao());
+  const [mercadoGlobal, setMercadoGlobal] = useState(() => estadoMercadoGlobal());
   const precosAnteriores = useRef<Record<string, number>>({});
   const alertados = useRef<Set<string>>(new Set());
 
@@ -144,7 +166,10 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
   }, []);
 
   useEffect(() => {
-    const id = window.setInterval(() => setPregao(estadoPregao()), 60_000);
+    const id = window.setInterval(() => {
+      setPregao(estadoPregao());
+      setMercadoGlobal(estadoMercadoGlobal());
+    }, 60_000);
     return () => window.clearInterval(id);
   }, []);
 
@@ -165,7 +190,25 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     [ativos],
   );
 
-  const intervalo = config.automatico ? (pregao.aberto ? config.intervaloMs : false) : false;
+  // Ativos internacionais (ETFs globais, stocks, REITs, cripto) seguem
+  // negociando fora do pregão da B3 — o polling acompanha essas janelas.
+  const temInternacional = useMemo(
+    () =>
+      ativos.some((a) =>
+        ["ETF (Exterior)", "ETF EUA", "Stocks", "REITs", "BDR", "Criptomoedas"].includes(
+          String(a.categoria),
+        ),
+      ),
+    [ativos],
+  );
+  const cripto = useMemo(
+    () => ativos.some((a) => String(a.categoria) === "Criptomoedas"),
+    [ativos],
+  );
+  const mercadoAtivo =
+    pregao.aberto || cripto || (temInternacional && mercadoGlobal.aberto);
+
+  const intervalo = config.automatico ? (mercadoAtivo ? config.intervaloMs : false) : false;
 
   const { data, isFetching, isError, dataUpdatedAt, refetch } = useQuery({
     queryKey: ["cotacoes-carteira", itens.map((i) => `${i.ticker}:${i.categoria}`).sort().join(",")],
