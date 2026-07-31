@@ -63,6 +63,8 @@ export function useAtivos() {
 export function useAportes() {
   return useQuery({
     queryKey: qk.aportes,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     queryFn: async (): Promise<Aporte[]> => {
       const { data, error } = await supabase
         .from("aportes")
@@ -87,6 +89,8 @@ export function useAportes() {
 export function useDividendos() {
   return useQuery({
     queryKey: qk.dividendos,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     queryFn: async (): Promise<Dividendo[]> => {
       const { data, error } = await supabase
         .from("dividendos")
