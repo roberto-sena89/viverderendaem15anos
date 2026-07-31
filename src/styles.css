@@ -253,7 +253,8 @@
   --accent-foreground: oklch(0.9 0.03 158);
 
   --destructive: oklch(0.74 0.16 25);
-  --destructive-foreground: oklch(0.98 0.005 150);
+  /* Texto escuro sobre o vermelho claro do dark mode garante contraste AA */
+  --destructive-foreground: oklch(0.16 0.03 25);
   --success: oklch(0.75 0.14 158);
   --success-foreground: oklch(0.14 0.02 160);
   --warning: oklch(0.78 0.14 78);
