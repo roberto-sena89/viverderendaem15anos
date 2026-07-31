@@ -297,8 +297,9 @@ function HistoricoAportesPage() {
                 <button
                   type="button"
                   aria-label="Selecionar período"
-                  className="inline-flex min-w-[11rem] items-center justify-center gap-2 rounded-md px-2 py-1 text-sm font-semibold text-foreground transition-colors hover:bg-muted/60"
+                  className="inline-flex min-w-0 flex-1 items-center justify-center gap-2 truncate rounded-md px-2 py-1 text-sm font-semibold text-foreground transition-colors hover:bg-muted/60 sm:min-w-[11rem] sm:flex-none"
                 >
+
                   <CalendarDays className="size-4 text-primary" />
                   {modo === "mensal"
                     ? diaSel
