@@ -115,7 +115,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         type: "font/woff2",
         href: interLatin,
         crossOrigin: "anonymous",
+        fetchPriority: "low",
       },
+
       {
         rel: "stylesheet",
         href: appCss,
