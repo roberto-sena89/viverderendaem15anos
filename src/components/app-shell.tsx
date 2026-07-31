@@ -9,7 +9,6 @@ import {
   LineChart,
   Scale,
   Target,
-  CandlestickChart,
   Trophy,
   BarChart3,
   ListOrdered,
