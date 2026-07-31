@@ -7,8 +7,10 @@ import {
   ChevronRight,
   Download,
   History as HistoryIcon,
+  Landmark,
   Search,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 import {
   Bar,
