@@ -436,7 +436,7 @@ export function TabelaAcoes({
   const alturaItem = ehMobile ? ALTURA_CARD : ALTURA_LINHA;
   const espacoTopo = janela.inicio * alturaItem;
   const espacoBase = Math.max(0, linhas.length - janela.fim) * alturaItem;
-  const colunasTotais = visiveis.length + 5;
+  const colunasTotais = visiveis.length + 4;
 
   return (
     <TooltipProvider delayDuration={150}>
