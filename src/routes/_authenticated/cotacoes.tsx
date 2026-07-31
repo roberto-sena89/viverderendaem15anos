@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
-import { WidgetCotacoes } from "@/components/widget-cotacoes";
 
 export const Route = createFileRoute("/_authenticated/cotacoes")({
   head: () => ({
@@ -29,8 +28,6 @@ function Cotacoes() {
       title="Cotações de mercado"
       description="Índices, moedas e ETFs atualizados, com busca por ativo"
     >
-      <WidgetCotacoes />
-
     </AppShell>
   );
 }
