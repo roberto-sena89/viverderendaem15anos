@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
+import { NavMobile } from "@/components/nav-mobile";
+
 
 import { ThemeToggle } from "@/components/theme";
 
