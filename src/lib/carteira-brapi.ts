@@ -11,7 +11,7 @@
  *   recebido continua exibido até chegar um novo.
  */
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { precosEtfsBrapi } from "@/lib/etfs.functions";
@@ -74,18 +74,13 @@ export function usePrecosBrapiCarteira(tickers: string[]): Map<string, PrecoVivo
 
 /** true quando a B3 ou o mercado americano estão abertos (reavaliado a cada minuto). */
 function useMercadoAberto(): boolean {
-  const [aberto, setAberto] = useEstado(() => estadoPregao().aberto || estadoMercadoGlobal().aberto);
+  const [aberto, setAberto] = useState(() => estadoPregao().aberto || estadoMercadoGlobal().aberto);
   useEffect(() => {
     const id = setInterval(
       () => setAberto(estadoPregao().aberto || estadoMercadoGlobal().aberto),
       60_000,
     );
     return () => clearInterval(id);
-  }, [setAberto]);
+  }, []);
   return aberto;
-}
-
-/** useState tipado localmente (evita import extra no topo do arquivo). */
-function useEstado<T>(inicial: () => T) {
-  return require("react").useState(inicial) as [T, (v: T) => void];
 }
