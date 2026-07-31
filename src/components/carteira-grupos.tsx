@@ -547,7 +547,8 @@ export function CarteiraGrupos({
                         const variacao = variacaoAtivo(a);
                         const rent = investido > 0 ? ((saldo - investido) / investido) * 100 : 0;
                         const participacao = totalCarteira > 0 ? (saldo / totalCarteira) * 100 : 0;
-                        const comprar = participacao < idealAtivo;
+                        const idealLinha = idealDe(a);
+                        const comprar = participacao < idealLinha;
                         return (
                           <TableRow key={a.id}>
                             <TableCell className={cel}>
