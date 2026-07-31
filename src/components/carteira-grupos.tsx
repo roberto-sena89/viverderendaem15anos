@@ -25,6 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+import { chaveBrapi, usePrecosBrapiCarteira } from "@/lib/carteira-brapi";
 import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
 
 type ColunaId =
