@@ -109,8 +109,11 @@ export async function precosBrapiEtfs(tickers: string[]): Promise<PrecoBrapiEtf[
       for (const t of bloco) emVoo.delete(t);
     });
     for (const t of bloco) {
-      aguardar.push(requisicao.then((m) => m.get(t) ?? null).catch(() => null));
+      const promessa = requisicao.then((m) => m.get(t) ?? null).catch(() => null);
+      emVoo.set(t, promessa);
+      aguardar.push(promessa);
     }
+
   }
 
   const resolvidos = await Promise.all(aguardar);
