@@ -204,14 +204,35 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
   const inicio = paginaAtual * porPagina;
   const visiveis = ordenadasBase.slice(inicio, inicio + porPagina);
 
-  const tickersVisiveis = useMemo(() => visiveis.map((l) => l.ticker), [visiveis]);
-  const chaveHistorico = tickersVisiveis.join(",");
+  // Indicadores históricos: só dos fundos que estão na viewport, agrupados em
+  // um único lote por rodada e nunca repetidos (cache local + guarda de voo).
+  const [naTela, setNaTela] = useState<string[]>([]);
+  const pedidos = useRef(new Set<string>());
+  const aoVisiveis = useCallback((tickers: string[]) => setNaTela(tickers), []);
+  const chaveNaTela = useValorAtrasado(naTela.join(","), 350);
+
+  const lote = useMemo(() => {
+    const lista = chaveNaTela ? chaveNaTela.split(",") : [];
+    const pendentes: string[] = [];
+    for (const t of lista) {
+      if (!t || historico.has(t) || pedidos.current.has(t) || pendentes.includes(t)) continue;
+      pendentes.push(t);
+      if (pendentes.length >= 30) break;
+    }
+    return pendentes;
+  }, [chaveNaTela, historico]);
+
+  useEffect(() => {
+    for (const t of lote) pedidos.current.add(t);
+  }, [lote]);
 
   const historicoQuery = useQuery({
-    queryKey: ["fiis", "historico", chaveHistorico],
-    queryFn: () => historicoFiisGrade({ data: { tickers: tickersVisiveis } }),
-    enabled: tickersVisiveis.length > 0,
-    staleTime: 30 * 60_000,
+    queryKey: ["fiis", "historico", lote.join(",")],
+    queryFn: () => historicoFiisGrade({ data: { tickers: lote } }),
+    enabled: lote.length > 0,
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: 60 * 60_000,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -222,6 +243,7 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
       return mapa;
     });
   }, [historicoQuery.data]);
+
 
   useEffect(() => {
     setPagina(0);
