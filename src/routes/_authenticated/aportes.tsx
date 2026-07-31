@@ -37,15 +37,6 @@ function AportesPage() {
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
 
-      <nav aria-label="Sub-páginas de Patrimônio" className="flex flex-wrap items-center gap-2">
-        <Button asChild variant="outline" size="sm">
-          <Link to="/historico-aportes">
-            <ListOrdered className="size-4" />
-            Aportes · Histórico de Aportes
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </nav>
 
 
 
