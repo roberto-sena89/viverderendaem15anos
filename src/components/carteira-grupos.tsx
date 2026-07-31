@@ -511,7 +511,17 @@ export function CarteiraGrupos({
                         {colunas.variacao && <TableHead className={`text-right ${colLg}`}>Var. (%)</TableHead>}
                         {colunas.rentabilidade && <TableHead className={`text-right ${colMd}`}>Rent. (R$)</TableHead>}
                         {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
-                        {colunas.nota && <TableHead className={`text-center ${colLg}`}>Nota</TableHead>}
+                        {colunas.nota && (
+                          <TableHead
+                            className={`text-center ${colLg}`}
+                            title={
+                              "Nota 0–10 pelo desempenho dos últimos 12 meses frente ao Ibovespa" +
+                              (ibov12m !== null ? ` (Ibovespa 12m: ${num(ibov12m, 1)}%)` : "")
+                            }
+                          >
+                            Nota 12m
+                          </TableHead>
+                        )}
                         {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
                         {colunas.ideal && <TableHead className={`text-right ${colLg}`}>% Ideal</TableHead>}
                         {colunas.comprar && <TableHead className={`text-center ${colLg}`}>Comprar</TableHead>}
