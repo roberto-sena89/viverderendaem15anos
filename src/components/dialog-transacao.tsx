@@ -251,7 +251,7 @@ export function DialogTransacao({
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{edicao ? "Editar Transação" : "Adicionar Transação"}</DialogTitle>
           <DialogDescription>
