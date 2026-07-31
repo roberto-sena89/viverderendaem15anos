@@ -51,16 +51,27 @@ const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
 /** GET https://brapi.dev/api/quote/{symbol} com retry exponencial. */
 async function buscarNaBrapi(symbol: string): Promise<CotacaoBrapi> {
   const token = process.env.BRAPI_TOKEN;
-  const params = new URLSearchParams({ range: "1d", interval: "5m" });
-  if (token) params.set("token", token);
-  const url = `https://brapi.dev/api/quote/${encodeURIComponent(symbol)}?${params}`;
+  // O plano gratuito da BRAPI só aceita interval=1d; intervalos intradiários
+  // devolvem HTTP 400 (INVALID_INTERVAL). Se o histórico for recusado, repetimos
+  // a chamada sem os parâmetros de série (o preço continua disponível).
+  const montarUrl = (comHistorico: boolean) => {
+    const params = new URLSearchParams();
+    if (comHistorico) {
+      params.set("range", "3mo");
+      params.set("interval", "1d");
+    }
+    if (token) params.set("token", token);
+    const qs = params.toString();
+    return `https://brapi.dev/api/quote/${encodeURIComponent(symbol)}${qs ? `?${qs}` : ""}`;
+  };
 
+  let comHistorico = true;
   let ultimoErro = "Não foi possível obter a cotação.";
   for (let tentativa = 0; tentativa < 3; tentativa++) {
     if (tentativa > 0) await espera(400 * 2 ** (tentativa - 1));
     let res: Response;
     try {
-      res = await fetch(url, {
+      res = await fetch(montarUrl(comHistorico), {
         headers: token ? { ...NAVEGADOR, Authorization: `Bearer ${token}` } : NAVEGADOR,
       });
     } catch {
@@ -71,7 +82,24 @@ async function buscarNaBrapi(symbol: string): Promise<CotacaoBrapi> {
       ultimoErro = erroDeStatus(res.status);
       continue;
     }
-    if (!res.ok) throw new Error(erroDeStatus(res.status));
+    if (!res.ok) {
+      const detalhe = await res.text().catch(() => "");
+      if (res.status === 400 && comHistorico) {
+        // Plano sem acesso ao histórico: tenta de novo apenas com a cotação.
+        comHistorico = false;
+        ultimoErro = erroDeStatus(res.status);
+        continue;
+      }
+      let mensagem = erroDeStatus(res.status);
+      try {
+        const j = JSON.parse(detalhe) as { message?: string };
+        if (j?.message) mensagem = j.message;
+      } catch {
+        /* corpo não-JSON: mantém a mensagem padrão */
+      }
+      throw new Error(mensagem);
+    }
+
 
     const json = (await res.json()) as {
       results?: Array<Record<string, unknown> & { historicalDataPrice?: Array<{ close?: number }> }>;
