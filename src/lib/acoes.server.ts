@@ -224,7 +224,6 @@ async function precosAoVivo(): Promise<Map<string, PrecoVivo>> {
     for (const s of data?.stocks ?? []) {
       if (!s.stock || typeof s.close !== "number") continue;
       const ticker = s.stock.toUpperCase();
-      if (!TICKER_ACAO.test(ticker) || ticker.endsWith("11") === false ? false : false) continue;
       if (!TICKER_ACAO.test(ticker)) continue;
       mapa.set(ticker, {
         preco: s.close,
