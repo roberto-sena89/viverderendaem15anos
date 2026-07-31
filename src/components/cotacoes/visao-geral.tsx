@@ -1,16 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Star, TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { corVar, fmtPercent, fmtPreco } from "@/components/cotacoes/formatos";
-import { useFavoritos } from "@/lib/favoritos-mercado";
 import { visaoGeralMercado, type LinhaCotacao } from "@/lib/grade-mercado.functions";
 
 export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
   const buscar = useServerFn(visaoGeralMercado);
-  const { favoritos } = useFavoritos();
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["visao-geral-mercado"],
@@ -21,10 +20,6 @@ export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
     gcTime: 30 * 60_000,
   });
 
-  const todos = [...(data?.altas ?? []), ...(data?.baixas ?? []), ...(data?.indices ?? [])];
-  const watchlist = todos.filter(
-    (l, i, arr) => favoritos.includes(l.ticker) && arr.findIndex((x) => x.ticker === l.ticker) === i,
-  );
 
   if (isLoading) {
     return (
@@ -44,18 +39,8 @@ export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
         ))}
       </div>
 
-      {watchlist.length > 0 ? (
-        <Panel title="Minha watchlist" bodyClassName="p-0">
-          <ListaCompacta linhas={watchlist} />
-        </Panel>
-      ) : (
-        <Panel title="Minha watchlist">
-          <p className="text-sm text-muted-foreground">
-            Toque na <Star className="inline size-3.5" aria-hidden /> estrela ao lado de qualquer ativo para
-            acompanhá-lo aqui.
-          </p>
-        </Panel>
-      )}
+
+
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel
