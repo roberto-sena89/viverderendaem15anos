@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { Panel } from "@/components/panel";
-import { RebalanceamentoSugerido } from "@/components/rebalanceamento-sugerido";
 import { DialogBuscarRecomendacao } from "@/components/dialog-buscar-recomendacao";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
-import { useAtivos } from "@/lib/data";
 import {
   modeloDoPerfil,
   novoId,
@@ -33,7 +31,7 @@ import {
   type LinhaRec,
   type Perfil,
 } from "@/lib/carteira-recomendada-store";
-import { alocacaoIdeal, CLASSE_POS_FIXADO, classeDoAtivo, valorAtual } from "@/lib/portfolio";
+import { alocacaoIdeal, CLASSE_POS_FIXADO } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira-recomendada")({
   head: () => ({
@@ -64,11 +62,9 @@ function CarteiraRecomendadaPage() {
   const { perfil, trocarPerfil, linhas, setLinhas, notas, setNotas, versoes, salvarVersao, restaurarVersao } =
     useCarteiraRecomendadaStore();
   const { salvar } = useAlocacaoAlvo();
-  const { data: carteira = [] } = useAtivos();
 
   const [buscar, setBuscar] = useState(false);
   const [remover, setRemover] = useState<LinhaRec | null>(null);
-  const [verOrdens, setVerOrdens] = useState(false);
 
   const total = linhas.reduce((s, l) => s + l.alvo, 0);
   const ok = Math.abs(total - 100) < 0.05;
