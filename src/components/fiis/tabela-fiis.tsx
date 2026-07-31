@@ -13,6 +13,7 @@ import {
   nomeCurto,
 } from "@/components/fiis/formatos-fii";
 import { COR_TIPO, type HistoricoFii, type LinhaFii } from "@/lib/fiis-base";
+import { useEhMobile, useJanelaVirtual } from "@/lib/fiis-virtualizacao";
 
 export type ColunaId =
   | "patrimonio"
@@ -66,6 +67,8 @@ type Props = {
   aoAbrir: (l: LinhaFii) => void;
   carregando: boolean;
   inicioRanking: number;
+  /** Tickers efetivamente renderizados na viewport (para lotes de indicadores). */
+  aoVisiveis?: (tickers: string[]) => void;
 };
 
 /** Guarda o preço anterior de cada ticker para acionar o flash de atualização. */
