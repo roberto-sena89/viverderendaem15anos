@@ -8,16 +8,18 @@ import logoIcone from "@/assets/logo-icone.webp";
 import heroFundo from "@/assets/hero-mercado-fundo.webp";
 
 const TITLE = "Viver de Renda em 15 Anos — Carteira, Dividendos e Independência";
+const OG_TITLE = "Viver de Renda em 15 Anos: carteira e dividendos";
 const DESCRIPTION =
   "Controle a sua carteira de ações, FIIs e renda fixa, acompanhe dividendos, rebalanceie a alocação e projete em quantos anos você vive de renda.";
 const URL = "https://viverderendaem15anos.lovable.app/";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
+      { property: "og:title", content: OG_TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: URL },
