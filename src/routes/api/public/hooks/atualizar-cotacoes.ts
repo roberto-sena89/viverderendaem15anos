@@ -80,6 +80,24 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-cotacoes")({
           }
         }
 
+        // Grade completa de ações: mesma lógica — regravar o cache empurra
+        // preço e variação por WebSocket para quem está com a aba aberta.
+        if (alvo.includes("acoes")) {
+          try {
+            const { gradeAcoesComCache } = await import("@/lib/acoes.server");
+            const g = await gradeAcoesComCache(true);
+            resultados.push({
+              categoria: "acoes:grade",
+              linhas: g.linhas.filter((l) => l.preco !== null).length,
+              parcial: g.parcial,
+            });
+          } catch {
+            resultados.push({ categoria: "acoes:grade", linhas: 0, parcial: true });
+          }
+        }
+
+
+
 
         return Response.json({
           ok: true,
