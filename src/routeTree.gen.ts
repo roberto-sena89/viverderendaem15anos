@@ -37,6 +37,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.melhores-livros-financas'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
 
 const IndexRoute = IndexRouteImport.update({
@@ -185,6 +186,12 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksAtualizarCotacoesRoute =
+  ApiPublicHooksAtualizarCotacoesRouteImport.update({
+    id: '/api/public/hooks/atualizar-cotacoes',
+    path: '/api/public/hooks/atualizar-cotacoes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksAtualizarPrecosRoute =
   ApiPublicHooksAtualizarPrecosRouteImport.update({
     id: '/api/public/hooks/atualizar-precos',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
 }
 export interface FileRoutesByTo {
@@ -250,6 +258,7 @@ export interface FileRoutesByTo {
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
 }
 export interface FileRoutesById {
@@ -282,6 +291,7 @@ export interface FileRoutesById {
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
 }
 export interface FileRouteTypes {
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -344,6 +355,7 @@ export interface FileRouteTypes {
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
   id:
     | '__root__'
@@ -375,6 +387,7 @@ export interface FileRouteTypes {
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
   fileRoutesById: FileRoutesById
 }
@@ -395,6 +408,7 @@ export interface RootRouteChildren {
   BlogMelhoresLivrosFinancasRoute: typeof BlogMelhoresLivrosFinancasRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicHooksAtualizarCotacoesRoute: typeof ApiPublicHooksAtualizarCotacoesRoute
   ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
 }
 
@@ -596,6 +610,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/atualizar-cotacoes': {
+      id: '/api/public/hooks/atualizar-cotacoes'
+      path: '/api/public/hooks/atualizar-cotacoes'
+      fullPath: '/api/public/hooks/atualizar-cotacoes'
+      preLoaderRoute: typeof ApiPublicHooksAtualizarCotacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/atualizar-precos': {
       id: '/api/public/hooks/atualizar-precos'
       path: '/api/public/hooks/atualizar-precos'
@@ -657,6 +678,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogMelhoresLivrosFinancasRoute: BlogMelhoresLivrosFinancasRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicHooksAtualizarCotacoesRoute: ApiPublicHooksAtualizarCotacoesRoute,
   ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
 }
 export const routeTree = rootRouteImport
