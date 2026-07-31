@@ -345,7 +345,10 @@ export function CarteiraGrupos({
             {minimal ? (
               <header
                 className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-l-[3px] px-3 py-2.5 sm:px-4"
-                style={{ borderColor: cor }}
+                style={{
+                  borderColor: cor,
+                  backgroundColor: `color-mix(in oklab, ${cor} 8%, transparent)`,
+                }}
               >
                 <button
                   type="button"
@@ -354,7 +357,8 @@ export function CarteiraGrupos({
                   className="flex min-w-0 items-center gap-2.5 text-left"
                 >
                   <ChevronDown
-                    className={`size-4 shrink-0 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
+                    className={`size-4 shrink-0 transition-transform ${aberto ? "rotate-180" : ""}`}
+                    style={{ color: cor }}
                   />
                   <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: cor }} />
                   <span className="min-w-0">
@@ -363,8 +367,10 @@ export function CarteiraGrupos({
                     </span>
                     <span className="block text-[0.82rem] text-muted-foreground">
                       {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} ·{" "}
-                      <span className="tabular-nums">{pct(g.participacao)}</span> de{" "}
-                      <span className="tabular-nums">{pct(g.ideal)}</span>
+                      <span className="font-semibold tabular-nums" style={{ color: cor }}>
+                        {pct(g.participacao)}
+                      </span>{" "}
+                      de <span className="tabular-nums">{pct(g.ideal)}</span>
                     </span>
                   </span>
                 </button>
