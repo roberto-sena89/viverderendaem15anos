@@ -440,13 +440,16 @@ export function TabelaAcoes({
     <TooltipProvider delayDuration={150}>
       <div ref={containerRef}>
         {!ehMobile ? (
-          <div className="hidden overflow-x-auto md:block">
-            <table className="w-full border-collapse text-sm">
+          /* table-fixed + larguras proporcionais: as colunas se comprimem em vez
+             de gerar barra de rolagem horizontal. */
+          <div className="hidden md:block">
+            <table className="w-full table-fixed border-collapse text-sm">
               <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
                 <tr className="border-b border-border">
-                  <th scope="col" className="w-10 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
+                  <th scope="col" className="w-8 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
                     #
                   </th>
+
                   <Cabecalho
                     rotulo="Ativo"
                     ajuda="Ticker e nome da empresa. Clique na linha para ver os detalhes."
