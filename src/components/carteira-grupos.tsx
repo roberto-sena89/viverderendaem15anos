@@ -629,15 +629,30 @@ export function CarteiraGrupos({
                             {colunas.nota && (
                               <TableCell className={`text-center ${colLg} ${cel}`}>
                                 <span
-                                  title="Nota de aderência ao alvo e desempenho"
-                                  className={`inline-grid place-items-center rounded-md bg-foreground font-bold text-background tabular-nums ${
-                                    compacto ? "size-6 text-xs" : "size-8 text-sm"
-                                  }`}
+                                  title={
+                                    d.retorno12m === null
+                                      ? "Sem histórico de 12 meses para este ativo"
+                                      : `Desempenho 12m: ${num(d.retorno12m, 1)}%` +
+                                        (d.excedente !== null
+                                          ? ` · ${d.excedente >= 0 ? "+" : ""}${num(d.excedente, 1)} p.p. vs Ibovespa`
+                                          : "") +
+                                        ` · ${d.classificacao}`
+                                  }
+                                  className={`inline-grid place-items-center rounded-md font-bold tabular-nums ${
+                                    d.retorno12m === null
+                                      ? "bg-muted text-muted-foreground"
+                                      : d.nota >= 7
+                                        ? "bg-pos text-pos-foreground"
+                                        : d.nota >= 5
+                                          ? "bg-foreground text-background"
+                                          : "bg-neg text-neg-foreground"
+                                  } ${compacto ? "size-6 text-xs" : "size-8 text-sm"}`}
                                 >
-                                  {n.toFixed(0)}
+                                  {d.retorno12m === null ? "—" : d.nota.toFixed(0)}
                                 </span>
                               </TableCell>
                             )}
+
                             {colunas.participacao && (
                               <TableCell className={`text-right tabular-nums ${cel}`}>{pct(participacao)}</TableCell>
                             )}
