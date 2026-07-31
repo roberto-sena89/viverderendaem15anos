@@ -31,6 +31,7 @@ import { Route as AuthenticatedDividendosRouteImport } from './routes/_authentic
 import { Route as AuthenticatedHistoricoAportesRouteImport } from './routes/_authenticated/historico-aportes'
 import { Route as AuthenticatedMercadoRouteImport } from './routes/_authenticated/mercado'
 import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
+import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticated/noticias'
 import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
 import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
@@ -153,6 +154,11 @@ const AuthenticatedMetasRoute = AuthenticatedMetasRouteImport.update({
   path: '/metas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNoticiasRoute = AuthenticatedNoticiasRouteImport.update({
+  id: '/noticias',
+  path: '/noticias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlanejadorRoute = AuthenticatedPlanejadorRouteImport.update({
   id: '/planejador',
   path: '/planejador',
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/historico-aportes': typeof AuthenticatedHistoricoAportesRoute
   '/mercado': typeof AuthenticatedMercadoRoute
   '/metas': typeof AuthenticatedMetasRoute
+  '/noticias': typeof AuthenticatedNoticiasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
@@ -251,6 +258,7 @@ export interface FileRoutesByTo {
   '/historico-aportes': typeof AuthenticatedHistoricoAportesRoute
   '/mercado': typeof AuthenticatedMercadoRoute
   '/metas': typeof AuthenticatedMetasRoute
+  '/noticias': typeof AuthenticatedNoticiasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
@@ -284,6 +292,7 @@ export interface FileRoutesById {
   '/_authenticated/historico-aportes': typeof AuthenticatedHistoricoAportesRoute
   '/_authenticated/mercado': typeof AuthenticatedMercadoRoute
   '/_authenticated/metas': typeof AuthenticatedMetasRoute
+  '/_authenticated/noticias': typeof AuthenticatedNoticiasRoute
   '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
   '/_authenticated/rankings': typeof AuthenticatedRankingsRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/historico-aportes'
     | '/mercado'
     | '/metas'
+    | '/noticias'
     | '/planejador'
     | '/rankings'
     | '/rebalanceamento'
@@ -348,6 +358,7 @@ export interface FileRouteTypes {
     | '/historico-aportes'
     | '/mercado'
     | '/metas'
+    | '/noticias'
     | '/planejador'
     | '/rankings'
     | '/rebalanceamento'
@@ -380,6 +391,7 @@ export interface FileRouteTypes {
     | '/_authenticated/historico-aportes'
     | '/_authenticated/mercado'
     | '/_authenticated/metas'
+    | '/_authenticated/noticias'
     | '/_authenticated/planejador'
     | '/_authenticated/rankings'
     | '/_authenticated/rebalanceamento'
@@ -566,6 +578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMetasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/noticias': {
+      id: '/_authenticated/noticias'
+      path: '/noticias'
+      fullPath: '/noticias'
+      preLoaderRoute: typeof AuthenticatedNoticiasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/planejador': {
       id: '/_authenticated/planejador'
       path: '/planejador'
@@ -636,6 +655,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHistoricoAportesRoute: typeof AuthenticatedHistoricoAportesRoute
   AuthenticatedMercadoRoute: typeof AuthenticatedMercadoRoute
   AuthenticatedMetasRoute: typeof AuthenticatedMetasRoute
+  AuthenticatedNoticiasRoute: typeof AuthenticatedNoticiasRoute
   AuthenticatedPlanejadorRoute: typeof AuthenticatedPlanejadorRoute
   AuthenticatedRankingsRoute: typeof AuthenticatedRankingsRoute
   AuthenticatedRebalanceamentoRoute: typeof AuthenticatedRebalanceamentoRoute
@@ -652,6 +672,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHistoricoAportesRoute: AuthenticatedHistoricoAportesRoute,
   AuthenticatedMercadoRoute: AuthenticatedMercadoRoute,
   AuthenticatedMetasRoute: AuthenticatedMetasRoute,
+  AuthenticatedNoticiasRoute: AuthenticatedNoticiasRoute,
   AuthenticatedPlanejadorRoute: AuthenticatedPlanejadorRoute,
   AuthenticatedRankingsRoute: AuthenticatedRankingsRoute,
   AuthenticatedRebalanceamentoRoute: AuthenticatedRebalanceamentoRoute,

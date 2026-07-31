@@ -16,7 +16,14 @@ export interface AlertaDisparado {
   lido: boolean;
   /** Canais em que o alerta foi entregue. */
   canais: string[];
+  /** Origem do alerta: variação de preço (padrão) ou notícia. */
+  tipo?: "preco" | "noticia";
+  /** Título da notícia, quando tipo = "noticia". */
+  titulo?: string;
+  /** Link da notícia, quando tipo = "noticia". */
+  url?: string;
 }
+
 
 const CHAVE = "alertas:historico";
 const LIMITE_REGISTROS = 100;
