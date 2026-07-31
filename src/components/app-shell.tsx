@@ -116,8 +116,12 @@ export function AppShell({
     .join("");
 
   return (
-    <div className="min-h-screen bg-background lg:flex">
-      <aside className="sticky top-0 z-30 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
+    <div className="min-h-dvh bg-background lg:flex">
+      <a href="#conteudo" className="link-pular">
+        Pular para o conteúdo
+      </a>
+      <aside className="sticky top-0 z-30 hidden h-dvh w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
+
         <Link to="/" className="mb-7 flex items-center gap-3 px-1">
           <img
             src={logoIcone}
