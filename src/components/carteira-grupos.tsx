@@ -483,11 +483,8 @@ export function CarteiraGrupos({
                                       ? "flash-baixa"
                                       : ""
                                 }`}
-                                title={
-                                  live
-                                    ? `Fonte: ${live.fonte}${horaCotacao(live.atualizadoEm) ? ` · ${horaCotacao(live.atualizadoEm)}` : ""}${live.erro ? ` · ${live.erro}` : ""}`
-                                    : "Aguardando cotação do provedor de mercado"
-                                }
+                                title={fonteDe(a.ticker)}
+
                               >
                                 {brl(a.precoAtual, 2)}
                               </TableCell>
