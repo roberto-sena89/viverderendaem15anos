@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Info, SlidersHorizontal } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
@@ -27,15 +27,23 @@ export function DialogAlocacaoAlvo() {
   const [aberto, setAberto] = useState(false);
   const [valores, setValores] = useState<Record<string, string>>({});
   const [subValores, setSubValores] = useState<Record<string, string>>({});
+  /** Snapshot do estado salvo ao abrir, usado para desfazer se o usuário fechar sem salvar. */
+  const original = useRef<{ alvo: Record<string, number>; sub: Record<string, number> } | null>(null);
+  const confirmado = useRef(false);
 
   useEffect(() => {
-    if (aberto) {
-      setValores(Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])));
-      setSubValores(
-        Object.fromEntries(SUBS_RENDA_FIXA.map((s) => [s, String(subAlvo[s] ?? 0).replace(".", ",")])),
-      );
-    }
-  }, [aberto, alvo, subAlvo]);
+    if (!aberto) return;
+    // Hidrata apenas ao abrir: evita sobrescrever a digitação quando outra aba
+    // atualiza os alvos enquanto o diálogo está aberto.
+    original.current = { alvo: { ...alvo }, sub: { ...subAlvo } };
+    confirmado.current = false;
+    setValores(Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])));
+    setSubValores(
+      Object.fromEntries(SUBS_RENDA_FIXA.map((s) => [s, String(subAlvo[s] ?? 0).replace(".", ",")])),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aberto]);
+
 
   /** Mantém apenas dígitos e um separador decimal, com no máximo 2 casas. */
   const sanitizar = (bruto: string) => {
@@ -91,6 +99,34 @@ export function DialogAlocacaoAlvo() {
   const tudoZerado = total < 0.01;
   const valido = (somaOk || tudoZerado) && camposInvalidos.size === 0 && !subInvalido;
 
+  /**
+   * Pré-visualização ao vivo: enquanto o diálogo está aberto e os campos são
+   * válidos, os alvos são propagados (com debounce) para a carteira e o
+   * rebalanceamento. Fechar sem salvar restaura o estado anterior.
+   */
+  const serializado = JSON.stringify({ numeros, subNumeros });
+  useEffect(() => {
+    if (!aberto || camposInvalidos.size > 0 || subInvalido) return;
+    const id = window.setTimeout(() => {
+      const { numeros: n, subNumeros: s } = JSON.parse(serializado) as {
+        numeros: Record<string, number>;
+        subNumeros: Record<string, number>;
+      };
+      salvar(n);
+      salvarSub(s);
+    }, 250);
+    return () => window.clearTimeout(id);
+  }, [aberto, serializado, camposInvalidos.size, subInvalido, salvar, salvarSub]);
+
+  /** Desfaz a pré-visualização quando o usuário fecha sem confirmar. */
+  function aoAlternar(estado: boolean) {
+    if (!estado && !confirmado.current && original.current) {
+      salvar(original.current.alvo);
+      salvarSub(original.current.sub);
+    }
+    setAberto(estado);
+  }
+
   /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
   const aoTeclar = (classe: string) => (e: KeyboardEvent<HTMLInputElement>) => {
     const passo =
@@ -105,7 +141,7 @@ export function DialogAlocacaoAlvo() {
   };
 
   return (
-    <Dialog open={aberto} onOpenChange={setAberto}>
+    <Dialog open={aberto} onOpenChange={aoAlternar}>
       <DialogTrigger asChild>
         <Button size="sm" className="h-9 gap-2 px-4 text-xs font-semibold">
           <SlidersHorizontal className="size-4!" />
@@ -273,6 +309,7 @@ export function DialogAlocacaoAlvo() {
             onClick={() => {
               salvar(numeros);
               salvarSub(subNumeros);
+              confirmado.current = true;
               setAberto(false);
               toast.success("Alocação ideal atualizada.");
             }}
