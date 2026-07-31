@@ -16,7 +16,9 @@ import {
   ListOrdered,
 
   Bot,
-  LogOut,, Sparkles } from "lucide-react";
+  LogOut,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme";
 
