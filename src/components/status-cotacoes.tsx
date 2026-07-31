@@ -30,7 +30,9 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
     carregando,
     config,
     salvarConfig,
+    streaming,
   } = useCotacoesTempoReal();
+
 
   // Re-renderiza a cada 10s para manter o "há Xs" vivo.
   const [, setTick] = useState(0);
