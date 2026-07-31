@@ -66,7 +66,11 @@ export function DialogDetalheAtivo({
     queryKey: ["cotacao-detalhe", simbolo],
     queryFn: () => cotacaoFn({ data: { simbolo } }),
     enabled: aberto && !!simbolo,
-    staleTime: 60 * 1000,
+    // Sincroniza sozinho enquanto a janela estiver aberta (inclui ativos
+    // internacionais, que negociam fora do pregão da B3).
+    staleTime: 10 * 1000,
+    refetchInterval: aberto ? 20_000 : false,
+    refetchOnWindowFocus: true,
     retry: false,
   });
 
