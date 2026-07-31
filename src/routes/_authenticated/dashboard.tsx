@@ -170,7 +170,6 @@ function Dashboard() {
     .filter((c) => c.value > 0);
 
 
-  const carteiraVazia = !isLoading && ativos.length === 0;
 
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
