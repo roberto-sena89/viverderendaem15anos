@@ -200,18 +200,27 @@ const TTL = 30_000;
 
 const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/** Cabeçalhos aceitos pelas fontes públicas (o Yahoo bloqueia sem User-Agent). */
+const CABECALHOS = {
+  Accept: "application/json",
+  "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+  "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+};
+
 async function json<T>(url: string, ttl = TTL, timeoutMs = 12_000): Promise<T | null> {
   const cache = memoria.get(url);
   if (cache && cache.expira > Date.now()) return cache.valor as T;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(url, { headers: { Accept: "application/json" }, signal: controller.signal });
+    const res = await fetch(url, { headers: CABECALHOS, signal: controller.signal });
     if (!res.ok) return (cache?.valor as T) ?? null;
     const valor = (await res.json()) as T;
     memoria.set(url, { valor, expira: Date.now() + ttl });
     return valor;
   } catch {
+
     return (cache?.valor as T) ?? null;
   } finally {
     clearTimeout(timer);
