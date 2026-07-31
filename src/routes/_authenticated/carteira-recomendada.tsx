@@ -295,16 +295,8 @@ function CarteiraRecomendadaPage() {
             <strong className={ok ? "text-success" : "text-destructive"}>{fmt(total)}%</strong>
             {ok ? "" : " · ajuste para 100%"}
           </p>
-          <Button
-            size="sm"
-            onClick={() => {
-              salvarVersao();
-              toast.success("Carteira recomendada salva.");
-            }}
-          >
-            <Save className="size-4" /> Salvar como minha carteira recomendada
-          </Button>
         </div>
+
       </Panel>
 
       <div className="grid gap-4 lg:grid-cols-2">
