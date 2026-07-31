@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Coins, LayoutDashboard, PiggyBank, Scale, TrendingUp, Wallet } from "lucide-react";
+import { Coins, LayoutDashboard, ListOrdered, PiggyBank, Scale, TrendingUp, Wallet } from "lucide-react";
 import { ABAS_CARTEIRA, secaoPorRota } from "@/lib/navegacao";
 
 const ICONES: Record<string, typeof LayoutDashboard> = {
@@ -9,6 +9,7 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/aportes": PiggyBank,
   "/estatisticas": TrendingUp,
   "/rebalanceamento": Scale,
+  "/historico-aportes": ListOrdered,
 };
 
 /** Barra de abas da carteira, no padrão Investidor 10. */
