@@ -276,19 +276,20 @@ function HistoricoAportesPage() {
 
       {/* Busca de período + modo + ações */}
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <div className="relative min-w-0 flex-1 sm:max-w-xs">
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="relative min-w-0 sm:max-w-xs sm:flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar ativo, categoria ou corretora"
-              className="pl-9"
+              className="w-full pl-9"
               aria-label="Buscar lançamentos"
             />
           </div>
-          <div className="flex items-center gap-1 rounded-lg border border-border bg-muted/30 p-1">
-            <Button variant="ghost" size="icon" className="size-8" onClick={() => navegar(-1)} aria-label="Período anterior">
+          <div className="flex w-full items-center justify-between gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-auto sm:justify-start">
+            <Button variant="ghost" size="icon" className="size-8 shrink-0" onClick={() => navegar(-1)} aria-label="Período anterior">
+
               <ChevronLeft className="size-4" />
             </Button>
             <Popover>
@@ -296,8 +297,9 @@ function HistoricoAportesPage() {
                 <button
                   type="button"
                   aria-label="Selecionar período"
-                  className="inline-flex min-w-[11rem] items-center justify-center gap-2 rounded-md px-2 py-1 text-sm font-semibold text-foreground transition-colors hover:bg-muted/60"
+                  className="inline-flex min-w-0 flex-1 items-center justify-center gap-2 truncate rounded-md px-2 py-1 text-sm font-semibold text-foreground transition-colors hover:bg-muted/60 sm:min-w-[11rem] sm:flex-none"
                 >
+
                   <CalendarDays className="size-4 text-primary" />
                   {modo === "mensal"
                     ? diaSel
@@ -307,7 +309,7 @@ function HistoricoAportesPage() {
                   <ChevronDown className="size-3.5 text-muted-foreground" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent align="center" className="w-[320px] p-3">
+              <PopoverContent align="center" className="w-[min(20rem,calc(100vw-2rem))] p-3">
                 {/* Ano */}
                 <div className="flex items-center justify-between">
                   <Button
@@ -449,14 +451,14 @@ function HistoricoAportesPage() {
                 ) : null}
               </PopoverContent>
             </Popover>
-            <Button variant="ghost" size="icon" className="size-8" onClick={() => navegar(1)} aria-label="Próximo período">
+            <Button variant="ghost" size="icon" className="size-8 shrink-0" onClick={() => navegar(1)} aria-label="Próximo período">
               <ChevronRight className="size-4" />
             </Button>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg border border-border p-1">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap">
+          <div className="grid grid-cols-2 rounded-lg border border-border p-1 sm:flex">
             {(["mensal", "anual"] as const).map((m) => (
               <button
                 key={m}
@@ -471,10 +473,13 @@ function HistoricoAportesPage() {
               </button>
             ))}
           </div>
-          <Button variant="outline" size="sm" onClick={exportar}>
-            <Download className="size-4" /> Exportar CSV
+          <Button variant="outline" size="sm" className="shrink-0" onClick={exportar}>
+            <Download className="size-4" />
+            <span className="hidden sm:inline">Exportar </span>CSV
           </Button>
+
         </div>
+
       </div>
 
       {/* Cabeçalho do período */}
