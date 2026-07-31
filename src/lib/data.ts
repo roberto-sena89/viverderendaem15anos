@@ -63,6 +63,8 @@ export function useAtivos() {
 export function useAportes() {
   return useQuery({
     queryKey: qk.aportes,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     queryFn: async (): Promise<Aporte[]> => {
       const { data, error } = await supabase
         .from("aportes")
