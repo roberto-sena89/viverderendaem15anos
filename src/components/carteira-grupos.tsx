@@ -746,3 +746,13 @@ export function CarteiraGrupos({
     </div>
   );
 }
+
+/** Identifica a sub-classe de Renda Fixa a partir do ticker/nome do ativo. */
+function subclasseRendaFixa(a: Ativo): string | null {
+  const texto = `${a.ticker ?? ""} ${a.nome ?? ""}`.toLowerCase();
+  if (texto.includes("selic")) return "Tesouro SELIC";
+  if (texto.includes("ipca")) return "Tesouro IPCA+";
+  if (texto.includes("prefix")) return "Tesouro Prefixado";
+  if (texto.includes("cdb")) return "CDB";
+  return null;
+}
