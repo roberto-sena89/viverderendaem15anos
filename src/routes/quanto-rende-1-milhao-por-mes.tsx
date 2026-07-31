@@ -45,7 +45,15 @@ export const Route = createFileRoute("/quanto-rende-1-milhao-por-mes")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "article" },
       { property: "og:url", content: URL },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Comparativo do rendimento mensal de R$ 1 milhão em poupança, Tesouro Selic, CDB e FIIs",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [
