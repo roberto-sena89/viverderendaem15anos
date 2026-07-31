@@ -218,11 +218,20 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
         const marca = `${chave}:${new Date().toISOString().slice(0, 10)}`;
         if (!alertados.current.has(marca)) {
           alertados.current.add(marca);
-          toast.info(
-            `${chave} variou ${c.variacaoPercent > 0 ? "+" : ""}${c.variacaoPercent.toFixed(2)}% hoje.`,
-          );
+          const sinal = c.variacaoPercent > 0 ? "+" : "";
+          const texto = `${chave} variou ${sinal}${c.variacaoPercent.toFixed(2)}% hoje.`;
+          toast.info(texto);
+          const push = config.pushAtivo && notificarPush("Alerta de variação", texto);
+          registrarAlerta({
+            ticker: chave,
+            variacaoPercent: c.variacaoPercent,
+            preco: c.preco,
+            limite: config.alertaPercent,
+            canais: push ? ["no app", "push"] : ["no app"],
+          });
         }
       }
+
     }
     if (Object.keys(novos).length === 0) return;
     setFlash((f) => ({ ...f, ...novos }));
