@@ -507,7 +507,6 @@ export function CarteiraGrupos({
                 <ul className="grid gap-2 border-t p-2 md:hidden">
                   {g.ativos.map((a) => {
                     const saldo = valorAtual(a);
-                    const investido = valorInvestido(a);
                     const variacao = variacaoAtivo(a);
                     const participacao = totalCarteira > 0 ? (saldo / totalCarteira) * 100 : 0;
                     const idealLinha = idealDe(a);
@@ -643,7 +642,6 @@ export function CarteiraGrupos({
                             </dd>
                           </div>
                         </dl>
-                        <p className="sr-only">{investido}</p>
                       </li>
                     );
                   })}
