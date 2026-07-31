@@ -134,7 +134,12 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Semântica financeira: um único verde e um único vermelho no app. */
+  --color-positive: var(--success);
+  --color-negative: var(--destructive);
 }
+
 
 :root {
   --radius: 0.875rem;
