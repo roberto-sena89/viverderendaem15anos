@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/theme";
+import ogImagem from "@/assets/og-quanto-rende-1-milhao.jpg.asset.json";
 
 const TITLE = "Quanto Rende 1 Milhão por Mês? Poupança x Tesouro Selic x FIIs";
 const OG_TITLE = "Quanto rende 1 milhão por mês? Veja a comparação";
@@ -12,6 +13,7 @@ const OG_TITLE = "Quanto rende 1 milhão por mês? Veja a comparação";
 const DESCRIPTION =
   "Quanto rende R$ 1 milhão por mês na poupança, no Tesouro Selic (CDI) e em FIIs: comparação da renda passiva líquida, taxa de retirada segura e o que muda numa carteira diversificada.";
 const URL = "https://viverderendaem15anos.lovable.app/quanto-rende-1-milhao-por-mes";
+const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
 
 const faqs = [
   {
@@ -45,7 +47,15 @@ export const Route = createFileRoute("/quanto-rende-1-milhao-por-mes")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "article" },
       { property: "og:url", content: URL },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Comparativo do rendimento mensal de R$ 1 milhão em poupança, Tesouro Selic, CDB e FIIs",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [

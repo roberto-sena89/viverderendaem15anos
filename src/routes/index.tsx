@@ -6,12 +6,14 @@ import { ThemeToggle } from "@/components/theme";
 import { supabase } from "@/integrations/supabase/client";
 import logoIcone from "@/assets/logo-icone.webp";
 import heroFundo from "@/assets/hero-mercado-fundo.webp";
+import ogImagem from "@/assets/og-home.jpg.asset.json";
 
 const TITLE = "Viver de Renda em 15 Anos — Carteira, Dividendos e Independência";
 const OG_TITLE = "Viver de Renda em 15 Anos: carteira e dividendos";
 const DESCRIPTION =
   "Controle a sua carteira de ações, FIIs e renda fixa, acompanhe dividendos, rebalanceie a alocação e projete em quantos anos você vive de renda.";
 const URL = "https://viverderendaem15anos.lovable.app/";
+const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
 
 
 export const Route = createFileRoute("/")({
@@ -23,7 +25,15 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: URL },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [
       { rel: "canonical", href: URL },
