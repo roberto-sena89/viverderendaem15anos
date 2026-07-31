@@ -123,13 +123,7 @@ function CarteiraRecomendadaPage() {
 
 
   function aplicarNaCarteira() {
-    const novo: Record<string, number> = {};
-    for (const k of Object.keys(alocacaoIdeal)) novo[k] = 0;
-    for (const l of linhas) {
-      const k = chaveClasse(l.classe);
-      novo[k] = (novo[k] ?? 0) + l.alvo;
-    }
-    salvar(novo);
+    salvar(alvoPorClasse);
     toast.success("Alocação-alvo da carteira atualizada com as recomendações.");
   }
 
