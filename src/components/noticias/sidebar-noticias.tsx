@@ -211,23 +211,26 @@ export function TermosDefinicoes() {
       }
       hint="Passe o mouse ou toque para ver o significado"
     >
-      <ul className="flex flex-wrap gap-1.5">
-        {GLOSSARIO.map((g) => (
-          <li key={g.termo}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="rounded-md border border-dashed border-border px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
-                >
-                  {g.termo}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-56 text-xs">{g.definicao}</TooltipContent>
-            </Tooltip>
-          </li>
-        ))}
-      </ul>
+      <TooltipProvider delayDuration={150}>
+        <ul className="flex flex-wrap gap-1.5">
+          {GLOSSARIO.map((g) => (
+            <li key={g.termo}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="rounded-md border border-dashed border-border px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+                  >
+                    {g.termo}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-56 text-xs">{g.definicao}</TooltipContent>
+              </Tooltip>
+            </li>
+          ))}
+        </ul>
+      </TooltipProvider>
+
     </Panel>
   );
 }
