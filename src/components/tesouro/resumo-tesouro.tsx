@@ -31,10 +31,12 @@ export const fmtDataCurta = (iso: string | null | undefined) =>
 export function ResumoTesouro({ dados }: { dados: RespostaTesouro | undefined }) {
   const linhas = dados?.linhas ?? [];
   const taxasReais = linhas
-    .filter((l) => l.indexador === "IPCA" && l.taxaCompra !== null)
+    .filter((l) => l.indexador === "IPCA" && l.taxaCompra !== null && l.anosAteVencimento >= 1)
     .map((l) => l.taxaCompra!);
   const maiorReal = taxasReais.length ? Math.max(...taxasReais) : null;
-  const prefixados = linhas.filter((l) => l.indexador === "PRE" && l.taxaCompra !== null);
+  const prefixados = linhas.filter(
+    (l) => l.indexador === "PRE" && l.taxaCompra !== null && l.anosAteVencimento >= 1,
+  );
   const maiorPre = prefixados.length ? Math.max(...prefixados.map((l) => l.taxaCompra!)) : null;
 
   const cards = [
