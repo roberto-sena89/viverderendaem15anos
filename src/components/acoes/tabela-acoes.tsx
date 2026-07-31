@@ -583,7 +583,7 @@ export function TabelaAcoes({
                           </span>
                         ) : null}
                       </td>
-                      <td className={`px-3 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
+                      <td className={`truncate px-2 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
                         <span className="block font-medium">{fmtPct(l.variacaoPercent)}</span>
                         <span className="block text-[0.68rem]">
                           {l.variacao === null ? "" : fmtMoeda(l.variacao)}
