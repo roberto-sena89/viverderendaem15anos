@@ -131,7 +131,7 @@ function Cotacoes() {
               variant={favoritos ? "default" : "outline"}
               size="sm"
               aria-pressed={favoritos}
-              onClick={() => setFavoritos((v) => !v)}
+              onClick={() => definirFavoritos()}
             >
               <Star className={`size-4 ${favoritos ? "fill-current" : ""}`} />
               Favoritos
