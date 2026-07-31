@@ -11,7 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAtivos, useDividendos } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
+import { useDividendos } from "@/lib/data";
 import { brl, dividendos12m, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
 function Indicador({
@@ -119,7 +120,7 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
 
 /** Faixa de indicadores da carteira (padrão Investidor 10). */
 export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: boolean }) {
-  const { data: ativos = [] } = useAtivos();
+  const { data: ativos = [] } = useAtivosAoVivo();
   const { data: proventos = [] } = useDividendos();
   const [aberto, setAberto] = useState<Detalhe | null>(null);
 

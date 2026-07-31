@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAtivos, useExcluir, useSalvarAtivo } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
+import { useExcluir, useSalvarAtivo } from "@/lib/data";
 import { brl, categorias, resumoCarteira, rotuloCategoria, type Ativo, type Categoria } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira")({
@@ -44,7 +45,7 @@ function CarteiraPage() {
   const [editando, setEditando] = useState<Ativo | null>(null);
   const [open, setOpen] = useState(false);
 
-  const { data: carteira = [], isLoading } = useAtivos();
+  const { data: carteira = [], isLoading } = useAtivosAoVivo();
   const salvar = useSalvarAtivo();
   const excluir = useExcluir("ativos");
   const { totalAtual } = resumoCarteira(carteira);

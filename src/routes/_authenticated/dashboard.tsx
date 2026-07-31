@@ -27,7 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAportes, useAtivos, useDividendos } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
+import { useAportes, useDividendos } from "@/lib/data";
 import { classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import type { Ativo } from "@/lib/portfolio";
@@ -103,7 +104,7 @@ function FiltroSelect({
 }
 
 function Dashboard() {
-  const { data: ativos = [] } = useAtivos();
+  const { data: ativos = [] } = useAtivosAoVivo();
   const { data: aportes = [] } = useAportes();
   const { data: proventos = [] } = useDividendos();
   void proventos;

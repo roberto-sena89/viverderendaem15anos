@@ -26,7 +26,8 @@ import { Panel } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { corCategoria } from "@/lib/cores-ativos";
-import { useAportes, useAtivos } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
+import { useAportes } from "@/lib/data";
 import { brl, pct, resumoCarteira, valorAtual, type Aporte } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
 
@@ -116,7 +117,7 @@ function Skeleton() {
 
 /** Painel analítico da evolução patrimonial: resumo, gráfico, comparativos e distribuição. */
 export function EvolucaoPatrimonio() {
-  const { data: ativos = [], isLoading: carregandoAtivos } = useAtivos();
+  const { data: ativos = [], isLoading: carregandoAtivos } = useAtivosAoVivo();
   const { data: aportes = [], isLoading: carregandoAportes } = useAportes();
 
   const [periodo, setPeriodo] = useState<string>("1a");
