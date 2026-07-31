@@ -533,7 +533,7 @@ export function EvolucaoPatrimonio() {
         title="Patrimônio x total aportado"
         hint="Comparativo mês a mês entre o valor de mercado da carteira e o capital aportado."
         action={
-          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
             {([
               {
                 chave: "patrimonio" as const,
