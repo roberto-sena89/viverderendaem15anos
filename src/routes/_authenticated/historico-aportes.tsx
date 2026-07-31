@@ -74,8 +74,9 @@ const total = (a: Aporte) => a.quantidade * a.preco + a.taxas;
 const ANOS_OPCOES = (atual: string, existentes: string[]) => {
   const base = Number(atual);
   const lista = new Set<string>([atual, ...existentes]);
-  for (let y = base - 10; y <= base + 10; y++) lista.add(String(y));
-  return [...lista].sort((x, y) => Number(y) - Number(x));
+  for (let y = base - 5; y <= base + 2; y++) lista.add(String(y));
+  return [...lista].sort((x, y) => Number(y) - Number(x)).slice(0, 12);
+
 };
 const num = (v: number, casas = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: casas });
@@ -349,7 +350,7 @@ function HistoricoAportesPage() {
                 </div>
 
                 {anosAberto ? (
-                  <div className="mt-3 max-h-40 overflow-y-auto rounded-md border border-border p-1">
+                  <div className="mt-3 rounded-md border border-border p-1">
                     <div className="grid grid-cols-4 gap-1">
                       {ANOS_OPCOES(modo === "mensal" ? mes.slice(0, 4) : ano, anos).map((y) => {
                         const ativo = y === (modo === "mensal" ? mes.slice(0, 4) : ano);
