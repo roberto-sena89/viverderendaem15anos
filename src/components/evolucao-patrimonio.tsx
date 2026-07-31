@@ -369,7 +369,7 @@ export function EvolucaoPatrimonio() {
                 onClick={() => setPeriodo(p.id)}
                 aria-pressed={periodo === p.id}
                 className={cn(
-                  "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
+                  "shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                   periodo === p.id
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border text-muted-foreground hover:bg-muted",
