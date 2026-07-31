@@ -363,23 +363,60 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
                   Colunas
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-60">
-                <DropdownMenuLabel>Exibir indicadores</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="space-y-1 p-1">
-                  {COLUNAS.map((c) => (
-                    <label
-                      key={c.id}
-                      className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+              <DropdownMenuContent
+                align="end"
+                sideOffset={8}
+                className="w-[min(94vw,42rem)] overflow-hidden p-0"
+              >
+                <div className="flex items-center justify-between gap-3 px-4 pt-3 pb-2">
+                  <DropdownMenuLabel className="p-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    Indicadores · {colunas.length}/{COLUNAS.length}
+                  </DropdownMenuLabel>
+                  <div className="flex shrink-0 gap-3 text-xs">
+                    <button
+                      type="button"
+                      className="text-muted-foreground transition-colors hover:text-foreground"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setColunas(COLUNAS_PADRAO);
+                      }}
                     >
-                      <Checkbox
-                        checked={colunas.includes(c.id)}
-                        onCheckedChange={() => alternarColuna(c.id)}
-                        aria-label={c.rotulo}
-                      />
-                      {c.rotulo}
-                    </label>
-                  ))}
+                      Padrão
+                    </button>
+                    <button
+                      type="button"
+                      className="text-muted-foreground transition-colors hover:text-foreground"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setColunas([]);
+                      }}
+                    >
+                      Limpar
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5 px-4 pt-1 pb-4">
+                  {COLUNAS.map((c) => {
+                    const on = colunas.includes(c.id);
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          alternarColuna(c.id);
+                        }}
+                        className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                          on
+                            ? "border-primary/40 bg-primary/15 text-primary"
+                            : "border-border text-muted-foreground hover:bg-muted"
+                        }`}
+                      >
+                        {c.rotulo}
+                      </button>
+                    );
+                  })}
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
