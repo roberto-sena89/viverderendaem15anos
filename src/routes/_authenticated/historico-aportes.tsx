@@ -114,10 +114,11 @@ function HistoricoAportesPage() {
 
   const [mesSel, setMesSel] = useState<string | null>(null);
   const [anoSel, setAnoSel] = useState<string | null>(null);
+  const [diaSel, setDiaSel] = useState<string | null>(null);
   const mes = mesSel ?? meses[0] ?? new Date().toISOString().slice(0, 7);
   const ano = anoSel ?? anos[0] ?? String(new Date().getFullYear());
 
-  const periodo = modo === "mensal" ? mes : ano;
+  const periodo = modo === "mensal" ? (diaSel ? `${mes}-${diaSel}` : mes) : ano;
   const doPeriodo = useMemo(
     () => aportes.filter((a) => a.data.startsWith(periodo)),
     [aportes, periodo],
