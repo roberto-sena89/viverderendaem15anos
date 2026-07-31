@@ -23,6 +23,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 import { chaveBrapi, usePrecosBrapiCarteira } from "@/lib/carteira-brapi";
