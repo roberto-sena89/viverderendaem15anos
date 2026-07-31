@@ -38,6 +38,7 @@ export const ABAS_CARTEIRA = [
   "/aportes",
   "/estatisticas",
   "/rebalanceamento",
+  "/historico-aportes",
 ] as const;
 
 export function secaoPorRota(pathname: string): SecaoNav | undefined {
