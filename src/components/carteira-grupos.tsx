@@ -23,6 +23,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
+import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 import { chaveBrapi, usePrecosBrapiCarteira } from "@/lib/carteira-brapi";
@@ -33,7 +34,7 @@ import {
   
 } from "@/lib/precos-ultimos";
 
-import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
+import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, CLASSE_POS_FIXADO, type Ativo } from "@/lib/portfolio";
 import { useSalvarAtivo } from "@/lib/data";
 import { Input } from "@/components/ui/input";
 import { formatarNumeroBR, numeroBR } from "@/lib/formato-numero";
@@ -144,6 +145,7 @@ export function CarteiraGrupos({
   minimal?: boolean;
 }) {
   const { alvo } = useAlocacaoAlvo();
+  const { subAlvo } = useSubAlocacaoAlvo();
   const { flash, mapa: cotacoes, pregaoAberto } = useCotacoesTempoReal();
   const tickers = useMemo(() => ativosBase.map((a) => a.ticker), [ativosBase]);
   const brapi = usePrecosBrapiCarteira(tickers);
@@ -321,6 +323,23 @@ export function CarteiraGrupos({
         const aberto = fechados[g.classe] === undefined ? !minimal : !fechados[g.classe];
         const cor = corClasse(g.classe);
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
+        // Dentro da Renda Fixa, o "% Ideal" vem das sub-classes definidas em
+        // "Editar alocação ideal" (Tesouro SELIC, IPCA+, Prefixado, CDB),
+        // dividido entre os ativos de cada sub-classe.
+        const contagemSub = new Map<string, number>();
+        if (g.classe === CLASSE_POS_FIXADO) {
+          for (const a of g.ativos) {
+            const sub = subclasseRendaFixa(a);
+            if (sub) contagemSub.set(sub, (contagemSub.get(sub) ?? 0) + 1);
+          }
+        }
+        const idealDe = (a: Ativo) => {
+          if (g.classe !== CLASSE_POS_FIXADO) return idealAtivo;
+          const sub = subclasseRendaFixa(a);
+          const n = sub ? (contagemSub.get(sub) ?? 0) : 0;
+          if (!sub || n === 0) return idealAtivo;
+          return (subAlvo[sub] ?? 0) / n;
+        };
         return (
           <section key={g.classe} className="surface-card overflow-hidden">
             {minimal ? (
@@ -528,7 +547,8 @@ export function CarteiraGrupos({
                         const variacao = variacaoAtivo(a);
                         const rent = investido > 0 ? ((saldo - investido) / investido) * 100 : 0;
                         const participacao = totalCarteira > 0 ? (saldo / totalCarteira) * 100 : 0;
-                        const comprar = participacao < idealAtivo;
+                        const idealLinha = idealDe(a);
+                        const comprar = participacao < idealLinha;
                         return (
                           <TableRow key={a.id}>
                             <TableCell className={cel}>
@@ -639,7 +659,7 @@ export function CarteiraGrupos({
                             )}
                             {colunas.ideal && (
                               <TableCell className={`text-right text-muted-foreground tabular-nums ${colLg} ${cel}`}>
-                                {pct(idealAtivo)}
+                                {pct(idealLinha)}
                               </TableCell>
                             )}
                             {colunas.comprar && (
@@ -726,4 +746,14 @@ export function CarteiraGrupos({
       })}
     </div>
   );
+}
+
+/** Identifica a sub-classe de Renda Fixa a partir do ticker/nome do ativo. */
+function subclasseRendaFixa(a: Ativo): string | null {
+  const texto = `${a.ticker ?? ""} ${a.nome ?? ""}`.toLowerCase();
+  if (texto.includes("selic")) return "Tesouro SELIC";
+  if (texto.includes("ipca")) return "Tesouro IPCA+";
+  if (texto.includes("prefix")) return "Tesouro Prefixado";
+  if (texto.includes("cdb")) return "CDB";
+  return null;
 }
