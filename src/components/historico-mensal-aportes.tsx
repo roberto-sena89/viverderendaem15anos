@@ -416,18 +416,29 @@ export function HistoricoMensalAportes() {
 
                   {aberta && (
                     <div className="mt-2 space-y-2 pl-1 sm:pl-3">
-                      <div className="overflow-x-auto">
-                        <table className="w-full table-auto text-xs">
+                      <div className="w-full min-w-0">
+                        <table className="w-full table-fixed text-xs">
+                          <colgroup>
+                            <col className="w-[4.5rem] sm:w-[5.5rem]" />
+                            <col />
+                            <col className="hidden lg:table-column lg:w-[9rem]" />
+                            <col className="hidden xl:table-column xl:w-[9rem]" />
+                            <col className="hidden sm:table-column sm:w-[4.5rem]" />
+                            <col className="hidden sm:table-column sm:w-[6.5rem]" />
+                            <col className="hidden md:table-column md:w-[5.5rem]" />
+                            <col className="w-[5.5rem] sm:w-[7rem]" />
+                            <col className="w-[2.5rem] sm:w-[5rem]" />
+                          </colgroup>
                           <thead>
                             <tr className="border-b border-border text-[0.85rem] tracking-[0.06em] text-muted-foreground uppercase">
-                              <th className="py-1.5 pr-2 text-left font-semibold">DATA</th>
+                              <th className="py-1.5 pr-2 text-left font-semibold">Data</th>
                               <th className="py-1.5 pr-2 text-left font-semibold">Ativo</th>
-                              <th className="py-1.5 pr-2 text-left font-semibold">Categoria</th>
-                              <th className="py-1.5 pr-2 text-left font-semibold">Corretora</th>
-                              <th className="py-1.5 pr-2 text-right font-semibold">Qtd.</th>
-                              <th className="py-1.5 pr-2 text-right font-semibold">Preço médio</th>
-                              <th className="py-1.5 pr-2 text-right font-semibold">Taxas</th>
-                              <th className="py-1.5 pr-2 text-right font-semibold">Valor aplicado</th>
+                              <th className="hidden py-1.5 pr-2 text-left font-semibold lg:table-cell">Categoria</th>
+                              <th className="hidden py-1.5 pr-2 text-left font-semibold xl:table-cell">Corretora</th>
+                              <th className="hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">Qtd.</th>
+                              <th className="hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">Preço médio</th>
+                              <th className="hidden py-1.5 pr-2 text-right font-semibold md:table-cell">Taxas</th>
+                              <th className="py-1.5 pr-2 text-right font-semibold">Valor</th>
                               <th className="py-1.5 text-right font-semibold">Editar</th>
                             </tr>
                           </thead>
@@ -442,29 +453,38 @@ export function HistoricoMensalAportes() {
                                   {intervalo(i.datas)}
                                 </td>
                                 <td className="py-1.5 pr-2">
-                                  <span className="flex items-center gap-1.5">
+                                  <span className="flex min-w-0 items-center gap-1.5">
                                     <span
                                       className="size-2 shrink-0 rounded-full"
                                       style={{ background: corCategoria(i.categoria) }}
                                     />
-                                    <span className="font-medium">{i.ticker}</span>
+                                    <span className="min-w-0 truncate font-medium" title={i.ticker}>
+                                      {i.ticker}
+                                    </span>
+                                  </span>
+                                  <span className="block truncate pl-3.5 text-[0.78rem] text-muted-foreground lg:hidden">
+                                    {i.categoria.replace(/\n/g, " · ")}
                                   </span>
                                 </td>
-                                <td className="py-1.5 pr-2 text-muted-foreground">
-                                  {i.categoria.replace(/\n/g, " · ")}
+                                <td className="hidden py-1.5 pr-2 text-muted-foreground lg:table-cell">
+                                  <span className="block truncate">{i.categoria.replace(/\n/g, " · ")}</span>
                                 </td>
-                                <td className="py-1.5 pr-2 text-muted-foreground">
-                                  {i.corretoras.length ? i.corretoras.join(", ") : "—"}
+                                <td className="hidden py-1.5 pr-2 text-muted-foreground xl:table-cell">
+                                  <span className="block truncate">
+                                    {i.corretoras.length ? i.corretoras.join(", ") : "—"}
+                                  </span>
                                 </td>
-                                <td className="num py-1.5 pr-2 text-right">
+                                <td className="num hidden py-1.5 pr-2 text-right sm:table-cell">
                                   {i.quantidade.toLocaleString("pt-BR")}
                                 </td>
-                                <td className="num py-1.5 pr-2 text-right">
+                                <td className="num hidden py-1.5 pr-2 text-right sm:table-cell">
                                   {brl(i.quantidade ? i.bruto / i.quantidade : 0, 2)}
                                 </td>
-                                <td className="num py-1.5 pr-2 text-right text-muted-foreground">{brl(i.taxas, 2)}</td>
-                                <td className="num py-1.5 text-right font-semibold">{brl(i.total)}</td>
-                                <td className="py-1.5 pl-2 text-right">
+                                <td className="num hidden py-1.5 pr-2 text-right text-muted-foreground md:table-cell">
+                                  {brl(i.taxas, 2)}
+                                </td>
+                                <td className="num py-1.5 pr-2 text-right font-semibold">{brl(i.total)}</td>
+                                <td className="py-1.5 text-right">
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -478,7 +498,7 @@ export function HistoricoMensalAportes() {
                                     className="h-7 gap-1 px-2 text-[0.78rem]"
                                   >
                                     <Pencil className="size-3.5" />
-                                    Editar
+                                    <span className="hidden sm:inline">Editar</span>
                                   </Button>
                                 </td>
                               </tr>
@@ -487,187 +507,219 @@ export function HistoricoMensalAportes() {
                                   const emEdicao = editando === a.id;
                                   return (
                                     <tr key={a.id} className="bg-muted/30">
-                                      <td className="py-1.5 pr-2 align-top">
-                                        {emEdicao ? (
-                                          <>
-                                            <Input
-                                              type="date"
-                                              min="1990-01-01"
-                                              max={new Date().toISOString().slice(0, 10)}
-                                              value={form.data}
-                                              aria-invalid={!!erros.data}
-                                              aria-label="Data do lançamento"
-                                              onChange={(e) => setForm({ ...form, data: e.target.value })}
-                                              className="h-7 w-32 text-xs"
-                                            />
-                                            <ErroCampo msg={erros.data} />
-                                          </>
-                                        ) : (
-                                          <span className="num text-muted-foreground">{dataCurta(a.data)}</span>
-                                        )}
-                                      </td>
-                                      <td className="py-1.5 pr-2 align-top">
-                                        {emEdicao ? (
-                                          <>
-                                            <Input
-                                              value={form.ticker}
-                                              maxLength={12}
-                                              aria-invalid={!!erros.ticker}
-                                              aria-label="Ticker do ativo"
-                                              onChange={(e) =>
-                                                setForm({ ...form, ticker: mascaraTicker(e.target.value) })
-                                              }
-                                              className="h-7 w-28 text-xs"
-                                            />
-                                            <ErroCampo msg={erros.ticker} />
-                                          </>
-                                        ) : (
-                                          a.ticker
-                                        )}
-                                      </td>
-                                      <td className="py-1.5 pr-2 align-top text-muted-foreground">
-                                        {a.categoria.replace(/\n/g, " · ")}
-                                      </td>
-                                      <td className="py-1.5 pr-2 align-top">
-                                        {emEdicao ? (
-                                          <>
-                                            <Input
-                                              value={form.corretora}
-                                              maxLength={60}
-                                              aria-invalid={!!erros.corretora}
-                                              aria-label="Corretora"
-                                              onChange={(e) => setForm({ ...form, corretora: e.target.value })}
-                                              className="h-7 w-32 text-xs"
-                                            />
-                                            <ErroCampo msg={erros.corretora} />
-                                          </>
-                                        ) : (
-                                          <span className="text-muted-foreground">{a.corretora || "—"}</span>
-                                        )}
-                                      </td>
-                                      <td className="py-1.5 pr-2 text-right align-top">
-                                        {emEdicao ? (
-                                          <>
-                                            <Input
-                                              inputMode="decimal"
-                                              value={form.quantidade}
-                                              aria-invalid={!!erros.quantidade}
-                                              aria-label="Quantidade"
-                                              onChange={(e) =>
-                                                setForm({ ...form, quantidade: mascaraDecimal(e.target.value) })
-                                              }
-                                              className="num h-7 w-20 text-right text-xs"
-                                            />
-                                            <ErroCampo msg={erros.quantidade} />
-                                          </>
-                                        ) : (
-                                          <span className="num">{a.quantidade.toLocaleString("pt-BR")}</span>
-                                        )}
-                                      </td>
-                                      <td className="py-1.5 pr-2 text-right align-top">
-                                        {emEdicao ? (
-                                          <>
-                                            <Input
-                                              inputMode="decimal"
-                                              value={form.preco}
-                                              aria-invalid={!!erros.preco}
-                                              aria-label="Preço unitário"
-                                              onChange={(e) =>
-                                                setForm({ ...form, preco: mascaraDecimal(e.target.value) })
-                                              }
-                                              className="num h-7 w-24 text-right text-xs"
-                                            />
-                                            <ErroCampo msg={erros.preco} />
-                                          </>
-                                        ) : (
-                                          <span className="num">{brl(a.preco, 2)}</span>
-                                        )}
-                                      </td>
-                                      <td className="py-1.5 pr-2 text-right align-top">
-                                        {emEdicao ? (
-                                          <>
-                                            <Input
-                                              inputMode="decimal"
-                                              value={form.taxas}
-                                              aria-invalid={!!erros.taxas}
-                                              aria-label="Taxas"
-                                              onChange={(e) =>
-                                                setForm({ ...form, taxas: mascaraDecimal(e.target.value) })
-                                              }
-                                              className="num h-7 w-20 text-right text-xs"
-                                            />
-                                            <ErroCampo msg={erros.taxas} />
-                                          </>
-                                        ) : (
+                                      <td colSpan={9} className="px-2 py-2">
+                                        <div className="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-3 lg:grid-cols-6">
+                                          <div className="min-w-0">
+                                            <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">
+                                              Data
+                                            </p>
+                                            {emEdicao ? (
+                                              <>
+                                                <Input
+                                                  type="date"
+                                                  min="1990-01-01"
+                                                  max={new Date().toISOString().slice(0, 10)}
+                                                  value={form.data}
+                                                  aria-invalid={!!erros.data}
+                                                  aria-label="Data do lançamento"
+                                                  onChange={(e) => setForm({ ...form, data: e.target.value })}
+                                                  className="h-7 w-full text-xs"
+                                                />
+                                                <ErroCampo msg={erros.data} />
+                                              </>
+                                            ) : (
+                                              <p className="num truncate">{dataCurta(a.data)}</p>
+                                            )}
+                                          </div>
 
-                                          <span className="num text-muted-foreground">{brl(a.taxas, 2)}</span>
-                                        )}
-                                      </td>
-                                      <td className="num py-1.5 text-right align-top font-semibold">
-                                        {emEdicao
-                                          ? brl(
-                                              (Number.isFinite(paraNumero(form.quantidade)) ? paraNumero(form.quantidade) : 0) *
-                                                (Number.isFinite(paraNumero(form.preco)) ? paraNumero(form.preco) : 0) +
-                                                (form.taxas.trim() && Number.isFinite(paraNumero(form.taxas))
-                                                  ? paraNumero(form.taxas)
-                                                  : 0),
-                                              2,
-                                            )
-                                          : brl(a.quantidade * a.preco + a.taxas, 2)}
-                                      </td>
-                                      <td className="py-1.5 pl-2 align-top">
-                                        <div className="flex justify-end gap-1">
-                                          {emEdicao ? (
-                                            <>
-                                              <Button
-                                                type="button"
-                                                size="icon"
-                                                variant="default"
-                                                aria-label="Salvar lançamento"
-                                                title={formValido ? "Salvar" : "Corrija os campos destacados"}
-                                                disabled={atualizar.isPending || !formValido}
-                                                onClick={() => salvar(a)}
-                                                className="size-7"
-                                              >
+                                          <div className="min-w-0">
+                                            <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">
+                                              Ativo
+                                            </p>
+                                            {emEdicao ? (
+                                              <>
+                                                <Input
+                                                  value={form.ticker}
+                                                  maxLength={12}
+                                                  aria-invalid={!!erros.ticker}
+                                                  aria-label="Ticker do ativo"
+                                                  onChange={(e) =>
+                                                    setForm({ ...form, ticker: mascaraTicker(e.target.value) })
+                                                  }
+                                                  className="h-7 w-full text-xs"
+                                                />
+                                                <ErroCampo msg={erros.ticker} />
+                                              </>
+                                            ) : (
+                                              <p className="truncate font-medium" title={a.ticker}>
+                                                {a.ticker}
+                                              </p>
+                                            )}
+                                          </div>
 
-                                                <Check className="size-3.5" />
-                                              </Button>
-                                              <Button
-                                                type="button"
-                                                size="icon"
-                                                variant="ghost"
-                                                aria-label="Cancelar edição"
-                                                onClick={() => setEditando(null)}
-                                                className="size-7"
-                                              >
-                                                <X className="size-3.5" />
-                                              </Button>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <Button
-                                                type="button"
-                                                size="icon"
-                                                variant="outline"
-                                                aria-label="Editar este lançamento"
-                                                onClick={() => iniciarEdicao(a)}
-                                                className="size-7"
-                                              >
-                                                <Pencil className="size-3.5" />
-                                              </Button>
-                                              <Button
-                                                type="button"
-                                                size="icon"
-                                                variant="ghost"
-                                                aria-label="Excluir este lançamento"
-                                                disabled={excluir.isPending}
-                                                onClick={() => remover(a)}
-                                                className="size-7 text-destructive"
-                                              >
-                                                <Trash2 className="size-3.5" />
-                                              </Button>
-                                            </>
-                                          )}
+                                          <div className="min-w-0">
+                                            <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">
+                                              Corretora
+                                            </p>
+                                            {emEdicao ? (
+                                              <>
+                                                <Input
+                                                  value={form.corretora}
+                                                  maxLength={60}
+                                                  aria-invalid={!!erros.corretora}
+                                                  aria-label="Corretora"
+                                                  onChange={(e) => setForm({ ...form, corretora: e.target.value })}
+                                                  className="h-7 w-full text-xs"
+                                                />
+                                                <ErroCampo msg={erros.corretora} />
+                                              </>
+                                            ) : (
+                                              <p className="truncate text-muted-foreground">{a.corretora || "—"}</p>
+                                            )}
+                                          </div>
+
+                                          <div className="min-w-0">
+                                            <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">
+                                              Qtd.
+                                            </p>
+                                            {emEdicao ? (
+                                              <>
+                                                <Input
+                                                  inputMode="decimal"
+                                                  value={form.quantidade}
+                                                  aria-invalid={!!erros.quantidade}
+                                                  aria-label="Quantidade"
+                                                  onChange={(e) =>
+                                                    setForm({ ...form, quantidade: mascaraDecimal(e.target.value) })
+                                                  }
+                                                  className="num h-7 w-full text-right text-xs"
+                                                />
+                                                <ErroCampo msg={erros.quantidade} />
+                                              </>
+                                            ) : (
+                                              <p className="num truncate">{a.quantidade.toLocaleString("pt-BR")}</p>
+                                            )}
+                                          </div>
+
+                                          <div className="min-w-0">
+                                            <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">
+                                              Preço
+                                            </p>
+                                            {emEdicao ? (
+                                              <>
+                                                <Input
+                                                  inputMode="decimal"
+                                                  value={form.preco}
+                                                  aria-invalid={!!erros.preco}
+                                                  aria-label="Preço unitário"
+                                                  onChange={(e) =>
+                                                    setForm({ ...form, preco: mascaraDecimal(e.target.value) })
+                                                  }
+                                                  className="num h-7 w-full text-right text-xs"
+                                                />
+                                                <ErroCampo msg={erros.preco} />
+                                              </>
+                                            ) : (
+                                              <p className="num truncate">{brl(a.preco, 2)}</p>
+                                            )}
+                                          </div>
+
+                                          <div className="min-w-0">
+                                            <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">
+                                              Taxas
+                                            </p>
+                                            {emEdicao ? (
+                                              <>
+                                                <Input
+                                                  inputMode="decimal"
+                                                  value={form.taxas}
+                                                  aria-invalid={!!erros.taxas}
+                                                  aria-label="Taxas"
+                                                  onChange={(e) =>
+                                                    setForm({ ...form, taxas: mascaraDecimal(e.target.value) })
+                                                  }
+                                                  className="num h-7 w-full text-right text-xs"
+                                                />
+                                                <ErroCampo msg={erros.taxas} />
+                                              </>
+                                            ) : (
+                                              <p className="num truncate text-muted-foreground">{brl(a.taxas, 2)}</p>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-2">
+                                          <p className="min-w-0 text-[0.78rem] text-muted-foreground">
+                                            <span className="truncate">{a.categoria.replace(/\n/g, " · ")}</span> ·{" "}
+                                            <span className="num font-semibold text-foreground">
+                                              {emEdicao
+                                                ? brl(
+                                                    (Number.isFinite(paraNumero(form.quantidade))
+                                                      ? paraNumero(form.quantidade)
+                                                      : 0) *
+                                                      (Number.isFinite(paraNumero(form.preco))
+                                                        ? paraNumero(form.preco)
+                                                        : 0) +
+                                                      (form.taxas.trim() && Number.isFinite(paraNumero(form.taxas))
+                                                        ? paraNumero(form.taxas)
+                                                        : 0),
+                                                    2,
+                                                  )
+                                                : brl(a.quantidade * a.preco + a.taxas, 2)}
+                                            </span>
+                                          </p>
+                                          <div className="flex shrink-0 items-center gap-1">
+                                            {emEdicao ? (
+                                              <>
+                                                <Button
+                                                  type="button"
+                                                  size="icon"
+                                                  variant="default"
+                                                  aria-label="Salvar lançamento"
+                                                  title={formValido ? "Salvar" : "Corrija os campos destacados"}
+                                                  disabled={atualizar.isPending || !formValido}
+                                                  onClick={() => salvar(a)}
+                                                  className="size-7"
+                                                >
+                                                  <Check className="size-3.5" />
+                                                </Button>
+                                                <Button
+                                                  type="button"
+                                                  size="icon"
+                                                  variant="ghost"
+                                                  aria-label="Cancelar edição"
+                                                  onClick={() => setEditando(null)}
+                                                  className="size-7"
+                                                >
+                                                  <X className="size-3.5" />
+                                                </Button>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <Button
+                                                  type="button"
+                                                  size="icon"
+                                                  variant="outline"
+                                                  aria-label="Editar este lançamento"
+                                                  onClick={() => iniciarEdicao(a)}
+                                                  className="size-7"
+                                                >
+                                                  <Pencil className="size-3.5" />
+                                                </Button>
+                                                <Button
+                                                  type="button"
+                                                  size="icon"
+                                                  variant="ghost"
+                                                  aria-label="Excluir este lançamento"
+                                                  disabled={excluir.isPending}
+                                                  onClick={() => remover(a)}
+                                                  className="size-7 text-destructive"
+                                                >
+                                                  <Trash2 className="size-3.5" />
+                                                </Button>
+                                              </>
+                                            )}
+                                          </div>
                                         </div>
                                       </td>
                                     </tr>
@@ -683,15 +735,24 @@ export function HistoricoMensalAportes() {
                               const pmTotal = qtdTotal ? m.bruto / qtdTotal : 0;
                               return (
                                 <tr className="border-t-2 border-border bg-muted/40 text-[0.875rem]">
-                                  <td className="py-1.5 pr-2 font-semibold" colSpan={4}>
-                                    Totais do mês · {m.lancamentos} {m.lancamentos === 1 ? "lançamento" : "lançamentos"}
+                                  <td className="py-1.5 pr-2 font-semibold" colSpan={2}>
+                                    <span className="block truncate">
+                                      Totais · {m.lancamentos}{" "}
+                                      {m.lancamentos === 1 ? "lançamento" : "lançamentos"}
+                                    </span>
                                   </td>
-                                  <td className="num py-1.5 pr-2 text-right font-semibold">
+                                  <td className="hidden lg:table-cell" />
+                                  <td className="hidden xl:table-cell" />
+                                  <td className="num hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">
                                     {qtdTotal.toLocaleString("pt-BR")}
                                   </td>
-                                  <td className="num py-1.5 pr-2 text-right font-semibold">{brl(pmTotal, 2)}</td>
-                                  <td className="num py-1.5 pr-2 text-right font-semibold">{brl(m.taxas, 2)}</td>
-                                  <td className="num py-1.5 text-right font-bold">{brl(m.total, 2)}</td>
+                                  <td className="num hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">
+                                    {brl(pmTotal, 2)}
+                                  </td>
+                                  <td className="num hidden py-1.5 pr-2 text-right font-semibold md:table-cell">
+                                    {brl(m.taxas, 2)}
+                                  </td>
+                                  <td className="num py-1.5 pr-2 text-right font-bold">{brl(m.total, 2)}</td>
                                   <td />
                                 </tr>
                               );
