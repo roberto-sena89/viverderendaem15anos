@@ -542,7 +542,7 @@ export function CarteiraGrupos({
                               </div>
                             </TableCell>
                             {colunas.quantidade && (
-                              <TableCell className={`text-right tabular-nums ${cel}`}>{num(a.quantidade)}</TableCell>
+                              <TableCell className={`text-right tabular-nums ${colSm} ${cel}`}>{num(a.quantidade)}</TableCell>
                             )}
                             {colunas.precoMedio && (
                               <TableCell className={`text-right tabular-nums ${colMd} ${cel}`}>{brl(a.precoMedio, 2)}</TableCell>
