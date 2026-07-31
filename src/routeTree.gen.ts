@@ -24,6 +24,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
 import { Route as AuthenticatedAuditoriaRouteImport } from './routes/_authenticated/auditoria'
 import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
+import { Route as AuthenticatedCarteiraRecomendadaRouteImport } from './routes/_authenticated/carteira-recomendada'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCotacoesRouteImport } from './routes/_authenticated/cotacoes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -118,6 +119,12 @@ const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
   path: '/carteira',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCarteiraRecomendadaRoute =
+  AuthenticatedCarteiraRecomendadaRouteImport.update({
+    id: '/carteira-recomendada',
+    path: '/carteira-recomendada',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/aportes': typeof AuthenticatedAportesRoute
   '/auditoria': typeof AuthenticatedAuditoriaRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
+  '/carteira-recomendada': typeof AuthenticatedCarteiraRecomendadaRoute
   '/chat': typeof AuthenticatedChatRoute
   '/cotacoes': typeof AuthenticatedCotacoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -252,6 +260,7 @@ export interface FileRoutesByTo {
   '/aportes': typeof AuthenticatedAportesRoute
   '/auditoria': typeof AuthenticatedAuditoriaRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
+  '/carteira-recomendada': typeof AuthenticatedCarteiraRecomendadaRoute
   '/chat': typeof AuthenticatedChatRoute
   '/cotacoes': typeof AuthenticatedCotacoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -286,6 +295,7 @@ export interface FileRoutesById {
   '/_authenticated/aportes': typeof AuthenticatedAportesRoute
   '/_authenticated/auditoria': typeof AuthenticatedAuditoriaRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
+  '/_authenticated/carteira-recomendada': typeof AuthenticatedCarteiraRecomendadaRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/cotacoes': typeof AuthenticatedCotacoesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/aportes'
     | '/auditoria'
     | '/carteira'
+    | '/carteira-recomendada'
     | '/chat'
     | '/cotacoes'
     | '/dashboard'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/aportes'
     | '/auditoria'
     | '/carteira'
+    | '/carteira-recomendada'
     | '/chat'
     | '/cotacoes'
     | '/dashboard'
@@ -385,6 +397,7 @@ export interface FileRouteTypes {
     | '/_authenticated/aportes'
     | '/_authenticated/auditoria'
     | '/_authenticated/carteira'
+    | '/_authenticated/carteira-recomendada'
     | '/_authenticated/chat'
     | '/_authenticated/cotacoes'
     | '/_authenticated/dashboard'
@@ -530,6 +543,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/carteira-recomendada': {
+      id: '/_authenticated/carteira-recomendada'
+      path: '/carteira-recomendada'
+      fullPath: '/carteira-recomendada'
+      preLoaderRoute: typeof AuthenticatedCarteiraRecomendadaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/chat': {
       id: '/_authenticated/chat'
       path: '/chat'
@@ -649,6 +669,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAportesRoute: typeof AuthenticatedAportesRoute
   AuthenticatedAuditoriaRoute: typeof AuthenticatedAuditoriaRoute
   AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
+  AuthenticatedCarteiraRecomendadaRoute: typeof AuthenticatedCarteiraRecomendadaRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedCotacoesRoute: typeof AuthenticatedCotacoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -666,6 +687,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAportesRoute: AuthenticatedAportesRoute,
   AuthenticatedAuditoriaRoute: AuthenticatedAuditoriaRoute,
   AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
+  AuthenticatedCarteiraRecomendadaRoute: AuthenticatedCarteiraRecomendadaRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedCotacoesRoute: AuthenticatedCotacoesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,

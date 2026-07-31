@@ -17,6 +17,7 @@ export const SECOES: SecaoNav[] = [
   { to: "/estatisticas", rotulo: "Rentabilidade", grupo: "Carteira" },
   { to: "/rebalanceamento", rotulo: "Rebalanceamento", grupo: "Carteira" },
   { to: "/historico-aportes", rotulo: "Histórico de Aportes", grupo: "Carteira" },
+  { to: "/carteira-recomendada", rotulo: "Carteira Recomendada", grupo: "Carteira" },
 
 
 
@@ -39,6 +40,7 @@ export const ABAS_CARTEIRA = [
   "/estatisticas",
   "/rebalanceamento",
   "/historico-aportes",
+  "/carteira-recomendada",
 ] as const;
 
 export function secaoPorRota(pathname: string): SecaoNav | undefined {
