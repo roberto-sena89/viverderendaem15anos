@@ -255,13 +255,12 @@ export function DialogAlocacaoAlvo() {
             variant="ghost"
             size="sm"
             onClick={() => {
-              restaurar();
-              restaurarSub();
-              setAberto(false);
-              toast.success("Alocação ideal restaurada ao padrão.");
+              setValores((v) => Object.fromEntries(Object.keys(v).map((c) => [c, "0,00"])));
+              setSubValores(Object.fromEntries(SUBS_RENDA_FIXA.map((s) => [s, "0,00"])));
+              toast.success("Todas as porcentagens foram zeradas.");
             }}
           >
-            Restaurar padrão
+            Zerar tudo
           </Button>
           <Button
             size="sm"
