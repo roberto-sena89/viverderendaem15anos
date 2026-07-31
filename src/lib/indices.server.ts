@@ -181,7 +181,7 @@ async function taxaReferencia(def: DefIndice): Promise<LinhaIndice> {
   if (!def.sgs) return base;
 
   if (def.codigo === "IPCA") {
-    const pontos = await serieSgs(433, 24);
+    const pontos = await serieSgs(433, 26);
     if (!pontos.length) return base;
     const valores = pontos.map((p) => num(p) ?? 0);
     const mes = valores.at(-1) ?? null;
@@ -202,11 +202,12 @@ async function taxaReferencia(def: DefIndice): Promise<LinhaIndice> {
     };
   }
 
-  const pontos = await serieSgs(def.sgs, 300);
+  const pontos = await serieSgs(def.sgs, 13);
   if (!pontos.length) return base;
   const valores = pontos.map((p) => num(p) ?? 0);
   const atual = valores.at(-1) ?? null;
-  const anoAtras = valores.length > 240 ? valores[valores.length - 241] : valores[0];
+  const anoAtras = valores[0] ?? null;
+
   const rotulo = def.codigo === "SELIC" ? "Selic hoje" : "CDI hoje";
   return {
     ...base,
