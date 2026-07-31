@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Bell, Clock, RefreshCw, Settings2, Wifi, WifiOff } from "lucide-react";
+import { Bell, BellRing, Clock, RefreshCw, Settings2, Wifi, WifiOff } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { pedirPermissaoPush, permissaoPush } from "@/lib/alertas-historico";
 import { INTERVALOS, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+
 
 /** Tempo relativo curto ("há 12s", "às 14:32"). */
 export function tempoRelativo(ts: number | null): string {
