@@ -656,10 +656,10 @@ export function CarteiraGrupos({
                                     d.retorno12m === null
                                       ? "bg-muted text-muted-foreground"
                                       : d.nota >= 7
-                                        ? "bg-pos text-pos-foreground"
+                                        ? "bg-success text-success-foreground"
                                         : d.nota >= 5
                                           ? "bg-foreground text-background"
-                                          : "bg-neg text-neg-foreground"
+                                          : "bg-destructive text-destructive-foreground"
                                   } ${compacto ? "size-6 text-xs" : "size-8 text-sm"}`}
                                 >
                                   {d.retorno12m === null ? "—" : d.nota.toFixed(0)}
