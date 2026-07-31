@@ -429,11 +429,6 @@ function HistoricoAportesPage() {
               <p className="max-w-sm text-sm text-muted-foreground">
                 Registre seu primeiro lançamento para acompanhar a evolução do seu patrimônio mês a mês.
               </p>
-              <DialogTransacao>
-                <Button className="font-display uppercase tracking-wide">
-                  <Plus className="size-4" /> Registrar aporte
-                </Button>
-              </DialogTransacao>
             </div>
           ) : (
             <>
