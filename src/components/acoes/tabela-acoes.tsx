@@ -226,6 +226,7 @@ function Cabecalho({
   ordem,
   aoOrdenar,
   alinhamento = "right",
+  largura,
 }: {
   rotulo: string;
   ajuda: string;
@@ -233,15 +234,22 @@ function Cabecalho({
   ordem: OrdemAcao;
   aoOrdenar: (c: OrdemColunaAcao) => void;
   alinhamento?: "left" | "right";
+  largura?: string;
 }) {
   const ativo = ordem.coluna === coluna;
   return (
-    <th scope="col" className={`px-3 py-2 ${alinhamento === "right" ? "text-right" : "text-left"}`}>
-      <span className={`inline-flex items-center gap-1 ${alinhamento === "right" ? "flex-row-reverse" : ""}`}>
+    <th
+      scope="col"
+      className={`px-2 py-2 ${largura ?? ""} ${alinhamento === "right" ? "text-right" : "text-left"}`}
+    >
+      <span
+        className={`inline-flex max-w-full items-center gap-1 ${alinhamento === "right" ? "flex-row-reverse" : ""}`}
+      >
+
         <button
           type="button"
           onClick={() => aoOrdenar(coluna)}
-          className={`inline-flex items-center gap-1 rounded text-[0.7rem] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors hover:text-foreground ${
+          className={`inline-flex items-center gap-1 rounded text-left text-[0.68rem] leading-tight font-semibold tracking-wide uppercase transition-colors hover:text-foreground ${
             ativo ? "text-foreground" : "text-muted-foreground"
           }`}
           aria-label={`Ordenar por ${rotulo}`}
@@ -290,12 +298,14 @@ function Estrela({ ativo, aoClicar, ticker }: { ativo: boolean; aoClicar: () => 
 export function BadgeSetor({ linha }: { linha: LinhaAcao }) {
   return (
     <span
-      className={`inline-block rounded-full border px-2 py-0.5 text-[0.68rem] font-medium whitespace-nowrap ${COR_SETOR[linha.setor]}`}
+      title={linha.setor}
+      className={`inline-block max-w-full truncate rounded-full border px-2 py-0.5 align-middle text-[0.66rem] font-medium ${COR_SETOR[linha.setor]}`}
     >
       {linha.setor}
     </span>
   );
 }
+
 
 function BadgeNeutro({ texto }: { texto: string | null }) {
   if (!texto) return <span className="text-muted-foreground">—</span>;
@@ -440,13 +450,16 @@ export function TabelaAcoes({
     <TooltipProvider delayDuration={150}>
       <div ref={containerRef}>
         {!ehMobile ? (
-          <div className="hidden overflow-x-auto md:block">
-            <table className="w-full border-collapse text-sm">
+          /* table-fixed + larguras proporcionais: as colunas se comprimem em vez
+             de gerar barra de rolagem horizontal. */
+          <div className="hidden md:block">
+            <table className="w-full table-fixed border-collapse text-sm">
               <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
                 <tr className="border-b border-border">
-                  <th scope="col" className="w-10 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
+                  <th scope="col" className="w-8 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
                     #
                   </th>
+
                   <Cabecalho
                     rotulo="Ativo"
                     ajuda="Ticker e nome da empresa. Clique na linha para ver os detalhes."
@@ -454,6 +467,7 @@ export function TabelaAcoes({
                     ordem={ordem}
                     aoOrdenar={aoOrdenar}
                     alinhamento="left"
+                    largura="w-[18%] min-w-0"
                   />
                   <Cabecalho
                     rotulo="Preço atual"
@@ -461,6 +475,7 @@ export function TabelaAcoes({
                     coluna="preco"
                     ordem={ordem}
                     aoOrdenar={aoOrdenar}
+                    largura="w-[11%]"
                   />
                   <Cabecalho
                     rotulo="Variação do dia"
@@ -468,7 +483,9 @@ export function TabelaAcoes({
                     coluna="variacaoPercent"
                     ordem={ordem}
                     aoOrdenar={aoOrdenar}
+                    largura="w-[11%]"
                   />
+
                   {visiveis.map((c) => (
                     <Cabecalho
                       key={c.id}
@@ -478,8 +495,10 @@ export function TabelaAcoes({
                       ordem={ordem}
                       aoOrdenar={aoOrdenar}
                       alinhamento={ALINHA_ESQUERDA.includes(c.id) ? "left" : "right"}
+                      largura={ALINHA_ESQUERDA.includes(c.id) ? "w-[14%]" : undefined}
                     />
                   ))}
+
                 </tr>
               </thead>
               <tbody>
@@ -511,8 +530,8 @@ export function TabelaAcoes({
                       <td className="px-1 py-2 text-right text-xs text-muted-foreground tabular-nums">
                         {inicioRanking + janela.inicio + i + 1}
                       </td>
-                      <td className="px-3 py-2">
-                        <div className="flex items-center gap-2">
+                      <td className="px-2 py-2">
+                        <div className="flex min-w-0 items-center gap-2">
                           <Estrela
                             ativo={favoritos.includes(l.ticker)}
                             aoClicar={() => aoFavoritar(l.ticker)}
@@ -523,22 +542,25 @@ export function TabelaAcoes({
                               src={l.logo}
                               alt=""
                               loading="lazy"
-                              className="size-6 rounded bg-muted object-contain"
+                              className="size-6 shrink-0 rounded bg-muted object-contain"
                             />
                           ) : (
                             <span className="grid size-6 shrink-0 place-items-center rounded bg-primary-soft text-[0.6rem] font-bold">
                               {l.ticker.slice(0, 2)}
                             </span>
                           )}
-                          <span className="min-w-0">
-                            <span className="block font-display text-[0.9rem] leading-tight">{l.ticker}</span>
-                            <span className="block max-w-[220px] truncate text-xs text-muted-foreground">
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-display text-[0.9rem] leading-tight">
+                              {l.ticker}
+                            </span>
+                            <span className="block truncate text-xs text-muted-foreground">
                               {nomeEmpresa(l)}
                             </span>
                           </span>
                         </div>
                       </td>
-                      <td className="px-3 py-2 text-right">
+                      <td className="truncate px-2 py-2 text-right">
+
                         <span
                           key={`${l.ticker}-${l.preco}`}
                           className={`inline-flex items-center gap-1 rounded px-1 font-medium tabular-nums ${
@@ -565,7 +587,7 @@ export function TabelaAcoes({
                           </span>
                         ) : null}
                       </td>
-                      <td className={`px-3 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
+                      <td className={`truncate px-2 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
                         <span className="block font-medium">{fmtPct(l.variacaoPercent)}</span>
                         <span className="block text-[0.68rem]">
                           {l.variacao === null ? "" : fmtMoeda(l.variacao)}
@@ -574,13 +596,14 @@ export function TabelaAcoes({
                       {visiveis.map((c) => (
                         <td
                           key={c.id}
-                          className={`px-3 py-2 whitespace-nowrap ${
+                          className={`truncate px-2 py-2 text-[0.82rem] whitespace-nowrap ${
                             ALINHA_ESQUERDA.includes(c.id) ? "text-left" : "text-right"
                           }`}
                         >
                           {celulaAcao(c.id, l, h)}
                         </td>
                       ))}
+
                     </tr>
                   );
                 })}
