@@ -306,17 +306,20 @@ async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<Linh
     const grupos: string[][] = [];
     const alvo = defs.filter((d) => !mapa.has(d.ticker.toUpperCase())).map((d) => d.ticker);
     for (let i = 0; i < alvo.length; i += tamanho) grupos.push(alvo.slice(i, i + tamanho));
-    let excedeu = false;
+    let refazer = false;
     await emLotes(grupos, tamanho === 1 ? 8 : 4, async (lote) => {
-      if (excedeu) return;
+      if (refazer) return;
       const r = await brapiPagina(lote, token, mapa);
-      if (r === "limite") excedeu = true;
+      if (r !== "ok") refazer = true;
     });
-    return excedeu;
+    return refazer;
   };
 
-  // Se o plano aceitar menos tickers por chamada, reaprende o limite e refaz.
-  if (await buscar(limiteBrapi)) await buscar(limiteBrapi);
+  // Reaprende limite de tickers / faixa de histórico do plano e refaz.
+  if (await buscar(limiteBrapi)) {
+    if (await buscar(limiteBrapi)) await buscar(limiteBrapi);
+  }
+
 
 
 
