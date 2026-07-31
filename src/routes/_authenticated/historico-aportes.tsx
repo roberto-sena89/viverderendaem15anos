@@ -122,6 +122,7 @@ function HistoricoAportesPage() {
   const [mesSel, setMesSel] = useState<string | null>(null);
   const [anoSel, setAnoSel] = useState<string | null>(null);
   const [diaSel, setDiaSel] = useState<string | null>(null);
+  const [anosAberto, setAnosAberto] = useState(false);
   const mes = mesSel ?? meses[0] ?? new Date().toISOString().slice(0, 7);
   const ano = anoSel ?? anos[0] ?? String(new Date().getFullYear());
 
@@ -321,22 +322,17 @@ function HistoricoAportesPage() {
                   >
                     <ChevronLeft className="size-4" />
                   </Button>
-                  <select
-                    value={modo === "mensal" ? mes.slice(0, 4) : ano}
-                    onChange={(e) =>
-                      modo === "mensal"
-                        ? setMesSel(`${e.target.value}-${mes.slice(5, 7)}`)
-                        : setAnoSel(e.target.value)
-                    }
+                  <button
+                    type="button"
+                    onClick={() => setAnosAberto((v) => !v)}
+                    aria-expanded={anosAberto}
                     aria-label="Selecionar ano"
-                    className="rounded-md border border-border bg-background px-3 py-1 text-sm font-semibold outline-none"
+                    className="flex items-center gap-1 rounded-md border border-border bg-background px-3 py-1 text-sm font-semibold outline-none hover:bg-muted"
                   >
-                    {ANOS_OPCOES(modo === "mensal" ? mes.slice(0, 4) : ano, anos).map((y) => (
-                      <option key={y} value={y}>
-                        {y}
-                      </option>
-                    ))}
-                  </select>
+                    {modo === "mensal" ? mes.slice(0, 4) : ano}
+                    <ChevronDown className={cn("size-3.5 transition-transform", anosAberto && "rotate-180")} />
+                  </button>
+
                   <Button
                     variant="ghost"
                     size="icon"
@@ -352,8 +348,36 @@ function HistoricoAportesPage() {
                   </Button>
                 </div>
 
+                {anosAberto ? (
+                  <div className="mt-3 max-h-40 overflow-y-auto rounded-md border border-border p-1">
+                    <div className="grid grid-cols-4 gap-1">
+                      {ANOS_OPCOES(modo === "mensal" ? mes.slice(0, 4) : ano, anos).map((y) => {
+                        const ativo = y === (modo === "mensal" ? mes.slice(0, 4) : ano);
+                        return (
+                          <button
+                            key={y}
+                            type="button"
+                            onClick={() => {
+                              if (modo === "mensal") setMesSel(`${y}-${mes.slice(5, 7)}`);
+                              else setAnoSel(y);
+                              setAnosAberto(false);
+                            }}
+                            className={cn(
+                              "rounded-md px-1 py-1.5 text-xs font-medium transition-colors",
+                              ativo ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted",
+                            )}
+                          >
+                            {y}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+
                 {/* Meses */}
                 <div className="mt-3 grid grid-cols-4 gap-1">
+
                   {MESES.map((nome, i) => {
                     const chave = `${mes.slice(0, 4)}-${String(i + 1).padStart(2, "0")}`;
                     const ativo = modo === "mensal" && chave === mes;
