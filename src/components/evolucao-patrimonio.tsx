@@ -508,8 +508,6 @@ export function EvolucaoPatrimonio() {
             </Button>
           </div>
         </div>
-
-        </div>
         {periodo === "custom" ? (
           <div className="mt-3 grid grid-cols-2 gap-2 sm:max-w-sm">
             <Input
