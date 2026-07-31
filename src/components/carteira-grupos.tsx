@@ -323,6 +323,23 @@ export function CarteiraGrupos({
         const aberto = fechados[g.classe] === undefined ? !minimal : !fechados[g.classe];
         const cor = corClasse(g.classe);
         const idealAtivo = g.ativos.length > 0 ? g.ideal / g.ativos.length : 0;
+        // Dentro da Renda Fixa, o "% Ideal" vem das sub-classes definidas em
+        // "Editar alocação ideal" (Tesouro SELIC, IPCA+, Prefixado, CDB),
+        // dividido entre os ativos de cada sub-classe.
+        const contagemSub = new Map<string, number>();
+        if (g.classe === CLASSE_POS_FIXADO) {
+          for (const a of g.ativos) {
+            const sub = subclasseRendaFixa(a);
+            if (sub) contagemSub.set(sub, (contagemSub.get(sub) ?? 0) + 1);
+          }
+        }
+        const idealDe = (a: Ativo) => {
+          if (g.classe !== CLASSE_POS_FIXADO) return idealAtivo;
+          const sub = subclasseRendaFixa(a);
+          const n = sub ? (contagemSub.get(sub) ?? 0) : 0;
+          if (!sub || n === 0) return idealAtivo;
+          return (subAlvo[sub] ?? 0) / n;
+        };
         return (
           <section key={g.classe} className="surface-card overflow-hidden">
             {minimal ? (
