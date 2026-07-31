@@ -103,7 +103,7 @@ function FiltroSelect({
 }
 
 function Dashboard() {
-  const { data: ativos = [], isLoading } = useAtivos();
+  const { data: ativos = [] } = useAtivos();
   const { data: aportes = [] } = useAportes();
   const { data: proventos = [] } = useDividendos();
   void proventos;
