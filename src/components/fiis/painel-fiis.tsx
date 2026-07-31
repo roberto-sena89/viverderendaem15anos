@@ -48,6 +48,7 @@ import type { HistoricoFii, LinhaFii, TipoFii } from "@/lib/fiis-base";
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
+import { mesclarPrecos, useFiisAoVivo } from "@/lib/fiis-tempo-real";
 
 const CHAVE_COLUNAS = "fiis:colunas";
 const COLUNAS_PADRAO: ColunaId[] = ["patrimonio", "pvp", "dy12", "liquidez", "tipo", "var12m", "segmento"];
