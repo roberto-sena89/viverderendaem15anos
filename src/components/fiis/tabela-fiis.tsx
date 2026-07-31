@@ -13,6 +13,7 @@ import {
   nomeCurto,
 } from "@/components/fiis/formatos-fii";
 import { COR_TIPO, type HistoricoFii, type LinhaFii } from "@/lib/fiis-base";
+import { useEhMobile, useJanelaVirtual } from "@/lib/fiis-virtualizacao";
 
 export type ColunaId =
   | "patrimonio"
@@ -66,6 +67,8 @@ type Props = {
   aoAbrir: (l: LinhaFii) => void;
   carregando: boolean;
   inicioRanking: number;
+  /** Tickers efetivamente renderizados na viewport (para lotes de indicadores). */
+  aoVisiveis?: (tickers: string[]) => void;
 };
 
 /** Guarda o preço anterior de cada ticker para acionar o flash de atualização. */
@@ -196,6 +199,9 @@ function celula(id: ColunaId, l: LinhaFii, h: HistoricoFii | undefined) {
 
 const ALINHA_ESQUERDA: ColunaId[] = ["tipo", "segmento"];
 
+const ALTURA_LINHA = 53;
+const ALTURA_CARD = 186;
+
 /** Grade principal: tabela densa no desktop, cards compactos no mobile. */
 export function TabelaFiis({
   linhas,
@@ -211,9 +217,26 @@ export function TabelaFiis({
   aoAbrir,
   carregando,
   inicioRanking,
+  aoVisiveis,
 }: Props) {
   const flashes = useFlash(linhas);
   const visiveis = COLUNAS.filter((c) => colunas.includes(c.id));
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const ehMobile = useEhMobile();
+  const janela = useJanelaVirtual(containerRef, linhas.length, ehMobile ? ALTURA_CARD : ALTURA_LINHA);
+
+  const naJanela = useMemo(
+    () => linhas.slice(janela.inicio, janela.fim),
+    [linhas, janela.inicio, janela.fim],
+  );
+
+  // Informa ao painel quais fundos estão realmente na tela para que os
+  // indicadores sejam pedidos em um único lote — sem multiplicar chamadas.
+  const chaveVisivel = naJanela.map((l) => l.ticker).join(",");
+  useEffect(() => {
+    aoVisiveis?.(chaveVisivel ? chaveVisivel.split(",") : []);
+  }, [chaveVisivel, aoVisiveis]);
 
   if (carregando) {
     return (
@@ -232,220 +255,241 @@ export function TabelaFiis({
     );
   }
 
+  const espacoTopo = janela.inicio * (ehMobile ? ALTURA_CARD : ALTURA_LINHA);
+  const espacoBase = Math.max(0, linhas.length - janela.fim) * (ehMobile ? ALTURA_CARD : ALTURA_LINHA);
+  const colunasTotais = visiveis.length + 5;
+
   return (
     <TooltipProvider delayDuration={150}>
-      {/* Desktop / tablet */}
-      <div className="hidden md:block">
-        <table className="w-full border-collapse text-sm">
-          <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
-            <tr className="border-b border-border">
-              <th scope="col" className="w-10 px-2 py-2 text-left">
-                <span className="sr-only">Selecionar</span>
-              </th>
-              <th scope="col" className="w-10 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
-                #
-              </th>
-              <Cabecalho
-                rotulo="Ativo"
-                ajuda="Ticker e nome do fundo. Clique na linha para ver os detalhes."
-                coluna="ticker"
-                ordem={ordem}
-                aoOrdenar={aoOrdenar}
-                alinhamento="left"
-              />
-              <Cabecalho
-                rotulo="Preço atual"
-                ajuda="Última cotação negociada, sincronizada durante o pregão."
-                coluna="preco"
-                ordem={ordem}
-                aoOrdenar={aoOrdenar}
-              />
-              <Cabecalho
-                rotulo="Variação do dia"
-                ajuda="Diferença frente ao fechamento anterior, em reais e em percentual."
-                coluna="variacaoPercent"
-                ordem={ordem}
-                aoOrdenar={aoOrdenar}
-              />
-              {visiveis.map((c) => (
-                <Cabecalho
-                  key={c.id}
-                  rotulo={c.rotulo}
-                  ajuda={c.ajuda}
-                  coluna={c.id}
-                  ordem={ordem}
-                  aoOrdenar={aoOrdenar}
-                  alinhamento={ALINHA_ESQUERDA.includes(c.id) ? "left" : "right"}
-                />
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {linhas.map((l, i) => {
+      <div ref={containerRef}>
+        {/* Desktop / tablet */}
+        {!ehMobile ? (
+          <div className="hidden md:block">
+            <table className="w-full border-collapse text-sm">
+              <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
+                <tr className="border-b border-border">
+                  <th scope="col" className="w-10 px-2 py-2 text-left">
+                    <span className="sr-only">Selecionar</span>
+                  </th>
+                  <th scope="col" className="w-10 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
+                    #
+                  </th>
+                  <Cabecalho
+                    rotulo="Ativo"
+                    ajuda="Ticker e nome do fundo. Clique na linha para ver os detalhes."
+                    coluna="ticker"
+                    ordem={ordem}
+                    aoOrdenar={aoOrdenar}
+                    alinhamento="left"
+                  />
+                  <Cabecalho
+                    rotulo="Preço atual"
+                    ajuda="Última cotação negociada, sincronizada durante o pregão."
+                    coluna="preco"
+                    ordem={ordem}
+                    aoOrdenar={aoOrdenar}
+                  />
+                  <Cabecalho
+                    rotulo="Variação do dia"
+                    ajuda="Diferença frente ao fechamento anterior, em reais e em percentual."
+                    coluna="variacaoPercent"
+                    ordem={ordem}
+                    aoOrdenar={aoOrdenar}
+                  />
+                  {visiveis.map((c) => (
+                    <Cabecalho
+                      key={c.id}
+                      rotulo={c.rotulo}
+                      ajuda={c.ajuda}
+                      coluna={c.id}
+                      ordem={ordem}
+                      aoOrdenar={aoOrdenar}
+                      alinhamento={ALINHA_ESQUERDA.includes(c.id) ? "left" : "right"}
+                    />
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {espacoTopo > 0 ? (
+                  <tr aria-hidden style={{ height: espacoTopo }}>
+                    <td colSpan={colunasTotais} />
+                  </tr>
+                ) : null}
+                {naJanela.map((l, i) => {
+                  const h = historico.get(l.ticker);
+                  const flash = flashes.get(l.ticker);
+                  const posicao = posicoes.get(l.ticker);
+                  const rentabilidade =
+                    posicao && posicao.precoMedio > 0 && l.preco
+                      ? ((l.preco - posicao.precoMedio) / posicao.precoMedio) * 100
+                      : null;
+                  return (
+                    <tr
+                      key={l.ticker}
+                      tabIndex={0}
+                      onClick={() => aoAbrir(l)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") aoAbrir(l);
+                      }}
+                      className={`cursor-pointer border-b border-border/60 transition-colors hover:bg-muted/40 focus-visible:bg-muted/50 focus-visible:outline-none ${
+                        posicao ? "border-l-2 border-l-primary" : ""
+                      }`}
+                    >
+                      <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={selecionados.includes(l.ticker)}
+                          onCheckedChange={() => aoSelecionar(l.ticker)}
+                          aria-label={`Selecionar ${l.ticker} para comparar`}
+                        />
+                      </td>
+                      <td className="px-1 py-2 text-right text-xs text-muted-foreground tabular-nums">
+                        {inicioRanking + janela.inicio + i + 1}
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <Estrela
+                            ativo={favoritos.includes(l.ticker)}
+                            aoClicar={() => aoFavoritar(l.ticker)}
+                            ticker={l.ticker}
+                          />
+                          {l.logo ? (
+                            <img src={l.logo} alt="" loading="lazy" className="size-6 rounded bg-muted object-contain" />
+                          ) : (
+                            <span className="grid size-6 shrink-0 place-items-center rounded bg-primary-soft text-[0.6rem] font-bold">
+                              {l.ticker.slice(0, 2)}
+                            </span>
+                          )}
+                          <span className="min-w-0">
+                            <span className="block font-display text-[0.9rem] leading-tight">{l.ticker}</span>
+                            <span className="block max-w-[220px] truncate text-xs text-muted-foreground">
+                              {nomeCurto(l)}
+                            </span>
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        <span
+                          key={`${l.ticker}-${l.preco}`}
+                          className={`inline-flex items-center gap-1 rounded px-1 font-medium tabular-nums ${
+                            flash === "alta" ? "flash-alta" : flash === "baixa" ? "flash-baixa" : ""
+                          }`}
+                        >
+                          {l.precoDefasado ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span aria-label="Cotação desatualizada">
+                                  <AlertTriangle className="size-3.5 text-amber-400" />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent className="text-xs">
+                                Sincronização ao vivo indisponível para este fundo — exibindo o último fechamento.
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : null}
+                          {fmtMoeda(l.preco)}
+                        </span>
+                        {rentabilidade !== null ? (
+                          <span className={`block text-[0.68rem] ${corVar(rentabilidade)}`}>
+                            sua posição {fmtPct(rentabilidade)}
+                          </span>
+                        ) : null}
+                      </td>
+                      <td className={`px-3 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
+                        <span className="block font-medium">{fmtPct(l.variacaoPercent)}</span>
+                        <span className="block text-[0.68rem]">{l.variacao === null ? "" : fmtMoeda(l.variacao)}</span>
+                      </td>
+                      {visiveis.map((c) => (
+                        <td
+                          key={c.id}
+                          className={`px-3 py-2 ${ALINHA_ESQUERDA.includes(c.id) ? "text-left" : "text-right"}`}
+                        >
+                          {celula(c.id, l, h)}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+                {espacoBase > 0 ? (
+                  <tr aria-hidden style={{ height: espacoBase }}>
+                    <td colSpan={colunasTotais} />
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          /* Mobile */
+          <div className="grid gap-2 p-3 md:hidden">
+            {espacoTopo > 0 ? <div aria-hidden style={{ height: espacoTopo }} /> : null}
+            {naJanela.map((l, i) => {
               const h = historico.get(l.ticker);
               const flash = flashes.get(l.ticker);
               const posicao = posicoes.get(l.ticker);
-              const rentabilidade =
-                posicao && posicao.precoMedio > 0 && l.preco
-                  ? ((l.preco - posicao.precoMedio) / posicao.precoMedio) * 100
-                  : null;
               return (
-                <tr
+                <button
                   key={l.ticker}
-                  tabIndex={0}
+                  type="button"
                   onClick={() => aoAbrir(l)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") aoAbrir(l);
-                  }}
-                  className={`cursor-pointer border-b border-border/60 transition-colors hover:bg-muted/40 focus-visible:bg-muted/50 focus-visible:outline-none ${
+                  className={`rounded-lg border border-border bg-card p-3 text-left ${
                     posicao ? "border-l-2 border-l-primary" : ""
                   }`}
                 >
-                  <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
-                    <Checkbox
-                      checked={selecionados.includes(l.ticker)}
-                      onCheckedChange={() => aoSelecionar(l.ticker)}
-                      aria-label={`Selecionar ${l.ticker} para comparar`}
-                    />
-                  </td>
-                  <td className="px-1 py-2 text-right text-xs text-muted-foreground tabular-nums">
-                    {inicioRanking + i + 1}
-                  </td>
-                  <td className="px-3 py-2">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
                       <Estrela
                         ativo={favoritos.includes(l.ticker)}
                         aoClicar={() => aoFavoritar(l.ticker)}
                         ticker={l.ticker}
                       />
-                      {l.logo ? (
-                        <img src={l.logo} alt="" loading="lazy" className="size-6 rounded bg-muted object-contain" />
-                      ) : (
-                        <span className="grid size-6 shrink-0 place-items-center rounded bg-primary-soft text-[0.6rem] font-bold">
-                          {l.ticker.slice(0, 2)}
-                        </span>
-                      )}
                       <span className="min-w-0">
-                        <span className="block font-display text-[0.9rem] leading-tight">{l.ticker}</span>
-                        <span className="block max-w-[220px] truncate text-xs text-muted-foreground">
-                          {nomeCurto(l)}
+                        <span className="font-display block text-sm">
+                          <span className="mr-1 text-xs text-muted-foreground tabular-nums">
+                            {inicioRanking + janela.inicio + i + 1}.
+                          </span>
+                          {l.ticker}
                         </span>
+                        <span className="block truncate text-xs text-muted-foreground">{nomeCurto(l)}</span>
                       </span>
                     </div>
-                  </td>
-                  <td className="px-3 py-2 text-right">
-                    <span
-                      key={`${l.ticker}-${l.preco}`}
-                      className={`inline-flex items-center gap-1 rounded px-1 font-medium tabular-nums ${
-                        flash === "alta" ? "flash-alta" : flash === "baixa" ? "flash-baixa" : ""
-                      }`}
-                    >
-                      {l.precoDefasado ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span aria-label="Cotação desatualizada">
-                              <AlertTriangle className="size-3.5 text-amber-400" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="text-xs">
-                            Sincronização ao vivo indisponível para este fundo — exibindo o último fechamento.
-                          </TooltipContent>
-                        </Tooltip>
-                      ) : null}
-                      {fmtMoeda(l.preco)}
-                    </span>
-                    {rentabilidade !== null ? (
-                      <span className={`block text-[0.68rem] ${corVar(rentabilidade)}`}>
-                        sua posição {fmtPct(rentabilidade)}
+                    <div className="text-right">
+                      <span
+                        key={`${l.ticker}-${l.preco}`}
+                        className={`block text-base font-semibold tabular-nums ${
+                          flash === "alta" ? "flash-alta" : flash === "baixa" ? "flash-baixa" : ""
+                        }`}
+                      >
+                        {fmtMoeda(l.preco)}
                       </span>
-                    ) : null}
-                  </td>
-                  <td className={`px-3 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
-                    <span className="block font-medium">{fmtPct(l.variacaoPercent)}</span>
-                    <span className="block text-[0.68rem]">{l.variacao === null ? "" : fmtMoeda(l.variacao)}</span>
-                  </td>
-                  {visiveis.map((c) => (
-                    <td
-                      key={c.id}
-                      className={`px-3 py-2 ${ALINHA_ESQUERDA.includes(c.id) ? "text-left" : "text-right"}`}
-                    >
-                      {celula(c.id, l, h)}
-                    </td>
-                  ))}
-                </tr>
+                      <span className={`block text-xs font-medium tabular-nums ${corVar(l.variacaoPercent)}`}>
+                        {fmtPct(l.variacaoPercent)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-border/60 pt-2 text-xs">
+                    <Info2 rotulo="Dividend yield" valor={fmtPctSimples(l.dy12, 2)} />
+                    <Info2 rotulo="P/VP" valor={fmtNumero(l.pvp, 2)} />
+                    <Info2 rotulo="Patrimônio" valor={fmtCompacto(l.patrimonio)} />
+                    <Info2 rotulo="Liquidez" valor={fmtCompacto(l.liquidez)} />
+                    <Info2 rotulo="DY 5 anos" valor={fmtPctSimples(h?.dy5a ?? null, 2)} />
+                    <Info2 rotulo="Var. 12m" valor={fmtPct(h?.var12m ?? null)} cor={corVar(h?.var12m)} />
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    <BadgeTipo linha={l} />
+                    <span className="rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[0.68rem] text-muted-foreground">
+                      {l.segmento}
+                    </span>
+                  </div>
+                </button>
               );
             })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile */}
-      <div className="grid gap-2 p-3 md:hidden">
-        {linhas.map((l, i) => {
-          const h = historico.get(l.ticker);
-          const flash = flashes.get(l.ticker);
-          const posicao = posicoes.get(l.ticker);
-          return (
-            <button
-              key={l.ticker}
-              type="button"
-              onClick={() => aoAbrir(l)}
-              className={`rounded-lg border border-border bg-card p-3 text-left ${
-                posicao ? "border-l-2 border-l-primary" : ""
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-2">
-                  <Estrela
-                    ativo={favoritos.includes(l.ticker)}
-                    aoClicar={() => aoFavoritar(l.ticker)}
-                    ticker={l.ticker}
-                  />
-                  <span className="min-w-0">
-                    <span className="font-display block text-sm">
-                      <span className="mr-1 text-xs text-muted-foreground tabular-nums">
-                        {inicioRanking + i + 1}.
-                      </span>
-                      {l.ticker}
-                    </span>
-                    <span className="block truncate text-xs text-muted-foreground">{nomeCurto(l)}</span>
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span
-                    key={`${l.ticker}-${l.preco}`}
-                    className={`block text-base font-semibold tabular-nums ${
-                      flash === "alta" ? "flash-alta" : flash === "baixa" ? "flash-baixa" : ""
-                    }`}
-                  >
-                    {fmtMoeda(l.preco)}
-                  </span>
-                  <span className={`block text-xs font-medium tabular-nums ${corVar(l.variacaoPercent)}`}>
-                    {fmtPct(l.variacaoPercent)}
-                  </span>
-                </div>
-              </div>
-              <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-border/60 pt-2 text-xs">
-                <Info2 rotulo="Dividend yield" valor={fmtPctSimples(l.dy12, 2)} />
-                <Info2 rotulo="P/VP" valor={fmtNumero(l.pvp, 2)} />
-                <Info2 rotulo="Patrimônio" valor={fmtCompacto(l.patrimonio)} />
-                <Info2 rotulo="Liquidez" valor={fmtCompacto(l.liquidez)} />
-                <Info2 rotulo="DY 5 anos" valor={fmtPctSimples(h?.dy5a ?? null, 2)} />
-                <Info2 rotulo="Var. 12m" valor={fmtPct(h?.var12m ?? null)} cor={corVar(h?.var12m)} />
-              </div>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                <BadgeTipo linha={l} />
-                <span className="rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[0.68rem] text-muted-foreground">
-                  {l.segmento}
-                </span>
-              </div>
-            </button>
-          );
-        })}
+            {espacoBase > 0 ? <div aria-hidden style={{ height: espacoBase }} /> : null}
+          </div>
+        )}
       </div>
     </TooltipProvider>
   );
 }
+
 
 function Info2({ rotulo, valor, cor }: { rotulo: string; valor: string; cor?: string }) {
   return (
