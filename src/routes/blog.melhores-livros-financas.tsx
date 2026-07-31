@@ -265,7 +265,7 @@ function LivrosPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-5 py-12">
+      <main id="conteudo" className="mx-auto max-w-4xl px-5 py-12">
         <article>
           <nav aria-label="Trilha de navegação" className="text-xs text-muted-foreground">
             <Link to="/" className="hover:text-foreground">

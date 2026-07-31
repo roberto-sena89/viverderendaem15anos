@@ -122,7 +122,7 @@ function GuiaPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-5 py-12">
+      <main id="conteudo" className="mx-auto max-w-3xl px-5 py-12">
         <article>
           <p className="text-xs tracking-wide text-muted-foreground uppercase">Guia completo</p>
           <h1 className="mt-3 text-4xl leading-tight font-semibold">

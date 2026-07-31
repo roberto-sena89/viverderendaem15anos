@@ -239,7 +239,7 @@ function HomePage() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-6xl px-6 pb-24">
+      <main id="conteudo" className="mx-auto max-w-6xl px-6 pb-24">
         <section className="grid gap-4 pt-14 sm:grid-cols-3">
           {recursos.map((r) => (
             <article key={r.title} className="bg-card rounded-xl border p-5">
