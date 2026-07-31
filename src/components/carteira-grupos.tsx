@@ -528,12 +528,16 @@ export function CarteiraGrupos({
                         return (
                           <TableRow key={a.id}>
                             <TableCell className={cel}>
-                              <div className={`flex items-center ${compacto ? "gap-2" : "gap-3"}`}>
-                                {compacto ? null : <TickerMark ticker={a.ticker} />}
+                              <div className={`flex min-w-0 items-center ${compacto ? "gap-2" : "gap-2 sm:gap-3"}`}>
+                                {compacto ? null : (
+                                  <span className="hidden shrink-0 sm:inline-flex">
+                                    <TickerMark ticker={a.ticker} />
+                                  </span>
+                                )}
                                 <div className="min-w-0">
-                                  <p className="font-display leading-tight font-bold">{a.ticker}</p>
+                                  <p className="truncate font-display leading-tight font-bold">{a.ticker}</p>
                                   <p
-                                    className={`truncate text-xs text-muted-foreground ${compacto ? "max-w-40" : "max-w-56"}`}
+                                    className={`truncate text-[0.7rem] text-muted-foreground sm:text-xs ${compacto ? "max-w-32 sm:max-w-40" : "max-w-36 sm:max-w-56"}`}
                                     title={a.nome || a.categoria}
                                   >
                                     {a.nome || a.categoria}
