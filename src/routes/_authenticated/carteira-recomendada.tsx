@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { History, Lock, Plus, Save, Search, Trash2, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
@@ -59,7 +59,7 @@ function chaveClasse(classe: string) {
 const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 function CarteiraRecomendadaPage() {
-  const { perfil, trocarPerfil, linhas, setLinhas, notas, setNotas, versoes, salvarVersao, restaurarVersao } =
+  const { perfil, trocarPerfil, linhas, setLinhas, notas, setNotas, versoes, salvarVersao, restaurarVersao, pronto } =
     useCarteiraRecomendadaStore();
   const { salvar } = useAlocacaoAlvo();
 
@@ -74,6 +74,28 @@ function CarteiraRecomendadaPage() {
     for (const l of linhas) mapa.set(l.grupo, [...(mapa.get(l.grupo) ?? []), l]);
     return [...mapa.entries()];
   }, [linhas]);
+
+  /** Alvos por classe derivados das linhas recomendadas. */
+  const alvoPorClasse = useMemo(() => {
+    const novo: Record<string, number> = {};
+    for (const k of Object.keys(alocacaoIdeal)) novo[k] = 0;
+    for (const l of linhas) {
+      const k = chaveClasse(l.classe);
+      novo[k] = (novo[k] ?? 0) + l.alvo;
+    }
+    return novo;
+  }, [linhas]);
+
+  // Sincronização automática e em tempo real com a aba "Rebalanceamento".
+  const ultimoAplicado = useRef<string>("");
+  useEffect(() => {
+    if (!pronto) return;
+    const assinatura = JSON.stringify(alvoPorClasse);
+    if (assinatura === ultimoAplicado.current) return;
+    ultimoAplicado.current = assinatura;
+    salvar(alvoPorClasse);
+  }, [alvoPorClasse, pronto, salvar]);
+
 
 
 
@@ -101,13 +123,7 @@ function CarteiraRecomendadaPage() {
 
 
   function aplicarNaCarteira() {
-    const novo: Record<string, number> = {};
-    for (const k of Object.keys(alocacaoIdeal)) novo[k] = 0;
-    for (const l of linhas) {
-      const k = chaveClasse(l.classe);
-      novo[k] = (novo[k] ?? 0) + l.alvo;
-    }
-    salvar(novo);
+    salvar(alvoPorClasse);
     toast.success("Alocação-alvo da carteira atualizada com as recomendações.");
   }
 
