@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GradeCotacoes } from "@/components/cotacoes/grade-cotacoes";
 import { VisaoGeralMercado } from "@/components/cotacoes/visao-geral";
+import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
 
