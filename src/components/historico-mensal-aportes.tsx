@@ -11,6 +11,7 @@ import { GraficoAportesMensais } from "@/components/grafico-aportes-mensais";
 
 type Item = {
   ticker: string;
+  nome: string;
   categoria: string;
   corretoras: string[];
   datas: string[];
