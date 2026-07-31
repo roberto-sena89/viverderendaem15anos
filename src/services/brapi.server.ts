@@ -60,6 +60,11 @@ export const ATIVOS_TICKER: AtivoTicker[] = [
 ];
 
 const TTL_MS = 5_000;
+/** Cada ativo é revalidado na BRAPI no máximo a cada 20s (plano gratuito: 1 ativo/requisição). */
+const TTL_ATIVO_MS = 20_000;
+/** Quantos ativos são revalidados na BRAPI por ciclo (rodízio). */
+const LOTE_POR_CICLO = 6;
+
 const NAVEGADOR = {
   "User-Agent":
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
@@ -68,135 +73,107 @@ const NAVEGADOR = {
 
 const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : null);
 
+/** Último valor conhecido por ativo (cache de fallback quando a fonte falha). */
+const porAtivo = new Map<string, { em: number; valor: CotacaoTicker }>();
 let cache: { em: number; valor: CotacaoTicker[] } | null = null;
 let emVoo: Promise<CotacaoTicker[]> | null = null;
+let cursor = 0;
+let ultimoYahoo = 0;
 
-function url(caminho: string, params: Record<string, string>) {
-  const qs = new URLSearchParams(params);
-  const token = process.env.BRAPI_TOKEN;
-  if (token) qs.set("token", token);
-  return `https://brapi.dev${caminho}?${qs.toString()}`;
+function base(a: AtivoTicker): CotacaoTicker {
+  return {
+    id: a.id,
+    rotulo: a.rotulo,
+    grupo: a.grupo,
+    preco: null,
+    variacaoPercent: null,
+    moeda: "BRL",
+    pontos: a.pontos === true,
+  };
 }
 
-async function json(u: string): Promise<Record<string, unknown> | null> {
+/** BRAPI: cotação individual (o plano gratuito aceita 1 ativo por requisição). */
+async function brapiUnitario(a: AtivoTicker): Promise<CotacaoTicker | null> {
   const token = process.env.BRAPI_TOKEN;
+  const qs = token ? `?token=${encodeURIComponent(token)}` : "";
   try {
-    const res = await fetch(u, {
+    const res = await fetch(`https://brapi.dev/api/quote/${encodeURIComponent(a.simbolo)}${qs}`, {
       headers: token ? { ...NAVEGADOR, Authorization: `Bearer ${token}` } : NAVEGADOR,
     });
     if (!res.ok) return null;
-    return (await res.json()) as Record<string, unknown>;
+    const j = (await res.json()) as { results?: Array<Record<string, unknown>> };
+    const r = j?.results?.[0];
+    if (!r) return null;
+    const preco = num(r.regularMarketPrice);
+    if (preco === null) return null;
+    return {
+      ...base(a),
+      preco,
+      variacaoPercent: num(r.regularMarketChangePercent),
+      moeda: (r.currency as string) ?? "BRL",
+    };
   } catch {
     return null;
   }
 }
 
-async function buscarQuotes(ativos: AtivoTicker[]): Promise<Map<string, CotacaoTicker>> {
-  const mapa = new Map<string, CotacaoTicker>();
-  const blocos: AtivoTicker[][] = [];
-  for (let i = 0; i < ativos.length; i += 10) blocos.push(ativos.slice(i, i + 10));
-
-  await Promise.all(
-    blocos.map(async (bloco) => {
-      const alvo = bloco.map((a) => a.simbolo).join(",");
-      const j = await json(url(`/api/quote/${encodeURIComponent(alvo)}`, {}));
-      const results = (j?.results ?? []) as Array<Record<string, unknown>>;
-      for (const r of results) {
-        const simbolo = String(r.symbol ?? "").toUpperCase();
-        const ativo = bloco.find((a) => a.simbolo.toUpperCase() === simbolo);
-        if (!ativo) continue;
-        mapa.set(ativo.id, {
-          id: ativo.id,
-          rotulo: ativo.rotulo,
-          grupo: ativo.grupo,
-          preco: num(r.regularMarketPrice),
-          variacaoPercent: num(r.regularMarketChangePercent),
-          moeda: (r.currency as string) ?? "BRL",
-          pontos: ativo.pontos === true,
-        });
-      }
-    }),
-  );
-  return mapa;
-}
-
-async function buscarCriptos(ativos: AtivoTicker[]): Promise<Map<string, CotacaoTicker>> {
+/** Fonte complementar (índices, cripto e câmbio, indisponíveis no plano gratuito da BRAPI). */
+async function complemento(ativos: AtivoTicker[]): Promise<Map<string, CotacaoTicker>> {
   const mapa = new Map<string, CotacaoTicker>();
   if (!ativos.length) return mapa;
-  const j = await json(
-    url("/api/v2/crypto", { coin: ativos.map((a) => a.simbolo).join(","), currency: "BRL" }),
-  );
-  const coins = (j?.coins ?? []) as Array<Record<string, unknown>>;
-  for (const c of coins) {
-    const simbolo = String(c.coin ?? c.coinName ?? "").toUpperCase();
-    const ativo = ativos.find((a) => a.simbolo.toUpperCase() === simbolo);
-    if (!ativo) continue;
-    mapa.set(ativo.id, {
-      id: ativo.id,
-      rotulo: ativo.rotulo,
-      grupo: ativo.grupo,
-      preco: num(c.regularMarketPrice),
-      variacaoPercent: num(c.regularMarketChangePercent),
-      moeda: (c.currency as string) ?? "BRL",
-      pontos: false,
-    });
+  try {
+    const { buscarFita } = await import("@/lib/market.server");
+    const itens = await buscarFita(ativos.map((a) => ({ simbolo: a.alternativo!, rotulo: a.id })));
+    for (const i of itens) {
+      const a = ativos.find((x) => x.id === i.nome);
+      if (!a || i.preco === null) continue;
+      mapa.set(a.id, {
+        ...base(a),
+        preco: i.preco,
+        variacaoPercent: i.variacaoPercent ?? null,
+        moeda: i.moeda ?? "BRL",
+      });
+    }
+  } catch {
+    /* mantém o último valor em cache */
   }
   return mapa;
 }
 
-async function buscarCambio(ativos: AtivoTicker[]): Promise<Map<string, CotacaoTicker>> {
-  const mapa = new Map<string, CotacaoTicker>();
-  if (!ativos.length) return mapa;
-  const j = await json(url("/api/v2/currency", { currency: ativos.map((a) => a.simbolo).join(",") }));
-  const moedas = (j?.currency ?? []) as Array<Record<string, unknown>>;
-  for (const m of moedas) {
-    const par = String(m.fromCurrency ?? "").toUpperCase();
-    const ativo = ativos.find((a) => a.simbolo.split("-")[0].toUpperCase() === par);
-    if (!ativo) continue;
-    const preco = num(m.bidPrice) ?? num(Number(m.bidPrice));
-    mapa.set(ativo.id, {
-      id: ativo.id,
-      rotulo: ativo.rotulo,
-      grupo: ativo.grupo,
-      preco: preco ?? (Number.isFinite(Number(m.bidPrice)) ? Number(m.bidPrice) : null),
-      variacaoPercent: Number.isFinite(Number(m.bidVariation))
-        ? Number(m.bidVariation)
-        : num(m.bidVariation),
-      moeda: "BRL",
-      pontos: false,
-    });
-  }
-  return mapa;
-}
-
-/** Cotações da fita com cache de 5s e deduplicação de chamadas simultâneas. */
+/** Cotações da fita com cache de 5s, rodízio de revalidação e deduplicação. */
 export async function cotacoesFita(): Promise<CotacaoTicker[]> {
   const agora = Date.now();
   if (cache && agora - cache.em < TTL_MS) return cache.valor;
   if (emVoo) return emVoo;
 
   emVoo = (async () => {
-    const [q, c, m] = await Promise.all([
-      buscarQuotes(ATIVOS_TICKER.filter((a) => a.fonte === "quote")),
-      buscarCriptos(ATIVOS_TICKER.filter((a) => a.fonte === "crypto")),
-      buscarCambio(ATIVOS_TICKER.filter((a) => a.fonte === "currency")),
-    ]);
-    const anterior = new Map((cache?.valor ?? []).map((v) => [v.id, v] as const));
-    const saida = ATIVOS_TICKER.map(
-      (a) =>
-        q.get(a.id) ??
-        c.get(a.id) ??
-        m.get(a.id) ??
-        anterior.get(a.id) ?? {
-          id: a.id,
-          rotulo: a.rotulo,
-          grupo: a.grupo,
-          preco: null,
-          variacaoPercent: null,
-          moeda: "BRL",
-          pontos: a.pontos === true,
-        },
-    );
+    const brapi = ATIVOS_TICKER.filter((a) => a.fonte === "quote" && !a.alternativoPrimario);
+    const vencidos = brapi.filter((a) => {
+      const s = porAtivo.get(a.id);
+      return !s || Date.now() - s.em > TTL_ATIVO_MS;
+    });
+    // Rodízio: revalida apenas um lote por ciclo para respeitar o limite do plano.
+    const lote: AtivoTicker[] = [];
+    for (let i = 0; i < Math.min(LOTE_POR_CICLO, vencidos.length); i++) {
+      lote.push(vencidos[(cursor + i) % vencidos.length]);
+    }
+    cursor = vencidos.length ? (cursor + lote.length) % vencidos.length : 0;
+
+    const resultados = await Promise.all(lote.map((a) => brapiUnitario(a)));
+    resultados.forEach((r, i) => {
+      if (r) porAtivo.set(lote[i].id, { em: Date.now(), valor: r });
+    });
+
+    // Índices, criptomoedas e câmbio vêm da fonte complementar (a cada 30s).
+    const outros = ATIVOS_TICKER.filter((a) => a.alternativo);
+    const faltando = outros.filter((a) => !porAtivo.has(a.id));
+    if (faltando.length || Date.now() - ultimoYahoo > 30_000) {
+      ultimoYahoo = Date.now();
+      const m = await complemento(outros);
+      for (const [id, v] of m) porAtivo.set(id, { em: Date.now(), valor: v });
+    }
+
+    const saida = ATIVOS_TICKER.map((a) => porAtivo.get(a.id)?.valor ?? base(a));
     if (saida.some((s) => s.preco !== null)) cache = { em: Date.now(), valor: saida };
     return saida;
   })().finally(() => {
