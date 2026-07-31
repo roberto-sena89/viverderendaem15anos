@@ -19,7 +19,9 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
+import { TickerTape } from "@/components/TickerTape";
 import { ThemeToggle } from "@/components/theme";
+
 
 
 
