@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { AlertTriangle, ArrowDown, ArrowUp, Info, Star } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   corVar,
   fmtCompacto,
@@ -233,7 +233,7 @@ export function TabelaFiis({
   }
 
   return (
-    <>
+    <TooltipProvider delayDuration={150}>
       {/* Desktop / tablet */}
       <div className="hidden md:block">
         <table className="w-full border-collapse text-sm">
@@ -443,7 +443,7 @@ export function TabelaFiis({
           );
         })}
       </div>
-    </>
+    </TooltipProvider>
   );
 }
 
