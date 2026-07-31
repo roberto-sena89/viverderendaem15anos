@@ -446,9 +446,6 @@ export function TabelaAcoes({
             <table className="w-full border-collapse text-sm">
               <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
                 <tr className="border-b border-border">
-                  <th scope="col" className="w-10 px-2 py-2 text-left">
-                    <span className="sr-only">Selecionar</span>
-                  </th>
                   <th scope="col" className="w-10 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
                     #
                   </th>
