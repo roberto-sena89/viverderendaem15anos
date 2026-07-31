@@ -520,7 +520,6 @@ export function EvolucaoPatrimonio() {
                 name="Patrimônio"
                 fill="var(--color-primary)"
                 radius={[3, 3, 0, 0]}
-                maxBarSize={90}
               >
                 {dadosGrafico.length <= 14 ? (
                 <LabelList
@@ -536,7 +535,6 @@ export function EvolucaoPatrimonio() {
                 name="Total investido"
                 fill="var(--color-chart-12)"
                 radius={[3, 3, 0, 0]}
-                maxBarSize={90}
               >
                 {dadosGrafico.length <= 14 ? (
                 <LabelList
