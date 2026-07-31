@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { Panel } from "@/components/panel";
-import { RebalanceamentoSugerido } from "@/components/rebalanceamento-sugerido";
 import { DialogBuscarRecomendacao } from "@/components/dialog-buscar-recomendacao";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
-import { useAtivos } from "@/lib/data";
 import {
   modeloDoPerfil,
   novoId,
@@ -33,7 +31,7 @@ import {
   type LinhaRec,
   type Perfil,
 } from "@/lib/carteira-recomendada-store";
-import { alocacaoIdeal, CLASSE_POS_FIXADO, classeDoAtivo, valorAtual } from "@/lib/portfolio";
+import { alocacaoIdeal, CLASSE_POS_FIXADO } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira-recomendada")({
   head: () => ({
@@ -64,11 +62,9 @@ function CarteiraRecomendadaPage() {
   const { perfil, trocarPerfil, linhas, setLinhas, notas, setNotas, versoes, salvarVersao, restaurarVersao } =
     useCarteiraRecomendadaStore();
   const { salvar } = useAlocacaoAlvo();
-  const { data: carteira = [] } = useAtivos();
 
   const [buscar, setBuscar] = useState(false);
   const [remover, setRemover] = useState<LinhaRec | null>(null);
-  const [verOrdens, setVerOrdens] = useState(false);
 
   const total = linhas.reduce((s, l) => s + l.alvo, 0);
   const ok = Math.abs(total - 100) < 0.05;
@@ -79,28 +75,8 @@ function CarteiraRecomendadaPage() {
     return [...mapa.entries()];
   }, [linhas]);
 
-  const comparativo = useMemo(() => {
-    const patrimonio = carteira.reduce((s, a) => s + valorAtual(a), 0);
-    const atual: Record<string, number> = {};
-    for (const a of carteira) {
-      const c = classeDoAtivo(a);
-      atual[c] = (atual[c] ?? 0) + valorAtual(a);
-    }
-    const alvoPorClasse: Record<string, number> = {};
-    for (const l of linhas) {
-      const k = chaveClasse(l.classe);
-      alvoPorClasse[k] = (alvoPorClasse[k] ?? 0) + l.alvo;
-    }
-    const chaves = new Set([...Object.keys(alvoPorClasse), ...Object.keys(atual)]);
-    return [...chaves]
-      .map((classe) => {
-        const atualPct = patrimonio > 0 ? ((atual[classe] ?? 0) / patrimonio) * 100 : 0;
-        const alvoPct = alvoPorClasse[classe] ?? 0;
-        return { classe, atualPct, alvoPct, desvio: atualPct - alvoPct };
-      })
-      .filter((l) => l.alvoPct > 0 || l.atualPct > 0)
-      .sort((a, b) => b.alvoPct - a.alvoPct);
-  }, [carteira, linhas]);
+
+
 
   function atualizar(id: string, patch: Partial<LinhaRec>) {
     setLinhas(linhas.map((l) => (l.id === id ? { ...l, ...patch } : l)));
@@ -370,63 +346,7 @@ function CarteiraRecomendadaPage() {
         </Panel>
       </div>
 
-      <Panel
-        title="Alocação-alvo vs. carteira atual"
-        action={
-          <Button size="sm" variant="outline" className="h-9" onClick={() => setVerOrdens((v) => !v)}>
-            {verOrdens ? "Ocultar sugestão" : "Ver sugestão de rebalanceamento"}
-          </Button>
-        }
-      >
-        {comparativo.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">
-            Cadastre ativos na carteira para comparar com a alocação recomendada.
-          </p>
-        ) : (
-          <ul className="grid gap-3">
-            {comparativo.map((l) => {
-              const abs = Math.abs(l.desvio);
-              const cor = abs <= 2 ? "bg-success" : abs <= 5 ? "bg-amber-500" : "bg-destructive";
-              const rotulo = abs <= 2 ? "Dentro da margem" : abs <= 5 ? "Atenção" : "Rebalancear";
-              return (
-                <li key={l.classe} className="grid gap-2 rounded-lg border border-border bg-primary-soft/25 p-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="flex min-w-0 items-center gap-2 text-sm font-medium">
-                      <span
-                        className="size-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: corClasse(l.classe) }}
-                      />
-                      <span className="truncate">{l.classe}</span>
-                    </span>
-                    <span className={`rounded-full px-2 py-0.5 text-[0.7rem] font-semibold text-background ${cor}`}>
-                      {rotulo} · {l.desvio >= 0 ? "+" : ""}
-                      {fmt(l.desvio)}%
-                    </span>
-                  </div>
-                  <div className="grid gap-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="w-24 shrink-0 text-xs text-muted-foreground">Recomendado</span>
-                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                        <span className="block h-full rounded-full bg-gradient-brand" style={{ width: `${Math.min(100, l.alvoPct)}%` }} />
-                      </span>
-                      <span className="w-14 text-right text-xs font-semibold tabular-nums">{fmt(l.alvoPct)}%</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-24 shrink-0 text-xs text-muted-foreground">Atual</span>
-                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                        <span className="block h-full rounded-full bg-foreground/40" style={{ width: `${Math.min(100, l.atualPct)}%` }} />
-                      </span>
-                      <span className="w-14 text-right text-xs font-semibold tabular-nums">{fmt(l.atualPct)}%</span>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </Panel>
 
-      {verOrdens ? <RebalanceamentoSugerido carteira={carteira} /> : null}
 
       {/* Barra de ações fixa no mobile */}
       <div className="sticky bottom-0 z-20 -mx-4 flex gap-2 border-t border-border bg-card/95 px-4 py-3 backdrop-blur sm:hidden">
