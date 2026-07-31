@@ -286,7 +286,7 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
 
       <Panel
         title="Fundos imobiliários listados na B3"
-        description={
+        hint={
           grade.data
             ? `${linhas.length.toLocaleString("pt-BR")} fundos monitorados · preços ${
                 pregao.aberto ? "ao vivo durante o pregão" : "do último fechamento"
@@ -294,7 +294,7 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
             : "Carregando a base completa de fundos…"
         }
         bodyClassName="p-0"
-        actions={
+        action={
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
