@@ -16,7 +16,6 @@ import {
 
   Bot,
   LogOut,
-  Sparkles,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme";
@@ -35,7 +34,6 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/carteira": Wallet,
   "/aportes": PiggyBank,
   "/historico-aportes": ListOrdered,
-  "/carteira-recomendada": Sparkles,
   "/dividendos": Coins,
   "/rebalanceamento": Scale,
   "/cotacoes": BarChart3,
