@@ -483,8 +483,8 @@ export function CarteiraGrupos({
                                     : "Aguardando cotação do provedor de mercado"
                                 }
                               >
-                                {live?.variacaoPercent != null ? (
-                                  <Variacao value={live.variacaoPercent} />
+                                {variacaoDiaDe(a.ticker) != null ? (
+                                  <Variacao value={variacaoDiaDe(a.ticker) as number} />
                                 ) : (
                                   <span className="text-muted-foreground">—</span>
                                 )}
