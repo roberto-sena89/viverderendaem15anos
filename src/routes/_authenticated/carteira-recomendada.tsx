@@ -370,63 +370,7 @@ function CarteiraRecomendadaPage() {
         </Panel>
       </div>
 
-      <Panel
-        title="Alocação-alvo vs. carteira atual"
-        action={
-          <Button size="sm" variant="outline" className="h-9" onClick={() => setVerOrdens((v) => !v)}>
-            {verOrdens ? "Ocultar sugestão" : "Ver sugestão de rebalanceamento"}
-          </Button>
-        }
-      >
-        {comparativo.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">
-            Cadastre ativos na carteira para comparar com a alocação recomendada.
-          </p>
-        ) : (
-          <ul className="grid gap-3">
-            {comparativo.map((l) => {
-              const abs = Math.abs(l.desvio);
-              const cor = abs <= 2 ? "bg-success" : abs <= 5 ? "bg-amber-500" : "bg-destructive";
-              const rotulo = abs <= 2 ? "Dentro da margem" : abs <= 5 ? "Atenção" : "Rebalancear";
-              return (
-                <li key={l.classe} className="grid gap-2 rounded-lg border border-border bg-primary-soft/25 p-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="flex min-w-0 items-center gap-2 text-sm font-medium">
-                      <span
-                        className="size-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: corClasse(l.classe) }}
-                      />
-                      <span className="truncate">{l.classe}</span>
-                    </span>
-                    <span className={`rounded-full px-2 py-0.5 text-[0.7rem] font-semibold text-background ${cor}`}>
-                      {rotulo} · {l.desvio >= 0 ? "+" : ""}
-                      {fmt(l.desvio)}%
-                    </span>
-                  </div>
-                  <div className="grid gap-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="w-24 shrink-0 text-xs text-muted-foreground">Recomendado</span>
-                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                        <span className="block h-full rounded-full bg-gradient-brand" style={{ width: `${Math.min(100, l.alvoPct)}%` }} />
-                      </span>
-                      <span className="w-14 text-right text-xs font-semibold tabular-nums">{fmt(l.alvoPct)}%</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-24 shrink-0 text-xs text-muted-foreground">Atual</span>
-                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                        <span className="block h-full rounded-full bg-foreground/40" style={{ width: `${Math.min(100, l.atualPct)}%` }} />
-                      </span>
-                      <span className="w-14 text-right text-xs font-semibold tabular-nums">{fmt(l.atualPct)}%</span>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </Panel>
 
-      {verOrdens ? <RebalanceamentoSugerido carteira={carteira} /> : null}
 
       {/* Barra de ações fixa no mobile */}
       <div className="sticky bottom-0 z-20 -mx-4 flex gap-2 border-t border-border bg-card/95 px-4 py-3 backdrop-blur sm:hidden">
