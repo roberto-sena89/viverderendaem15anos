@@ -110,8 +110,57 @@ function Rebalanceamento() {
         ))}
       </div>
 
-      <div className="surface-card overflow-x-auto">
+      {/* Mobile: cartões alinhados à largura da tela */}
+      <div className="grid gap-3 md:hidden">
+        {linhas.map((l) => (
+          <div key={l.classe} className="surface-card p-4">
+            <div className="flex min-w-0 items-start gap-2">
+              <span className="mt-1.5 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(l.classe) }} />
+              <p className="min-w-0 flex-1 text-sm font-semibold leading-snug">{l.classe}</p>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+              <div className="min-w-0">
+                <p className="text-muted-foreground">Alocação atual (R$)</p>
+                <p className="font-semibold tabular-nums">{brl(l.valor)}</p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-muted-foreground">Alocação atual (%)</p>
+                <p className="font-semibold tabular-nums">{pct(l.atualPct)}</p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-muted-foreground">Alocação ideal (%)</p>
+                <p className="font-semibold tabular-nums">{pct(l.idealPct)}</p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-muted-foreground">Diferença (%)</p>
+                <p
+                  className={`font-semibold tabular-nums ${
+                    l.diff > 0 ? "text-success" : l.diff < 0 ? "text-destructive" : "text-muted-foreground"
+                  }`}
+                >
+                  {l.diff > 0 ? `+${pct(l.diff)}` : pct(l.diff)}
+                </p>
+              </div>
+              <div className="col-span-2 min-w-0 border-t border-border pt-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground">Valor para rebalancear</span>
+                  <span
+                    className={`font-semibold tabular-nums ${
+                      l.valor > l.idealValor ? "text-success" : l.valor < l.idealValor ? "text-destructive" : "text-muted-foreground"
+                    }`}
+                  >
+                    {brl(Math.abs(l.idealValor - l.valor))}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="surface-card hidden overflow-x-auto md:block">
         <Table>
+
           <TableHeader>
             <TableRow>
               <TableHead className="text-center align-middle whitespace-pre-line h-14">{"CLASSE\n "}</TableHead>
