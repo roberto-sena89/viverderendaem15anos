@@ -944,7 +944,7 @@ export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Pr
 
   const ordenados = [...candidatos].sort((a, b) => b.variacaoPercent - a.variacaoPercent);
 
-  return {
+  const resultado: PanoramaMercado = {
     periodo,
     indice: {
       nome: "Ibovespa",
@@ -961,4 +961,9 @@ export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Pr
       .slice(0, 6),
     atualizadoEm: new Date().toISOString(),
   };
+
+  // Só guarda respostas úteis: falha total das fontes não deve virar cache.
+  if (preco !== null || ordenados.length > 0) cachePanorama.set(periodo, { em: Date.now(), dados: resultado });
+  return resultado;
 }
+
