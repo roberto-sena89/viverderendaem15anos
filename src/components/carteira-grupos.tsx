@@ -503,7 +503,153 @@ export function CarteiraGrupos({
 
             {aberto ? (
               <>
-                <div className="border-t">
+                {/* Mobile: cartões por ativo (evita estouro da grade). */}
+                <ul className="grid gap-2 border-t p-2 md:hidden">
+                  {g.ativos.map((a) => {
+                    const saldo = valorAtual(a);
+                    const investido = valorInvestido(a);
+                    const variacao = variacaoAtivo(a);
+                    const participacao = totalCarteira > 0 ? (saldo / totalCarteira) * 100 : 0;
+                    const idealLinha = idealDe(a);
+                    const varDia = variacaoDiaDe(a.ticker);
+                    return (
+                      <li key={a.id} className="rounded-xl border bg-card p-3">
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate font-display text-sm leading-tight font-bold">{a.ticker}</p>
+                            <p className="truncate text-[0.7rem] text-muted-foreground" title={a.nome || a.categoria}>
+                              {a.nome || a.categoria}
+                            </p>
+                          </div>
+                          <div className="flex shrink-0 items-center gap-1.5">
+                            <div className="text-right leading-tight">
+                              <p className="text-sm font-bold tabular-nums">{brl(saldo, 2)}</p>
+                              <p className="text-[0.65rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                                Saldo
+                              </p>
+                            </div>
+                            {onEditar && onExcluir ? (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    aria-label={`Ações de ${a.ticker}`}
+                                    className="h-7 gap-1 rounded-md px-1.5 text-[0.7rem] leading-none font-semibold"
+                                  >
+                                    <Settings2 className="size-3.5" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-52">
+                                  <DropdownMenuLabel className="truncate text-xs text-muted-foreground">
+                                    {a.ticker}
+                                  </DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onSelect={() => onEditar?.(a)}>
+                                    <Pencil className="size-4" /> Editar ativo
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => setEditando(a.id)}>
+                                    <Pencil className="size-4" /> Editar preço atual
+                                  </DropdownMenuItem>
+                                  {manuais[chavePreco(a.ticker)] !== undefined && (
+                                    <DropdownMenuItem onSelect={() => voltarAoAutomatico(a.ticker)}>
+                                      <CircleCheck className="size-4" /> Voltar preço automático
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="text-destructive focus:text-destructive"
+                                    onSelect={() => onExcluir?.(a)}
+                                  >
+                                    <Trash2 className="size-4" /> Excluir ativo
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            ) : null}
+                          </div>
+                        </div>
+
+                        <dl className="mt-2.5 grid grid-cols-3 gap-x-2 gap-y-2 border-t pt-2.5">
+                          <div className="min-w-0">
+                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                              P. atual
+                            </dt>
+                            <dd className="text-[0.8rem] font-semibold tabular-nums">
+                              {editando === a.id ? (
+                                <Input
+                                  autoFocus
+                                  inputMode="decimal"
+                                  aria-label={`Preço atual de ${a.ticker}`}
+                                  defaultValue={formatarNumeroBR(a.precoAtual)}
+                                  onFocus={(e) => e.currentTarget.select()}
+                                  onBlur={(e) => void definirPrecoManual(a, e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") e.currentTarget.blur();
+                                    if (e.key === "Escape") setEditando(null);
+                                  }}
+                                  className="h-7 w-full text-right tabular-nums"
+                                />
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setEditando(a.id)}
+                                  className="inline-flex items-center gap-1 rounded hover:bg-muted"
+                                >
+                                  {manuais[chavePreco(a.ticker)] !== undefined && (
+                                    <Pencil className="size-3 text-muted-foreground" />
+                                  )}
+                                  {brl(a.precoAtual, 2)}
+                                </button>
+                              )}
+                            </dd>
+                          </div>
+                          <div className="min-w-0">
+                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                              Var. dia
+                            </dt>
+                            <dd className="text-[0.8rem]">
+                              {varDia != null ? <Variacao value={varDia} /> : <span className="text-muted-foreground">—</span>}
+                            </dd>
+                          </div>
+                          <div className="min-w-0">
+                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                              Rent.
+                            </dt>
+                            <dd className="text-[0.8rem]">
+                              <Variacao value={variacao} />
+                            </dd>
+                          </div>
+                          <div className="min-w-0">
+                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                              Quant.
+                            </dt>
+                            <dd className="text-[0.8rem] tabular-nums">{num(a.quantidade)}</dd>
+                          </div>
+                          <div className="min-w-0">
+                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                              P. médio
+                            </dt>
+                            <dd className="text-[0.8rem] tabular-nums">{brl(a.precoMedio, 2)}</dd>
+                          </div>
+                          <div className="min-w-0">
+                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                              % Cart. / Ideal
+                            </dt>
+                            <dd className="text-[0.8rem] tabular-nums">
+                              <span className={participacao >= idealLinha ? "text-success" : "text-destructive"}>
+                                {pct(participacao)}
+                              </span>{" "}
+                              <span className="text-muted-foreground">/ {pct(idealLinha)}</span>
+                            </dd>
+                          </div>
+                        </dl>
+                        <p className="sr-only">{investido}</p>
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                <div className="hidden border-t md:block">
                 <Table
                   wrapperClassName="w-full max-w-full overflow-x-auto overscroll-x-contain scrollbar-none"
                   className="w-full min-w-0 table-auto text-[0.8rem] sm:text-sm [&_th]:px-1.5 [&_td]:px-1.5 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.62rem] sm:[&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
