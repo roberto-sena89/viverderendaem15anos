@@ -282,7 +282,7 @@ async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<Linh
   });
 
 
-  return defs.map((d) => {
+  const linhas = defs.map((d) => {
     const r = mapa.get(d.ticker.toUpperCase());
     if (!r || typeof r.regularMarketPrice !== "number") return vazio(d, categoria);
     const preco = r.regularMarketPrice;
@@ -304,7 +304,25 @@ async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<Linh
         .slice(-40),
     };
   });
+
+  // Fallback: ativos sem retorno da brapi são buscados no Yahoo (TICKER.SA).
+  const faltantes = linhas
+    .map((l, i) => ({ l, i }))
+    .filter(({ l }) => l.preco === null);
+  if (faltantes.length) {
+    const resolvidos = await emLotes(faltantes, 4, async ({ l, i }) => ({
+      i,
+      linha: await yahooLinha(
+        { ticker: l.ticker, nome: l.nome, grupo: l.grupo ?? undefined, simbolo: `${l.ticker}.SA` },
+        categoria,
+      ),
+    }));
+    for (const { i, linha } of resolvidos) if (linha.preco !== null) linhas[i] = linha;
+  }
+
+  return linhas;
 }
+
 
 /* ------------------------------------------------------------------ *
  * Yahoo — índices, câmbio, commodities e futuros
