@@ -428,31 +428,38 @@ export function PainelEtfs({ intervaloMs, busca, apenasFavoritos }: Props) {
 
               <span
                 title={
-                  aoVivo.canal === "websocket"
-                    ? "Preços recebidos por WebSocket, sem recarregar a página"
-                    : aoVivo.canal === "conectando"
-                      ? "Conectando ao canal em tempo real…"
-                      : `Atualização periódica a cada ${Math.round(aoVivo.intervaloPolling / 1000)}s`
+                  brapi.ativo
+                    ? "Cotações da BRAPI atualizadas a cada 5s"
+                    : aoVivo.canal === "websocket"
+                      ? "Preços recebidos por WebSocket, sem recarregar a página"
+                      : aoVivo.canal === "conectando"
+                        ? "Conectando ao canal em tempo real…"
+                        : `Atualização periódica a cada ${Math.round(aoVivo.intervaloPolling / 1000)}s`
                 }
                 className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
-                  aoVivo.canal === "websocket"
+                  brapi.ativo || aoVivo.canal === "websocket"
                     ? "border-primary/30 bg-primary/10 text-primary"
                     : "border-border bg-muted text-muted-foreground"
                 }`}
               >
                 <span
                   className={`size-1.5 rounded-full ${
-                    aoVivo.canal === "websocket" ? "animate-pulse bg-primary" : "bg-muted-foreground"
+                    brapi.ativo || aoVivo.canal === "websocket"
+                      ? "animate-pulse bg-primary"
+                      : "bg-muted-foreground"
                   }`}
                   aria-hidden
                 />
-                {aoVivo.canal === "websocket"
-                  ? "Tempo real"
-                  : aoVivo.canal === "conectando"
-                    ? "Conectando…"
-                    : aoVivo.intervaloPolling > 0
-                      ? `Atualiza ${Math.round(aoVivo.intervaloPolling / 1000)}s`
-                      : "Manual"}
+                {brapi.ativo
+                  ? "BRAPI · 5s"
+                  : aoVivo.canal === "websocket"
+                    ? "Tempo real"
+                    : aoVivo.canal === "conectando"
+                      ? "Conectando…"
+                      : aoVivo.intervaloPolling > 0
+                        ? `Atualiza ${Math.round(aoVivo.intervaloPolling / 1000)}s`
+                        : "Manual"}
+
               </span>
 
               <Button
