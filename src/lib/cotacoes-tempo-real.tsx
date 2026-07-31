@@ -11,9 +11,11 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { notificarPush, registrarAlerta } from "@/lib/alertas-historico";
 import { cotacoesCarteira, type CotacaoLive } from "@/lib/cotacoes.functions";
 import { useAtivos } from "@/lib/data";
 import type { Ativo } from "@/lib/portfolio";
+
 
 /* ---------------------------------------------------------------- *
  * Preferências do usuário (persistidas no navegador)
