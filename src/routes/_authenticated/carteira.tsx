@@ -87,8 +87,8 @@ function CarteiraPage() {
       <StatusCotacoes />
       <AbasCarteira />
       <ResumoKpis mostrarLancamento />
-      <div className="flex items-center gap-2 border-b pb-2">
-        <div className="scrollbar-none -mb-px flex flex-1 items-center gap-1 overflow-x-auto">
+      <div className="flex flex-col gap-2 border-b pb-2 sm:flex-row sm:items-center">
+        <div className="scrollbar-none -mb-px grid grid-cols-3 gap-1 sm:flex sm:flex-1 sm:items-center sm:overflow-x-auto">
           {filtros
             .filter((f) => f === "Todos" || contagem.get(f))
             .map((f) => {
@@ -100,22 +100,28 @@ function CarteiraPage() {
                   type="button"
                   onClick={() => setFiltro(f)}
                   aria-pressed={ativo}
-                  className={`flex min-h-11 shrink-0 flex-col items-center justify-center gap-0 rounded-xl px-4 py-2 text-xs font-semibold whitespace-nowrap transition-colors sm:min-h-9 ${
+                  className={`flex min-h-11 min-w-0 flex-col items-center justify-center gap-0 rounded-xl px-2 py-2 text-center text-[0.7rem] font-semibold leading-tight transition-colors sm:min-h-9 sm:shrink-0 sm:px-4 sm:text-xs sm:whitespace-nowrap ${
                     ativo
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  <span>{f === "ETF (Global)" ? "ETF (Global)" : f}</span>
+                  <span className="w-full break-words">{f}</span>
                   <span className={`text-[10px] tabular-nums ${ativo ? "opacity-90" : "opacity-60"}`}>{qtd}</span>
                 </button>
               );
             })}
         </div>
-        <Button size="sm" variant="ghost" className="shrink-0 gap-1.5 text-xs font-semibold" onClick={() => abrir(null)}>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="w-full shrink-0 gap-1.5 text-xs font-semibold sm:w-auto"
+          onClick={() => abrir(null)}
+        >
           <Plus className="size-4" /> Novo ativo
         </Button>
       </div>
+
 
       {isLoading ? (
         <div className="surface-card p-12 text-center text-sm text-muted-foreground">Carregando carteira…</div>
