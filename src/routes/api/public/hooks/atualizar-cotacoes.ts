@@ -59,7 +59,10 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-cotacoes")({
             });
           } catch {
             resultados.push({ categoria, linhas: 0, parcial: true });
+          }
         }
+
+
 
         // Grade completa de FIIs: regravar o cache dispara o evento de tempo
         // real (WebSocket) que atualiza preço e variação nos navegadores abertos.
