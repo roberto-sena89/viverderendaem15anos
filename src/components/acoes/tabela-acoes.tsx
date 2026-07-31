@@ -226,6 +226,7 @@ function Cabecalho({
   ordem,
   aoOrdenar,
   alinhamento = "right",
+  largura,
 }: {
   rotulo: string;
   ajuda: string;
@@ -233,11 +234,18 @@ function Cabecalho({
   ordem: OrdemAcao;
   aoOrdenar: (c: OrdemColunaAcao) => void;
   alinhamento?: "left" | "right";
+  largura?: string;
 }) {
   const ativo = ordem.coluna === coluna;
   return (
-    <th scope="col" className={`px-3 py-2 ${alinhamento === "right" ? "text-right" : "text-left"}`}>
-      <span className={`inline-flex items-center gap-1 ${alinhamento === "right" ? "flex-row-reverse" : ""}`}>
+    <th
+      scope="col"
+      className={`px-2 py-2 ${largura ?? ""} ${alinhamento === "right" ? "text-right" : "text-left"}`}
+    >
+      <span
+        className={`inline-flex max-w-full items-center gap-1 ${alinhamento === "right" ? "flex-row-reverse" : ""}`}
+      >
+
         <button
           type="button"
           onClick={() => aoOrdenar(coluna)}
