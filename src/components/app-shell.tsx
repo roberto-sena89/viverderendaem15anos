@@ -13,6 +13,8 @@ import {
   Trophy,
   BarChart3,
   ListOrdered,
+  Newspaper,
+
 
   Bot,
   LogOut,
