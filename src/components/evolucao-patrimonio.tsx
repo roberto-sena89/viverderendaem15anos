@@ -58,6 +58,13 @@ const PERIODOS = [
 ] as const;
 
 const valorAporte = (a: Aporte) => a.quantidade * a.preco + a.taxas;
+/** Formata valores do eixo Y de forma compacta (R$ 1,2 mi / R$ 12 mil). */
+const compacto = (v: number) => {
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000) return `R$ ${(v / 1_000_000).toFixed(1).replace(".", ",")} mi`;
+  if (abs >= 1_000) return `R$ ${Math.round(v / 1_000)} mil`;
+  return `R$ ${Math.round(v)}`;
+};
 const chaveMes = (d: string) => d.slice(0, 7);
 const rotuloMes = (chave: string) => `${MESES_CURTO[Number(chave.slice(5, 7)) - 1]}/${chave.slice(2, 4)}`;
 const rotuloMesLongo = (chave: string) =>
@@ -313,7 +320,7 @@ export function EvolucaoPatrimonio() {
               {pct(resumo.rentabilidade)})
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-card/60 p-3">
               <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
                 Variação no período
@@ -354,7 +361,7 @@ export function EvolucaoPatrimonio() {
       {/* 2. Seletor de período */}
       <div className="sticky top-0 z-20 -mx-1 rounded-xl border border-border bg-background/95 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="-mx-1 flex items-center gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible sm:pb-0">
             {PERIODOS.map((p) => (
               <button
                 key={p.id}
@@ -362,7 +369,7 @@ export function EvolucaoPatrimonio() {
                 onClick={() => setPeriodo(p.id)}
                 aria-pressed={periodo === p.id}
                 className={cn(
-                  "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
+                  "shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                   periodo === p.id
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border text-muted-foreground hover:bg-muted",
@@ -435,7 +442,23 @@ export function EvolucaoPatrimonio() {
         title="Patrimônio x total aportado"
         hint="Área verde: patrimônio total. Linha tracejada: dinheiro investido acumulado."
       >
-        <div className="-mx-2 h-64 sm:h-80">
+        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.72rem] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block size-2.5 rounded-[3px] bg-primary" aria-hidden />
+            Patrimônio
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block h-0 w-4 border-t-2 border-dashed border-muted-foreground" aria-hidden />
+            Total investido
+          </span>
+          {comparar ? (
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-0.5 w-4 rounded bg-chart-12" aria-hidden />
+              Período anterior
+            </span>
+          ) : null}
+        </div>
+        <div className="-mx-1 h-[260px] sm:-mx-2 sm:h-[340px] xl:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={dadosGrafico} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <defs>
@@ -450,14 +473,17 @@ export function EvolucaoPatrimonio() {
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
                 axisLine={false}
-                minTickGap={16}
+                minTickGap={20}
+                interval="preserveStartEnd"
+                tickMargin={8}
               />
               <YAxis
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
                 axisLine={false}
-                width={64}
-                tickFormatter={(v: number) => brl(v)}
+                width={52}
+                tickMargin={4}
+                tickFormatter={compacto}
               />
               <Tooltip
                 contentStyle={tooltipStyle}
@@ -506,8 +532,9 @@ export function EvolucaoPatrimonio() {
         ) : (
           <>
             {/* Desktop / tablet */}
-            <div className="hidden md:block">
-              <table className="w-full table-fixed text-sm">
+            <div className="-mx-4 hidden overflow-x-auto px-4 md:block sm:-mx-5 sm:px-5">
+              <table className="w-full min-w-[46rem] table-auto text-sm">
+
                 <thead>
                   <tr className="text-left text-[0.65rem] uppercase tracking-wide text-muted-foreground">
                     <th className="py-2 font-semibold">Período</th>
