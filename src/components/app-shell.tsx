@@ -19,7 +19,9 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
+import { TickerTape } from "@/components/TickerTape";
 import { ThemeToggle } from "@/components/theme";
+
 
 
 
@@ -203,8 +205,10 @@ export function AppShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        
+        <TickerTape speed={40} pauseOnHover refreshInterval={5000} theme="dark" showIcons showCurrency />
+
         <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
+
           <div className="container-app grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-4 sm:py-5">
 
             <div className="min-w-0 space-y-1">
