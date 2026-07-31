@@ -25,6 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+import { useDesempenho12m, type NotaDesempenho } from "@/lib/desempenho-12m";
 import { chaveBrapi, usePrecosBrapiCarteira } from "@/lib/carteira-brapi";
 import {
   chavePreco,
