@@ -46,8 +46,14 @@ export async function lerPrecosPersistidos(tickers: string[]): Promise<PrecoPers
   }
 }
 
-/** Grava (upsert) os preços recebidos das fontes ao vivo. Best-effort. */
+/**
+ * Grava (upsert) os preços recebidos das fontes ao vivo. Best-effort.
+ *
+ * Uso interno do servidor: os valores precisam vir de uma fonte de mercado
+ * confiável (BRAPI, cache de cotações, jobs agendados), nunca do navegador.
+ */
 export async function gravarPrecosPersistidos(precos: PrecoPersistido[]) {
+
   const linhas = precos
     .filter((p) => Number.isFinite(p.preco) && p.preco > 0 && p.ticker)
     .map((p) => ({
