@@ -573,14 +573,15 @@ export function EvolucaoPatrimonio() {
                 <span className={cn("grid size-7 shrink-0 place-items-center rounded-lg", s.fundo)} aria-hidden>
                   <s.Icone className={cn("size-4", s.cor)} />
                 </span>
-                <span className="min-w-0">
-                  <span className="block text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
                     {s.rotulo}
                   </span>
-                  <span className="block font-display text-[0.8rem] font-bold tabular-nums text-foreground">
+                  <span className="block truncate font-display text-[0.8rem] font-bold tabular-nums text-foreground">
                     {typeof s.valor === "number" ? brl(s.valor, 2) : "—"}
                   </span>
                 </span>
+
               </button>
             ))}
             {comparar ? (
