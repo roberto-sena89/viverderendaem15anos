@@ -415,11 +415,11 @@ export function CarteiraGrupos({
                     {/* Indicador: colado ao título no celular, centralizado a partir de sm. */}
                     <ChevronDown
                       aria-hidden="true"
-                      className={`size-4 shrink-0 text-muted-foreground transition-transform sm:hidden ${aberto ? "rotate-180" : ""}`}
+                      className={`size-4 shrink-0 text-muted-foreground transition-transform lg:hidden ${aberto ? "rotate-180" : ""}`}
                     />
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 sm:block"
+                      className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 lg:block"
                     >
                       <ChevronDown
                         className={`size-5 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
@@ -681,7 +681,7 @@ export function CarteiraGrupos({
                             )}
 
                             {onEditar && onExcluir ? (
-                              <TableCell className={`text-center ${cel}`}>
+                              <TableCell className={`pr-2 text-center sm:pr-3 ${cel}`}>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                     <Button
