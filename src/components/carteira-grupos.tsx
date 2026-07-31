@@ -468,6 +468,36 @@ export function CarteiraGrupos({
                                 </span>
                               </TableCell>
                             )}
+                            {colunas.ultimoPreco && (() => {
+                              const live = cotacoes.get(chaveTicker(a.ticker));
+                              const hora = horaCotacao(live?.atualizadoEm);
+                              return (
+                                <TableCell
+                                  className={`text-right tabular-nums ${cel} ${
+                                    flash[chaveTicker(a.ticker)] === "alta"
+                                      ? "flash-alta"
+                                      : flash[chaveTicker(a.ticker)] === "baixa"
+                                        ? "flash-baixa"
+                                        : ""
+                                  }`}
+                                  title={
+                                    live
+                                      ? `Fonte: ${live.fonte}${live.erro ? ` · ${live.erro}` : ""}`
+                                      : "Aguardando cotação do provedor de mercado"
+                                  }
+                                >
+                                  <span className="block font-semibold">
+                                    {live?.preco != null ? brl(live.preco, 2) : "—"}
+                                  </span>
+                                  <span className="block text-[0.68rem] font-normal text-muted-foreground">
+                                    {live?.preco != null
+                                      ? `${live.fonte}${hora ? ` · ${hora}` : ""}`
+                                      : "sincronizando…"}
+                                  </span>
+                                </TableCell>
+                              );
+                            })()}
+
                             {onEditar && onExcluir ? (
                               <TableCell className={`text-center ${cel}`}>
                                 <DropdownMenu>
