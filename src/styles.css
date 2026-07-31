@@ -253,7 +253,8 @@
   --accent-foreground: oklch(0.9 0.03 158);
 
   --destructive: oklch(0.74 0.16 25);
-  --destructive-foreground: oklch(0.98 0.005 150);
+  /* Texto escuro sobre o vermelho claro do dark mode garante contraste AA */
+  --destructive-foreground: oklch(0.16 0.03 25);
   --success: oklch(0.75 0.14 158);
   --success-foreground: oklch(0.14 0.02 160);
   --warning: oklch(0.78 0.14 78);
@@ -300,17 +301,41 @@
     border-color: var(--color-border);
   }
 
-  /* Foco visível garantido para navegação por teclado em todo o app */
+  /* Foco visível garantido para navegação por teclado em todo o app.
+     O halo externo na cor do fundo mantém o anel legível também sobre
+     superfícies coloridas (botões primários, badges, gráficos). */
   :focus-visible {
     outline: 2px solid var(--color-ring, var(--color-primary));
     outline-offset: 2px;
     border-radius: 2px;
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-background) 85%, transparent);
   }
 
   /* Regiões roláveis alcançáveis por teclado */
   [tabindex="0"][data-scroll-region]:focus-visible {
     outline-offset: -2px;
   }
+
+  /* Link "pular para o conteúdo" — só aparece ao receber foco por teclado */
+  .link-pular {
+    position: absolute;
+    left: 1rem;
+    top: 0.75rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    border-radius: 0.75rem;
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: transform 150ms ease;
+  }
+
+  .link-pular:focus-visible {
+    transform: translateY(0);
+  }
+
 
   body {
     background-color: var(--color-background);

@@ -169,7 +169,8 @@ function HomePage() {
   }, [navigate]);
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background min-h-dvh">
+      <a href="#conteudo" className="link-pular">Pular para o conteúdo</a>
       <header className="absolute inset-x-0 top-0 z-20">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <Link to="/" className="flex items-center gap-3">
@@ -239,7 +240,7 @@ function HomePage() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-6xl px-6 pb-24">
+      <main id="conteudo" className="mx-auto max-w-6xl px-6 pb-24">
         <section className="grid gap-4 pt-14 sm:grid-cols-3">
           {recursos.map((r) => (
             <article key={r.title} className="bg-card rounded-xl border p-5">

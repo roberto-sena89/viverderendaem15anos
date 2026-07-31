@@ -87,7 +87,7 @@ function RecuperarSenhaPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-5 py-12">
+    <main className="flex min-h-dvh items-center justify-center bg-background px-5 py-12">
       <div className="w-full max-w-sm">
         <Link
           to="/auth"

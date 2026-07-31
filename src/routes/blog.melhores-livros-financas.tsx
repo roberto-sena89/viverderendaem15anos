@@ -245,7 +245,8 @@ export const Route = createFileRoute("/blog/melhores-livros-financas")({
 
 function LivrosPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
+      <a href="#conteudo" className="link-pular">Pular para o conteúdo</a>
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
@@ -265,7 +266,7 @@ function LivrosPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-5 py-12">
+      <main id="conteudo" className="mx-auto max-w-4xl px-5 py-12">
         <article>
           <nav aria-label="Trilha de navegação" className="text-xs text-muted-foreground">
             <Link to="/" className="hover:text-foreground">

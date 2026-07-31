@@ -116,8 +116,12 @@ export function AppShell({
     .join("");
 
   return (
-    <div className="min-h-screen bg-background lg:flex">
-      <aside className="sticky top-0 z-30 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
+    <div className="min-h-dvh bg-background lg:flex">
+      <a href="#conteudo" className="link-pular">
+        Pular para o conteúdo
+      </a>
+      <aside className="sticky top-0 z-30 hidden h-dvh w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
+
         <Link to="/" className="mb-7 flex items-center gap-3 px-1">
           <img
             src={logoIcone}
@@ -140,7 +144,7 @@ export function AppShell({
         <nav className="flex flex-1 flex-col gap-6 overflow-y-auto pr-1">
           {grupos.map((grupo, i) => (
             <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-5" : ""}>
-              <p className="mb-2 px-3 text-[0.82rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground/80 uppercase">
+              <p className="mb-2 px-3 text-[0.82rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground uppercase">
                 {grupo.titulo}
               </p>
               <div className="flex flex-col gap-0.5">

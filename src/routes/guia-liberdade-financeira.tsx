@@ -102,7 +102,8 @@ const faqs = [
 
 function GuiaPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
+      <a href="#conteudo" className="link-pular">Pular para o conteúdo</a>
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
@@ -122,7 +123,7 @@ function GuiaPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-5 py-12">
+      <main id="conteudo" className="mx-auto max-w-3xl px-5 py-12">
         <article>
           <p className="text-xs tracking-wide text-muted-foreground uppercase">Guia completo</p>
           <h1 className="mt-3 text-4xl leading-tight font-semibold">
