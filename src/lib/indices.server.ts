@@ -141,9 +141,18 @@ const formatarPontos = (v: number) =>
 
 type PontoSgs = { data: string; valor: string };
 
-async function serieSgs(codigo: number, ultimos: number): Promise<PontoSgs[]> {
+/**
+ * Série histórica do SGS por período: o endpoint "ultimos/N" aceita no máximo
+ * 20 pontos, então consultamos por intervalo de datas (dd/mm/aaaa).
+ */
+async function serieSgs(codigo: number, mesesAtras: number): Promise<PontoSgs[]> {
+  const fim = new Date();
+  const inicio = new Date(fim);
+  inicio.setMonth(inicio.getMonth() - mesesAtras);
+  const br = (d: Date) =>
+    `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
   const dados = await json<PontoSgs[]>(
-    `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${codigo}/dados/ultimos/${ultimos}?formato=json`,
+    `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${codigo}/dados?formato=json&dataInicial=${br(inicio)}&dataFinal=${br(fim)}`,
     3 * 60 * 60_000,
     PADRAO as unknown as Record<string, string>,
   );
@@ -151,6 +160,7 @@ async function serieSgs(codigo: number, ultimos: number): Promise<PontoSgs[]> {
 }
 
 const num = (p?: PontoSgs) => (p ? Number(p.valor.replace(",", ".")) : null);
+
 
 async function taxaReferencia(def: DefIndice): Promise<LinhaIndice> {
   const base: LinhaIndice = {
