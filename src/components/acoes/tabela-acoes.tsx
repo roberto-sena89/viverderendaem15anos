@@ -465,6 +465,7 @@ export function TabelaAcoes({
                     ordem={ordem}
                     aoOrdenar={aoOrdenar}
                     alinhamento="left"
+                    largura="w-[22%] min-w-0"
                   />
                   <Cabecalho
                     rotulo="Preço atual"
@@ -472,6 +473,7 @@ export function TabelaAcoes({
                     coluna="preco"
                     ordem={ordem}
                     aoOrdenar={aoOrdenar}
+                    largura="w-[11%]"
                   />
                   <Cabecalho
                     rotulo="Variação do dia"
@@ -479,7 +481,9 @@ export function TabelaAcoes({
                     coluna="variacaoPercent"
                     ordem={ordem}
                     aoOrdenar={aoOrdenar}
+                    largura="w-[11%]"
                   />
+
                   {visiveis.map((c) => (
                     <Cabecalho
                       key={c.id}
