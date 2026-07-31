@@ -68,7 +68,6 @@ function CarteiraRecomendadaPage() {
 
   const [buscar, setBuscar] = useState(false);
   const [remover, setRemover] = useState<LinhaRec | null>(null);
-  const [arrastando, setArrastando] = useState<string | null>(null);
   const [verOrdens, setVerOrdens] = useState(false);
 
   const total = linhas.reduce((s, l) => s + l.alvo, 0);
