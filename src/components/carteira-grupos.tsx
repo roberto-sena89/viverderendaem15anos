@@ -164,7 +164,7 @@ export function CarteiraGrupos({
   const fonteDe = (ticker: string) => {
     const b = brapi.get(chaveBrapi(ticker));
     if (b) {
-      const hora = horaCotacao(b.atualizadoEm);
+      const hora = horaCotacao(b.atualizadoEm ?? undefined);
       const rotulo = pregaoAberto ? "BRAPI · tempo real" : "BRAPI · fechamento do último pregão";
       return hora ? `${rotulo} · ${hora}` : rotulo;
     }
