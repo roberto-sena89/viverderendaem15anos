@@ -239,11 +239,14 @@ export function DialogAlocacaoAlvo() {
               style={{ width: `${Math.min(100, total)}%` }}
             />
           </div>
-          {!somaOk && (
+          {!somaOk && !tudoZerado && (
             <p className="text-xs text-destructive">
               {restante > 0 ? "Faltam" : "Excedem"} {Math.abs(restante).toFixed(1).replace(".", ",")} pontos para
               fechar 100%.
             </p>
+          )}
+          {tudoZerado && (
+            <p className="text-xs text-muted-foreground">Tudo zerado — você pode salvar assim mesmo.</p>
           )}
           {camposInvalidos.size > 0 && (
             <p className="text-xs text-destructive">Informe um número entre 0 e 100 em cada classe.</p>
