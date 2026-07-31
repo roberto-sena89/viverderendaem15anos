@@ -30,7 +30,7 @@ import {
   chavePreco,
   usePersistirPrecos,
   useUltimosPrecosSalvos,
-  type PrecoPersistido,
+  
 } from "@/lib/precos-ultimos";
 
 import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
