@@ -87,7 +87,9 @@ export function DialogAlocacaoAlvo() {
   );
   const subInvalido = subsInvalidos.size > 0 || somaSubs > 100.001;
 
-  const valido = somaOk && camposInvalidos.size === 0 && !subInvalido;
+  /** Tudo zerado também é um estado salvável (usado pelo botão "Zerar tudo"). */
+  const tudoZerado = total < 0.01;
+  const valido = (somaOk || tudoZerado) && camposInvalidos.size === 0 && !subInvalido;
 
   /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
   const aoTeclar = (classe: string) => (e: KeyboardEvent<HTMLInputElement>) => {
@@ -237,11 +239,14 @@ export function DialogAlocacaoAlvo() {
               style={{ width: `${Math.min(100, total)}%` }}
             />
           </div>
-          {!somaOk && (
+          {!somaOk && !tudoZerado && (
             <p className="text-xs text-destructive">
               {restante > 0 ? "Faltam" : "Excedem"} {Math.abs(restante).toFixed(1).replace(".", ",")} pontos para
               fechar 100%.
             </p>
+          )}
+          {tudoZerado && (
+            <p className="text-xs text-muted-foreground">Tudo zerado — você pode salvar assim mesmo.</p>
           )}
           {camposInvalidos.size > 0 && (
             <p className="text-xs text-destructive">Informe um número entre 0 e 100 em cada classe.</p>
