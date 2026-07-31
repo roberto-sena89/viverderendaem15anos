@@ -304,7 +304,7 @@ export function CarteiraGrupos({
                   </div>
                 </div>
 
-                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-5">
+                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-6">
                   <div className="min-w-0">
                     <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Ativos
@@ -316,6 +316,18 @@ export function CarteiraGrupos({
                       Investido
                     </dt>
                     <dd className="text-sm font-semibold tabular-nums">{brl(g.investido, 2)}</dd>
+                  </div>
+                  <div className="min-w-0">
+                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      Var. dia
+                    </dt>
+                    <dd className="text-sm">
+                      {g.variacaoDiaPct === null ? (
+                        <span className="text-sm text-muted-foreground">—</span>
+                      ) : (
+                        <Variacao value={g.variacaoDiaPct} />
+                      )}
+                    </dd>
                   </div>
                   <div className="min-w-0">
                     <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
