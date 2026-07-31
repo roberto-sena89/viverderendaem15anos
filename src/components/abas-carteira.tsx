@@ -7,7 +7,6 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/carteira": Wallet,
   "/dividendos": Coins,
   "/aportes": PiggyBank,
-  "/estatisticas": TrendingUp,
   "/rebalanceamento": Scale,
   "/historico-aportes": ListOrdered,
   "/carteira-recomendada": Sparkles,

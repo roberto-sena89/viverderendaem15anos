@@ -38,7 +38,6 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/historico-aportes": ListOrdered,
   "/carteira-recomendada": Sparkles,
   "/dividendos": Coins,
-  "/estatisticas": TrendingUp,
   "/rebalanceamento": Scale,
   "/cotacoes": BarChart3,
   "/rankings": Trophy,
