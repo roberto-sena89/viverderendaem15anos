@@ -361,7 +361,7 @@ export function EvolucaoPatrimonio() {
       {/* 2. Seletor de período */}
       <div className="sticky top-0 z-20 -mx-1 rounded-xl border border-border bg-background/95 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="-mx-1 flex items-center gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible sm:pb-0">
             {PERIODOS.map((p) => (
               <button
                 key={p.id}
