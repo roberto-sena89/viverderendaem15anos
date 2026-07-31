@@ -54,11 +54,14 @@ function CartaoResumo({
     >
       <div className="flex items-start gap-2">
         <Icone className="size-8! shrink-0 text-muted-foreground/70" />
-        <p className="min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] text-balance text-muted-foreground uppercase">
+        <p className="min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] break-words text-balance text-muted-foreground uppercase">
           {titulo}
         </p>
-        <span className="shrink-0 text-[0.85rem] text-muted-foreground">detalhes</span>
+        <span className="hidden shrink-0 text-[0.8rem] text-muted-foreground sm:inline">
+          detalhes
+        </span>
       </div>
+
 
       <div className="mt-3">{children}</div>
     </button>

@@ -202,7 +202,8 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         
         <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4 lg:px-8 lg:py-5">
+          <div className="container-app grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-4 sm:py-5">
+
             <div className="min-w-0 space-y-1">
               <nav aria-label="Trilha de navegação">
                 <ol className="flex min-w-0 items-center gap-1.5 text-[0.78rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
@@ -225,9 +226,10 @@ export function AppShell({
                   ) : null}
                 </ol>
               </nav>
-              <h1 className="truncate font-display text-xl leading-tight font-bold tracking-tight sm:text-2xl">
+              <h1 className="truncate font-display text-[1.75rem] leading-tight font-bold tracking-[-0.02em] sm:text-[2rem]">
                 {tituloPagina}
               </h1>
+
               {description ? (
                 <p className="line-clamp-2 max-w-2xl text-xs leading-snug text-muted-foreground sm:text-sm">
                   {description}
@@ -251,7 +253,7 @@ export function AppShell({
             </div>
           </div>
 
-          <nav className="flex max-w-full min-w-0 gap-1 overflow-x-auto px-3 pb-3 lg:hidden">
+          <nav className="container-app scrollbar-none flex max-w-full min-w-0 gap-2 overflow-x-auto pb-3 lg:hidden">
             {nav.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
@@ -271,8 +273,9 @@ export function AppShell({
 
         <main
           id="conteudo"
-          className="animate-rise mx-auto w-full min-w-0 max-w-[1600px] flex-1 space-y-6 px-4 py-6 sm:px-5 lg:px-8 lg:py-8"
+          className="animate-rise container-app min-w-0 flex-1 space-y-6 py-6 sm:space-y-8 sm:py-8"
         >
+
           {children}
         </main>
       </div>
