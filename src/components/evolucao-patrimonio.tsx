@@ -528,54 +528,81 @@ export function EvolucaoPatrimonio() {
       {/* 3. Gráfico principal */}
       <Panel
         title="Patrimônio x total aportado"
-        hint={"Barra Verde: Patrimônio Total\nBarra Azul: Dinheiro Investido Acumulado"}
+        hint="Comparativo mês a mês entre o valor de mercado da carteira e o capital aportado."
+        action={
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {([
+              {
+                chave: "patrimonio" as const,
+                rotulo: "Patrimônio",
+                Icone: Wallet,
+                cor: "text-primary",
+                fundo: "bg-primary/10",
+                valor: ultimoPonto?.patrimonio,
+              },
+              {
+                chave: "aportadoAcum" as const,
+                rotulo: "Total investido",
+                Icone: Landmark,
+                cor: "text-chart-12",
+                fundo: "bg-chart-12/10",
+                valor: ultimoPonto?.aportadoAcum,
+              },
+            ]).map((s) => (
+              <button
+                key={s.chave}
+                type="button"
+                onMouseEnter={() => setDestaque(s.chave)}
+                onMouseLeave={() => setDestaque(null)}
+                onFocus={() => setDestaque(s.chave)}
+                onBlur={() => setDestaque(null)}
+                onClick={() => setDestaque((d) => (d === s.chave ? null : s.chave))}
+                aria-pressed={destaque === s.chave}
+                title={`Destacar ${s.rotulo}`}
+                className={cn(
+                  "flex shrink-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all",
+                  destaque === s.chave
+                    ? "border-primary/50 bg-card shadow-sm"
+                    : "border-border bg-muted/30 hover:bg-muted/60",
+                  destaque && destaque !== s.chave && "opacity-50",
+                )}
+              >
+                <span className={cn("grid size-7 shrink-0 place-items-center rounded-lg", s.fundo)} aria-hidden>
+                  <s.Icone className={cn("size-4", s.cor)} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                    {s.rotulo}
+                  </span>
+                  <span className="block font-display text-[0.8rem] font-bold tabular-nums text-foreground">
+                    {typeof s.valor === "number" ? brl(s.valor, 2) : "—"}
+                  </span>
+                </span>
+              </button>
+            ))}
+            {comparar ? (
+              <button
+                type="button"
+                onMouseEnter={() => setDestaque("anterior")}
+                onMouseLeave={() => setDestaque(null)}
+                onClick={() => setDestaque((d) => (d === "anterior" ? null : "anterior"))}
+                aria-pressed={destaque === "anterior"}
+                className={cn(
+                  "flex shrink-0 items-center gap-2 self-stretch rounded-xl border px-2.5 py-1.5 text-[0.7rem] font-semibold transition-all",
+                  destaque === "anterior"
+                    ? "border-primary/50 bg-card text-foreground shadow-sm"
+                    : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/60",
+                  destaque && destaque !== "anterior" && "opacity-50",
+                )}
+              >
+                <HistoryIcon className="size-3.5" aria-hidden />
+                Período anterior
+              </button>
+            ) : null}
+          </div>
+        }
       >
-        <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {([
-            { chave: "patrimonio" as const, rotulo: "Patrimônio", cor: "bg-primary" },
-            { chave: "aportadoAcum" as const, rotulo: "Total investido", cor: "bg-chart-12" },
-          ]).map((s) => (
-            <button
-              key={s.chave}
-              type="button"
-              onMouseEnter={() => setDestaque(s.chave)}
-              onMouseLeave={() => setDestaque(null)}
-              onFocus={() => setDestaque(s.chave)}
-              onBlur={() => setDestaque(null)}
-              onClick={() => setDestaque((d) => (d === s.chave ? null : s.chave))}
-              aria-pressed={destaque === s.chave}
-              className={cn(
-                "flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[0.7rem] font-medium transition-all",
-                destaque === s.chave
-                  ? "border-primary/60 bg-primary/10 text-foreground shadow-sm"
-                  : "border-border bg-muted/40 text-muted-foreground hover:bg-muted",
-                destaque && destaque !== s.chave && "opacity-50",
-              )}
-            >
-              <span className={cn("inline-block size-2.5 rounded-[2px]", s.cor)} aria-hidden />
-              {s.rotulo}
-            </button>
-          ))}
-          {comparar ? (
-            <button
-              type="button"
-              onMouseEnter={() => setDestaque("anterior")}
-              onMouseLeave={() => setDestaque(null)}
-              onClick={() => setDestaque((d) => (d === "anterior" ? null : "anterior"))}
-              aria-pressed={destaque === "anterior"}
-              className={cn(
-                "flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-1 text-[0.7rem] font-medium transition-all",
-                destaque === "anterior"
-                  ? "border-primary/60 bg-primary/10 text-foreground shadow-sm"
-                  : "border-border bg-muted/40 text-muted-foreground hover:bg-muted",
-                destaque && destaque !== "anterior" && "opacity-50",
-              )}
-            >
-              <HistoryIcon className="size-3.5" aria-hidden />
-              Período anterior
-            </button>
-          ) : null}
-        </div>
+
 
         <div className="-mx-1 overflow-x-auto pb-1 sm:-mx-2 [scrollbar-width:thin]">
           <div
