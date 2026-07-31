@@ -5,9 +5,44 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { cn } from "@/lib/utils";
 
-const TooltipProvider = TooltipPrimitive.Provider;
+/**
+ * Tracks whether a TooltipProvider is present anywhere above in the React tree
+ * (including across portals). Radix's own provider context is not readable from
+ * here, so we mirror it with our own flag.
+ */
+const TooltipProviderPresence = React.createContext(false);
 
-const Tooltip = TooltipPrimitive.Root;
+const TooltipProvider = ({
+  delayDuration = 150,
+  children,
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Provider>) => (
+  <TooltipPrimitive.Provider delayDuration={delayDuration} {...props}>
+    <TooltipProviderPresence.Provider value={true}>{children}</TooltipProviderPresence.Provider>
+  </TooltipPrimitive.Provider>
+);
+TooltipProvider.displayName = "TooltipProvider";
+
+/**
+ * Self-healing Tooltip: if it is rendered outside of any TooltipProvider
+ * (e.g. inside a portal-rendered subtree, an error boundary fallback, or a
+ * standalone component), it provides its own so it never throws
+ * "Tooltip must be used within TooltipProvider".
+ */
+const Tooltip = ({ children, ...props }: React.ComponentProps<typeof TooltipPrimitive.Root>) => {
+  const hasProvider = React.useContext(TooltipProviderPresence);
+
+  if (hasProvider) {
+    return <TooltipPrimitive.Root {...props}>{children}</TooltipPrimitive.Root>;
+  }
+
+  return (
+    <TooltipProvider>
+      <TooltipPrimitive.Root {...props}>{children}</TooltipPrimitive.Root>
+    </TooltipProvider>
+  );
+};
+Tooltip.displayName = "Tooltip";
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
