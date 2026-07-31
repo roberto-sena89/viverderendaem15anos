@@ -22,8 +22,8 @@ const SUBS_RENDA_FIXA = ["Tesouro SELIC", "Tesouro IPCA+", "Tesouro Prefixado", 
 
 /** Permite ajustar o percentual ideal de cada classe de ativo. */
 export function DialogAlocacaoAlvo() {
-  const { alvo, salvar, restaurar } = useAlocacaoAlvo();
-  const { subAlvo, salvarSub, restaurarSub } = useSubAlocacaoAlvo();
+  const { alvo, salvar } = useAlocacaoAlvo();
+  const { subAlvo, salvarSub } = useSubAlocacaoAlvo();
   const [aberto, setAberto] = useState(false);
   const [valores, setValores] = useState<Record<string, string>>({});
   const [subValores, setSubValores] = useState<Record<string, string>>({});
@@ -255,13 +255,12 @@ export function DialogAlocacaoAlvo() {
             variant="ghost"
             size="sm"
             onClick={() => {
-              restaurar();
-              restaurarSub();
-              setAberto(false);
-              toast.success("Alocação ideal restaurada ao padrão.");
+              setValores((v) => Object.fromEntries(Object.keys(v).map((c) => [c, "0,00"])));
+              setSubValores(Object.fromEntries(SUBS_RENDA_FIXA.map((s) => [s, "0,00"])));
+              toast.success("Todas as porcentagens foram zeradas.");
             }}
           >
-            Restaurar padrão
+            Zerar tudo
           </Button>
           <Button
             size="sm"
