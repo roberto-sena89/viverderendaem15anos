@@ -513,13 +513,6 @@ export function TabelaAcoes({
                         posicao ? "border-l-2 border-l-primary" : ""
                       }`}
                     >
-                      <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          checked={selecionados.includes(l.ticker)}
-                          onCheckedChange={() => aoSelecionar(l.ticker)}
-                          aria-label={`Selecionar ${l.ticker} para comparar`}
-                        />
-                      </td>
                       <td className="px-1 py-2 text-right text-xs text-muted-foreground tabular-nums">
                         {inicioRanking + janela.inicio + i + 1}
                       </td>
