@@ -99,6 +99,34 @@ export function DialogAlocacaoAlvo() {
   const tudoZerado = total < 0.01;
   const valido = (somaOk || tudoZerado) && camposInvalidos.size === 0 && !subInvalido;
 
+  /**
+   * Pré-visualização ao vivo: enquanto o diálogo está aberto e os campos são
+   * válidos, os alvos são propagados (com debounce) para a carteira e o
+   * rebalanceamento. Fechar sem salvar restaura o estado anterior.
+   */
+  const serializado = JSON.stringify({ numeros, subNumeros });
+  useEffect(() => {
+    if (!aberto || camposInvalidos.size > 0 || subInvalido) return;
+    const id = window.setTimeout(() => {
+      const { numeros: n, subNumeros: s } = JSON.parse(serializado) as {
+        numeros: Record<string, number>;
+        subNumeros: Record<string, number>;
+      };
+      salvar(n);
+      salvarSub(s);
+    }, 250);
+    return () => window.clearTimeout(id);
+  }, [aberto, serializado, camposInvalidos.size, subInvalido, salvar, salvarSub]);
+
+  /** Desfaz a pré-visualização quando o usuário fecha sem confirmar. */
+  function aoAlternar(estado: boolean) {
+    if (!estado && !confirmado.current && original.current) {
+      salvar(original.current.alvo);
+      salvarSub(original.current.sub);
+    }
+    setAberto(estado);
+  }
+
   /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
   const aoTeclar = (classe: string) => (e: KeyboardEvent<HTMLInputElement>) => {
     const passo =
