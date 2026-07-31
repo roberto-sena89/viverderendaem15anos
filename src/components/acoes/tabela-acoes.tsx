@@ -390,8 +390,6 @@ export function TabelaAcoes({
   favoritos,
   aoFavoritar,
   posicoes,
-  selecionados,
-  aoSelecionar,
   aoAbrir,
   carregando,
   inicioRanking,
