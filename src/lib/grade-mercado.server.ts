@@ -519,8 +519,10 @@ async function yahooLinha(d: Def, categoria: CategoriaMercado): Promise<LinhaCot
   for (let t = 0; t < tentativas.length; t++) {
     const [host, headers] = tentativas[t];
     if (t > 0) await dormir(250 * t);
+    // Símbolos de futuros ("ZC=F") não devem ter o "=" escapado.
+    const alvo = simbolo.includes("=") ? simbolo : encodeURIComponent(simbolo);
     const data = await yahooJson(
-      `https://${host}/v8/finance/chart/${encodeURIComponent(simbolo)}?range=1d&interval=15m`,
+      `https://${host}/v8/finance/chart/${alvo}?range=1d&interval=15m`,
       headers,
     );
 
