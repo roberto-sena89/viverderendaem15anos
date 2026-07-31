@@ -475,7 +475,7 @@ export function EvolucaoPatrimonio() {
           </span>
           {comparar ? (
             <span className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[0.7rem] font-medium text-muted-foreground">
-              <History className="size-3.5 text-chart-12" aria-hidden />
+              <HistoryIcon className="size-3.5 text-chart-12" aria-hidden />
               Período anterior
             </span>
           ) : null}
