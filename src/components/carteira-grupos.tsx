@@ -145,6 +145,7 @@ export function CarteiraGrupos({
   minimal?: boolean;
 }) {
   const { alvo } = useAlocacaoAlvo();
+  const { subAlvo } = useSubAlocacaoAlvo();
   const { flash, mapa: cotacoes, pregaoAberto } = useCotacoesTempoReal();
   const tickers = useMemo(() => ativosBase.map((a) => a.ticker), [ativosBase]);
   const brapi = usePrecosBrapiCarteira(tickers);
