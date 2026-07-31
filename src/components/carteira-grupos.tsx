@@ -34,6 +34,9 @@ import {
 } from "@/lib/precos-ultimos";
 
 import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
+import { useSalvarAtivo } from "@/lib/data";
+import { InputNumeroBR } from "@/components/input-numero-br";
+import { toast } from "sonner";
 
 type ColunaId =
   | "quantidade"
