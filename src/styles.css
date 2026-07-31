@@ -450,22 +450,12 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   }
 }
 
-/* Barra de cotações (TickerTape): marquee infinito acelerado por GPU. */
-.ticker-trilha {
-  animation-name: marquee;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .fita-rolando,
-  .ticker-trilha {
+  .fita-rolando {
     animation: none;
   }
 }
+
 
 
 
