@@ -243,7 +243,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
       });
     }, 1600);
     return () => window.clearTimeout(id);
-  }, [data, config.alertaAtivo, config.alertaPercent]);
+  }, [data, config.alertaAtivo, config.alertaPercent, config.pushAtivo]);
 
   const status: StatusSync = isFetching
     ? "atualizando"

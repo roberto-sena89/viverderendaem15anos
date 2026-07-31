@@ -168,7 +168,41 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
                 />
                 <span className="text-xs text-muted-foreground">% no dia</span>
               </div>
+
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <Label htmlFor="sync-push" className="flex items-center gap-1.5 text-sm">
+                  <BellRing className="size-3.5" /> Notificação push
+                </Label>
+                <Switch
+                  id="sync-push"
+                  disabled={!config.alertaAtivo || permissao === "indisponivel"}
+                  checked={config.pushAtivo && permissao === "granted"}
+                  onCheckedChange={async (v) => {
+                    if (!v) {
+                      salvarConfig({ pushAtivo: false });
+                      return;
+                    }
+                    const p = await pedirPermissaoPush();
+                    setPermissao(p);
+                    if (p === "granted") {
+                      salvarConfig({ pushAtivo: true });
+                      toast.success("Notificações push ativadas neste dispositivo.");
+                    } else {
+                      salvarConfig({ pushAtivo: false });
+                      toast.error("Permissão de notificações bloqueada no navegador.");
+                    }
+                  }}
+                />
+              </div>
+              <p className="text-[0.7rem] leading-snug text-muted-foreground">
+                {permissao === "indisponivel"
+                  ? "Este navegador não suporta notificações."
+                  : permissao === "denied"
+                    ? "Permissão bloqueada — libere nas configurações do navegador."
+                    : "Avisos do sistema quando um ativo passar do limite. O histórico fica no sino do cabeçalho."}
+              </p>
             </div>
+
           </PopoverContent>
         </Popover>
       </span>
