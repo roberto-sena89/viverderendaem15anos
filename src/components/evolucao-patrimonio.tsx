@@ -113,6 +113,68 @@ const tooltipStyle = {
   fontSize: "12px",
 };
 
+type SerieChave = "patrimonio" | "aportadoAcum" | "anterior";
+
+const CORES_SERIE: Record<SerieChave, string> = {
+  patrimonio: "var(--color-primary)",
+  aportadoAcum: "var(--color-chart-12)",
+  anterior: "var(--color-muted-foreground)",
+};
+
+/** Tooltip com destaque da série sob o cursor e sem sobreposição de rótulos. */
+function TooltipEvolucao({
+  active,
+  payload,
+  label,
+  destaque,
+}: {
+  active?: boolean;
+  payload?: Array<{ dataKey?: string | number; name?: string; value?: number }>;
+  label?: string;
+  destaque: SerieChave | null;
+}) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="pointer-events-none min-w-[11rem] rounded-xl border border-border bg-popover/95 p-3 shadow-lg backdrop-blur-sm">
+      <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+      <ul className="space-y-1.5">
+        {payload.map((item) => {
+          const chave = String(item.dataKey ?? "") as SerieChave;
+          const ativo = destaque === null || destaque === chave;
+          return (
+            <li
+              key={chave}
+              className={cn(
+                "flex items-center justify-between gap-4 rounded-md px-1.5 py-1 transition-colors",
+                destaque === chave && "bg-muted/60",
+                !ativo && "opacity-40",
+              )}
+            >
+              <span className="flex items-center gap-2 whitespace-nowrap text-[0.72rem] text-muted-foreground">
+                <span
+                  className="inline-block size-2.5 shrink-0 rounded-[2px]"
+                  style={{ backgroundColor: CORES_SERIE[chave] ?? "var(--color-muted-foreground)" }}
+                  aria-hidden
+                />
+                {item.name}
+              </span>
+              <span
+                className={cn(
+                  "whitespace-nowrap font-display text-[0.78rem] font-bold tabular-nums text-foreground",
+                  destaque === chave && "text-primary",
+                )}
+              >
+                {brl(Number(item.value ?? 0), 2)}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+
 function Kpi({ rotulo, valor, sub }: { rotulo: string; valor: string; sub?: string }) {
   return (
     <div className="rounded-xl border border-border bg-card/60 p-3 transition-colors hover:bg-muted/40">
