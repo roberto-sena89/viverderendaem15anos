@@ -21,10 +21,6 @@ export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
     gcTime: 30 * 60_000,
   });
 
-  const todos = [...(data?.altas ?? []), ...(data?.baixas ?? []), ...(data?.indices ?? [])];
-  const watchlist = todos.filter(
-    (l, i, arr) => favoritos.includes(l.ticker) && arr.findIndex((x) => x.ticker === l.ticker) === i,
-  );
 
   if (isLoading) {
     return (
