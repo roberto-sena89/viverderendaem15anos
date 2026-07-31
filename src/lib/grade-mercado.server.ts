@@ -294,7 +294,7 @@ async function brapiPagina(
     data = cache.valor as Resposta;
   } else {
     try {
-      const res = await fetch(url, { headers: { Accept: "application/json" } });
+      const res = await fetch(url, { headers: CABECALHOS });
       data = (await res.json()) as Resposta;
       if (res.ok) memoria.set(url, { valor: data, expira: Date.now() + 120_000 });
     } catch {
