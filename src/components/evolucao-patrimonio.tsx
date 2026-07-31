@@ -386,6 +386,7 @@ export function EvolucaoPatrimonio() {
 
   /** Rótulos só cabem sem sobreposição quando há poucos períodos. */
   const mostrarRotulos = dadosGrafico.length <= 12;
+  const ultimoPonto = dadosGrafico[dadosGrafico.length - 1];
 
   return (
     <section className="space-y-4" aria-label="Evolução de Patrimônio">
