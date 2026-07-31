@@ -73,7 +73,7 @@ export async function gravarCache(categoria: CategoriaMercado, grade: RespostaGr
     await db.from("cotacoes_cache").upsert(
       {
         categoria,
-        payload: grade as unknown as Record<string, unknown>,
+        payload: JSON.parse(JSON.stringify(grade)),
         parcial: grade.parcial,
         atualizado_em: grade.atualizadoEm,
       },
