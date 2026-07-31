@@ -49,6 +49,7 @@ import {
 import { ComparadorEtfs } from "@/components/etfs/comparador-etfs";
 import { ModalEtf } from "@/components/etfs/modal-etf";
 import { RodapeEducativoEtfs } from "@/components/etfs/rodape-educativo-etfs";
+import { CotacaoAoVivoBrapi } from "@/components/etfs/market-card";
 import { gradeEtfs } from "@/lib/etfs.functions";
 import type { ClasseEtf, LinhaEtf, MercadoEtf } from "@/lib/etfs-base";
 import { useFavoritos } from "@/lib/favoritos-mercado";
@@ -297,6 +298,9 @@ export function PainelEtfs({ intervaloMs, busca, apenasFavoritos }: Props) {
           maiorDy={maiorDy}
           aoSelecionar={setDetalhe}
         />
+
+        {/* Cotação ao vivo (BRAPI) com busca de qualquer ativo da B3 */}
+        <CotacaoAoVivoBrapi inicial={detalhe?.ticker ?? "IVVB11"} />
 
         <Panel
           title="Todos os ETFs listados na B3"
