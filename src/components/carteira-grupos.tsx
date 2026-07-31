@@ -258,6 +258,8 @@ export function CarteiraGrupos({
   /** Colunas secundárias somem em telas menores para eliminar a rolagem horizontal. */
   const colMd = "hidden md:table-cell";
   const colLg = "hidden lg:table-cell";
+  /** Colunas secundárias: escondidas no celular para a grade não estourar. */
+  const colSm = "hidden sm:table-cell";
 
   const { grupos, totalCarteira } = useMemo(() => {
     const totalCarteira = ativos.reduce((s, a) => s + valorAtual(a), 0);
@@ -391,10 +393,14 @@ export function CarteiraGrupos({
                         </span>
                       ) : null}
                     </span>
-                    {/* Indicador centralizado na largura da janela do grupo. */}
+                    {/* Indicador: colado ao título no celular, centralizado a partir de sm. */}
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={`size-4 shrink-0 text-muted-foreground transition-transform sm:hidden ${aberto ? "rotate-180" : ""}`}
+                    />
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute left-1/2 -translate-x-1/2"
+                      className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 sm:block"
                     >
                       <ChevronDown
                         className={`size-5 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
@@ -404,7 +410,7 @@ export function CarteiraGrupos({
 
 
                   <div className="flex shrink-0 flex-col items-end leading-tight">
-                    <span className="text-base font-bold tabular-nums lg:text-lg">{brl(g.total, 2)}</span>
+                    <span className="text-sm font-bold tabular-nums sm:text-base lg:text-lg">{brl(g.total, 2)}</span>
                     <span className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Saldo atual
                     </span>
@@ -412,7 +418,7 @@ export function CarteiraGrupos({
                   </div>
                 </div>
 
-                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-6">
+                <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
                   <div className="min-w-0">
                     <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Ativos
@@ -480,26 +486,34 @@ export function CarteiraGrupos({
               <>
                 <div className="border-t">
                 <Table
-                  wrapperClassName="w-full max-w-full overflow-x-auto"
-                  className="w-full table-auto [&_th]:px-2.5 [&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
+                  wrapperClassName="w-full max-w-full overflow-x-auto overscroll-x-contain"
+                  className="w-full table-auto text-sm [&_th]:px-2 [&_td]:px-2 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.65rem] sm:[&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
                 >
                     <TableHeader>
                       <TableRow className="bg-muted/40">
                         {/* Coluna elástica: absorve todo o espaço livre para as colunas numéricas ficarem coladas à direita. */}
-                        <TableHead className="w-full min-w-[11rem]">Ticker / Ativo</TableHead>
+                        <TableHead className="w-full min-w-[8.5rem] sm:min-w-[11rem]">Ticker / Ativo</TableHead>
 
-                        {colunas.quantidade && <TableHead className="min-w-[5rem] text-right">Quant.</TableHead>}
+                        {colunas.quantidade && (
+                          <TableHead className={`min-w-[5rem] text-right ${colSm}`}>Quant.</TableHead>
+                        )}
                         {colunas.precoMedio && <TableHead className={`min-w-[6rem] text-right ${colMd}`}>P. médio</TableHead>}
-                        {colunas.precoAtual && <TableHead className="min-w-[6.5rem] text-right">P. atual</TableHead>}
+                        {colunas.precoAtual && (
+                          <TableHead className="min-w-[5.5rem] text-right sm:min-w-[6.5rem]">P. atual</TableHead>
+                        )}
                         {colunas.variacaoDia && (
-                          <TableHead className="min-w-[5.5rem] text-right" title="Variação do dia vinda das cotações ao vivo">
+                          <TableHead className="min-w-[5rem] text-right sm:min-w-[5.5rem]" title="Variação do dia vinda das cotações ao vivo">
                             Var. dia
                           </TableHead>
                         )}
                         {colunas.variacao && <TableHead className={`min-w-[5.5rem] text-right ${colLg}`}>Var. (%)</TableHead>}
                         {colunas.rentabilidade && <TableHead className={`min-w-[6.5rem] text-right ${colMd}`}>Rent. (R$)</TableHead>}
-                        {colunas.saldo && <TableHead className="min-w-[7rem] text-right">Saldo</TableHead>}
-                        {colunas.participacao && <TableHead className="min-w-[5rem] text-right">% Cart.</TableHead>}
+                        {colunas.saldo && (
+                          <TableHead className="min-w-[6rem] text-right sm:min-w-[7rem]">Saldo</TableHead>
+                        )}
+                        {colunas.participacao && (
+                          <TableHead className={`min-w-[5rem] text-right ${colSm}`}>% Cart.</TableHead>
+                        )}
                         {colunas.ideal && <TableHead className={`min-w-[5rem] text-right ${colLg}`}>% Ideal</TableHead>}
                         {colunas.comprar && <TableHead className={`min-w-[5.5rem] text-center ${colLg}`}>Comprar</TableHead>}
 
@@ -518,12 +532,16 @@ export function CarteiraGrupos({
                         return (
                           <TableRow key={a.id}>
                             <TableCell className={cel}>
-                              <div className={`flex items-center ${compacto ? "gap-2" : "gap-3"}`}>
-                                {compacto ? null : <TickerMark ticker={a.ticker} />}
+                              <div className={`flex min-w-0 items-center ${compacto ? "gap-2" : "gap-2 sm:gap-3"}`}>
+                                {compacto ? null : (
+                                  <span className="hidden shrink-0 sm:inline-flex">
+                                    <TickerMark ticker={a.ticker} />
+                                  </span>
+                                )}
                                 <div className="min-w-0">
-                                  <p className="font-display leading-tight font-bold">{a.ticker}</p>
+                                  <p className="truncate font-display leading-tight font-bold">{a.ticker}</p>
                                   <p
-                                    className={`truncate text-xs text-muted-foreground ${compacto ? "max-w-40" : "max-w-56"}`}
+                                    className={`truncate text-[0.7rem] text-muted-foreground sm:text-xs ${compacto ? "max-w-32 sm:max-w-40" : "max-w-36 sm:max-w-56"}`}
                                     title={a.nome || a.categoria}
                                   >
                                     {a.nome || a.categoria}
@@ -532,7 +550,7 @@ export function CarteiraGrupos({
                               </div>
                             </TableCell>
                             {colunas.quantidade && (
-                              <TableCell className={`text-right tabular-nums ${cel}`}>{num(a.quantidade)}</TableCell>
+                              <TableCell className={`text-right tabular-nums ${colSm} ${cel}`}>{num(a.quantidade)}</TableCell>
                             )}
                             {colunas.precoMedio && (
                               <TableCell className={`text-right tabular-nums ${colMd} ${cel}`}>{brl(a.precoMedio, 2)}</TableCell>
@@ -617,7 +635,7 @@ export function CarteiraGrupos({
                             )}
 
                             {colunas.participacao && (
-                              <TableCell className={`text-right tabular-nums ${cel}`}>{pct(participacao)}</TableCell>
+                              <TableCell className={`text-right tabular-nums ${colSm} ${cel}`}>{pct(participacao)}</TableCell>
                             )}
                             {colunas.ideal && (
                               <TableCell className={`text-right text-muted-foreground tabular-nums ${colLg} ${cel}`}>
