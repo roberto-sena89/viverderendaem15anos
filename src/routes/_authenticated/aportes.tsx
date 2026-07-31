@@ -1,8 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ListOrdered } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
-import { Button } from "@/components/ui/button";
 import { GraficoEvolucaoPatrimonio } from "@/components/grafico-evolucao-patrimonio";
 import { HistoricoMensalAportes } from "@/components/historico-mensal-aportes";
 import { useAportes } from "@/lib/data";
