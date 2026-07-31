@@ -41,7 +41,7 @@ export const Route = createFileRoute("/quanto-rende-1-milhao-por-mes")({
     meta: [
       { title: TITLE },
       { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
+      { property: "og:title", content: OG_TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "article" },
       { property: "og:url", content: URL },
