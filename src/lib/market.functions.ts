@@ -178,6 +178,33 @@ const CATEGORIAS_B3 = [
   "Fiagro",
 ];
 const CATEGORIAS_TESOURO = ["Tesouro Direto", "Renda Fixa"];
+/** Categorias que aceitam tanto papéis da B3 quanto do exterior. */
+const CATEGORIAS_MISTAS = ["ETF (Global)", "ETF (Exterior)"];
+
+/**
+ * ETFs de índices internacionais listados na B3 (negociados em reais).
+ *
+ * Ficam no catálogo local para aparecerem no autocomplete mesmo quando a busca
+ * do Yahoo falha ou devolve o papel estrangeiro homônimo (ex.: "IVVB" nos EUA
+ * em vez de "IVVB11" na B3, que cotam em moedas diferentes).
+ */
+const ETFS_GLOBAIS_B3: Array<{ ticker: string; nome: string }> = [
+  { ticker: "IVVB11", nome: "iShares S&P 500 FIC de Fundo de Índice - Investimento no Exterior" },
+  { ticker: "SPXI11", nome: "It Now S&P 500 Fundo de Índice" },
+  { ticker: "WRLD11", nome: "iShares MSCI ACWI FIC de Fundo de Índice" },
+  { ticker: "NASD11", nome: "Trend ETF Nasdaq 100 Fundo de Índice" },
+  { ticker: "URET11", nome: "Trend ETF MSCI US REITs Fundo de Índice" },
+  { ticker: "EURP11", nome: "Trend ETF MSCI Europa Fundo de Índice" },
+  { ticker: "ACWI11", nome: "Buena Vista ETF MSCI ACWI Fundo de Índice" },
+  { ticker: "XINA11", nome: "Trend ETF MSCI China Fundo de Índice" },
+  { ticker: "JAPA11", nome: "Trend ETF MSCI Japão Fundo de Índice" },
+  { ticker: "BDEF11", nome: "Bradesco ETF S&P 500 Fundo de Índice" },
+  { ticker: "USTK11", nome: "Investo Wilshire US Large Cap Fundo de Índice" },
+  { ticker: "BIGT11", nome: "Investo Big Tech Fundo de Índice" },
+  { ticker: "ALUG11", nome: "Investo US REITs Fundo de Índice" },
+  { ticker: "WRLD39", nome: "BDR de ETF iShares MSCI World" },
+];
+
 
 /**
  * Autocomplete de ativos: títulos do Tesouro Transparente e papéis listados na
