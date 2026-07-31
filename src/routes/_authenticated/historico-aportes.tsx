@@ -122,6 +122,7 @@ function HistoricoAportesPage() {
   const [mesSel, setMesSel] = useState<string | null>(null);
   const [anoSel, setAnoSel] = useState<string | null>(null);
   const [diaSel, setDiaSel] = useState<string | null>(null);
+  const [anosAberto, setAnosAberto] = useState(false);
   const mes = mesSel ?? meses[0] ?? new Date().toISOString().slice(0, 7);
   const ano = anoSel ?? anos[0] ?? String(new Date().getFullYear());
 
