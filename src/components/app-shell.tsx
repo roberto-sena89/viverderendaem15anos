@@ -13,6 +13,7 @@ import {
   CandlestickChart,
   Trophy,
   BarChart3,
+  ListOrdered,
 
   Bot,
   LogOut,
@@ -33,6 +34,7 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/dashboard": LayoutDashboard,
   "/carteira": Wallet,
   "/aportes": PiggyBank,
+  "/historico-aportes": ListOrdered,
   "/dividendos": Coins,
   "/estatisticas": TrendingUp,
   "/rebalanceamento": Scale,
