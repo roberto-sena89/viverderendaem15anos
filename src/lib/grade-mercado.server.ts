@@ -263,7 +263,8 @@ const TTL = 30_000;
 
 const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Cabeçalhos aceitos pelas fontes públicas (o Yahoo bloqueia sem User-Agent). */
+const PADRAO = { Accept: "application/json" };
+/** Alguns símbolos do Yahoo só respondem quando a chamada simula um navegador. */
 const CABECALHOS = {
   Accept: "application/json",
   "User-Agent":
@@ -271,13 +272,19 @@ const CABECALHOS = {
   "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
 };
 
-async function json<T>(url: string, ttl = TTL, timeoutMs = 12_000): Promise<T | null> {
+async function json<T>(
+  url: string,
+  ttl = TTL,
+  timeoutMs = 12_000,
+  headers: Record<string, string> = PADRAO,
+): Promise<T | null> {
   const cache = memoria.get(url);
   if (cache && cache.expira > Date.now()) return cache.valor as T;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(url, { headers: CABECALHOS, signal: controller.signal });
+    const res = await fetch(url, { headers, signal: controller.signal });
+
     if (!res.ok) return (cache?.valor as T) ?? null;
     const valor = (await res.json()) as T;
     memoria.set(url, { valor, expira: Date.now() + ttl });
