@@ -21,6 +21,7 @@ import { Panel } from "@/components/panel";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes, useAtivos, useExcluirAporte } from "@/lib/data";
