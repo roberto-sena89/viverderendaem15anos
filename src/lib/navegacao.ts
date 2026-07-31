@@ -19,7 +19,7 @@ export const SECOES: SecaoNav[] = [
 
 
 
-  { to: "/cotacoes", rotulo: "Cotações de mercado", grupo: "MERCADO" },
+  { to: "/cotacoes", rotulo: "Cotações", grupo: "MERCADO" },
   { to: "/rankings", rotulo: "Ranking de Ativos", grupo: "MERCADO" },
   { to: "/noticias", rotulo: "Notícias de Mercado", grupo: "MERCADO" },
   { to: "/planejador", rotulo: "Planejador Financeiro", grupo: "Planejamento" },
