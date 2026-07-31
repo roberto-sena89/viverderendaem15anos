@@ -83,13 +83,13 @@ export function NavMobile({
           </SheetTitle>
         </SheetHeader>
 
-        <nav className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-3">
+        <nav className="scrollbar-none flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain p-3">
           {grupos.map((grupo, i) => (
-            <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-4" : ""}>
-              <p className="mb-1.5 px-3 text-[0.72rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+            <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-3" : ""}>
+              <p className="mb-1 px-3 text-[0.68rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground uppercase">
                 {grupo.titulo}
               </p>
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col">
                 {grupo.itens.map(({ to, label, icon: Icon }) => {
                   const ativo = pathname === to;
                   return (
@@ -97,16 +97,16 @@ export function NavMobile({
                       key={to}
                       to={to}
                       aria-current={ativo ? "page" : undefined}
-                      className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm transition-colors ${
+                      className={`flex min-h-10 items-center gap-3 rounded-lg px-3 text-[0.8125rem] transition-colors ${
                         ativo
                           ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
                           : "font-medium text-muted-foreground active:bg-sidebar-accent/60"
                       }`}
                     >
                       <Icon
-                        className={`size-[18px] shrink-0 ${ativo ? "text-primary" : ""}`}
+                        className={`size-[17px] shrink-0 ${ativo ? "text-primary" : ""}`}
                       />
-                      <span className="truncate">{label}</span>
+                      <span className="min-w-0 flex-1 truncate">{label}</span>
                     </Link>
                   );
                 })}
