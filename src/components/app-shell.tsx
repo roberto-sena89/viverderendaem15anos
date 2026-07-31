@@ -144,7 +144,7 @@ export function AppShell({
         <nav className="flex flex-1 flex-col gap-6 overflow-y-auto pr-1">
           {grupos.map((grupo, i) => (
             <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-5" : ""}>
-              <p className="mb-2 px-3 text-[0.82rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground/80 uppercase">
+              <p className="mb-2 px-3 text-[0.82rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground uppercase">
                 {grupo.titulo}
               </p>
               <div className="flex flex-col gap-0.5">
