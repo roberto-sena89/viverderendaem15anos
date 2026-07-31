@@ -14,9 +14,9 @@ export const SECOES: SecaoNav[] = [
   { to: "/carteira", rotulo: "Carteira", grupo: "Carteira" },
   { to: "/dividendos", rotulo: "Proventos", grupo: "Carteira" },
   { to: "/aportes", rotulo: "Patrimônio", grupo: "Carteira" },
-  { to: "/historico-aportes", rotulo: "Histórico de Aportes", grupo: "Carteira" },
   { to: "/estatisticas", rotulo: "Rentabilidade", grupo: "Carteira" },
   { to: "/rebalanceamento", rotulo: "Rebalanceamento", grupo: "Carteira" },
+  { to: "/historico-aportes", rotulo: "Histórico de Aportes", grupo: "Carteira" },
 
 
 
