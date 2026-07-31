@@ -31,6 +31,7 @@ type ColunaId =
   | "quantidade"
   | "precoMedio"
   | "precoAtual"
+  | "variacaoDia"
   | "variacao"
   | "rentabilidade"
   | "saldo"
@@ -43,6 +44,7 @@ const PADRAO: Record<ColunaId, boolean> = {
   quantidade: true,
   precoMedio: true,
   precoAtual: true,
+  variacaoDia: true,
   variacao: true,
   rentabilidade: true,
   saldo: true,
@@ -50,6 +52,15 @@ const PADRAO: Record<ColunaId, boolean> = {
   participacao: true,
   ideal: true,
   comprar: true,
+};
+
+/** Hora local (HH:mm:ss) da última cotação recebida do provedor. */
+const horaCotacao = (iso?: string) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? null
+    : d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 };
 
 
@@ -65,6 +76,8 @@ interface Grupo {
   ideal: number;
   /** Soma das variações (%) dos ativos do grupo. */
   variacaoPct: number;
+  /** Variação do dia (%) ponderada pelo saldo, vinda das cotações ao vivo. */
+  variacaoDiaPct: number | null;
 }
 
 /** Nota 0–10: aderência ao alvo (70%) + rentabilidade positiva (30%). */
@@ -150,6 +163,16 @@ export function CarteiraGrupos({
         const total = lista.reduce((s, a) => s + valorAtual(a), 0);
         const investido = lista.reduce((s, a) => s + valorInvestido(a), 0);
         const somaVariacoes = lista.reduce((s, a) => s + variacaoAtivo(a), 0);
+        // Variação do dia ponderada pelo saldo, a partir das cotações ao vivo.
+        let pesoDia = 0;
+        let somaDia = 0;
+        for (const a of lista) {
+          const v = cotacoes.get(chaveTicker(a.ticker))?.variacaoPercent;
+          if (v === null || v === undefined) continue;
+          const peso = valorAtual(a);
+          pesoDia += peso;
+          somaDia += v * peso;
+        }
         // Soma os mesmos valores arredondados exibidos em cada linha da tabela,
         // garantindo que o cabeçalho nunca divirja das linhas visíveis.
         const rentabilidadeReais = lista.reduce(
@@ -158,6 +181,7 @@ export function CarteiraGrupos({
         );
         return {
           variacaoPct: somaVariacoes,
+          variacaoDiaPct: pesoDia > 0 ? somaDia / pesoDia : null,
           classe,
           ativos: [...lista].sort((x, y) => valorAtual(y) - valorAtual(x)),
           total,
@@ -171,7 +195,7 @@ export function CarteiraGrupos({
       })
       .sort((a, b) => b.total - a.total);
     return { grupos, totalCarteira };
-  }, [ativos, alvo]);
+  }, [ativos, alvo, cotacoes]);
 
   if (grupos.length === 0) {
     return (
@@ -280,7 +304,7 @@ export function CarteiraGrupos({
                   </div>
                 </div>
 
-                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-5">
+                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-6">
                   <div className="min-w-0">
                     <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Ativos
@@ -292,6 +316,18 @@ export function CarteiraGrupos({
                       Investido
                     </dt>
                     <dd className="text-sm font-semibold tabular-nums">{brl(g.investido, 2)}</dd>
+                  </div>
+                  <div className="min-w-0">
+                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      Var. dia
+                    </dt>
+                    <dd className="text-sm">
+                      {g.variacaoDiaPct === null ? (
+                        <span className="text-sm text-muted-foreground">—</span>
+                      ) : (
+                        <Variacao value={g.variacaoDiaPct} />
+                      )}
+                    </dd>
                   </div>
                   <div className="min-w-0">
                     <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
@@ -346,6 +382,11 @@ export function CarteiraGrupos({
                         {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
                         {colunas.precoMedio && <TableHead className={`text-right ${colMd}`}>P. médio</TableHead>}
                         {colunas.precoAtual && <TableHead className="text-right">P. atual</TableHead>}
+                        {colunas.variacaoDia && (
+                          <TableHead className="text-right" title="Variação do dia vinda das cotações ao vivo">
+                            Var. dia
+                          </TableHead>
+                        )}
                         {colunas.variacao && <TableHead className={`text-right ${colLg}`}>Var. (%)</TableHead>}
                         {colunas.rentabilidade && <TableHead className={`text-right ${colMd}`}>Rent. (R$)</TableHead>}
                         {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
@@ -359,6 +400,7 @@ export function CarteiraGrupos({
                     </TableHeader>
                     <TableBody>
                       {g.ativos.map((a) => {
+                        const live = cotacoes.get(chaveTicker(a.ticker));
                         const saldo = valorAtual(a);
                         const investido = valorInvestido(a);
                         const variacao = variacaoAtivo(a);
@@ -398,12 +440,34 @@ export function CarteiraGrupos({
                                       : ""
                                 }`}
                                 title={
-                                  cotacoes.get(chaveTicker(a.ticker))
-                                    ? `Fonte: ${cotacoes.get(chaveTicker(a.ticker))!.fonte}`
-                                    : undefined
+                                  live
+                                    ? `Fonte: ${live.fonte}${horaCotacao(live.atualizadoEm) ? ` · ${horaCotacao(live.atualizadoEm)}` : ""}${live.erro ? ` · ${live.erro}` : ""}`
+                                    : "Aguardando cotação do provedor de mercado"
                                 }
                               >
                                 {brl(a.precoAtual, 2)}
+                              </TableCell>
+                            )}
+                            {colunas.variacaoDia && (
+                              <TableCell
+                                className={`text-right ${cel} ${
+                                  flash[chaveTicker(a.ticker)] === "alta"
+                                    ? "flash-alta"
+                                    : flash[chaveTicker(a.ticker)] === "baixa"
+                                      ? "flash-baixa"
+                                      : ""
+                                }`}
+                                title={
+                                  live
+                                    ? `Variação do dia · ${live.fonte}`
+                                    : "Aguardando cotação do provedor de mercado"
+                                }
+                              >
+                                {live?.variacaoPercent != null ? (
+                                  <Variacao value={live.variacaoPercent} />
+                                ) : (
+                                  <span className="text-muted-foreground">—</span>
+                                )}
                               </TableCell>
                             )}
                             {colunas.variacao && (
