@@ -141,7 +141,7 @@ export function DialogAlocacaoAlvo() {
   };
 
   return (
-    <Dialog open={aberto} onOpenChange={setAberto}>
+    <Dialog open={aberto} onOpenChange={aoAlternar}>
       <DialogTrigger asChild>
         <Button size="sm" className="h-9 gap-2 px-4 text-xs font-semibold">
           <SlidersHorizontal className="size-4!" />
