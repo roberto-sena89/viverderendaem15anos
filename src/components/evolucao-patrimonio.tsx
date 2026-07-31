@@ -25,10 +25,22 @@ import {
 import { Panel } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { corCategoria } from "@/lib/cores-ativos";
+import { corClasse } from "@/lib/cores-ativos";
 import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { useAportes } from "@/lib/data";
-import { brl, pct, resumoCarteira, valorAtual, type Aporte } from "@/lib/portfolio";
+import {
+  brl,
+  classeDoAtivo,
+  pct,
+  resumoCarteira,
+  valorAtual,
+  type Aporte,
+  type Ativo,
+} from "@/lib/portfolio";
+
+/** Classe de alocação a partir de uma categoria solta (aportes não trazem o ativo). */
+const classeDaCategoria = (categoria: string) =>
+  classeDoAtivo({ categoria } as Ativo);
 import { cn } from "@/lib/utils";
 
 const MESES_CURTO = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
