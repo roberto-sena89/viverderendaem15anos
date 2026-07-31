@@ -122,17 +122,8 @@ function CarteiraRecomendadaPage() {
     ]);
   }
 
-  function soltar(alvoId: string) {
-    if (!arrastando || arrastando === alvoId) return;
-    const de = linhas.findIndex((l) => l.id === arrastando);
-    const para = linhas.findIndex((l) => l.id === alvoId);
-    if (de < 0 || para < 0) return;
-    const copia = [...linhas];
-    const [item] = copia.splice(de, 1);
-    copia.splice(para, 0, { ...item, grupo: linhas[para].grupo, risco: linhas[para].risco });
-    setLinhas(copia);
-    setArrastando(null);
-  }
+  // Ordem travada: linhas não podem ser reordenadas por arrastar.
+
 
   function aplicarNaCarteira() {
     const novo: Record<string, number> = {};
