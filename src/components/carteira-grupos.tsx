@@ -686,7 +686,16 @@ export function CarteiraGrupos({
                                     <DropdownMenuItem onSelect={() => onEditar?.(a)}>
                                       <Pencil className="size-4" /> Editar ativo
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => setEditando(a.id)}>
+                                      <Pencil className="size-4" /> Editar preço atual
+                                    </DropdownMenuItem>
+                                    {manuais[chavePreco(a.ticker)] !== undefined && (
+                                      <DropdownMenuItem onSelect={() => voltarAoAutomatico(a.ticker)}>
+                                        <CircleCheck className="size-4" /> Voltar preço automático
+                                      </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuSeparator />
+
                                     <DropdownMenuItem
                                       className="text-destructive focus:text-destructive"
                                       onSelect={() => onExcluir?.(a)}
