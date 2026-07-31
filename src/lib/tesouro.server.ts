@@ -5,13 +5,16 @@
  * https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto
  *
  * O CSV traz a série completa desde 2005 (~14 MB). Ele é lido em streaming
- * (sem carregar o arquivo inteiro na memória), guardando apenas a linha mais
- * recente de cada título. Como o Tesouro publica preços uma vez por dia útil,
- * o resultado fica em cache por 6 horas e a sincronização roda 1x/dia.
+ * (sem carregar o arquivo inteiro na memória), guardando a linha mais recente
+ * de cada título e uma série curta (últimos ~18 meses) para os gráficos.
+ * Como o Tesouro publica preços uma vez por dia útil, o resultado fica em
+ * cache por 6 horas.
  */
 
 const CSV_TESOURO =
   "https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv";
+
+export type PontoTesouro = { data: string; preco: number; taxa: number | null };
 
 export type TituloTesouro = {
   nome: string;
@@ -21,6 +24,8 @@ export type TituloTesouro = {
   taxaVenda: number | null;
   precoCompra: number | null;
   precoVenda: number | null;
+  /** Série diária recente do preço unitário de compra (para gráficos). */
+  serie: PontoTesouro[];
 };
 
 let cache: { expira: number; valor: TituloTesouro[] } | null = null;
@@ -37,7 +42,13 @@ const dataIso = (v: string) => {
   return m ? `${m[3]}-${m[2]}-${m[1]}` : null;
 };
 
-function processarLinha(linha: string, mapa: Map<string, TituloTesouro>) {
+function corteSerie() {
+  const d = new Date();
+  d.setMonth(d.getMonth() - 18);
+  return d.toISOString().slice(0, 10);
+}
+
+function processarLinha(linha: string, mapa: Map<string, TituloTesouro>, corte: string) {
   const c = linha.split(";");
   if (c.length < 8 || !c[0].startsWith("Tesouro")) return;
   const vencimento = dataIso(c[1]);
@@ -45,18 +56,47 @@ function processarLinha(linha: string, mapa: Map<string, TituloTesouro>) {
   if (!vencimento || !dataBase) return;
 
   const chave = `${c[0].trim()}|${vencimento}`;
-  const atual = mapa.get(chave);
-  if (atual?.dataBase && atual.dataBase >= dataBase) return;
+  const precoCompra = numero(c[5]);
+  const precoVenda = numero(c[6]);
+  const taxaCompra = numero(c[3]);
 
-  mapa.set(chave, {
-    nome: `${c[0].trim()} ${vencimento.slice(0, 4)}`,
-    vencimento,
-    dataBase,
-    taxaCompra: numero(c[3]),
-    taxaVenda: numero(c[4]),
-    precoCompra: numero(c[5]),
-    precoVenda: numero(c[6]),
-  });
+  let atual = mapa.get(chave);
+  if (!atual) {
+    atual = {
+      nome: `${c[0].trim()} ${vencimento.slice(0, 4)}`,
+      vencimento,
+      dataBase: null,
+      taxaCompra: null,
+      taxaVenda: null,
+      precoCompra: null,
+      precoVenda: null,
+      serie: [],
+    };
+    mapa.set(chave, atual);
+  }
+
+  const preco = precoCompra ?? precoVenda;
+  if (dataBase >= corte && preco !== null) {
+    atual.serie.push({ data: dataBase, preco, taxa: taxaCompra });
+  }
+
+  if (atual.dataBase && atual.dataBase >= dataBase) return;
+  atual.dataBase = dataBase;
+  atual.taxaCompra = taxaCompra;
+  atual.taxaVenda = numero(c[4]);
+  atual.precoCompra = precoCompra;
+  atual.precoVenda = precoVenda;
+}
+
+/** Reduz a série para no máximo `max` pontos, preservando o mais recente. */
+function amostrar(serie: PontoTesouro[], max = 180): PontoTesouro[] {
+  const ordenada = serie.sort((a, b) => a.data.localeCompare(b.data));
+  if (ordenada.length <= max) return ordenada;
+  const passo = Math.ceil(ordenada.length / max);
+  const saida = ordenada.filter((_, i) => i % passo === 0);
+  const ultimo = ordenada[ordenada.length - 1];
+  if (saida[saida.length - 1]?.data !== ultimo.data) saida.push(ultimo);
+  return saida;
 }
 
 /** Preço e taxa mais recentes de cada título público. */
@@ -69,6 +109,7 @@ export async function listarTesouroDireto(): Promise<TituloTesouro[]> {
     const res = await fetch(CSV_TESOURO, { headers: { Accept: "text/csv" }, signal: controller.signal });
     if (!res.ok || !res.body) throw new Error(`Tesouro Transparente respondeu ${res.status}`);
 
+    const corte = corteSerie();
     const mapa = new Map<string, TituloTesouro>();
     const leitor = res.body.pipeThrough(new TextDecoderStream("utf-8")).getReader();
     let resto = "";
@@ -78,11 +119,13 @@ export async function listarTesouroDireto(): Promise<TituloTesouro[]> {
       if (done) break;
       const partes = (resto + value).split("\n");
       resto = partes.pop() ?? "";
-      for (const linha of partes) processarLinha(linha, mapa);
+      for (const linha of partes) processarLinha(linha, mapa, corte);
     }
-    if (resto) processarLinha(resto, mapa);
+    if (resto) processarLinha(resto, mapa, corte);
 
-    const titulos = [...mapa.values()].sort((a, b) => (a.vencimento ?? "").localeCompare(b.vencimento ?? ""));
+    const titulos = [...mapa.values()]
+      .map((t) => ({ ...t, serie: amostrar(t.serie) }))
+      .sort((a, b) => (a.vencimento ?? "").localeCompare(b.vencimento ?? ""));
     cache = { valor: titulos, expira: Date.now() + TTL_MS };
     return titulos;
   } finally {
@@ -101,7 +144,7 @@ const normalizar = (t: string) =>
 /** Indexador declarado no ticker/nome do ativo (SELIC, IPCA+, PREFIXADO). */
 function indexador(texto: string): "SELIC" | "IPCA" | "PRE" | null {
   if (/SELIC|LFT/.test(texto)) return "SELIC";
-  if (/IPCA|NTN B/.test(texto)) return "IPCA";
+  if (/IPCA|NTN B|RENDA|EDUCA/.test(texto)) return "IPCA";
   if (/PREFIXAD|PRE\b|LTN|NTN F/.test(texto)) return "PRE";
   return null;
 }
