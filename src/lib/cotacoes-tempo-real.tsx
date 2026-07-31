@@ -142,9 +142,13 @@ interface ContextoCotacoes {
   carregando: boolean;
   config: ConfigSync;
   salvarConfig: (parcial: Partial<ConfigSync>) => void;
+  /** Streaming (SSE) ativo para os ativos internacionais da carteira. */
+  streaming: boolean;
+  statusStream: StatusStream;
 }
 
 const Ctx = createContext<ContextoCotacoes | null>(null);
+
 
 const chaveTicker = (t: string) => t.trim().toUpperCase().replace(/\.SA$/i, "");
 
