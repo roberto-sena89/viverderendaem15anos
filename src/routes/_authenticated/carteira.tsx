@@ -130,7 +130,6 @@ function CarteiraPage() {
       )}
 
 
-      <CarteiraRecomendada />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-2xl">
