@@ -6,12 +6,14 @@ import { ThemeToggle } from "@/components/theme";
 import { supabase } from "@/integrations/supabase/client";
 import logoIcone from "@/assets/logo-icone.webp";
 import heroFundo from "@/assets/hero-mercado-fundo.webp";
+import ogImagem from "@/assets/og-home.jpg.asset.json";
 
 const TITLE = "Viver de Renda em 15 Anos — Carteira, Dividendos e Independência";
 const OG_TITLE = "Viver de Renda em 15 Anos: carteira e dividendos";
 const DESCRIPTION =
   "Controle a sua carteira de ações, FIIs e renda fixa, acompanhe dividendos, rebalanceie a alocação e projete em quantos anos você vive de renda.";
 const URL = "https://viverderendaem15anos.lovable.app/";
+const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
 
 
 export const Route = createFileRoute("/")({
