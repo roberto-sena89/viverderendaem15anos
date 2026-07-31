@@ -393,10 +393,14 @@ export function CarteiraGrupos({
                         </span>
                       ) : null}
                     </span>
-                    {/* Indicador centralizado na largura da janela do grupo. */}
+                    {/* Indicador: colado ao título no celular, centralizado a partir de sm. */}
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={`size-4 shrink-0 text-muted-foreground transition-transform sm:hidden ${aberto ? "rotate-180" : ""}`}
+                    />
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute left-1/2 -translate-x-1/2"
+                      className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 sm:block"
                     >
                       <ChevronDown
                         className={`size-5 text-muted-foreground transition-transform ${aberto ? "rotate-180" : ""}`}
