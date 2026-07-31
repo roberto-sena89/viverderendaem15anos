@@ -21,7 +21,7 @@ export function AbasCarteira() {
     >
       <ul className="flex min-w-max items-center gap-1 px-1">
         {ABAS_CARTEIRA.map((to) => {
-          const Icone = ICONES[to];
+          const Icone = ICONES[to] ?? LayoutDashboard;
           const rotulo = secaoPorRota(to)?.rotulo ?? to;
           return (
             <li key={to}>
