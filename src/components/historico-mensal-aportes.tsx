@@ -11,6 +11,7 @@ import { GraficoAportesMensais } from "@/components/grafico-aportes-mensais";
 
 type Item = {
   ticker: string;
+  nome: string;
   categoria: string;
   corretoras: string[];
   datas: string[];
@@ -146,10 +147,10 @@ export function HistoricoMensalAportes() {
   const [pagina, setPagina] = useState(0);
   const [busca, setBusca] = useState("");
 
-  /** Categoria oficial de cada ticker vem da aba Carteira (fonte única). */
-  const categoriaPorTicker = useMemo(() => {
-    const m = new Map<string, string>();
-    for (const a of carteira) m.set(a.ticker.toUpperCase(), a.categoria);
+  /** Categoria e nome oficiais de cada ticker vêm da aba Carteira (fonte única). */
+  const infoPorTicker = useMemo(() => {
+    const m = new Map<string, { categoria: string; nome: string }>();
+    for (const a of carteira) m.set(a.ticker.toUpperCase(), { categoria: a.categoria, nome: a.nome ?? "" });
     return m;
   }, [carteira]);
 
@@ -157,7 +158,9 @@ export function HistoricoMensalAportes() {
     const mapa = new Map<string, Mes>();
     for (const a of aportes) {
       const ticker = a.ticker.toUpperCase();
-      const categoria = categoriaPorTicker.get(ticker) ?? a.categoria;
+      const info = infoPorTicker.get(ticker);
+      const categoria = info?.categoria ?? a.categoria;
+      const nome = info?.nome ?? "";
       const chave = a.data.slice(0, 7);
       const bruto = a.quantidade * a.preco;
       const total = bruto + a.taxas;
@@ -193,11 +196,13 @@ export function HistoricoMensalAportes() {
         item.lancamentos += 1;
         item.datas.push(a.data);
         item.categoria = categoria;
+        if (nome) item.nome = nome;
         if (a.corretora && !item.corretoras.includes(a.corretora)) item.corretoras.push(a.corretora);
         item.registros.push(a);
       } else {
         m.itens.push({
           ticker,
+          nome,
           categoria,
           corretoras: a.corretora ? [a.corretora] : [],
           datas: [a.data],
@@ -213,7 +218,7 @@ export function HistoricoMensalAportes() {
     return [...mapa.values()]
       .sort((a, b) => (a.chave < b.chave ? 1 : -1))
       .map((m) => ({ ...m, itens: m.itens.sort((a, b) => b.total - a.total) }));
-  }, [aportes, categoriaPorTicker]);
+  }, [aportes, infoPorTicker]);
   const atualizar = useAtualizarAporte();
   const excluir = useExcluirAporte();
   const [linhaAberta, setLinhaAberta] = useState<string | null>(null);
@@ -421,8 +426,8 @@ export function HistoricoMensalAportes() {
                           <colgroup>
                             <col className="w-[4.5rem] sm:w-[5.5rem]" />
                             <col />
-                            <col className="hidden lg:table-column lg:w-[9rem]" />
-                            <col className="hidden xl:table-column xl:w-[9rem]" />
+                            <col className="hidden md:table-column md:w-[8.5rem]" />
+                            <col className="hidden md:table-column md:w-[8rem]" />
                             <col className="hidden sm:table-column sm:w-[4.5rem]" />
                             <col className="hidden sm:table-column sm:w-[6.5rem]" />
                             <col className="hidden md:table-column md:w-[5.5rem]" />
@@ -433,8 +438,8 @@ export function HistoricoMensalAportes() {
                             <tr className="border-b border-border text-[0.85rem] tracking-[0.06em] text-muted-foreground uppercase">
                               <th className="py-1.5 pr-2 text-left font-semibold">Data</th>
                               <th className="py-1.5 pr-2 text-left font-semibold">Ativo</th>
-                              <th className="hidden py-1.5 pr-2 text-left font-semibold lg:table-cell">Categoria</th>
-                              <th className="hidden py-1.5 pr-2 text-left font-semibold xl:table-cell">Corretora</th>
+                              <th className="hidden py-1.5 pr-2 text-left font-semibold md:table-cell">Categoria</th>
+                              <th className="hidden py-1.5 pr-2 text-left font-semibold md:table-cell">Corretora</th>
                               <th className="hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">Qtd.</th>
                               <th className="hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">Preço médio</th>
                               <th className="hidden py-1.5 pr-2 text-right font-semibold md:table-cell">Taxas</th>
@@ -446,44 +451,64 @@ export function HistoricoMensalAportes() {
                             {m.itens.map((i) => {
                               const chaveLinha = `${m.chave}:${i.ticker}`;
                               const linhaAbertaAtual = linhaAberta === chaveLinha;
+                              const categoriaTexto = i.categoria.replace(/\n/g, " · ");
+                              const corretorasTexto = i.corretoras.length ? i.corretoras.join(", ") : "—";
+                              const precoMedio = i.quantidade ? i.bruto / i.quantidade : 0;
                               return (
                               <Fragment key={chaveLinha}>
                               <tr>
-                                <td className="num py-1.5 pr-2 whitespace-nowrap text-muted-foreground">
+                                <td className="num py-1.5 pr-2 align-top whitespace-nowrap text-muted-foreground">
                                   {intervalo(i.datas)}
                                 </td>
-                                <td className="py-1.5 pr-2">
+                                <td className="py-1.5 pr-2 align-top">
                                   <span className="flex min-w-0 items-center gap-1.5">
                                     <span
                                       className="size-2 shrink-0 rounded-full"
                                       style={{ background: corCategoria(i.categoria) }}
                                     />
-                                    <span className="min-w-0 truncate font-medium" title={i.ticker}>
+                                    <span className="min-w-0 truncate font-semibold" title={i.ticker}>
                                       {i.ticker}
                                     </span>
                                   </span>
-                                  <span className="block truncate pl-3.5 text-[0.78rem] text-muted-foreground lg:hidden">
-                                    {i.categoria.replace(/\n/g, " · ")}
+                                  {i.nome && (
+                                    <span
+                                      className="block truncate pl-3.5 text-[0.78rem] text-muted-foreground"
+                                      title={i.nome}
+                                    >
+                                      {i.nome}
+                                    </span>
+                                  )}
+                                  <span className="block truncate pl-3.5 text-[0.78rem] text-muted-foreground md:hidden">
+                                    {categoriaTexto} · {corretorasTexto}
+                                  </span>
+                                  <span className="num block truncate pl-3.5 text-[0.78rem] text-muted-foreground sm:hidden">
+                                    {i.quantidade.toLocaleString("pt-BR")} × {brl(precoMedio, 2)} · taxas{" "}
+                                    {brl(i.taxas, 2)}
+                                  </span>
+                                  <span className="block pl-3.5 text-[0.78rem] text-muted-foreground">
+                                    {i.lancamentos} {i.lancamentos === 1 ? "lançamento" : "lançamentos"}
                                   </span>
                                 </td>
-                                <td className="hidden py-1.5 pr-2 text-muted-foreground lg:table-cell">
-                                  <span className="block truncate">{i.categoria.replace(/\n/g, " · ")}</span>
-                                </td>
-                                <td className="hidden py-1.5 pr-2 text-muted-foreground xl:table-cell">
-                                  <span className="block truncate">
-                                    {i.corretoras.length ? i.corretoras.join(", ") : "—"}
+                                <td className="hidden py-1.5 pr-2 align-top text-muted-foreground md:table-cell">
+                                  <span className="block truncate" title={categoriaTexto}>
+                                    {categoriaTexto}
                                   </span>
                                 </td>
-                                <td className="num hidden py-1.5 pr-2 text-right sm:table-cell">
+                                <td className="hidden py-1.5 pr-2 align-top text-muted-foreground md:table-cell">
+                                  <span className="block truncate" title={corretorasTexto}>
+                                    {corretorasTexto}
+                                  </span>
+                                </td>
+                                <td className="num hidden py-1.5 pr-2 text-right align-top sm:table-cell">
                                   {i.quantidade.toLocaleString("pt-BR")}
                                 </td>
-                                <td className="num hidden py-1.5 pr-2 text-right sm:table-cell">
-                                  {brl(i.quantidade ? i.bruto / i.quantidade : 0, 2)}
+                                <td className="num hidden py-1.5 pr-2 text-right align-top sm:table-cell">
+                                  {brl(precoMedio, 2)}
                                 </td>
-                                <td className="num hidden py-1.5 pr-2 text-right text-muted-foreground md:table-cell">
+                                <td className="num hidden py-1.5 pr-2 text-right align-top text-muted-foreground md:table-cell">
                                   {brl(i.taxas, 2)}
                                 </td>
-                                <td className="num py-1.5 pr-2 text-right font-semibold">{brl(i.total)}</td>
+                                <td className="num py-1.5 pr-2 text-right align-top font-semibold">{brl(i.total)}</td>
                                 <td className="py-1.5 text-right">
                                   <Button
                                     type="button"
