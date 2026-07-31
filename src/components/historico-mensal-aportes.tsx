@@ -735,10 +735,15 @@ export function HistoricoMensalAportes() {
                               const pmTotal = qtdTotal ? m.bruto / qtdTotal : 0;
                               return (
                                 <tr className="border-t-2 border-border bg-muted/40 text-[0.875rem]">
-                                  <td className="py-1.5 pr-2 font-semibold" colSpan={4}>
-                                    Totais do mês · {m.lancamentos} {m.lancamentos === 1 ? "lançamento" : "lançamentos"}
+                                  <td className="py-1.5 pr-2 font-semibold" colSpan={2}>
+                                    <span className="block truncate">
+                                      Totais · {m.lancamentos}{" "}
+                                      {m.lancamentos === 1 ? "lançamento" : "lançamentos"}
+                                    </span>
                                   </td>
-                                  <td className="num py-1.5 pr-2 text-right font-semibold">
+                                  <td className="hidden lg:table-cell" />
+                                  <td className="hidden xl:table-cell" />
+                                  <td className="num hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">
                                     {qtdTotal.toLocaleString("pt-BR")}
                                   </td>
                                   <td className="num py-1.5 pr-2 text-right font-semibold">{brl(pmTotal, 2)}</td>
