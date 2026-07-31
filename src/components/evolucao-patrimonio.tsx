@@ -865,7 +865,7 @@ export function EvolucaoPatrimonio() {
                       />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(Number(v), 2)} />
+                  <Tooltip cursor={false} content={<TooltipCategoria />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
