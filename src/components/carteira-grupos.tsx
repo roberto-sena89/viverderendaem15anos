@@ -382,6 +382,11 @@ export function CarteiraGrupos({
                         {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
                         {colunas.precoMedio && <TableHead className={`text-right ${colMd}`}>P. médio</TableHead>}
                         {colunas.precoAtual && <TableHead className="text-right">P. atual</TableHead>}
+                        {colunas.variacaoDia && (
+                          <TableHead className="text-right" title="Variação do dia vinda das cotações ao vivo">
+                            Var. dia
+                          </TableHead>
+                        )}
                         {colunas.variacao && <TableHead className={`text-right ${colLg}`}>Var. (%)</TableHead>}
                         {colunas.rentabilidade && <TableHead className={`text-right ${colMd}`}>Rent. (R$)</TableHead>}
                         {colunas.saldo && <TableHead className="text-right">Saldo</TableHead>}
