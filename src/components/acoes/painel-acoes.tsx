@@ -432,30 +432,70 @@ export function PainelAcoes({ intervaloMs, busca, apenasFavoritos }: Props) {
                     Colunas
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="max-h-[70dvh] w-64 overflow-y-auto">
-                  <DropdownMenuLabel>Exibir indicadores</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {GRUPOS_COLUNA.map((grupo) => (
-                    <div key={grupo} className="p-1">
-                      <p className="px-2 py-1 text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
-                        {grupo}
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={8}
+                  className="w-[min(94vw,44rem)] p-0"
+                >
+                  <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+                    <div className="min-w-0">
+                      <DropdownMenuLabel className="p-0 text-sm">Exibir indicadores</DropdownMenuLabel>
+                      <p className="text-xs text-muted-foreground">
+                        {colunas.length} de {COLUNAS_ACAO.length} colunas visíveis na tabela
                       </p>
-                      {COLUNAS_ACAO.filter((c) => c.grupo === grupo).map((c) => (
-                        <label
-                          key={c.id}
-                          className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
-                        >
-                          <Checkbox
-                            checked={colunas.includes(c.id)}
-                            onCheckedChange={() => alternarColuna(c.id)}
-                            aria-label={c.rotulo}
-                          />
-                          {c.rotulo}
-                        </label>
-                      ))}
                     </div>
-                  ))}
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setColunas(COLUNAS_PADRAO);
+                        }}
+                      >
+                        Padrão
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setColunas([]);
+                        }}
+                      >
+                        Limpar
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid max-h-[60dvh] grid-cols-1 gap-x-6 gap-y-4 overflow-y-auto p-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {GRUPOS_COLUNA.map((grupo) => (
+                      <div key={grupo} className="min-w-0">
+                        <p className="mb-1 text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                          {grupo}
+                        </p>
+                        <div className="space-y-0.5">
+                          {COLUNAS_ACAO.filter((c) => c.grupo === grupo).map((c) => (
+                            <label
+                              key={c.id}
+                              className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+                            >
+                              <Checkbox
+                                checked={colunas.includes(c.id)}
+                                onCheckedChange={() => alternarColuna(c.id)}
+                                aria-label={c.rotulo}
+                              />
+                              <span className="min-w-0 truncate">{c.rotulo}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </DropdownMenuContent>
+
               </DropdownMenu>
 
               <span
