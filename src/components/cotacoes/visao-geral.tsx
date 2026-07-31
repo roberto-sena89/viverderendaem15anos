@@ -1,16 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Star, TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { corVar, fmtPercent, fmtPreco } from "@/components/cotacoes/formatos";
-import { useFavoritos } from "@/lib/favoritos-mercado";
 import { visaoGeralMercado, type LinhaCotacao } from "@/lib/grade-mercado.functions";
 
 export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
   const buscar = useServerFn(visaoGeralMercado);
-  const { favoritos } = useFavoritos();
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["visao-geral-mercado"],
