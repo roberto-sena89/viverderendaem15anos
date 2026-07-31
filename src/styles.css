@@ -155,6 +155,7 @@
   --fs-table-head: 0.6875rem;
 }
 
+/* Escala de gutter/tipografia por breakpoint: 320 → 1920 */
 @media (min-width: 641px) {
   :root {
     --gutter-app: 1.5rem; /* 24px */
@@ -163,6 +164,27 @@
     --fs-table-head: 0.75rem; /* 12px */
   }
 }
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter-app: 2rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --container-app: 1440px;
+    --gutter-app: 2.5rem;
+    --gap-grid: 1.75rem;
+  }
+}
+
+@media (min-width: 1800px) {
+  :root {
+    --container-app: 1600px;
+  }
+}
+
 
 :root {
 
