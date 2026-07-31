@@ -10,6 +10,7 @@ import { VisaoGeralMercado } from "@/components/cotacoes/visao-geral";
 import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { PainelAcoes } from "@/components/acoes/painel-acoes";
 import { PainelEtfs } from "@/components/etfs/painel-etfs";
+import { PainelIndices } from "@/components/indices/painel-indices";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
