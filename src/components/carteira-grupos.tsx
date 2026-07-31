@@ -486,7 +486,7 @@ export function CarteiraGrupos({
               <>
                 <div className="border-t">
                 <Table
-                  wrapperClassName="w-full max-w-full overflow-x-auto overscroll-x-contain"
+                  wrapperClassName="w-full max-w-full overflow-x-auto overscroll-x-contain scrollbar-none"
                   className="w-full table-auto text-sm [&_th]:px-2 [&_td]:px-2 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.65rem] sm:[&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
                 >
                     <TableHeader>
