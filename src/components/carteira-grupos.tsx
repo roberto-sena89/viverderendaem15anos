@@ -640,32 +640,6 @@ export function CarteiraGrupos({
                             {colunas.saldo && (
                               <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>{brl(saldo, 2)}</TableCell>
                             )}
-                            {colunas.nota && (
-                              <TableCell className={`text-center ${colLg} ${cel}`}>
-                                <span
-                                  title={
-                                    d.retorno12m === null
-                                      ? "Sem histórico de 12 meses para este ativo"
-                                      : `Desempenho 12m: ${num(d.retorno12m, 1)}%` +
-                                        (d.excedente !== null
-                                          ? ` · ${d.excedente >= 0 ? "+" : ""}${num(d.excedente, 1)} p.p. vs Ibovespa`
-                                          : "") +
-                                        ` · ${d.classificacao}`
-                                  }
-                                  className={`inline-grid place-items-center rounded-md font-bold tabular-nums ${
-                                    d.retorno12m === null
-                                      ? "bg-muted text-muted-foreground"
-                                      : d.nota >= 7
-                                        ? "bg-success text-success-foreground"
-                                        : d.nota >= 5
-                                          ? "bg-foreground text-background"
-                                          : "bg-destructive text-destructive-foreground"
-                                  } ${compacto ? "size-6 text-xs" : "size-8 text-sm"}`}
-                                >
-                                  {d.retorno12m === null ? "—" : d.nota.toFixed(0)}
-                                </span>
-                              </TableCell>
-                            )}
 
                             {colunas.participacao && (
                               <TableCell className={`text-right tabular-nums ${cel}`}>{pct(participacao)}</TableCell>
