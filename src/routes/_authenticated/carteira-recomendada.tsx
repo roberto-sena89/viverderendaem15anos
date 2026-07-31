@@ -263,16 +263,22 @@ function CarteiraRecomendadaPage() {
                         }
                       />
 
-                      <Input
-                        aria-label={`Percentual de ${l.indexador}`}
-                        inputMode="decimal"
-                        value={String(l.alvo).replace(".", ",")}
-                        onChange={(e) => {
-                          const v = Number(e.target.value.replace(",", "."));
-                          atualizar(l.id, { alvo: Number.isFinite(v) ? Math.min(Math.max(v, 0), 100) : 0 });
-                        }}
-                        className="h-9 w-20 text-right font-display font-bold tabular-nums"
-                      />
+                      <div className="relative w-24">
+                        <Input
+                          aria-label={`Percentual de ${l.indexador}`}
+                          inputMode="decimal"
+                          value={fmt(l.alvo)}
+                          onChange={(e) => {
+                            const v = Number(e.target.value.replace("%", "").replace(",", ".").trim());
+                            atualizar(l.id, { alvo: Number.isFinite(v) ? Math.min(Math.max(v, 0), 100) : 0 });
+                          }}
+                          onFocus={(e) => e.currentTarget.select()}
+                          className="h-9 pr-6 text-right font-display font-bold tabular-nums"
+                        />
+                        <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
+                          %
+                        </span>
+                      </div>
                     </div>
 
                     <Button
