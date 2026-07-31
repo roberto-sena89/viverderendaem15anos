@@ -107,10 +107,12 @@ async function indiceBolsa(def: DefIndice): Promise<LinhaIndice> {
       const serie = (r?.indicators?.quote?.[0]?.close ?? []).filter(
         (v): v is number => typeof v === "number" && Number.isFinite(v),
       );
-      const atual = r?.meta?.regularMarketPrice ?? serie.at(-1) ?? null;
-      if (typeof atual !== "number") continue;
+      const atual = r?.meta?.regularMarketPrice || serie.at(-1) || null;
+      if (typeof atual !== "number" || atual === 0) continue;
 
-      const anterior = r?.meta?.chartPreviousClose ?? r?.meta?.previousClose ?? serie.at(-2) ?? null;
+      // Com faixa de 1 ano, o "chartPreviousClose" é o fechamento anterior à
+      // janela inteira: o pregão anterior real é o penúltimo ponto da série.
+      const anterior = serie.length > 1 ? serie.at(-2)! : (r?.meta?.previousClose ?? null);
       const primeiro = serie[0] ?? null;
       return {
         ...base,
@@ -118,6 +120,7 @@ async function indiceBolsa(def: DefIndice): Promise<LinhaIndice> {
         variacaoDiaPercent: anterior && anterior > 0 ? ((atual - anterior) / anterior) * 100 : null,
         variacao12m: primeiro && primeiro > 0 ? ((atual - primeiro) / primeiro) * 100 : null,
         spark: serie.slice(-30),
+
         extras: [
           { rotulo: "Fechamento anterior", valor: anterior ? formatarPontos(anterior) : "—" },
           { rotulo: "Mínima 12m", valor: serie.length ? formatarPontos(Math.min(...serie)) : "—" },
