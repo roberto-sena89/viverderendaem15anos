@@ -263,23 +263,54 @@ type BrapiQuote = {
   historicalDataPrice?: Array<{ close?: number | null }>;
 };
 
+/** Limite de tickers por requisição aprendido com a resposta da brapi. */
+let limiteBrapi = 0;
+
+async function brapiPagina(
+  tickers: string[],
+  token: string | undefined,
+  mapa: Map<string, BrapiQuote>,
+): Promise<"ok" | "limite"> {
+  const params = new URLSearchParams({ range: "1d", interval: "30m" });
+  if (token) params.set("token", token);
+  const url = `https://brapi.dev/api/quote/${tickers.join(",")}?${params}`;
+  const data = await json<{ results?: BrapiQuote[]; error?: boolean; code?: string; message?: string }>(
+    url,
+    120_000,
+  );
+  if (data?.error) {
+    if (data.code === "QUOTES_PER_REQUEST_EXCEEDED") {
+      const permitido = Number(data.message?.match(/máximo\s+(\d+)/i)?.[1] ?? 1);
+      limiteBrapi = Math.max(1, permitido);
+      return "limite";
+    }
+    return "ok";
+  }
+  for (const r of data?.results ?? []) if (r.symbol) mapa.set(r.symbol.toUpperCase(), r);
+  return "ok";
+}
+
 async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<LinhaCotacao[]> {
   const token = process.env.BRAPI_TOKEN;
-  // Sem token a brapi só aceita 2 tickers por chamada; com token, lotes maiores.
-  const tamanho = token ? 20 : 2;
+  if (!limiteBrapi) limiteBrapi = token ? 20 : 2;
   const mapa = new Map<string, BrapiQuote>();
 
-  const grupos: Def[][] = [];
-  for (let i = 0; i < defs.length; i += tamanho) grupos.push(defs.slice(i, i + tamanho));
+  const buscar = async (tamanho: number) => {
+    const grupos: string[][] = [];
+    const alvo = defs.filter((d) => !mapa.has(d.ticker.toUpperCase())).map((d) => d.ticker);
+    for (let i = 0; i < alvo.length; i += tamanho) grupos.push(alvo.slice(i, i + tamanho));
+    let excedeu = false;
+    await emLotes(grupos, tamanho === 1 ? 8 : 4, async (lote) => {
+      if (excedeu) return;
+      const r = await brapiPagina(lote, token, mapa);
+      if (r === "limite") excedeu = true;
+    });
+    return excedeu;
+  };
 
-  await emLotes(grupos, 4, async (lote) => {
-    const params = new URLSearchParams({ range: "1d", interval: "30m" });
-    if (token) params.set("token", token);
-    const url = `https://brapi.dev/api/quote/${lote.map((d) => d.ticker).join(",")}?${params}`;
-    const data = await json<{ results?: BrapiQuote[]; error?: boolean }>(url, 60_000);
-    if (data?.error) return;
-    for (const r of data?.results ?? []) if (r.symbol) mapa.set(r.symbol.toUpperCase(), r);
-  });
+  // Se o plano aceitar menos tickers por chamada, reaprende o limite e refaz.
+  if (await buscar(limiteBrapi)) await buscar(limiteBrapi);
+
 
 
   const linhas = defs.map((d) => {
