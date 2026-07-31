@@ -34,14 +34,19 @@ export function DialogBuscarRecomendacao({
   const [carregando, setCarregando] = useState(false);
   const [horizonte, setHorizonte] = useState(HORIZONTES[2]);
   const [objetivo, setObjetivo] = useState(OBJETIVOS[0]);
-  const [valor, setValor] = useState("10000");
+  const [centavos, setCentavos] = useState(1_000_000);
   const [sugestao, setSugestao] = useState<{ resumo: string; linhas: LinhaSugerida[] } | null>(null);
+
+  const valorFormatado = (centavos / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
   async function gerar() {
     setCarregando(true);
     try {
       const r = await chamarIA({
-        data: { perfil, horizonte, objetivo, valor: Number(valor.replace(/\D/g, "")) },
+        data: { perfil, horizonte, objetivo, valor: centavos / 100 },
       });
       setSugestao(r);
     } catch (err) {
