@@ -2,11 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Radio, Search, Star } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { Panel } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GradeCotacoes } from "@/components/cotacoes/grade-cotacoes";
+import { PainelCategoria } from "@/components/cotacoes/painel-categoria";
 import { VisaoGeralMercado } from "@/components/cotacoes/visao-geral";
 import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { PainelAcoes } from "@/components/acoes/painel-acoes";
@@ -182,15 +181,14 @@ function Cotacoes() {
 
           {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes").map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
-              <Panel title={a.rotulo} bodyClassName="p-0">
-                <GradeCotacoes
-                  categoria={a.categoria as CategoriaMercado}
-                  intervaloMs={intervalo}
-                  busca={busca}
-                  apenasFavoritos={favoritos}
-                  aoAtualizar={aoAtualizar}
-                />
-              </Panel>
+              <PainelCategoria
+                categoria={a.categoria as CategoriaMercado}
+                titulo={a.rotulo}
+                intervaloMs={intervalo}
+                busca={busca}
+                apenasFavoritos={favoritos}
+                aoAtualizar={aoAtualizar}
+              />
             </TabsContent>
           ))}
         </Tabs>

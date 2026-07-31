@@ -27,12 +27,14 @@ export function GradeCotacoes({
   busca,
   apenasFavoritos,
   aoAtualizar,
+  ocultarAtualizar,
 }: {
   categoria: CategoriaMercado;
   intervaloMs: number;
   busca: string;
   apenasFavoritos: boolean;
   aoAtualizar?: (quando: number, parcial: boolean) => void;
+  ocultarAtualizar?: boolean;
 }) {
   const buscarGrade = useServerFn(gradeMercado);
   const { favoritos, ehFavorito, alternar } = useFavoritos();
@@ -151,16 +153,18 @@ export function GradeCotacoes({
         <span className="ml-auto text-xs text-muted-foreground tabular-nums">
           {linhas.length} ativo{linhas.length === 1 ? "" : "s"}
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => refetch()}
-          aria-label="Atualizar cotações agora"
-          className="h-8"
-        >
-          <RefreshCw className={`size-3.5 ${isFetching ? "animate-spin" : ""}`} />
-          Atualizar
-        </Button>
+        {ocultarAtualizar ? null : (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => refetch()}
+            aria-label="Atualizar cotações agora"
+            className="h-8"
+          >
+            <RefreshCw className={`size-3.5 ${isFetching ? "animate-spin" : ""}`} />
+            Atualizar
+          </Button>
+        )}
       </div>
 
       {linhas.length === 0 ? (
