@@ -511,17 +511,17 @@ export function CarteiraGrupos({
                     <TableHeader>
                       <TableRow className="bg-muted/40">
                         {/* Coluna elástica: absorve todo o espaço livre para as colunas numéricas ficarem coladas à direita. */}
-                        <TableHead className="w-full min-w-[7rem] sm:min-w-[10rem]">Ticker / Ativo</TableHead>
+                        <TableHead className="w-full min-w-[6rem] sm:min-w-[10rem]">Ticker / Ativo</TableHead>
 
                         {colunas.quantidade && (
                           <TableHead className={`min-w-[4rem] text-right ${colSm}`}>Quant.</TableHead>
                         )}
                         {colunas.precoMedio && <TableHead className={`min-w-[5rem] text-right ${colMd}`}>P. médio</TableHead>}
                         {colunas.precoAtual && (
-                          <TableHead className="min-w-[4.75rem] text-right sm:min-w-[5.75rem]">P. atual</TableHead>
+                          <TableHead className="min-w-[4.5rem] text-right sm:min-w-[5.75rem]">P. atual</TableHead>
                         )}
                         {colunas.variacaoDia && (
-                          <TableHead className="min-w-[4.25rem] text-right sm:min-w-[5rem]" title="Variação do dia vinda das cotações ao vivo">
+                          <TableHead className={`min-w-[4.25rem] text-right sm:min-w-[5rem] ${colSm}`} title="Variação do dia vinda das cotações ao vivo">
                             Var. dia
                           </TableHead>
                         )}
@@ -621,7 +621,7 @@ export function CarteiraGrupos({
 
                             {colunas.variacaoDia && (
                               <TableCell
-                                className={`text-right ${cel} ${
+                                className={`text-right ${colSm} ${cel} ${
                                   flash[chaveTicker(a.ticker)] === "alta"
                                     ? "flash-alta"
                                     : flash[chaveTicker(a.ticker)] === "baixa"
