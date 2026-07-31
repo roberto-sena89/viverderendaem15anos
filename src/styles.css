@@ -451,21 +451,21 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   background-color: color-mix(in oklab, var(--color-destructive) 14%, transparent);
 }
 
-/* Padronização global: toda tabela do app usa 12px */
+/* ---------------------------------------------------------------
+ * Tabelas — padrão "terminal financeiro"
+ * Cabeçalho compacto em caixa alta, corpo 14px tabular, linhas de
+ * 44–48px, separadores sutis e hover discreto.
+ * --------------------------------------------------------------- */
+
 table {
-  font-size: 12px;
+  font-size: var(--fs-table);
+  font-variant-numeric: tabular-nums;
 }
 
-table th,
-table td {
-  font-size: 12px !important;
-  line-height: 1.35;
-}
-
-/* Tabelas de dados dentro de cards ganham cara de terminal financeiro */
-.surface-card table thead th,
-.panel table thead th {
-  font-weight: 700;
+table thead th {
+  font-size: var(--fs-table-head);
+  line-height: 1.25;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
@@ -474,21 +474,42 @@ table td {
   overflow-wrap: normal;
 }
 
-.surface-card table tbody td,
-.panel table tbody td {
+table tbody td {
+  font-size: var(--fs-table);
+  line-height: 1.4;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
-.surface-card table tbody tr,
-.panel table tbody tr {
-  transition: background-color var(--transition-smooth);
+table tbody tr {
+  transition: background-color var(--transition-fast);
 }
 
-.surface-card table tbody tr:hover,
-.panel table tbody tr:hover {
+table tbody tr:hover {
   background-color: color-mix(in oklab, var(--color-primary) 6%, transparent);
 }
+
+/* Linha de totais: destaque e fixação ao final quando há rolagem. */
+table tfoot tr {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  border-top: 2px solid color-mix(in oklab, var(--color-border) 100%, transparent);
+  background-color: color-mix(in oklab, var(--color-muted) 92%, var(--color-card));
+  font-weight: 600;
+}
+
+/* Indicação visual (sombras nas bordas) de que há conteúdo lateral. */
+@utility rolagem-lateral {
+  overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--color-card) 30%, transparent) left center / 32px 100% no-repeat,
+    linear-gradient(to left, var(--color-card) 30%, transparent) right center / 32px 100% no-repeat,
+    radial-gradient(farthest-side at 0 50%, oklch(0 0 0 / 0.22), transparent) left center / 16px 100% no-repeat,
+    radial-gradient(farthest-side at 100% 50%, oklch(0 0 0 / 0.22), transparent) right center / 16px 100% no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
+
 
 /* Slider de alocação (input[type=range]) — arraste suave e alvo de toque maior */
 .range-alocacao {
