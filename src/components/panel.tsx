@@ -24,7 +24,7 @@ export function Panel({
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-muted/30 px-4 py-3">
           <div className="min-w-0">
             <p className="panel-title truncate">{title}</p>
-            {hint ? <p className="mt-1 pl-2.5 text-xs text-muted-foreground">{hint}</p> : null}
+            {hint ? <p className="mt-1 pl-2.5 text-xs text-muted-foreground whitespace-pre-line">{hint}</p> : null}
           </div>
           {action ? <div className="shrink-0">{action}</div> : null}
         </div>
