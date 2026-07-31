@@ -467,7 +467,7 @@ export function TabelaAcoes({
                     ordem={ordem}
                     aoOrdenar={aoOrdenar}
                     alinhamento="left"
-                    largura="w-[22%] min-w-0"
+                    largura="w-[18%] min-w-0"
                   />
                   <Cabecalho
                     rotulo="Preço atual"
@@ -495,7 +495,7 @@ export function TabelaAcoes({
                       ordem={ordem}
                       aoOrdenar={aoOrdenar}
                       alinhamento={ALINHA_ESQUERDA.includes(c.id) ? "left" : "right"}
-                      largura={ALINHA_ESQUERDA.includes(c.id) ? "w-[12%]" : undefined}
+                      largura={ALINHA_ESQUERDA.includes(c.id) ? "w-[14%]" : undefined}
                     />
                   ))}
 
