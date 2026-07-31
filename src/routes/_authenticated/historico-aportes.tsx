@@ -309,7 +309,7 @@ function HistoricoAportesPage() {
                   <ChevronDown className="size-3.5 text-muted-foreground" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent align="center" className="w-[320px] p-3">
+              <PopoverContent align="center" className="w-[min(20rem,calc(100vw-2rem))] p-3">
                 {/* Ano */}
                 <div className="flex items-center justify-between">
                   <Button
