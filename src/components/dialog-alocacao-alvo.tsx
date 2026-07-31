@@ -309,6 +309,7 @@ export function DialogAlocacaoAlvo() {
             onClick={() => {
               salvar(numeros);
               salvarSub(subNumeros);
+              confirmado.current = true;
               setAberto(false);
               toast.success("Alocação ideal atualizada.");
             }}
