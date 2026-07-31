@@ -129,7 +129,7 @@ function Variacao({ value, suffix = "%" }: { value: number; suffix?: string }) {
 }
 
 export function CarteiraGrupos({
-  ativos,
+  ativos: ativosBase,
   onEditar,
   onExcluir,
   minimal = false,
