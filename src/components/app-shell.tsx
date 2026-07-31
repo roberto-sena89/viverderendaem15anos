@@ -9,7 +9,6 @@ import {
   LineChart,
   Scale,
   Target,
-  CandlestickChart,
   Trophy,
   BarChart3,
   ListOrdered,
@@ -43,7 +42,6 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/cotacoes": BarChart3,
   "/rankings": Trophy,
   "/noticias": Newspaper,
-  "/mercado": CandlestickChart,
 
   "/auditoria": ShieldCheck,
   "/planejador": LineChart,

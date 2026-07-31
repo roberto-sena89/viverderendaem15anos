@@ -97,8 +97,7 @@ function ListaRanking({
             {visiveis.map((item, idx) => (
               <li key={item.ticker}>
                 <Link
-                  to="/mercado"
-                  search={{ ativo: item.ticker }}
+                  to="/cotacoes"
                   className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
                 >
                   <span
