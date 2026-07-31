@@ -315,11 +315,6 @@ function HistoricoAportesPage() {
           <Button variant="outline" size="sm" onClick={exportar}>
             <Download className="size-4" /> Exportar CSV
           </Button>
-          <DialogTransacao>
-            <Button size="sm" className="font-display uppercase tracking-wide">
-              <Plus className="size-4" /> Novo aporte
-            </Button>
-          </DialogTransacao>
         </div>
       </div>
 
