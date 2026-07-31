@@ -382,6 +382,9 @@ export function EvolucaoPatrimonio() {
     );
   }
 
+  /** Rótulos só cabem sem sobreposição quando há poucos períodos. */
+  const mostrarRotulos = dadosGrafico.length <= 12;
+
   return (
     <section className="space-y-4" aria-label="Evolução de Patrimônio">
       {/* 1. Cabeçalho de resumo */}
