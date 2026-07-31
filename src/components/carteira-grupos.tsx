@@ -37,8 +37,7 @@ type ColunaId =
   | "nota"
   | "participacao"
   | "ideal"
-  | "comprar"
-  | "ultimoPreco";
+  | "comprar";
 
 const PADRAO: Record<ColunaId, boolean> = {
   quantidade: true,
@@ -51,7 +50,6 @@ const PADRAO: Record<ColunaId, boolean> = {
   participacao: true,
   ideal: true,
   comprar: true,
-  ultimoPreco: true,
 };
 
 /** Hora local (HH:mm) da última cotação recebida do provedor. */
@@ -363,9 +361,6 @@ export function CarteiraGrupos({
                         {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
                         {colunas.ideal && <TableHead className={`text-right ${colLg}`}>% Ideal</TableHead>}
                         {colunas.comprar && <TableHead className={`text-center ${colLg}`}>Comprar</TableHead>}
-                        {colunas.ultimoPreco && (
-                          <TableHead className="text-right whitespace-nowrap">Último preço</TableHead>
-                        )}
 
                         {onEditar && onExcluir ? <TableHead className="w-px text-center">Opções</TableHead> : null}
                       </TableRow>
@@ -468,35 +463,6 @@ export function CarteiraGrupos({
                                 </span>
                               </TableCell>
                             )}
-                            {colunas.ultimoPreco && (() => {
-                              const live = cotacoes.get(chaveTicker(a.ticker));
-                              const hora = horaCotacao(live?.atualizadoEm);
-                              return (
-                                <TableCell
-                                  className={`text-right tabular-nums ${cel} ${
-                                    flash[chaveTicker(a.ticker)] === "alta"
-                                      ? "flash-alta"
-                                      : flash[chaveTicker(a.ticker)] === "baixa"
-                                        ? "flash-baixa"
-                                        : ""
-                                  }`}
-                                  title={
-                                    live
-                                      ? `Fonte: ${live.fonte}${live.erro ? ` · ${live.erro}` : ""}`
-                                      : "Aguardando cotação do provedor de mercado"
-                                  }
-                                >
-                                  <span className="block font-semibold">
-                                    {live?.preco != null ? brl(live.preco, 2) : "—"}
-                                  </span>
-                                  <span className="block text-[0.68rem] font-normal text-muted-foreground">
-                                    {live?.preco != null
-                                      ? `${live.fonte}${hora ? ` · ${hora}` : ""}`
-                                      : "sincronizando…"}
-                                  </span>
-                                </TableCell>
-                              );
-                            })()}
 
                             {onEditar && onExcluir ? (
                               <TableCell className={`text-center ${cel}`}>
