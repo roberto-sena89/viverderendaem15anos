@@ -210,6 +210,7 @@ export function EvolucaoPatrimonio() {
   const [granularidade, setGranularidade] = useState<"mensal" | "anual">("mensal");
   const [busca, setBusca] = useState("");
   const [comparar, setComparar] = useState(false);
+  const [destaque, setDestaque] = useState<SerieChave | null>(null);
   const [categoriaFiltro, setCategoriaFiltro] = useState<string | null>(null);
 
   const resumo = useMemo(() => resumoCarteira(ativos), [ativos]);
