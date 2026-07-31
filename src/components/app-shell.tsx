@@ -1,7 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  ShieldCheck,
   LayoutDashboard,
   Wallet,
   PiggyBank,
@@ -42,8 +41,6 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/cotacoes": BarChart3,
   "/rankings": Trophy,
   "/noticias": Newspaper,
-
-  "/auditoria": ShieldCheck,
   "/planejador": LineChart,
   "/metas": Target,
   "/chat": Bot,
