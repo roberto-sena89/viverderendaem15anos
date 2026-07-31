@@ -125,6 +125,30 @@ export type Database = {
         }
         Relationships: []
       }
+      cotacoes_cache: {
+        Row: {
+          atualizado_em: string
+          categoria: string
+          created_at: string
+          parcial: boolean
+          payload: Json
+        }
+        Insert: {
+          atualizado_em?: string
+          categoria: string
+          created_at?: string
+          parcial?: boolean
+          payload: Json
+        }
+        Update: {
+          atualizado_em?: string
+          categoria?: string
+          created_at?: string
+          parcial?: boolean
+          payload?: Json
+        }
+        Relationships: []
+      }
       dividendos: {
         Row: {
           created_at: string
