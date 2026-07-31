@@ -187,7 +187,7 @@ export function CarteiraGrupos({
         let pesoDia = 0;
         let somaDia = 0;
         for (const a of lista) {
-          const v = cotacoes.get(chaveTicker(a.ticker))?.variacaoPercent;
+          const v = variacaoDiaDe(a.ticker);
           if (v === null || v === undefined) continue;
           const peso = valorAtual(a);
           pesoDia += peso;
