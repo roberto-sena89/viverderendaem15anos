@@ -265,19 +265,22 @@ type BrapiQuote = {
 
 async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<LinhaCotacao[]> {
   const token = process.env.BRAPI_TOKEN;
-  const tamanho = token ? 20 : 5;
+  // Sem token a brapi só aceita 2 tickers por chamada; com token, lotes maiores.
+  const tamanho = token ? 20 : 2;
   const mapa = new Map<string, BrapiQuote>();
 
   const grupos: Def[][] = [];
   for (let i = 0; i < defs.length; i += tamanho) grupos.push(defs.slice(i, i + tamanho));
 
-  await emLotes(grupos, 2, async (lote) => {
+  await emLotes(grupos, 4, async (lote) => {
     const params = new URLSearchParams({ range: "1d", interval: "30m" });
     if (token) params.set("token", token);
     const url = `https://brapi.dev/api/quote/${lote.map((d) => d.ticker).join(",")}?${params}`;
-    const data = await json<{ results?: BrapiQuote[] }>(url);
+    const data = await json<{ results?: BrapiQuote[]; error?: boolean }>(url, 60_000);
+    if (data?.error) return;
     for (const r of data?.results ?? []) if (r.symbol) mapa.set(r.symbol.toUpperCase(), r);
   });
+
 
   return defs.map((d) => {
     const r = mapa.get(d.ticker.toUpperCase());
