@@ -12,6 +12,8 @@ export type PrecoBrapiEtf = {
   variacaoPercent: number | null;
   volume: number | null;
   atualizadoEm: string | null;
+  /** Moeda da cotação ("BRL", "USD", ...). Evita misturar preços de bolsas diferentes. */
+  moeda: string | null;
 };
 
 const TTL_MS = 4_000;
