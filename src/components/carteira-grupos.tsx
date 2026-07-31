@@ -24,6 +24,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
+import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
 
 type ColunaId =
@@ -126,6 +127,7 @@ export function CarteiraGrupos({
   minimal?: boolean;
 }) {
   const { alvo } = useAlocacaoAlvo();
+  const { flash, mapa: cotacoes } = useCotacoesTempoReal();
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
   const colunas = PADRAO;
   const compacto = minimal;
@@ -383,7 +385,20 @@ export function CarteiraGrupos({
                               <TableCell className={`text-right tabular-nums ${colMd} ${cel}`}>{brl(a.precoMedio, 2)}</TableCell>
                             )}
                             {colunas.precoAtual && (
-                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>
+                              <TableCell
+                                className={`text-right font-semibold tabular-nums ${cel} ${
+                                  flash[chaveTicker(a.ticker)] === "alta"
+                                    ? "flash-alta"
+                                    : flash[chaveTicker(a.ticker)] === "baixa"
+                                      ? "flash-baixa"
+                                      : ""
+                                }`}
+                                title={
+                                  cotacoes.get(chaveTicker(a.ticker))
+                                    ? `Fonte: ${cotacoes.get(chaveTicker(a.ticker))!.fonte}`
+                                    : undefined
+                                }
+                              >
                                 {brl(a.precoAtual, 2)}
                               </TableCell>
                             )}
