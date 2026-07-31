@@ -58,6 +58,13 @@ const PERIODOS = [
 ] as const;
 
 const valorAporte = (a: Aporte) => a.quantidade * a.preco + a.taxas;
+/** Formata valores do eixo Y de forma compacta (R$ 1,2 mi / R$ 12 mil). */
+const compacto = (v: number) => {
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000) return `R$ ${(v / 1_000_000).toFixed(1).replace(".", ",")} mi`;
+  if (abs >= 1_000) return `R$ ${Math.round(v / 1_000)} mil`;
+  return `R$ ${Math.round(v)}`;
+};
 const chaveMes = (d: string) => d.slice(0, 7);
 const rotuloMes = (chave: string) => `${MESES_CURTO[Number(chave.slice(5, 7)) - 1]}/${chave.slice(2, 4)}`;
 const rotuloMesLongo = (chave: string) =>
