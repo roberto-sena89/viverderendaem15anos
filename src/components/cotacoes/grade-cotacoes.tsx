@@ -130,7 +130,7 @@ export function GradeCotacoes({
       {/* Filtros */}
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2.5">
         <Select value={filtroVar} onValueChange={(v) => setFiltroVar(v as typeof filtroVar)}>
-          <SelectTrigger size="sm" className="w-[168px]" aria-label="Filtrar por variação">
+          <SelectTrigger className="h-8 w-[168px] text-sm" aria-label="Filtrar por variação">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
