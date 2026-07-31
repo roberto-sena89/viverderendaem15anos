@@ -34,6 +34,10 @@ import {
 } from "@/lib/precos-ultimos";
 
 import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
+import { useSalvarAtivo } from "@/lib/data";
+import { Input } from "@/components/ui/input";
+import { formatarNumeroBR, numeroBR } from "@/lib/formato-numero";
+import { toast } from "sonner";
 
 type ColunaId =
   | "quantidade"
@@ -159,6 +163,11 @@ export function CarteiraGrupos({
   /** O servidor busca e grava o último preço destes tickers (máx. 1x/min). */
   usePersistirPrecos(tickers);
 
+  /** Preços definidos manualmente pelo usuário (têm prioridade sobre as fontes). */
+  const [manuais, setManuais] = useState<Record<string, number>>({});
+  /** Ticker cuja célula "P. atual" está em edição. */
+  const [editando, setEditando] = useState<string | null>(null);
+  const salvarAtivo = useSalvarAtivo();
 
   /** Variação do dia: prioriza o provedor em tempo real, com fallback na BRAPI. */
   const variacaoDiaDe = (ticker: string): number | null =>
@@ -168,11 +177,13 @@ export function CarteiraGrupos({
     null;
 
   /**
-   * Preço atual do ativo: BRAPI em primeiro lugar (tempo real no pregão, último
-   * preço antes do fechamento fora dele); se ela não tiver o ativo, a cotação
-   * da aba "Cotações"; e, por fim, o último preço válido salvo no banco.
+   * Preço atual do ativo: valor definido manualmente vem primeiro; depois BRAPI
+   * (tempo real no pregão, último preço antes do fechamento fora dele); se ela
+   * não tiver o ativo, a cotação da aba "Cotações"; e, por fim, o último preço
+   * válido salvo no banco.
    */
   const precoDe = (ticker: string) =>
+    manuais[chavePreco(ticker)] ??
     brapi.get(chaveBrapi(ticker))?.preco ??
     cotacoes.get(chaveTicker(ticker))?.preco ??
     salvos.get(chavePreco(ticker))?.preco ??
@@ -180,6 +191,8 @@ export function CarteiraGrupos({
 
   /** Origem do preço exibido, usada no tooltip da coluna "P. atual". */
   const fonteDe = (ticker: string) => {
+    if (manuais[chavePreco(ticker)] !== undefined)
+      return "Preço informado manualmente · clique duas vezes para editar";
     const b = brapi.get(chaveBrapi(ticker));
     if (b) {
       const hora = horaCotacao(b.atualizadoEm ?? undefined);
@@ -199,6 +212,41 @@ export function CarteiraGrupos({
     return "Aguardando cotação do provedor de mercado";
   };
 
+  /** Grava o preço informado manualmente (mantido também no cadastro do ativo). */
+  async function definirPrecoManual(a: Ativo, texto: string) {
+    setEditando(null);
+    const valor = numeroBR(texto);
+    if (!Number.isFinite(valor) || valor <= 0) {
+      toast.error("Informe um preço maior que zero.");
+      return;
+    }
+    setManuais((m) => ({ ...m, [chavePreco(a.ticker)]: valor }));
+    try {
+      await salvarAtivo.mutateAsync({
+        id: a.id,
+        ticker: a.ticker,
+        nome: a.nome,
+        categoria: a.categoria,
+        quantidade: a.quantidade,
+        precoMedio: a.precoMedio,
+        precoAtual: valor,
+        dy: a.dy,
+      });
+      toast.success(`${a.ticker}: preço atualizado para ${brl(valor, 2)}.`);
+    } catch {
+      toast.error("Não foi possível salvar o preço.");
+    }
+  }
+
+  /** Volta a seguir as cotações automáticas do ativo. */
+  function voltarAoAutomatico(ticker: string) {
+    setManuais((m) => {
+      const { [chavePreco(ticker)]: _removido, ...resto } = m;
+      return resto;
+    });
+    toast.success(`${ticker}: preço voltou a sincronizar automaticamente.`);
+  }
+
   /** Ativos com o preço atual sincronizado com a cotação de mercado. */
   const ativos = useMemo(
     () =>
@@ -206,8 +254,10 @@ export function CarteiraGrupos({
         const preco = precoDe(a.ticker);
         return preco && preco > 0 ? { ...a, precoAtual: preco } : a;
       }),
-    [ativosBase, brapi, cotacoes, salvos],
+    [ativosBase, brapi, cotacoes, salvos, manuais],
   );
+
+
 
 
 
@@ -501,18 +551,46 @@ export function CarteiraGrupos({
                             {colunas.precoAtual && (
                               <TableCell
                                 className={`text-right font-semibold tabular-nums ${cel} ${
-                                  flash[chaveTicker(a.ticker)] === "alta"
-                                    ? "flash-alta"
-                                    : flash[chaveTicker(a.ticker)] === "baixa"
-                                      ? "flash-baixa"
-                                      : ""
+                                  editando === a.id
+                                    ? ""
+                                    : flash[chaveTicker(a.ticker)] === "alta"
+                                      ? "flash-alta"
+                                      : flash[chaveTicker(a.ticker)] === "baixa"
+                                        ? "flash-baixa"
+                                        : ""
                                 }`}
                                 title={fonteDe(a.ticker)}
-
+                                onDoubleClick={() => setEditando(a.id)}
                               >
-                                {brl(a.precoAtual, 2)}
+                                {editando === a.id ? (
+                                  <Input
+                                    autoFocus
+                                    inputMode="decimal"
+                                    aria-label={`Preço atual de ${a.ticker}`}
+                                    defaultValue={formatarNumeroBR(a.precoAtual)}
+                                    onFocus={(e) => e.currentTarget.select()}
+                                    onBlur={(e) => void definirPrecoManual(a, e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") e.currentTarget.blur();
+                                      if (e.key === "Escape") setEditando(null);
+                                    }}
+                                    className="h-8 w-24 text-right tabular-nums"
+                                  />
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditando(a.id)}
+                                    className="inline-flex items-center gap-1 rounded px-1 hover:bg-muted"
+                                  >
+                                    {manuais[chavePreco(a.ticker)] !== undefined && (
+                                      <Pencil className="size-3 text-muted-foreground" />
+                                    )}
+                                    {brl(a.precoAtual, 2)}
+                                  </button>
+                                )}
                               </TableCell>
                             )}
+
                             {colunas.variacaoDia && (
                               <TableCell
                                 className={`text-right ${cel} ${
@@ -608,7 +686,16 @@ export function CarteiraGrupos({
                                     <DropdownMenuItem onSelect={() => onEditar?.(a)}>
                                       <Pencil className="size-4" /> Editar ativo
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => setEditando(a.id)}>
+                                      <Pencil className="size-4" /> Editar preço atual
+                                    </DropdownMenuItem>
+                                    {manuais[chavePreco(a.ticker)] !== undefined && (
+                                      <DropdownMenuItem onSelect={() => voltarAoAutomatico(a.ticker)}>
+                                        <CircleCheck className="size-4" /> Voltar preço automático
+                                      </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuSeparator />
+
                                     <DropdownMenuItem
                                       className="text-destructive focus:text-destructive"
                                       onSelect={() => onExcluir?.(a)}
