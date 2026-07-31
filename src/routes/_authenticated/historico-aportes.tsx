@@ -276,19 +276,20 @@ function HistoricoAportesPage() {
 
       {/* Busca de período + modo + ações */}
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <div className="relative min-w-0 flex-1 sm:max-w-xs">
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="relative min-w-0 sm:max-w-xs sm:flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar ativo, categoria ou corretora"
-              className="pl-9"
+              className="w-full pl-9"
               aria-label="Buscar lançamentos"
             />
           </div>
-          <div className="flex items-center gap-1 rounded-lg border border-border bg-muted/30 p-1">
-            <Button variant="ghost" size="icon" className="size-8" onClick={() => navegar(-1)} aria-label="Período anterior">
+          <div className="flex w-full items-center justify-between gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-auto sm:justify-start">
+            <Button variant="ghost" size="icon" className="size-8 shrink-0" onClick={() => navegar(-1)} aria-label="Período anterior">
+
               <ChevronLeft className="size-4" />
             </Button>
             <Popover>
