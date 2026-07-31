@@ -163,6 +163,16 @@ export function CarteiraGrupos({
         const total = lista.reduce((s, a) => s + valorAtual(a), 0);
         const investido = lista.reduce((s, a) => s + valorInvestido(a), 0);
         const somaVariacoes = lista.reduce((s, a) => s + variacaoAtivo(a), 0);
+        // Variação do dia ponderada pelo saldo, a partir das cotações ao vivo.
+        let pesoDia = 0;
+        let somaDia = 0;
+        for (const a of lista) {
+          const v = cotacoes.get(chaveTicker(a.ticker))?.variacaoPercent;
+          if (v === null || v === undefined) continue;
+          const peso = valorAtual(a);
+          pesoDia += peso;
+          somaDia += v * peso;
+        }
         // Soma os mesmos valores arredondados exibidos em cada linha da tabela,
         // garantindo que o cabeçalho nunca divirja das linhas visíveis.
         const rentabilidadeReais = lista.reduce(
@@ -171,6 +181,7 @@ export function CarteiraGrupos({
         );
         return {
           variacaoPct: somaVariacoes,
+          variacaoDiaPct: pesoDia > 0 ? somaDia / pesoDia : null,
           classe,
           ativos: [...lista].sort((x, y) => valorAtual(y) - valorAtual(x)),
           total,
@@ -184,7 +195,7 @@ export function CarteiraGrupos({
       })
       .sort((a, b) => b.total - a.total);
     return { grupos, totalCarteira };
-  }, [ativos, alvo]);
+  }, [ativos, alvo, cotacoes]);
 
   if (grupos.length === 0) {
     return (
