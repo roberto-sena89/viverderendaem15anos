@@ -453,28 +453,37 @@ export function HistoricoMensalAportes() {
                                   {intervalo(i.datas)}
                                 </td>
                                 <td className="py-1.5 pr-2">
-                                  <span className="flex items-center gap-1.5">
+                                  <span className="flex min-w-0 items-center gap-1.5">
                                     <span
                                       className="size-2 shrink-0 rounded-full"
                                       style={{ background: corCategoria(i.categoria) }}
                                     />
-                                    <span className="font-medium">{i.ticker}</span>
+                                    <span className="min-w-0 truncate font-medium" title={i.ticker}>
+                                      {i.ticker}
+                                    </span>
+                                  </span>
+                                  <span className="block truncate pl-3.5 text-[0.78rem] text-muted-foreground lg:hidden">
+                                    {i.categoria.replace(/\n/g, " · ")}
                                   </span>
                                 </td>
-                                <td className="py-1.5 pr-2 text-muted-foreground">
-                                  {i.categoria.replace(/\n/g, " · ")}
+                                <td className="hidden py-1.5 pr-2 text-muted-foreground lg:table-cell">
+                                  <span className="block truncate">{i.categoria.replace(/\n/g, " · ")}</span>
                                 </td>
-                                <td className="py-1.5 pr-2 text-muted-foreground">
-                                  {i.corretoras.length ? i.corretoras.join(", ") : "—"}
+                                <td className="hidden py-1.5 pr-2 text-muted-foreground xl:table-cell">
+                                  <span className="block truncate">
+                                    {i.corretoras.length ? i.corretoras.join(", ") : "—"}
+                                  </span>
                                 </td>
-                                <td className="num py-1.5 pr-2 text-right">
+                                <td className="num hidden py-1.5 pr-2 text-right sm:table-cell">
                                   {i.quantidade.toLocaleString("pt-BR")}
                                 </td>
-                                <td className="num py-1.5 pr-2 text-right">
+                                <td className="num hidden py-1.5 pr-2 text-right sm:table-cell">
                                   {brl(i.quantidade ? i.bruto / i.quantidade : 0, 2)}
                                 </td>
-                                <td className="num py-1.5 pr-2 text-right text-muted-foreground">{brl(i.taxas, 2)}</td>
-                                <td className="num py-1.5 text-right font-semibold">{brl(i.total)}</td>
+                                <td className="num hidden py-1.5 pr-2 text-right text-muted-foreground md:table-cell">
+                                  {brl(i.taxas, 2)}
+                                </td>
+                                <td className="num py-1.5 pr-2 text-right font-semibold">{brl(i.total)}</td>
                                 <td className="py-1.5 pl-2 text-right">
                                   <Button
                                     type="button"
