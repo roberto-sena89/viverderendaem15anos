@@ -11,6 +11,7 @@ import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { PainelAcoes } from "@/components/acoes/painel-acoes";
 import { PainelEtfs } from "@/components/etfs/painel-etfs";
 import { PainelIndices } from "@/components/indices/painel-indices";
+import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
@@ -41,7 +42,7 @@ const ABAS: { id: string; rotulo: string; categoria?: CategoriaMercado }[] = [
   { id: "acoes", rotulo: "Ações", categoria: "acoes" },
   { id: "fiis", rotulo: "FIIs", categoria: "fiis" },
   { id: "indices", rotulo: "Índices" },
-  { id: "commodities", rotulo: "Tesouro Direto", categoria: "commodities" },
+  { id: "tesouro", rotulo: "Tesouro Direto" },
   { id: "etfs", rotulo: "ETFs", categoria: "etfs" },
   { id: "cripto", rotulo: "Criptomoedas", categoria: "cripto" },
   { id: "cambio", rotulo: "Câmbio", categoria: "cambio" },
@@ -187,6 +188,10 @@ function Cotacoes() {
 
           <TabsContent value="indices" className="mt-4">
             <PainelIndices intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+          </TabsContent>
+
+          <TabsContent value="tesouro" className="mt-4">
+            <PainelTesouro busca={busca} apenasFavoritos={favoritos} />
           </TabsContent>
 
 
