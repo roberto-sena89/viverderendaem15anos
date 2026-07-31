@@ -108,12 +108,15 @@ export function DialogBuscarRecomendacao({
                 </select>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="valor">Valor disponível (R$)</Label>
+                <Label htmlFor="valor">Valor disponível</Label>
                 <Input
                   id="valor"
                   inputMode="numeric"
-                  value={valor}
-                  onChange={(e) => setValor(e.target.value)}
+                  value={valorFormatado}
+                  onChange={(e) => {
+                    const digitos = e.target.value.replace(/\D/g, "").slice(0, 15);
+                    setCentavos(Number(digitos || "0"));
+                  }}
                 />
               </div>
             </div>
