@@ -160,6 +160,8 @@ export function CarteiraGrupos({
   const brapi = usePrecosBrapiCarteira(tickers);
   /** Rede de segurança: último preço válido gravado no banco. */
   const salvos = useUltimosPrecosSalvos(tickers);
+  /** Retorno de 12 meses por ativo (Yahoo) + Ibovespa como referência da nota. */
+  const { porTicker: desempenho, benchmark: ibov12m } = useDesempenho12m(tickers);
 
   /** O servidor busca e grava o último preço destes tickers (máx. 1x/min). */
   usePersistirPrecos(tickers);
