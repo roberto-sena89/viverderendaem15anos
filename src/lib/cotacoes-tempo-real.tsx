@@ -156,6 +156,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
   const [flash, setFlash] = useState<Record<string, "alta" | "baixa">>({});
   const [cache, setCache] = useState<CotacaoLive[]>([]);
   const [pregao, setPregao] = useState(() => estadoPregao());
+  const [mercadoGlobal, setMercadoGlobal] = useState(() => estadoMercadoGlobal());
   const precosAnteriores = useRef<Record<string, number>>({});
   const alertados = useRef<Set<string>>(new Set());
 
@@ -165,7 +166,10 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
   }, []);
 
   useEffect(() => {
-    const id = window.setInterval(() => setPregao(estadoPregao()), 60_000);
+    const id = window.setInterval(() => {
+      setPregao(estadoPregao());
+      setMercadoGlobal(estadoMercadoGlobal());
+    }, 60_000);
     return () => window.clearInterval(id);
   }, []);
 
@@ -186,7 +190,25 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     [ativos],
   );
 
-  const intervalo = config.automatico ? (pregao.aberto ? config.intervaloMs : false) : false;
+  // Ativos internacionais (ETFs globais, stocks, REITs, cripto) seguem
+  // negociando fora do pregão da B3 — o polling acompanha essas janelas.
+  const temInternacional = useMemo(
+    () =>
+      ativos.some((a) =>
+        ["ETF (Exterior)", "ETF EUA", "Stocks", "REITs", "BDR", "Criptomoedas"].includes(
+          String(a.categoria),
+        ),
+      ),
+    [ativos],
+  );
+  const cripto = useMemo(
+    () => ativos.some((a) => String(a.categoria) === "Criptomoedas"),
+    [ativos],
+  );
+  const mercadoAtivo =
+    pregao.aberto || cripto || (temInternacional && mercadoGlobal.aberto);
+
+  const intervalo = config.automatico ? (mercadoAtivo ? config.intervaloMs : false) : false;
 
   const { data, isFetching, isError, dataUpdatedAt, refetch } = useQuery({
     queryKey: ["cotacoes-carteira", itens.map((i) => `${i.ticker}:${i.categoria}`).sort().join(",")],
