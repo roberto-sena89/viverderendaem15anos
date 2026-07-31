@@ -16,22 +16,27 @@ export function AbasCarteira() {
   return (
     <nav
       aria-label="Seções da carteira"
-      className="-mx-1 overflow-x-auto border-b border-border"
+      className="border-b border-border"
     >
-      <ul className="flex min-w-max items-center gap-1 px-1">
+      <ul className="grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:items-center">
         {ABAS_CARTEIRA.map((to) => {
           const Icone = ICONES[to] ?? LayoutDashboard;
           const rotulo = secaoPorRota(to)?.rotulo ?? to;
           return (
-            <li key={to}>
+            <li key={to} className="min-w-0">
               <Link
                 to={to}
                 activeOptions={{ exact: true }}
-                className="flex items-center gap-2 border-b-2 border-transparent px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[status=active]:border-primary data-[status=active]:font-semibold data-[status=active]:text-foreground"
+                className="flex h-full min-w-0 flex-col items-center justify-start gap-1 border-b-2 border-transparent px-1.5 py-2 text-center text-[11px] leading-tight font-medium text-muted-foreground transition-colors hover:text-foreground data-[status=active]:border-primary data-[status=active]:font-semibold data-[status=active]:text-foreground sm:flex-row sm:gap-2 sm:px-3 sm:py-2.5 sm:text-sm"
               >
-                <Icone className="size-8!" />
-                {rotulo}
+                <Icone className="size-5 shrink-0 sm:size-6" />
+                <span className="block w-full break-words sm:whitespace-nowrap">{rotulo}</span>
               </Link>
+            </li>
+          );
+        })}
+      </ul>
+
             </li>
           );
         })}
