@@ -348,8 +348,36 @@ function HistoricoAportesPage() {
                   </Button>
                 </div>
 
+                {anosAberto ? (
+                  <div className="mt-3 max-h-40 overflow-y-auto rounded-md border border-border p-1">
+                    <div className="grid grid-cols-4 gap-1">
+                      {ANOS_OPCOES(modo === "mensal" ? mes.slice(0, 4) : ano, anos).map((y) => {
+                        const ativo = y === (modo === "mensal" ? mes.slice(0, 4) : ano);
+                        return (
+                          <button
+                            key={y}
+                            type="button"
+                            onClick={() => {
+                              if (modo === "mensal") setMesSel(`${y}-${mes.slice(5, 7)}`);
+                              else setAnoSel(y);
+                              setAnosAberto(false);
+                            }}
+                            className={cn(
+                              "rounded-md px-1 py-1.5 text-xs font-medium transition-colors",
+                              ativo ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted",
+                            )}
+                          >
+                            {y}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+
                 {/* Meses */}
                 <div className="mt-3 grid grid-cols-4 gap-1">
+
                   {MESES.map((nome, i) => {
                     const chave = `${mes.slice(0, 4)}-${String(i + 1).padStart(2, "0")}`;
                     const ativo = modo === "mensal" && chave === mes;
