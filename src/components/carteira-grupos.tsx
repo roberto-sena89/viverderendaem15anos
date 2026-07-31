@@ -163,6 +163,11 @@ export function CarteiraGrupos({
   /** O servidor busca e grava o último preço destes tickers (máx. 1x/min). */
   usePersistirPrecos(tickers);
 
+  /** Preços definidos manualmente pelo usuário (têm prioridade sobre as fontes). */
+  const [manuais, setManuais] = useState<Record<string, number>>({});
+  /** Ticker cuja célula "P. atual" está em edição. */
+  const [editando, setEditando] = useState<string | null>(null);
+  const salvarAtivo = useSalvarAtivo();
 
   /** Variação do dia: prioriza o provedor em tempo real, com fallback na BRAPI. */
   const variacaoDiaDe = (ticker: string): number | null =>
@@ -172,11 +177,13 @@ export function CarteiraGrupos({
     null;
 
   /**
-   * Preço atual do ativo: BRAPI em primeiro lugar (tempo real no pregão, último
-   * preço antes do fechamento fora dele); se ela não tiver o ativo, a cotação
-   * da aba "Cotações"; e, por fim, o último preço válido salvo no banco.
+   * Preço atual do ativo: valor definido manualmente vem primeiro; depois BRAPI
+   * (tempo real no pregão, último preço antes do fechamento fora dele); se ela
+   * não tiver o ativo, a cotação da aba "Cotações"; e, por fim, o último preço
+   * válido salvo no banco.
    */
   const precoDe = (ticker: string) =>
+    manuais[chavePreco(ticker)] ??
     brapi.get(chaveBrapi(ticker))?.preco ??
     cotacoes.get(chaveTicker(ticker))?.preco ??
     salvos.get(chavePreco(ticker))?.preco ??
@@ -184,6 +191,8 @@ export function CarteiraGrupos({
 
   /** Origem do preço exibido, usada no tooltip da coluna "P. atual". */
   const fonteDe = (ticker: string) => {
+    if (manuais[chavePreco(ticker)] !== undefined)
+      return "Preço informado manualmente · clique duas vezes para editar";
     const b = brapi.get(chaveBrapi(ticker));
     if (b) {
       const hora = horaCotacao(b.atualizadoEm ?? undefined);
@@ -203,6 +212,41 @@ export function CarteiraGrupos({
     return "Aguardando cotação do provedor de mercado";
   };
 
+  /** Grava o preço informado manualmente (mantido também no cadastro do ativo). */
+  async function definirPrecoManual(a: Ativo, texto: string) {
+    setEditando(null);
+    const valor = numeroBR(texto);
+    if (!Number.isFinite(valor) || valor <= 0) {
+      toast.error("Informe um preço maior que zero.");
+      return;
+    }
+    setManuais((m) => ({ ...m, [chavePreco(a.ticker)]: valor }));
+    try {
+      await salvarAtivo.mutateAsync({
+        id: a.id,
+        ticker: a.ticker,
+        nome: a.nome,
+        categoria: a.categoria,
+        quantidade: a.quantidade,
+        precoMedio: a.precoMedio,
+        precoAtual: valor,
+        dy: a.dy,
+      });
+      toast.success(`${a.ticker}: preço atualizado para ${brl(valor, 2)}.`);
+    } catch {
+      toast.error("Não foi possível salvar o preço.");
+    }
+  }
+
+  /** Volta a seguir as cotações automáticas do ativo. */
+  function voltarAoAutomatico(ticker: string) {
+    setManuais((m) => {
+      const { [chavePreco(ticker)]: _removido, ...resto } = m;
+      return resto;
+    });
+    toast.success(`${ticker}: preço voltou a sincronizar automaticamente.`);
+  }
+
   /** Ativos com o preço atual sincronizado com a cotação de mercado. */
   const ativos = useMemo(
     () =>
@@ -210,8 +254,10 @@ export function CarteiraGrupos({
         const preco = precoDe(a.ticker);
         return preco && preco > 0 ? { ...a, precoAtual: preco } : a;
       }),
-    [ativosBase, brapi, cotacoes, salvos],
+    [ativosBase, brapi, cotacoes, salvos, manuais],
   );
+
+
 
 
 
