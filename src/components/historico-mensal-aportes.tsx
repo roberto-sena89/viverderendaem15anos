@@ -196,11 +196,13 @@ export function HistoricoMensalAportes() {
         item.lancamentos += 1;
         item.datas.push(a.data);
         item.categoria = categoria;
+        if (nome) item.nome = nome;
         if (a.corretora && !item.corretoras.includes(a.corretora)) item.corretoras.push(a.corretora);
         item.registros.push(a);
       } else {
         m.itens.push({
           ticker,
+          nome,
           categoria,
           corretoras: a.corretora ? [a.corretora] : [],
           datas: [a.data],
@@ -216,7 +218,7 @@ export function HistoricoMensalAportes() {
     return [...mapa.values()]
       .sort((a, b) => (a.chave < b.chave ? 1 : -1))
       .map((m) => ({ ...m, itens: m.itens.sort((a, b) => b.total - a.total) }));
-  }, [aportes, categoriaPorTicker]);
+  }, [aportes, infoPorTicker]);
   const atualizar = useAtualizarAporte();
   const excluir = useExcluirAporte();
   const [linhaAberta, setLinhaAberta] = useState<string | null>(null);
