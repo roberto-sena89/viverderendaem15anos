@@ -14,11 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/theme";
+import ogImagem from "@/assets/og-calculadora.jpg.asset.json";
 
 const TITLE = "Calculadora de Juros Compostos | Simulador de Investimentos";
 const DESCRIPTION =
   "Calculadora de juros compostos gratuita: informe capital inicial, aporte mensal, prazo e taxa de juros e veja a projeção do seu patrimônio com gráfico ano a ano.";
 const URL = "https://viverderendaem15anos.lovable.app/calculadora-juros-compostos";
+const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
 
 const faqs = [
   {
