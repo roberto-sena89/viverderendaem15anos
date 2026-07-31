@@ -11,7 +11,7 @@ const TITLE = "Quanto Rende 1 Milhão por Mês? Poupança x Tesouro Selic x FIIs
 const OG_TITLE = "Quanto rende 1 milhão por mês? Veja a comparação";
 
 const DESCRIPTION =
-  "Quanto rende R$ 1 milhão por mês na poupança, no Tesouro Selic (CDI) e em FIIs: comparação da renda passiva líquida, taxa de retirada segura e o que muda numa carteira diversificada.";
+  "Quanto rende R$ 1 milhão por mês na poupança, no Tesouro Selic e em FIIs: compare a renda passiva líquida e a taxa de retirada segura.";
 const URL = "https://viverderendaem15anos.lovable.app/quanto-rende-1-milhao-por-mes";
 const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
 
