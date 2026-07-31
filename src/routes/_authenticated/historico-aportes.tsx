@@ -322,22 +322,17 @@ function HistoricoAportesPage() {
                   >
                     <ChevronLeft className="size-4" />
                   </Button>
-                  <select
-                    value={modo === "mensal" ? mes.slice(0, 4) : ano}
-                    onChange={(e) =>
-                      modo === "mensal"
-                        ? setMesSel(`${e.target.value}-${mes.slice(5, 7)}`)
-                        : setAnoSel(e.target.value)
-                    }
+                  <button
+                    type="button"
+                    onClick={() => setAnosAberto((v) => !v)}
+                    aria-expanded={anosAberto}
                     aria-label="Selecionar ano"
-                    className="rounded-md border border-border bg-background px-3 py-1 text-sm font-semibold outline-none"
+                    className="flex items-center gap-1 rounded-md border border-border bg-background px-3 py-1 text-sm font-semibold outline-none hover:bg-muted"
                   >
-                    {ANOS_OPCOES(modo === "mensal" ? mes.slice(0, 4) : ano, anos).map((y) => (
-                      <option key={y} value={y}>
-                        {y}
-                      </option>
-                    ))}
-                  </select>
+                    {modo === "mensal" ? mes.slice(0, 4) : ano}
+                    <ChevronDown className={cn("size-3.5 transition-transform", anosAberto && "rotate-180")} />
+                  </button>
+
                   <Button
                     variant="ghost"
                     size="icon"
