@@ -18,10 +18,8 @@ import { AppShell } from "@/components/app-shell";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 
-import { DialogTransacao } from "@/components/dialog-transacao";
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
