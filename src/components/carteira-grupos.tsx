@@ -25,7 +25,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
-import { useDesempenho12m, type NotaDesempenho } from "@/lib/desempenho-12m";
 import { chaveBrapi, usePrecosBrapiCarteira } from "@/lib/carteira-brapi";
 import {
   chavePreco,
@@ -48,7 +47,6 @@ type ColunaId =
   | "variacao"
   | "rentabilidade"
   | "saldo"
-  | "nota"
   | "participacao"
   | "ideal"
   | "comprar";
@@ -61,7 +59,6 @@ const PADRAO: Record<ColunaId, boolean> = {
   variacao: true,
   rentabilidade: true,
   saldo: true,
-  nota: true,
   participacao: true,
   ideal: true,
   comprar: true,
@@ -92,14 +89,6 @@ interface Grupo {
   /** Variação do dia (%) ponderada pelo saldo, vinda das cotações ao vivo. */
   variacaoDiaPct: number | null;
 }
-
-/** Nota padrão enquanto o histórico de 12 meses não chega (ou não existe). */
-const SEM_DESEMPENHO: NotaDesempenho = {
-  nota: 5,
-  retorno12m: null,
-  excedente: null,
-  classificacao: "Sem histórico",
-};
 
 const num = (v: number, d = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -160,8 +149,6 @@ export function CarteiraGrupos({
   const brapi = usePrecosBrapiCarteira(tickers);
   /** Rede de segurança: último preço válido gravado no banco. */
   const salvos = useUltimosPrecosSalvos(tickers);
-  /** Retorno de 12 meses por ativo (Yahoo) + Ibovespa como referência da nota. */
-  const { porTicker: desempenho, benchmark: ibov12m } = useDesempenho12m(tickers);
 
   /** O servidor busca e grava o último preço destes tickers (máx. 1x/min). */
   usePersistirPrecos(tickers);
