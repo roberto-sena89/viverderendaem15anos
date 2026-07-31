@@ -40,7 +40,7 @@ const ABAS: { id: string; rotulo: string; categoria?: CategoriaMercado }[] = [
   { id: "acoes", rotulo: "Ações", categoria: "acoes" },
   { id: "fiis", rotulo: "FIIs", categoria: "fiis" },
   { id: "futuros", rotulo: "Futuros", categoria: "futuros" },
-  { id: "commodities", rotulo: "Commodities", categoria: "commodities" },
+  { id: "commodities", rotulo: "Índices", categoria: "commodities" },
   { id: "etfs", rotulo: "ETFs", categoria: "etfs" },
   { id: "cripto", rotulo: "Criptomoedas", categoria: "cripto" },
   { id: "cambio", rotulo: "Câmbio", categoria: "cambio" },
