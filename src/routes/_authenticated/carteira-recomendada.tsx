@@ -183,6 +183,16 @@ function CarteiraRecomendadaPage() {
           ))}
           <Button
             size="sm"
+            className="min-h-9"
+            onClick={() => {
+              salvarVersao();
+              toast.success("Carteira recomendada salva.");
+            }}
+          >
+            <Save className="size-4" /> Salvar como minha carteira recomendada
+          </Button>
+          <Button
+            size="sm"
             variant="ghost"
             className="ml-auto text-xs"
             onClick={() => setLinhas(modeloDoPerfil(perfil))}
@@ -295,16 +305,8 @@ function CarteiraRecomendadaPage() {
             <strong className={ok ? "text-success" : "text-destructive"}>{fmt(total)}%</strong>
             {ok ? "" : " · ajuste para 100%"}
           </p>
-          <Button
-            size="sm"
-            onClick={() => {
-              salvarVersao();
-              toast.success("Carteira recomendada salva.");
-            }}
-          >
-            <Save className="size-4" /> Salvar como minha carteira recomendada
-          </Button>
         </div>
+
       </Panel>
 
       <div className="grid gap-4 lg:grid-cols-2">
