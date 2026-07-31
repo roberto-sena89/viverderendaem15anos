@@ -92,13 +92,13 @@ interface Grupo {
   variacaoDiaPct: number | null;
 }
 
-/** Nota 0–10: aderência ao alvo (70%) + rentabilidade positiva (30%). */
-function nota(participacao: number, ideal: number, rentabilidade: number) {
-  const desvio = ideal > 0 ? Math.min(1, Math.abs(participacao - ideal) / ideal) : participacao > 0 ? 1 : 0;
-  const aderencia = (1 - desvio) * 7;
-  const desempenho = Math.max(0, Math.min(3, (rentabilidade / 20) * 3 + 1.5));
-  return Math.max(0, Math.min(10, aderencia + desempenho));
-}
+/** Nota padrão enquanto o histórico de 12 meses não chega (ou não existe). */
+const SEM_DESEMPENHO: NotaDesempenho = {
+  nota: 5,
+  retorno12m: null,
+  excedente: null,
+  classificacao: "Sem histórico",
+};
 
 const num = (v: number, d = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
