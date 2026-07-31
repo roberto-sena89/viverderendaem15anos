@@ -533,7 +533,7 @@ export function EvolucaoPatrimonio() {
         title="Patrimônio x total aportado"
         hint="Comparativo mês a mês entre o valor de mercado da carteira e o capital aportado."
         action={
-          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
             {([
               {
                 chave: "patrimonio" as const,
@@ -563,7 +563,7 @@ export function EvolucaoPatrimonio() {
                 aria-pressed={destaque === s.chave}
                 title={`Destacar ${s.rotulo}`}
                 className={cn(
-                  "flex shrink-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all",
+                  "flex min-w-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all sm:shrink-0",
                   destaque === s.chave
                     ? "border-primary/50 bg-card shadow-sm"
                     : "border-border bg-muted/30 hover:bg-muted/60",
@@ -573,14 +573,15 @@ export function EvolucaoPatrimonio() {
                 <span className={cn("grid size-7 shrink-0 place-items-center rounded-lg", s.fundo)} aria-hidden>
                   <s.Icone className={cn("size-4", s.cor)} />
                 </span>
-                <span className="min-w-0">
-                  <span className="block text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
                     {s.rotulo}
                   </span>
-                  <span className="block font-display text-[0.8rem] font-bold tabular-nums text-foreground">
+                  <span className="block truncate font-display text-[0.8rem] font-bold tabular-nums text-foreground">
                     {typeof s.valor === "number" ? brl(s.valor, 2) : "—"}
                   </span>
                 </span>
+
               </button>
             ))}
             {comparar ? (
