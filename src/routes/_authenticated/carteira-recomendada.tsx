@@ -266,17 +266,18 @@ function CarteiraRecomendadaPage() {
                         type="range"
                         min={0}
                         max={100}
-                        step={0.5}
+                        step={0.1}
                         value={l.alvo}
                         aria-label={`Alocação de ${l.indexador}`}
                         onChange={(e) => atualizar(l.id, { alvo: Number(e.target.value) })}
-                        className="h-1.5 w-full flex-1 cursor-pointer appearance-none rounded-full bg-muted accent-primary"
-                        style={{
-                          backgroundImage: `linear-gradient(var(--primary), var(--primary))`,
-                          backgroundSize: `${Math.min(100, l.alvo)}% 100%`,
-                          backgroundRepeat: "no-repeat",
-                        }}
+                        className="range-alocacao flex-1"
+                        style={
+                          {
+                            "--range-progress": `${Math.min(100, Math.max(0, l.alvo))}%`,
+                          } as React.CSSProperties
+                        }
                       />
+
                       <Input
                         aria-label={`Percentual de ${l.indexador}`}
                         inputMode="decimal"
