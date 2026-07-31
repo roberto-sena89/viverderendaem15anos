@@ -71,6 +71,12 @@ const rotuloMes = (chave: string) => {
   return `${nome.charAt(0).toUpperCase()}${nome.slice(1)} de ${ano}`;
 };
 const total = (a: Aporte) => a.quantidade * a.preco + a.taxas;
+const ANOS_OPCOES = (atual: string, existentes: string[]) => {
+  const base = Number(atual);
+  const lista = new Set<string>([atual, ...existentes]);
+  for (let y = base - 10; y <= base + 10; y++) lista.add(String(y));
+  return [...lista].sort((x, y) => Number(y) - Number(x));
+};
 const num = (v: number, casas = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: casas });
 
