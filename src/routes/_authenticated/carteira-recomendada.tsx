@@ -79,28 +79,8 @@ function CarteiraRecomendadaPage() {
     return [...mapa.entries()];
   }, [linhas]);
 
-  const comparativo = useMemo(() => {
-    const patrimonio = carteira.reduce((s, a) => s + valorAtual(a), 0);
-    const atual: Record<string, number> = {};
-    for (const a of carteira) {
-      const c = classeDoAtivo(a);
-      atual[c] = (atual[c] ?? 0) + valorAtual(a);
-    }
-    const alvoPorClasse: Record<string, number> = {};
-    for (const l of linhas) {
-      const k = chaveClasse(l.classe);
-      alvoPorClasse[k] = (alvoPorClasse[k] ?? 0) + l.alvo;
-    }
-    const chaves = new Set([...Object.keys(alvoPorClasse), ...Object.keys(atual)]);
-    return [...chaves]
-      .map((classe) => {
-        const atualPct = patrimonio > 0 ? ((atual[classe] ?? 0) / patrimonio) * 100 : 0;
-        const alvoPct = alvoPorClasse[classe] ?? 0;
-        return { classe, atualPct, alvoPct, desvio: atualPct - alvoPct };
-      })
-      .filter((l) => l.alvoPct > 0 || l.atualPct > 0)
-      .sort((a, b) => b.alvoPct - a.alvoPct);
-  }, [carteira, linhas]);
+
+
 
   function atualizar(id: string, patch: Partial<LinhaRec>) {
     setLinhas(linhas.map((l) => (l.id === id ? { ...l, ...patch } : l)));
