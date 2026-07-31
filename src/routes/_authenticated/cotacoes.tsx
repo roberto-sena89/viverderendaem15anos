@@ -185,6 +185,12 @@ function Cotacoes() {
             <PainelEtfs intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
           </TabsContent>
 
+          <TabsContent value="indices" className="mt-4">
+            <PainelIndices intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+          </TabsContent>
+
+
+
           {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes" && a.id !== "etfs").map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
               <PainelCategoria
