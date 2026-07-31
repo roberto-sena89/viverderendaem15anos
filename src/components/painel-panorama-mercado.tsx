@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Clock, TrendingDown, TrendingUp } from "lucide-react";
+import { Clock, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
 import { Panel, TickerMark } from "@/components/panel";
+import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { panoramaMercado } from "@/lib/market.functions";
 import type { ItemVariacao, PeriodoPanorama } from "@/lib/market.server";
+
 
 const PERIODOS: PeriodoPanorama[] = ["1D", "7D", "30D", "6M", "1A", "5A"];
 
