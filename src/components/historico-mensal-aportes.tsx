@@ -419,15 +419,15 @@ export function HistoricoMensalAportes() {
                       <div className="w-full min-w-0">
                         <table className="w-full table-fixed text-xs">
                           <colgroup>
-                            <col className="w-[5.5rem]" />
+                            <col className="w-[4.5rem] sm:w-[5.5rem]" />
                             <col />
                             <col className="hidden lg:table-column lg:w-[9rem]" />
                             <col className="hidden xl:table-column xl:w-[9rem]" />
                             <col className="hidden sm:table-column sm:w-[4.5rem]" />
                             <col className="hidden sm:table-column sm:w-[6.5rem]" />
                             <col className="hidden md:table-column md:w-[5.5rem]" />
-                            <col className="w-[7rem]" />
-                            <col className="w-[5.5rem]" />
+                            <col className="w-[5.5rem] sm:w-[7rem]" />
+                            <col className="w-[2.5rem] sm:w-[5rem]" />
                           </colgroup>
                           <thead>
                             <tr className="border-b border-border text-[0.85rem] tracking-[0.06em] text-muted-foreground uppercase">
