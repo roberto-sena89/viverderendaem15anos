@@ -621,7 +621,7 @@ export function CarteiraGrupos({
 
                             {colunas.variacaoDia && (
                               <TableCell
-                                className={`text-right ${cel} ${
+                                className={`text-right ${colSm} ${cel} ${
                                   flash[chaveTicker(a.ticker)] === "alta"
                                     ? "flash-alta"
                                     : flash[chaveTicker(a.ticker)] === "baixa"
