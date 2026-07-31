@@ -284,6 +284,39 @@ export type Database = {
         }
         Relationships: []
       }
+      precos_ultimos: {
+        Row: {
+          ao_vivo: boolean
+          atualizado_em: string
+          created_at: string
+          fonte: string
+          preco: number
+          ticker: string
+          updated_at: string
+          variacao_percent: number | null
+        }
+        Insert: {
+          ao_vivo?: boolean
+          atualizado_em?: string
+          created_at?: string
+          fonte?: string
+          preco: number
+          ticker: string
+          updated_at?: string
+          variacao_percent?: number | null
+        }
+        Update: {
+          ao_vivo?: boolean
+          atualizado_em?: string
+          created_at?: string
+          fonte?: string
+          preco?: number
+          ticker?: string
+          updated_at?: string
+          variacao_percent?: number | null
+        }
+        Relationships: []
+      }
       preferencias_mercado: {
         Row: {
           created_at: string

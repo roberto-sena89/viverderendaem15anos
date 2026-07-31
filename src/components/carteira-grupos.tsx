@@ -26,6 +26,13 @@ import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 import { chaveBrapi, usePrecosBrapiCarteira } from "@/lib/carteira-brapi";
+import {
+  chavePreco,
+  usePersistirPrecos,
+  useUltimosPrecosSalvos,
+  type PrecoPersistido,
+} from "@/lib/precos-ultimos";
+
 import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
 
 type ColunaId =
@@ -144,21 +151,60 @@ export function CarteiraGrupos({
 }) {
   const { alvo } = useAlocacaoAlvo();
   const { flash, mapa: cotacoes, pregaoAberto } = useCotacoesTempoReal();
-  const brapi = usePrecosBrapiCarteira(useMemo(() => ativosBase.map((a) => a.ticker), [ativosBase]));
+  const tickers = useMemo(() => ativosBase.map((a) => a.ticker), [ativosBase]);
+  const brapi = usePrecosBrapiCarteira(tickers);
+  /** Rede de segurança: último preço válido gravado no banco. */
+  const salvos = useUltimosPrecosSalvos(tickers);
+
+  /** Preços ao vivo desta renderização, enviados ao banco no máximo 1x/min. */
+  const paraPersistir = useMemo(() => {
+    const lote = new Map<string, PrecoPersistido>();
+    for (const t of tickers) {
+      const b = brapi.get(chaveBrapi(t));
+      if (b?.preco) {
+        lote.set(chavePreco(t), {
+          ticker: chavePreco(t),
+          preco: b.preco,
+          variacaoPercent: b.variacaoPercent,
+          fonte: "brapi",
+          aoVivo: b.aoVivo,
+          atualizadoEm: b.atualizadoEm ?? new Date().toISOString(),
+        });
+        continue;
+      }
+      const c = cotacoes.get(chaveTicker(t));
+      if (c?.preco) {
+        lote.set(chavePreco(t), {
+          ticker: chavePreco(t),
+          preco: c.preco,
+          variacaoPercent: c.variacaoPercent ?? null,
+          fonte: `cotacoes:${c.fonte ?? "-"}`,
+          aoVivo: pregaoAberto,
+          atualizadoEm: c.atualizadoEm ?? new Date().toISOString(),
+        });
+      }
+    }
+    return [...lote.values()];
+  }, [tickers, brapi, cotacoes, pregaoAberto]);
+  usePersistirPrecos(paraPersistir);
 
   /** Variação do dia: prioriza o provedor em tempo real, com fallback na BRAPI. */
   const variacaoDiaDe = (ticker: string): number | null =>
     cotacoes.get(chaveTicker(ticker))?.variacaoPercent ??
     brapi.get(chaveBrapi(ticker))?.variacaoPercent ??
+    salvos.get(chavePreco(ticker))?.variacaoPercent ??
     null;
 
   /**
    * Preço atual do ativo: BRAPI em primeiro lugar (tempo real no pregão, último
-   * preço antes do fechamento fora dele) e, se ela não tiver o ativo, a cotação
-   * da aba "Cotações".
+   * preço antes do fechamento fora dele); se ela não tiver o ativo, a cotação
+   * da aba "Cotações"; e, por fim, o último preço válido salvo no banco.
    */
   const precoDe = (ticker: string) =>
-    brapi.get(chaveBrapi(ticker))?.preco ?? cotacoes.get(chaveTicker(ticker))?.preco ?? null;
+    brapi.get(chaveBrapi(ticker))?.preco ??
+    cotacoes.get(chaveTicker(ticker))?.preco ??
+    salvos.get(chavePreco(ticker))?.preco ??
+    null;
 
   /** Origem do preço exibido, usada no tooltip da coluna "P. atual". */
   const fonteDe = (ticker: string) => {
@@ -173,6 +219,11 @@ export function CarteiraGrupos({
       const hora = horaCotacao(c.atualizadoEm);
       return `Cotações: ${c.fonte}${hora ? ` · ${hora}` : ""}${c.erro ? ` · ${c.erro}` : ""}`;
     }
+    const s = salvos.get(chavePreco(ticker));
+    if (s) {
+      const hora = horaCotacao(s.atualizadoEm);
+      return `Último preço salvo (${s.fonte})${hora ? ` · ${hora}` : ""}`;
+    }
     return "Aguardando cotação do provedor de mercado";
   };
 
@@ -183,8 +234,9 @@ export function CarteiraGrupos({
         const preco = precoDe(a.ticker);
         return preco && preco > 0 ? { ...a, precoAtual: preco } : a;
       }),
-    [ativosBase, brapi, cotacoes],
+    [ativosBase, brapi, cotacoes, salvos],
   );
+
 
 
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
