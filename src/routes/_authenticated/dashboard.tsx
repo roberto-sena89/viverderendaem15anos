@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { StatusCotacoes } from "@/components/status-cotacoes";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 
@@ -174,6 +175,7 @@ function Dashboard() {
 
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
+      <StatusCotacoes />
       <AbasCarteira />
 
 

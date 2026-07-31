@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { StatusCotacoes } from "@/components/status-cotacoes";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 
 import { ResumoKpis } from "@/components/resumo-kpis";
@@ -83,6 +84,7 @@ function CarteiraPage() {
 
   return (
     <AppShell title="Carteira" description={`${carteira.length} ativos · ${brl(totalAtual)}`}>
+      <StatusCotacoes />
       <AbasCarteira />
       <ResumoKpis mostrarLancamento />
       <div className="flex items-center gap-2 border-b pb-2">
