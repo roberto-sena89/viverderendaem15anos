@@ -203,6 +203,12 @@ function HistoricoAportesPage() {
       return;
     }
     const [a, m] = mes.split("-").map(Number);
+    if (diaSel) {
+      const d = new Date(a, m - 1, Number(diaSel) + passo);
+      setMesSel(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+      setDiaSel(String(d.getDate()).padStart(2, "0"));
+      return;
+    }
     const d = new Date(a, m - 1 + passo, 1);
     setMesSel(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
   };
