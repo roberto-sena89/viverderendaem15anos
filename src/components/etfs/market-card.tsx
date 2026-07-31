@@ -50,8 +50,8 @@ function Linha({ rotulo, valor }: { rotulo: string; valor: string }) {
 export function MarketCard({ symbol }: { symbol: string }) {
   const { loading, error, quote, refresh } = useMarketQuote(symbol);
   const flash = useFlash(quote?.regularMarketPrice ?? null);
-  const { favoritos, alternar } = useFavoritos();
-  const favorito = favoritos.has(symbol);
+  const { alternar, ehFavorito } = useFavoritos();
+  const favorito = ehFavorito(symbol);
 
   if (loading && !quote) {
     return (
