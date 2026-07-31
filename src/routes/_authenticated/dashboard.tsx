@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BarChart3, Calendar, CircleDollarSign, PiggyBank, Wallet } from "lucide-react";
+import { BarChart3, Calendar, CircleDollarSign, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -18,10 +18,8 @@ import { AppShell } from "@/components/app-shell";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 
-import { DialogTransacao } from "@/components/dialog-transacao";
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -105,7 +103,7 @@ function FiltroSelect({
 }
 
 function Dashboard() {
-  const { data: ativos = [], isLoading } = useAtivos();
+  const { data: ativos = [] } = useAtivos();
   const { data: aportes = [] } = useAportes();
   const { data: proventos = [] } = useDividendos();
   void proventos;
@@ -172,26 +170,12 @@ function Dashboard() {
     .filter((c) => c.value > 0);
 
 
-  const carteiraVazia = !isLoading && ativos.length === 0;
 
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
       <AbasCarteira />
 
 
-      {carteiraVazia ? (
-        <div className="surface-card flex flex-wrap items-center gap-3 p-4">
-          <PiggyBank className="size-8 shrink-0 text-muted-foreground" />
-          <DialogTransacao>
-            <Button
-              size="sm"
-              className="font-display text-[12px] font-semibold uppercase tracking-wide"
-            >
-              REGISTRAR INVESTIMENTO
-            </Button>
-          </DialogTransacao>
-        </div>
-      ) : null}
 
       <ResumoKpis />
 
