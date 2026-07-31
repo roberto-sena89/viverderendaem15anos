@@ -43,7 +43,6 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/cotacoes": BarChart3,
   "/rankings": Trophy,
   "/noticias": Newspaper,
-  "/mercado": CandlestickChart,
 
   "/auditoria": ShieldCheck,
   "/planejador": LineChart,
