@@ -451,14 +451,14 @@ function HistoricoAportesPage() {
                 ) : null}
               </PopoverContent>
             </Popover>
-            <Button variant="ghost" size="icon" className="size-8" onClick={() => navegar(1)} aria-label="Próximo período">
+            <Button variant="ghost" size="icon" className="size-8 shrink-0" onClick={() => navegar(1)} aria-label="Próximo período">
               <ChevronRight className="size-4" />
             </Button>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg border border-border p-1">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap">
+          <div className="grid grid-cols-2 rounded-lg border border-border p-1 sm:flex">
             {(["mensal", "anual"] as const).map((m) => (
               <button
                 key={m}
@@ -473,10 +473,13 @@ function HistoricoAportesPage() {
               </button>
             ))}
           </div>
-          <Button variant="outline" size="sm" onClick={exportar}>
-            <Download className="size-4" /> Exportar CSV
+          <Button variant="outline" size="sm" className="shrink-0" onClick={exportar}>
+            <Download className="size-4" />
+            <span className="hidden xs:inline sm:inline">Exportar CSV</span>
+            <span className="xs:hidden sm:hidden">CSV</span>
           </Button>
         </div>
+
       </div>
 
       {/* Cabeçalho do período */}
