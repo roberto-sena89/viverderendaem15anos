@@ -226,16 +226,22 @@ export function EvolucaoPatrimonio() {
   const variacaoPct = primeiro && primeiro.patrimonio > 0 ? (variacao / primeiro.patrimonio) * 100 : 0;
   const positivo = variacao >= 0;
 
-  /** Distribuição atual por categoria e comparação com o início do período. */
+  /** Distribuição atual por classe (mesma paleta da aba Rebalanceamento). */
   const distribuicao = useMemo(() => {
     const atualPorCat = new Map<string, number>();
-    for (const a of ativos) atualPorCat.set(a.categoria, (atualPorCat.get(a.categoria) ?? 0) + valorAtual(a));
+    for (const a of ativos) {
+      const classe = classeDoAtivo(a);
+      atualPorCat.set(classe, (atualPorCat.get(classe) ?? 0) + valorAtual(a));
+    }
     const totalAtual = [...atualPorCat.values()].reduce((s, v) => s + v, 0);
 
     const corte = primeiro?.chave ?? "0000-00";
     const antesPorCat = new Map<string, number>();
     for (const a of aportes) {
-      if (chaveMes(a.data) < corte) antesPorCat.set(a.categoria, (antesPorCat.get(a.categoria) ?? 0) + valorAporte(a));
+      if (chaveMes(a.data) < corte) {
+        const classe = classeDaCategoria(a.categoria);
+        antesPorCat.set(classe, (antesPorCat.get(classe) ?? 0) + valorAporte(a));
+      }
     }
     const totalAntes = [...antesPorCat.values()].reduce((s, v) => s + v, 0);
 
@@ -247,7 +253,8 @@ export function EvolucaoPatrimonio() {
         valor,
         parte: totalAtual > 0 ? (valor / totalAtual) * 100 : 0,
         antes: totalAntes > 0 ? ((antesPorCat.get(categoria) ?? 0) / totalAntes) * 100 : 0,
-        cor: corCategoria(categoria),
+        cor: corClasse(categoria),
+
       }));
   }, [ativos, aportes, primeiro]);
 
