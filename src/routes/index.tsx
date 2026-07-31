@@ -203,8 +203,10 @@ function HomePage() {
           width={1920}
           height={1088}
           className="absolute inset-0 -z-10 size-full object-cover"
-          fetchPriority="high"
+          decoding="async"
+          fetchPriority="low"
         />
+
         <div className="from-background via-background/85 to-background/40 absolute inset-0 -z-10 bg-gradient-to-r" />
         <div className="from-background absolute inset-0 -z-10 bg-gradient-to-t via-transparent to-transparent" />
 
