@@ -249,7 +249,7 @@ function Cabecalho({
         <button
           type="button"
           onClick={() => aoOrdenar(coluna)}
-          className={`inline-flex items-center gap-1 rounded text-[0.7rem] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors hover:text-foreground ${
+          className={`inline-flex items-center gap-1 rounded text-left text-[0.68rem] leading-tight font-semibold tracking-wide uppercase transition-colors hover:text-foreground ${
             ativo ? "text-foreground" : "text-muted-foreground"
           }`}
           aria-label={`Ordenar por ${rotulo}`}
