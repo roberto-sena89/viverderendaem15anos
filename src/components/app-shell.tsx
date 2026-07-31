@@ -13,6 +13,7 @@ import {
   CandlestickChart,
   Trophy,
   BarChart3,
+  ListOrdered,
 
   Bot,
   LogOut,
