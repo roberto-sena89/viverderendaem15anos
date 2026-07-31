@@ -22,8 +22,8 @@ const SUBS_RENDA_FIXA = ["Tesouro SELIC", "Tesouro IPCA+", "Tesouro Prefixado", 
 
 /** Permite ajustar o percentual ideal de cada classe de ativo. */
 export function DialogAlocacaoAlvo() {
-  const { alvo, salvar, restaurar } = useAlocacaoAlvo();
-  const { subAlvo, salvarSub, restaurarSub } = useSubAlocacaoAlvo();
+  const { alvo, salvar } = useAlocacaoAlvo();
+  const { subAlvo, salvarSub } = useSubAlocacaoAlvo();
   const [aberto, setAberto] = useState(false);
   const [valores, setValores] = useState<Record<string, string>>({});
   const [subValores, setSubValores] = useState<Record<string, string>>({});
