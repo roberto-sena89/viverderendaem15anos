@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { GripVertical, History, Plus, Save, Search, Trash2, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
