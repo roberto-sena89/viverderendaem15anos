@@ -11,6 +11,7 @@ import { VisaoGeralMercado } from "@/components/cotacoes/visao-geral";
 import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { PainelAcoes } from "@/components/acoes/painel-acoes";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
+import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
 
 export const Route = createFileRoute("/_authenticated/cotacoes")({
@@ -55,7 +56,8 @@ const INTERVALOS = [
 function Cotacoes() {
   const [aba, setAba] = useState("geral");
   const [busca, setBusca] = useState("");
-  const [favoritos, setFavoritos] = useState(false);
+  // Preferência do perfil: acompanha o usuário entre sessões e dispositivos.
+  const [favoritos, definirFavoritos] = useFiltroFavoritos();
   const [intervalo, setIntervalo] = useState(30_000);
   const [pregao, setPregao] = useState(() => estadoPregao());
   const [ultima, setUltima] = useState<number | null>(null);
@@ -129,7 +131,7 @@ function Cotacoes() {
               variant={favoritos ? "default" : "outline"}
               size="sm"
               aria-pressed={favoritos}
-              onClick={() => setFavoritos((v) => !v)}
+              onClick={() => definirFavoritos()}
             >
               <Star className={`size-4 ${favoritos ? "fill-current" : ""}`} />
               Favoritos
