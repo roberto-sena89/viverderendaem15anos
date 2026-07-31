@@ -36,11 +36,6 @@ export function AbasCarteira() {
           );
         })}
       </ul>
-
-            </li>
-          );
-        })}
-      </ul>
     </nav>
   );
 }
