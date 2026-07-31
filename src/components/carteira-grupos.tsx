@@ -334,12 +334,13 @@ export function CarteiraGrupos({
               <>
                 <div className="border-t">
                 <Table
-                  wrapperClassName="overflow-visible"
-                  className="w-full table-fixed [&_th]:px-2 [&_td]:px-2 [&_th]:leading-tight [&_th]:whitespace-normal"
+                  wrapperClassName="w-full max-w-full overflow-x-auto"
+                  className="w-full table-auto [&_th]:px-2 [&_td]:px-2 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap"
                 >
                     <TableHeader>
                       <TableRow className="bg-muted/40">
-                        <TableHead className="w-[22%] min-w-0">Ticker / Ativo</TableHead>
+                        <TableHead className="w-full min-w-[9rem]">Ticker / Ativo</TableHead>
+
                         {colunas.quantidade && <TableHead className="text-right">Quant.</TableHead>}
                         {colunas.precoMedio && <TableHead className={`text-right ${colMd}`}>P. médio</TableHead>}
                         {colunas.precoAtual && <TableHead className="text-right">P. atual</TableHead>}
@@ -350,7 +351,7 @@ export function CarteiraGrupos({
                         {colunas.participacao && <TableHead className="text-right">% Cart.</TableHead>}
                         {colunas.ideal && <TableHead className={`text-right ${colLg}`}>% Ideal</TableHead>}
                         {colunas.comprar && <TableHead className={`text-center ${colLg}`}>Comprar</TableHead>}
-                        {onEditar && onExcluir ? <TableHead className="w-[7%] text-center">Opções</TableHead> : null}
+                        {onEditar && onExcluir ? <TableHead className="w-px text-center">Opções</TableHead> : null}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
