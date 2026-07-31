@@ -133,15 +133,23 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
     });
   };
 
+  // WebSocket (Supabase Realtime) como canal primário de preço/variação.
+  const aoVivo = useFiisAoVivo(intervaloMs > 0, pregao.aberto);
+
   const grade = useQuery({
     queryKey: ["fiis", "grade"],
     queryFn: () => gradeFiis({ data: {} }),
-    refetchInterval: intervaloMs > 0 ? (pregao.aberto ? intervaloMs : Math.max(intervaloMs, 300_000)) : false,
+    // Fallback: 15s no pregão quando o WebSocket não está disponível.
+    refetchInterval: aoVivo.intervaloPolling > 0 ? aoVivo.intervaloPolling : false,
     refetchOnWindowFocus: true,
     staleTime: 10_000,
   });
 
-  const linhas = useMemo(() => grade.data?.linhas ?? [], [grade.data]);
+  const linhas = useMemo(
+    () => mesclarPrecos(grade.data?.linhas ?? [], aoVivo.precos),
+    [grade.data, aoVivo.precos],
+  );
+
 
   const posicoes = useMemo(() => {
     const mapa = new Map<string, { precoMedio: number; quantidade: number }>();
