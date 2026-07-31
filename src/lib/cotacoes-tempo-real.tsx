@@ -103,6 +103,27 @@ export function estadoPregao(referencia = new Date()) {
   return { aberto, proximaAbertura };
 }
 
+/**
+ * Pregão de Nova York (NYSE/Nasdaq), em horário de Brasília.
+ * Cobre ETFs globais, stocks e REITs, que continuam negociando depois
+ * do fechamento da B3 — janela ampla (10h30–22h) para cobrir o horário
+ * de verão americano.
+ */
+export function estadoMercadoGlobal(referencia = new Date()) {
+  const fmt = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const partes = Object.fromEntries(fmt.formatToParts(referencia).map((p) => [p.type, p.value]));
+  const minutos = Number(partes.hour ?? 0) * 60 + Number(partes.minute ?? 0);
+  const dia = String(partes.weekday ?? "").toLowerCase();
+  const fimDeSemana = dia.startsWith("sáb") || dia.startsWith("sab") || dia.startsWith("dom");
+  return { aberto: !fimDeSemana && minutos >= 10 * 60 + 30 && minutos < 22 * 60 };
+}
+
 /* ---------------------------------------------------------------- *
  * Contexto
  * ---------------------------------------------------------------- */
