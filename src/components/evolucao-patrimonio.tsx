@@ -487,7 +487,7 @@ export function EvolucaoPatrimonio() {
             style={{ minWidth: Math.max(320, dadosGrafico.length * 68) }}
           >
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 18, right: 8, left: 0, bottom: 18 }} barGap={2} barCategoryGap="22%">
+            <ComposedChart data={dadosGrafico} margin={{ top: 18, right: 8, left: 0, bottom: 18 }} barGap={0} barCategoryGap="28%" barSize={30}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
@@ -520,7 +520,6 @@ export function EvolucaoPatrimonio() {
                 name="Patrimônio"
                 fill="var(--color-primary)"
                 radius={[3, 3, 0, 0]}
-                maxBarSize={38}
               >
                 {dadosGrafico.length <= 14 ? (
                 <LabelList
@@ -536,7 +535,6 @@ export function EvolucaoPatrimonio() {
                 name="Total investido"
                 fill="var(--color-chart-12)"
                 radius={[3, 3, 0, 0]}
-                maxBarSize={38}
               >
                 {dadosGrafico.length <= 14 ? (
                 <LabelList
