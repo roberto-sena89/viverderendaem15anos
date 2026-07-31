@@ -877,20 +877,21 @@ export function EvolucaoPatrimonio() {
                     onClick={() => setCategoriaFiltro((c) => (c === d.categoria ? null : d.categoria))}
                     aria-pressed={categoriaFiltro === d.categoria}
                     className={cn(
-                      "flex w-full items-center gap-2 rounded-full border px-3 py-1.5 text-left text-xs transition-colors",
+                      "grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2 gap-y-0.5 rounded-xl border px-3 py-2 text-left text-xs transition-colors",
                       categoriaFiltro === d.categoria ? "border-primary bg-primary/10" : "border-border hover:bg-muted",
                     )}
                   >
                     <span className="size-2.5 shrink-0 rounded-full" style={{ background: d.cor }} aria-hidden />
-                    <span className="min-w-0 flex-1 truncate font-medium">{d.categoria}</span>
+                    <span className="min-w-0 truncate font-medium">{d.categoria}</span>
                     <span className="shrink-0 tabular-nums font-semibold">{pct(d.parte)}</span>
-                    <span className="shrink-0 text-[0.65rem] text-muted-foreground">
+                    <span className="col-start-2 col-span-2 text-[0.65rem] text-muted-foreground tabular-nums">
                       {pct(d.antes)} → {pct(d.parte)}
                     </span>
                   </button>
                 </li>
               ))}
             </ul>
+
           </div>
         )}
       </Panel>
