@@ -76,6 +76,8 @@ interface Grupo {
   ideal: number;
   /** Soma das variações (%) dos ativos do grupo. */
   variacaoPct: number;
+  /** Variação do dia (%) ponderada pelo saldo, vinda das cotações ao vivo. */
+  variacaoDiaPct: number | null;
 }
 
 /** Nota 0–10: aderência ao alvo (70%) + rentabilidade positiva (30%). */
