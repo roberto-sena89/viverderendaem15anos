@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, type CSSProperties } from "react";
-import { GripVertical, History, Plus, Save, Search, Trash2, Wand2 } from "lucide-react";
+import { History, Lock, Plus, Save, Search, Trash2, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
@@ -68,7 +68,6 @@ function CarteiraRecomendadaPage() {
 
   const [buscar, setBuscar] = useState(false);
   const [remover, setRemover] = useState<LinhaRec | null>(null);
-  const [arrastando, setArrastando] = useState<string | null>(null);
   const [verOrdens, setVerOrdens] = useState(false);
 
   const total = linhas.reduce((s, l) => s + l.alvo, 0);
@@ -122,17 +121,8 @@ function CarteiraRecomendadaPage() {
     ]);
   }
 
-  function soltar(alvoId: string) {
-    if (!arrastando || arrastando === alvoId) return;
-    const de = linhas.findIndex((l) => l.id === arrastando);
-    const para = linhas.findIndex((l) => l.id === alvoId);
-    if (de < 0 || para < 0) return;
-    const copia = [...linhas];
-    const [item] = copia.splice(de, 1);
-    copia.splice(para, 0, { ...item, grupo: linhas[para].grupo, risco: linhas[para].risco });
-    setLinhas(copia);
-    setArrastando(null);
-  }
+  // Ordem travada: linhas não podem ser reordenadas por arrastar.
+
 
   function aplicarNaCarteira() {
     const novo: Record<string, number> = {};
@@ -228,17 +218,12 @@ function CarteiraRecomendadaPage() {
                 {itens.map((l) => (
                   <li
                     key={l.id}
-                    draggable
-                    onDragStart={() => setArrastando(l.id)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => soltar(l.id)}
-                    className={`grid gap-3 px-3 py-3 transition-colors sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,14rem)_auto] sm:items-center ${
-                      arrastando === l.id ? "bg-muted/50" : "hover:bg-muted/30"
-                    }`}
+                    className="grid gap-3 px-3 py-3 transition-colors hover:bg-muted/30 sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,14rem)_auto] sm:items-center"
                   >
-                    <span className="hidden cursor-grab text-muted-foreground sm:block" aria-hidden>
-                      <GripVertical className="size-4" />
+                    <span className="hidden text-muted-foreground/50 sm:block" aria-hidden>
+                      <Lock className="size-3.5" />
                     </span>
+
 
                     <div className="flex items-center gap-2">
                       <span
