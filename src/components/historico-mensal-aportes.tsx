@@ -158,7 +158,9 @@ export function HistoricoMensalAportes() {
     const mapa = new Map<string, Mes>();
     for (const a of aportes) {
       const ticker = a.ticker.toUpperCase();
-      const categoria = categoriaPorTicker.get(ticker) ?? a.categoria;
+      const info = infoPorTicker.get(ticker);
+      const categoria = info?.categoria ?? a.categoria;
+      const nome = info?.nome ?? "";
       const chave = a.data.slice(0, 7);
       const bruto = a.quantidade * a.preco;
       const total = bruto + a.taxas;
