@@ -306,7 +306,11 @@ async function brapiPagina(
     return "ok";
   }
   for (const r of data?.results ?? []) if (r.symbol) mapa.set(r.symbol.toUpperCase(), r);
-  return "ok";
+  // Tickers renomeados pela B3 voltam com outro símbolo: associa ao pedido.
+  if (tickers.length === 1 && data?.results?.length === 1) {
+    mapa.set(tickers[0].toUpperCase(), data.results[0]);
+  }
+
 }
 
 
