@@ -29,7 +29,6 @@ import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/c
 import { Route as AuthenticatedCotacoesRouteImport } from './routes/_authenticated/cotacoes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDividendosRouteImport } from './routes/_authenticated/dividendos'
-import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authenticated/estatisticas'
 import { Route as AuthenticatedHistoricoAportesRouteImport } from './routes/_authenticated/historico-aportes'
 import { Route as AuthenticatedMercadoRouteImport } from './routes/_authenticated/mercado'
 import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
@@ -145,12 +144,6 @@ const AuthenticatedDividendosRoute = AuthenticatedDividendosRouteImport.update({
   path: '/dividendos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedEstatisticasRoute =
-  AuthenticatedEstatisticasRouteImport.update({
-    id: '/estatisticas',
-    path: '/estatisticas',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedHistoricoAportesRoute =
   AuthenticatedHistoricoAportesRouteImport.update({
     id: '/historico-aportes',
@@ -232,7 +225,6 @@ export interface FileRoutesByFullPath {
   '/cotacoes': typeof AuthenticatedCotacoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
-  '/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/historico-aportes': typeof AuthenticatedHistoricoAportesRoute
   '/mercado': typeof AuthenticatedMercadoRoute
   '/metas': typeof AuthenticatedMetasRoute
@@ -265,7 +257,6 @@ export interface FileRoutesByTo {
   '/cotacoes': typeof AuthenticatedCotacoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/dividendos': typeof AuthenticatedDividendosRoute
-  '/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/historico-aportes': typeof AuthenticatedHistoricoAportesRoute
   '/mercado': typeof AuthenticatedMercadoRoute
   '/metas': typeof AuthenticatedMetasRoute
@@ -300,7 +291,6 @@ export interface FileRoutesById {
   '/_authenticated/cotacoes': typeof AuthenticatedCotacoesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dividendos': typeof AuthenticatedDividendosRoute
-  '/_authenticated/estatisticas': typeof AuthenticatedEstatisticasRoute
   '/_authenticated/historico-aportes': typeof AuthenticatedHistoricoAportesRoute
   '/_authenticated/mercado': typeof AuthenticatedMercadoRoute
   '/_authenticated/metas': typeof AuthenticatedMetasRoute
@@ -335,7 +325,6 @@ export interface FileRouteTypes {
     | '/cotacoes'
     | '/dashboard'
     | '/dividendos'
-    | '/estatisticas'
     | '/historico-aportes'
     | '/mercado'
     | '/metas'
@@ -368,7 +357,6 @@ export interface FileRouteTypes {
     | '/cotacoes'
     | '/dashboard'
     | '/dividendos'
-    | '/estatisticas'
     | '/historico-aportes'
     | '/mercado'
     | '/metas'
@@ -402,7 +390,6 @@ export interface FileRouteTypes {
     | '/_authenticated/cotacoes'
     | '/_authenticated/dashboard'
     | '/_authenticated/dividendos'
-    | '/_authenticated/estatisticas'
     | '/_authenticated/historico-aportes'
     | '/_authenticated/mercado'
     | '/_authenticated/metas'
@@ -578,13 +565,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDividendosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/estatisticas': {
-      id: '/_authenticated/estatisticas'
-      path: '/estatisticas'
-      fullPath: '/estatisticas'
-      preLoaderRoute: typeof AuthenticatedEstatisticasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/historico-aportes': {
       id: '/_authenticated/historico-aportes'
       path: '/historico-aportes'
@@ -674,7 +654,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCotacoesRoute: typeof AuthenticatedCotacoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDividendosRoute: typeof AuthenticatedDividendosRoute
-  AuthenticatedEstatisticasRoute: typeof AuthenticatedEstatisticasRoute
   AuthenticatedHistoricoAportesRoute: typeof AuthenticatedHistoricoAportesRoute
   AuthenticatedMercadoRoute: typeof AuthenticatedMercadoRoute
   AuthenticatedMetasRoute: typeof AuthenticatedMetasRoute
@@ -692,7 +671,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCotacoesRoute: AuthenticatedCotacoesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDividendosRoute: AuthenticatedDividendosRoute,
-  AuthenticatedEstatisticasRoute: AuthenticatedEstatisticasRoute,
   AuthenticatedHistoricoAportesRoute: AuthenticatedHistoricoAportesRoute,
   AuthenticatedMercadoRoute: AuthenticatedMercadoRoute,
   AuthenticatedMetasRoute: AuthenticatedMetasRoute,
