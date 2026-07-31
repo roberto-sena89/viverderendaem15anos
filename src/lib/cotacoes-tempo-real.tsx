@@ -29,7 +29,10 @@ export interface ConfigSync {
   /** Alerta quando um ativo variar acima deste percentual no dia. */
   alertaAtivo: boolean;
   alertaPercent: number;
+  /** Também enviar notificação push nativa do navegador. */
+  pushAtivo: boolean;
 }
+
 
 export const INTERVALOS = [
   { ms: 15_000, rotulo: "15s" },
@@ -43,7 +46,9 @@ const CONFIG_PADRAO: ConfigSync = {
   intervaloMs: 30_000,
   alertaAtivo: false,
   alertaPercent: 5,
+  pushAtivo: false,
 };
+
 
 const CHAVE_CONFIG = "cotacoes:config";
 const CHAVE_CACHE = "cotacoes:cache";
