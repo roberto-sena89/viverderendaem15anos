@@ -53,6 +53,8 @@ async function buscarBloco(tickers: string[]): Promise<PrecoBrapiEtf[]> {
         variacaoPercent: num(r.regularMarketChangePercent),
         volume: num(r.regularMarketVolume),
         atualizadoEm: (r.regularMarketTime as string) ?? new Date().toISOString(),
+        moeda: typeof r.currency === "string" ? r.currency.toUpperCase() : null,
+
       }))
       .filter((p) => p.ticker);
   } catch {
