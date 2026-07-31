@@ -567,3 +567,36 @@ table td {
 .range-alocacao:focus-visible::-moz-range-thumb {
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 45%, transparent);
 }
+
+/* Flash sutil ao atualizar uma cotação em tempo real. */
+.flash-alta {
+  animation: flash-alta 1.6s ease-out;
+}
+.flash-baixa {
+  animation: flash-baixa 1.6s ease-out;
+}
+
+@keyframes flash-alta {
+  0% {
+    background-color: color-mix(in oklab, var(--color-success) 26%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flash-baixa {
+  0% {
+    background-color: color-mix(in oklab, var(--color-destructive) 26%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-alta,
+  .flash-baixa {
+    animation: none;
+  }
+}

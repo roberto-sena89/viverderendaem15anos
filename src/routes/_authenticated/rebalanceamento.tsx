@@ -6,7 +6,7 @@ import { DialogAporteMensal } from "@/components/dialog-aporte-mensal";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useAtivos } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { brl, classeDoAtivo, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/rebalanceamento")({
 });
 
 function Rebalanceamento() {
-  const { data: carteira = [] } = useAtivos();
+  const { data: carteira = [] } = useAtivosAoVivo();
   const { totalAtual } = resumoCarteira(carteira);
   const { alvo: alocacaoIdeal } = useAlocacaoAlvo();
 

@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { StatusCotacoes } from "@/components/status-cotacoes";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 
 import { ResumoKpis } from "@/components/resumo-kpis";
@@ -20,7 +21,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAtivos, useExcluir, useSalvarAtivo } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
+import { useExcluir, useSalvarAtivo } from "@/lib/data";
 import { brl, categorias, resumoCarteira, rotuloCategoria, type Ativo, type Categoria } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira")({
@@ -44,7 +46,7 @@ function CarteiraPage() {
   const [editando, setEditando] = useState<Ativo | null>(null);
   const [open, setOpen] = useState(false);
 
-  const { data: carteira = [], isLoading } = useAtivos();
+  const { data: carteira = [], isLoading } = useAtivosAoVivo();
   const salvar = useSalvarAtivo();
   const excluir = useExcluir("ativos");
   const { totalAtual } = resumoCarteira(carteira);
@@ -82,6 +84,7 @@ function CarteiraPage() {
 
   return (
     <AppShell title="Carteira" description={`${carteira.length} ativos · ${brl(totalAtual)}`}>
+      <StatusCotacoes />
       <AbasCarteira />
       <ResumoKpis mostrarLancamento />
       <div className="flex items-center gap-2 border-b pb-2">

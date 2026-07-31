@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { StatusCotacoes } from "@/components/status-cotacoes";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 
@@ -27,7 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAportes, useAtivos, useDividendos } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
+import { useAportes, useDividendos } from "@/lib/data";
 import { classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import type { Ativo } from "@/lib/portfolio";
@@ -103,7 +105,7 @@ function FiltroSelect({
 }
 
 function Dashboard() {
-  const { data: ativos = [] } = useAtivos();
+  const { data: ativos = [] } = useAtivosAoVivo();
   const { data: aportes = [] } = useAportes();
   const { data: proventos = [] } = useDividendos();
   void proventos;
@@ -173,6 +175,7 @@ function Dashboard() {
 
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
+      <StatusCotacoes />
       <AbasCarteira />
 
 
