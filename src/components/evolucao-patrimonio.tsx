@@ -532,8 +532,9 @@ export function EvolucaoPatrimonio() {
         ) : (
           <>
             {/* Desktop / tablet */}
-            <div className="hidden md:block">
-              <table className="w-full table-fixed text-sm">
+            <div className="-mx-4 hidden overflow-x-auto px-4 md:block sm:-mx-5 sm:px-5">
+              <table className="w-full min-w-[46rem] table-auto text-sm">
+
                 <thead>
                   <tr className="text-left text-[0.65rem] uppercase tracking-wide text-muted-foreground">
                     <th className="py-2 font-semibold">Período</th>
