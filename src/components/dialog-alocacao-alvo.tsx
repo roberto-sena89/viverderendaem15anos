@@ -27,15 +27,23 @@ export function DialogAlocacaoAlvo() {
   const [aberto, setAberto] = useState(false);
   const [valores, setValores] = useState<Record<string, string>>({});
   const [subValores, setSubValores] = useState<Record<string, string>>({});
+  /** Snapshot do estado salvo ao abrir, usado para desfazer se o usuário fechar sem salvar. */
+  const original = useRef<{ alvo: Record<string, number>; sub: Record<string, number> } | null>(null);
+  const confirmado = useRef(false);
 
   useEffect(() => {
-    if (aberto) {
-      setValores(Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])));
-      setSubValores(
-        Object.fromEntries(SUBS_RENDA_FIXA.map((s) => [s, String(subAlvo[s] ?? 0).replace(".", ",")])),
-      );
-    }
-  }, [aberto, alvo, subAlvo]);
+    if (!aberto) return;
+    // Hidrata apenas ao abrir: evita sobrescrever a digitação quando outra aba
+    // atualiza os alvos enquanto o diálogo está aberto.
+    original.current = { alvo: { ...alvo }, sub: { ...subAlvo } };
+    confirmado.current = false;
+    setValores(Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])));
+    setSubValores(
+      Object.fromEntries(SUBS_RENDA_FIXA.map((s) => [s, String(subAlvo[s] ?? 0).replace(".", ",")])),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aberto]);
+
 
   /** Mantém apenas dígitos e um separador decimal, com no máximo 2 casas. */
   const sanitizar = (bruto: string) => {
