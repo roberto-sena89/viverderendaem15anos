@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
-import { GraficoEvolucaoPatrimonio } from "@/components/grafico-evolucao-patrimonio";
-import { HistoricoMensalAportes } from "@/components/historico-mensal-aportes";
 import { useAportes } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
 
@@ -40,10 +38,6 @@ function AportesPage() {
 
 
 
-
-      <GraficoEvolucaoPatrimonio />
-
-      <HistoricoMensalAportes />
 
     </AppShell>
   );
