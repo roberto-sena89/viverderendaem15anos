@@ -61,6 +61,11 @@ export function usePrecosBrapiCarteira(tickers: string[]): Map<string, PrecoVivo
   return useMemo(() => {
     for (const p of (q.data ?? []) as PrecoBrapiEtf[]) {
       if (p.preco === null || !Number.isFinite(p.preco) || p.preco <= 0) continue;
+      // A carteira é em reais: um ticker que resolve para uma bolsa estrangeira
+      // (ex.: "IVVB" nos EUA em vez de "IVVB11" na B3) devolve preço em USD e
+      // distorceria todo o saldo. Nesse caso, ignoramos a cotação.
+      if (p.moeda && p.moeda !== "BRL") continue;
+
       ultimos.current.set(chaveBrapi(p.ticker), {
         preco: p.preco,
         variacaoPercent: p.variacaoPercent ?? null,
