@@ -134,6 +134,24 @@ const provedorB3: Provedor = {
  * Provedor 2 — Exterior e cripto (Yahoo Finance).
  * ------------------------------------------------------------------ */
 
+/** Dólar comercial (USD→BRL) com cache curto em memória do worker. */
+let cacheDolar: { valor: number; em: number } | null = null;
+
+async function dolarParaReal(): Promise<number | null> {
+  if (cacheDolar && Date.now() - cacheDolar.em < 60_000) return cacheDolar.valor;
+  try {
+    const mercado = await import("@/lib/market.server");
+    const c = await mercado.buscarCotacao("USDBRL=X");
+    if (c.preco && c.preco > 0) {
+      cacheDolar = { valor: c.preco, em: Date.now() };
+      return c.preco;
+    }
+  } catch {
+    /* mantém o último valor conhecido, se houver */
+  }
+  return cacheDolar?.valor ?? null;
+}
+
 const provedorGlobal: Provedor = {
   id: "global",
   aceita: (p) => CATEGORIAS_EXTERIOR.includes(p.categoria) || p.categoria === "Criptomoedas",
@@ -146,13 +164,19 @@ const provedorGlobal: Provedor = {
         p.categoria === "Criptomoedas" && !base.includes("-") ? `${base}-BRL` : base;
       try {
         const c = await mercado.buscarCotacao(simbolo);
+        const moeda = (c.moeda ?? "USD").toUpperCase();
+        // A carteira é contabilizada em reais: converte cotações em moeda
+        // estrangeira pelo câmbio do momento (ETFs globais, stocks, REITs…).
+        const cambio = moeda === "BRL" ? 1 : await dolarParaReal();
+        const fator = moeda === "BRL" ? 1 : (cambio ?? 1);
+        const converteu = moeda !== "BRL" && cambio !== null;
         saida.push({
           ticker: base,
-          preco: c.preco,
-          fechamentoAnterior: c.fechamentoAnterior,
+          preco: c.preco === null ? null : c.preco * fator,
+          fechamentoAnterior: c.fechamentoAnterior === null ? null : c.fechamentoAnterior * fator,
           variacaoPercent: c.variacaoDiaPercent,
-          moeda: c.moeda ?? "USD",
-          fonte: "yahoo",
+          moeda: converteu || moeda === "BRL" ? "BRL" : moeda,
+          fonte: converteu ? `yahoo (${moeda}→BRL)` : "yahoo",
           atualizadoEm: c.atualizadoEm ?? agora(),
         });
       } catch {
