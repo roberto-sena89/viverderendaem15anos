@@ -450,9 +450,9 @@ export function EvolucaoPatrimonio() {
       </Panel>
 
       {/* 2. Seletor de período */}
-      <div className="sticky top-0 z-20 -mx-1 rounded-xl border border-border bg-background/95 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="sticky top-0 z-20 rounded-xl border border-border bg-background/95 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div className="-mx-1 flex items-center gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible sm:pb-0">
+          <div className="flex flex-wrap items-center gap-1.5">
             {PERIODOS.map((p) => (
               <button
                 key={p.id}
@@ -470,18 +470,18 @@ export function EvolucaoPatrimonio() {
               </button>
             ))}
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative min-w-0 flex-1 sm:w-52 sm:flex-none">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-wrap">
+            <div className="relative col-span-2 min-w-0 sm:col-span-1 sm:w-52">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Buscar período"
                 aria-label="Buscar período"
-                className="h-9 pl-8 text-xs"
+                className="h-9 w-full pl-8 text-xs"
               />
             </div>
-            <div className="flex rounded-full border border-border p-0.5" role="group" aria-label="Granularidade">
+            <div className="flex min-w-0 rounded-full border border-border p-0.5" role="group" aria-label="Granularidade">
               {(["mensal", "anual"] as const).map((g) => (
                 <button
                   key={g}
@@ -489,7 +489,7 @@ export function EvolucaoPatrimonio() {
                   onClick={() => setGranularidade(g)}
                   aria-pressed={granularidade === g}
                   className={cn(
-                    "rounded-full px-3 py-1 text-xs font-semibold capitalize transition-colors",
+                    "flex-1 rounded-full px-3 py-1 text-xs font-semibold capitalize transition-colors",
                     granularidade === g ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted",
                   )}
                 >
@@ -500,7 +500,7 @@ export function EvolucaoPatrimonio() {
             <Button
               variant={comparar ? "default" : "outline"}
               size="sm"
-              className="h-9 text-xs"
+              className="h-9 shrink-0 text-xs"
               onClick={() => setComparar((v) => !v)}
               aria-pressed={comparar}
             >
