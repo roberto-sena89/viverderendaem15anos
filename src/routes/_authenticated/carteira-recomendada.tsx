@@ -183,6 +183,16 @@ function CarteiraRecomendadaPage() {
           ))}
           <Button
             size="sm"
+            className="min-h-9"
+            onClick={() => {
+              salvarVersao();
+              toast.success("Carteira recomendada salva.");
+            }}
+          >
+            <Save className="size-4" /> Salvar como minha carteira recomendada
+          </Button>
+          <Button
+            size="sm"
             variant="ghost"
             className="ml-auto text-xs"
             onClick={() => setLinhas(modeloDoPerfil(perfil))}
