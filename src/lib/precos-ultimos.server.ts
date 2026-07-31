@@ -46,8 +46,14 @@ export async function lerPrecosPersistidos(tickers: string[]): Promise<PrecoPers
   }
 }
 
-/** Grava (upsert) os preços recebidos das fontes ao vivo. Best-effort. */
+/**
+ * Grava (upsert) os preços recebidos das fontes ao vivo. Best-effort.
+ *
+ * Uso interno do servidor: os valores precisam vir de uma fonte de mercado
+ * confiável (BRAPI, cache de cotações, jobs agendados), nunca do navegador.
+ */
 export async function gravarPrecosPersistidos(precos: PrecoPersistido[]) {
+
   const linhas = precos
     .filter((p) => Number.isFinite(p.preco) && p.preco > 0 && p.ticker)
     .map((p) => ({
@@ -64,6 +70,34 @@ export async function gravarPrecosPersistidos(precos: PrecoPersistido[]) {
     const db = await admin();
     await db.from("precos_ultimos").upsert(linhas, { onConflict: "ticker" });
     return { gravados: linhas.length };
+  } catch {
+    return { gravados: 0 };
+  }
+}
+
+/**
+ * Busca os preços dos tickers nas fontes de mercado (BRAPI) e persiste o
+ * resultado. Só o servidor decide o valor gravado — o cliente informa apenas
+ * quais tickers acompanhar.
+ */
+export async function sincronizarPrecosDeFonte(tickers: string[]) {
+  const lista = [...new Set(tickers.map(normalizar).filter(Boolean))].slice(0, 200);
+  if (!lista.length) return { gravados: 0 };
+  try {
+    const { precosBrapiEtfs } = await import("@/lib/etfs-brapi.server");
+    const { dentroDoPregao } = await import("@/lib/cotacoes-cache.server");
+    const aoVivo = dentroDoPregao();
+    const precos = (await precosBrapiEtfs(lista))
+      .filter((p) => p.preco !== null && Number.isFinite(p.preco) && (p.preco as number) > 0)
+      .map((p) => ({
+        ticker: p.ticker,
+        preco: p.preco as number,
+        variacaoPercent: p.variacaoPercent ?? null,
+        fonte: "brapi",
+        aoVivo,
+        atualizadoEm: p.atualizadoEm ?? new Date().toISOString(),
+      }));
+    return gravarPrecosPersistidos(precos);
   } catch {
     return { gravados: 0 };
   }

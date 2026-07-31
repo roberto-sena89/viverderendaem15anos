@@ -30,7 +30,7 @@ import {
   chavePreco,
   usePersistirPrecos,
   useUltimosPrecosSalvos,
-  type PrecoPersistido,
+  
 } from "@/lib/precos-ultimos";
 
 import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
@@ -156,37 +156,9 @@ export function CarteiraGrupos({
   /** Rede de segurança: último preço válido gravado no banco. */
   const salvos = useUltimosPrecosSalvos(tickers);
 
-  /** Preços ao vivo desta renderização, enviados ao banco no máximo 1x/min. */
-  const paraPersistir = useMemo(() => {
-    const lote = new Map<string, PrecoPersistido>();
-    for (const t of tickers) {
-      const b = brapi.get(chaveBrapi(t));
-      if (b?.preco) {
-        lote.set(chavePreco(t), {
-          ticker: chavePreco(t),
-          preco: b.preco,
-          variacaoPercent: b.variacaoPercent,
-          fonte: "brapi",
-          aoVivo: b.aoVivo,
-          atualizadoEm: b.atualizadoEm ?? new Date().toISOString(),
-        });
-        continue;
-      }
-      const c = cotacoes.get(chaveTicker(t));
-      if (c?.preco) {
-        lote.set(chavePreco(t), {
-          ticker: chavePreco(t),
-          preco: c.preco,
-          variacaoPercent: c.variacaoPercent ?? null,
-          fonte: `cotacoes:${c.fonte ?? "-"}`,
-          aoVivo: pregaoAberto,
-          atualizadoEm: c.atualizadoEm ?? new Date().toISOString(),
-        });
-      }
-    }
-    return [...lote.values()];
-  }, [tickers, brapi, cotacoes, pregaoAberto]);
-  usePersistirPrecos(paraPersistir);
+  /** O servidor busca e grava o último preço destes tickers (máx. 1x/min). */
+  usePersistirPrecos(tickers);
+
 
   /** Variação do dia: prioriza o provedor em tempo real, com fallback na BRAPI. */
   const variacaoDiaDe = (ticker: string): number | null =>

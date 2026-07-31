@@ -10,7 +10,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { lerUltimosPrecos, salvarUltimosPrecos } from "@/lib/precos-ultimos.functions";
+import { lerUltimosPrecos, sincronizarUltimosPrecos } from "@/lib/precos-ultimos.functions";
 import type { PrecoPersistido } from "@/lib/precos-ultimos.server";
 
 export type { PrecoPersistido };
@@ -45,23 +45,30 @@ export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPers
   }, [q.data]);
 }
 
-/** Persiste no banco, no máximo uma vez por minuto, os preços recebidos ao vivo. */
-export function usePersistirPrecos(precos: PrecoPersistido[]) {
-  const salvar = useServerFn(salvarUltimosPrecos);
+/**
+ * Pede ao servidor, no máximo uma vez por minuto, que atualize no banco o
+ * último preço dos tickers acompanhados. O preço é buscado no servidor: nada
+ * vindo do navegador é gravado.
+ */
+export function usePersistirPrecos(tickers: string[]) {
+  const sincronizar = useServerFn(sincronizarUltimosPrecos);
   const ultimoEnvio = useRef(0);
-  const pendentes = useRef(new Map<string, PrecoPersistido>());
-
-  for (const p of precos) {
-    if (p && Number.isFinite(p.preco) && p.preco > 0) pendentes.current.set(chavePreco(p.ticker), p);
-  }
+  const lista = useMemo(
+    () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t)))].sort(),
+    [tickers],
+  );
 
   useEffect(() => {
-    const agora = Date.now();
-    if (!pendentes.current.size) return;
-    if (agora - ultimoEnvio.current < INTERVALO_GRAVACAO_MS) return;
-    ultimoEnvio.current = agora;
-    const lote = [...pendentes.current.values()];
-    pendentes.current.clear();
-    void salvar({ data: { precos: lote } }).catch(() => undefined);
-  }, [precos, salvar]);
+    if (!lista.length) return;
+    const enviar = () => {
+      const agora = Date.now();
+      if (agora - ultimoEnvio.current < INTERVALO_GRAVACAO_MS) return;
+      ultimoEnvio.current = agora;
+      void sincronizar({ data: { tickers: lista } }).catch(() => undefined);
+    };
+    enviar();
+    const id = setInterval(enviar, INTERVALO_GRAVACAO_MS);
+    return () => clearInterval(id);
+  }, [lista, sincronizar]);
 }
+
