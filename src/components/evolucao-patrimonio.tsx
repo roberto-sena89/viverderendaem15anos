@@ -20,7 +20,6 @@ import {
   ComposedChart,
   LabelList,
 
-  ComposedChart,
   Line,
   Pie,
   PieChart,
