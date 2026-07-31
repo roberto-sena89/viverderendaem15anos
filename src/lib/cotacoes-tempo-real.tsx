@@ -341,14 +341,17 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     mapa,
     flash,
     status,
-    atualizadoEm: dataUpdatedAt || null,
+    atualizadoEm: Math.max(dataUpdatedAt || 0, streamEm ?? 0) || null,
     pregaoAberto: pregao.aberto,
     proximaAbertura: pregao.proximaAbertura,
     atualizarAgora: () => void refetch(),
     carregando: isFetching,
     config,
     salvarConfig,
+    streaming,
+    statusStream,
   };
+
 
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>;
 }
