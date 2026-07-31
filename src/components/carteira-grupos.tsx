@@ -258,6 +258,8 @@ export function CarteiraGrupos({
   /** Colunas secundárias somem em telas menores para eliminar a rolagem horizontal. */
   const colMd = "hidden md:table-cell";
   const colLg = "hidden lg:table-cell";
+  /** Colunas secundárias: escondidas no celular para a grade não estourar. */
+  const colSm = "hidden sm:table-cell";
 
   const { grupos, totalCarteira } = useMemo(() => {
     const totalCarteira = ativos.reduce((s, a) => s + valorAtual(a), 0);
