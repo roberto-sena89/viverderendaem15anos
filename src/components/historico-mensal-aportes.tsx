@@ -746,9 +746,13 @@ export function HistoricoMensalAportes() {
                                   <td className="num hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">
                                     {qtdTotal.toLocaleString("pt-BR")}
                                   </td>
-                                  <td className="num py-1.5 pr-2 text-right font-semibold">{brl(pmTotal, 2)}</td>
-                                  <td className="num py-1.5 pr-2 text-right font-semibold">{brl(m.taxas, 2)}</td>
-                                  <td className="num py-1.5 text-right font-bold">{brl(m.total, 2)}</td>
+                                  <td className="num hidden py-1.5 pr-2 text-right font-semibold sm:table-cell">
+                                    {brl(pmTotal, 2)}
+                                  </td>
+                                  <td className="num hidden py-1.5 pr-2 text-right font-semibold md:table-cell">
+                                    {brl(m.taxas, 2)}
+                                  </td>
+                                  <td className="num py-1.5 pr-2 text-right font-bold">{brl(m.total, 2)}</td>
                                   <td />
                                 </tr>
                               );
