@@ -551,18 +551,46 @@ export function CarteiraGrupos({
                             {colunas.precoAtual && (
                               <TableCell
                                 className={`text-right font-semibold tabular-nums ${cel} ${
-                                  flash[chaveTicker(a.ticker)] === "alta"
-                                    ? "flash-alta"
-                                    : flash[chaveTicker(a.ticker)] === "baixa"
-                                      ? "flash-baixa"
-                                      : ""
+                                  editando === a.id
+                                    ? ""
+                                    : flash[chaveTicker(a.ticker)] === "alta"
+                                      ? "flash-alta"
+                                      : flash[chaveTicker(a.ticker)] === "baixa"
+                                        ? "flash-baixa"
+                                        : ""
                                 }`}
                                 title={fonteDe(a.ticker)}
-
+                                onDoubleClick={() => setEditando(a.id)}
                               >
-                                {brl(a.precoAtual, 2)}
+                                {editando === a.id ? (
+                                  <Input
+                                    autoFocus
+                                    inputMode="decimal"
+                                    aria-label={`Preço atual de ${a.ticker}`}
+                                    defaultValue={formatarNumeroBR(a.precoAtual)}
+                                    onFocus={(e) => e.currentTarget.select()}
+                                    onBlur={(e) => void definirPrecoManual(a, e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") e.currentTarget.blur();
+                                      if (e.key === "Escape") setEditando(null);
+                                    }}
+                                    className="h-8 w-24 text-right tabular-nums"
+                                  />
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditando(a.id)}
+                                    className="inline-flex items-center gap-1 rounded px-1 hover:bg-muted"
+                                  >
+                                    {manuais[chavePreco(a.ticker)] !== undefined && (
+                                      <Pencil className="size-3 text-muted-foreground" />
+                                    )}
+                                    {brl(a.precoAtual, 2)}
+                                  </button>
+                                )}
                               </TableCell>
                             )}
+
                             {colunas.variacaoDia && (
                               <TableCell
                                 className={`text-right ${cel} ${
