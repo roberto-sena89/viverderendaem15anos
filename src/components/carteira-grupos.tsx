@@ -143,7 +143,7 @@ export function CarteiraGrupos({
   minimal?: boolean;
 }) {
   const { alvo } = useAlocacaoAlvo();
-  const { flash, mapa: cotacoes } = useCotacoesTempoReal();
+  const { flash, mapa: cotacoes, pregaoAberto } = useCotacoesTempoReal();
   const brapi = usePrecosBrapiCarteira(useMemo(() => ativosBase.map((a) => a.ticker), [ativosBase]));
 
   /** Variação do dia: prioriza o provedor em tempo real, com fallback na BRAPI. */
@@ -152,16 +152,40 @@ export function CarteiraGrupos({
     brapi.get(chaveBrapi(ticker))?.variacaoPercent ??
     null;
 
+  /**
+   * Preço atual do ativo: BRAPI em primeiro lugar (tempo real no pregão, último
+   * preço antes do fechamento fora dele) e, se ela não tiver o ativo, a cotação
+   * da aba "Cotações".
+   */
+  const precoDe = (ticker: string) =>
+    brapi.get(chaveBrapi(ticker))?.preco ?? cotacoes.get(chaveTicker(ticker))?.preco ?? null;
+
+  /** Origem do preço exibido, usada no tooltip da coluna "P. atual". */
+  const fonteDe = (ticker: string) => {
+    const b = brapi.get(chaveBrapi(ticker));
+    if (b) {
+      const hora = horaCotacao(b.atualizadoEm);
+      const rotulo = pregaoAberto ? "BRAPI · tempo real" : "BRAPI · fechamento do último pregão";
+      return hora ? `${rotulo} · ${hora}` : rotulo;
+    }
+    const c = cotacoes.get(chaveTicker(ticker));
+    if (c) {
+      const hora = horaCotacao(c.atualizadoEm);
+      return `Cotações: ${c.fonte}${hora ? ` · ${hora}` : ""}${c.erro ? ` · ${c.erro}` : ""}`;
+    }
+    return "Aguardando cotação do provedor de mercado";
+  };
+
   /** Ativos com o preço atual sincronizado com a cotação de mercado. */
   const ativos = useMemo(
     () =>
       ativosBase.map((a) => {
-        const preco =
-          brapi.get(chaveBrapi(a.ticker))?.preco ?? cotacoes.get(chaveTicker(a.ticker))?.preco ?? null;
+        const preco = precoDe(a.ticker);
         return preco && preco > 0 ? { ...a, precoAtual: preco } : a;
       }),
     [ativosBase, brapi, cotacoes],
   );
+
 
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
   const colunas = PADRAO;
