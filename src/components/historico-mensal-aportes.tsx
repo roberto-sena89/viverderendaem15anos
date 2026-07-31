@@ -147,10 +147,10 @@ export function HistoricoMensalAportes() {
   const [pagina, setPagina] = useState(0);
   const [busca, setBusca] = useState("");
 
-  /** Categoria oficial de cada ticker vem da aba Carteira (fonte única). */
-  const categoriaPorTicker = useMemo(() => {
-    const m = new Map<string, string>();
-    for (const a of carteira) m.set(a.ticker.toUpperCase(), a.categoria);
+  /** Categoria e nome oficiais de cada ticker vêm da aba Carteira (fonte única). */
+  const infoPorTicker = useMemo(() => {
+    const m = new Map<string, { categoria: string; nome: string }>();
+    for (const a of carteira) m.set(a.ticker.toUpperCase(), { categoria: a.categoria, nome: a.nome ?? "" });
     return m;
   }, [carteira]);
 
