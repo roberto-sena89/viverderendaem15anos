@@ -18,7 +18,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import { SinoAlertas } from "@/components/sino-alertas";
 import { ThemeToggle } from "@/components/theme";
+
 
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
