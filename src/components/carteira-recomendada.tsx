@@ -198,15 +198,16 @@ export function CarteiraRecomendada() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Aplicar carteira recomendada</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-1.5rem)] max-w-3xl flex-col gap-0 overflow-hidden p-0 sm:w-full">
+          <DialogHeader className="shrink-0 border-b border-border px-4 py-4 text-left sm:px-6">
+            <DialogTitle className="text-base sm:text-lg">Aplicar carteira recomendada</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm">
               Sua alocação-alvo passa a seguir o perfil agressivo. Veja abaixo o impacto estimado sobre o patrimônio
               atual de {brl(patrimonio, 2)}.
             </DialogDescription>
           </DialogHeader>
 
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 sm:px-6">
           {patrimonio === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
               Cadastre ativos na carteira para ver o impacto estimado. Você ainda pode aplicar os alvos recomendados.
@@ -224,10 +225,41 @@ export function CarteiraRecomendada() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-border">
+              {/* Impacto por classe — cards no mobile, tabela no desktop */}
+              <div className="space-y-2 sm:hidden">
+                {impacto.map((l) => (
+                  <div key={l.classe} className="rounded-lg border border-border p-3">
+                    <div className="flex min-w-0 items-start gap-2">
+                      <span
+                        className="mt-1.5 size-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: corClasse(l.classe) }}
+                      />
+                      <span className="min-w-0 flex-1 text-sm font-medium whitespace-pre-line">{l.classe}</span>
+                      <span
+                        className={`num shrink-0 text-sm font-semibold ${
+                          Math.abs(l.delta) < 0.5
+                            ? "text-muted-foreground"
+                            : l.delta > 0
+                              ? "text-success"
+                              : "text-destructive"
+                        }`}
+                      >
+                        {brl(Math.abs(l.delta), 2)}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-3 pl-4.5 text-xs text-muted-foreground">
+                      <span className="num">Atual {pct(l.atualPct)}</span>
+                      <span aria-hidden>→</span>
+                      <span className="num text-foreground">Alvo {pct(l.alvoPct)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="hidden rounded-lg border border-border sm:block">
                 <table className="w-full border-collapse text-sm">
                   <thead>
-                    <tr className="bg-muted/40 text-[0.875rem] tracking-wider text-muted-foreground uppercase">
+                    <tr className="bg-muted/40 text-xs tracking-wider text-muted-foreground uppercase">
                       <th className="px-3 py-2 text-left font-semibold">Classe</th>
                       <th className="px-3 py-2 text-right font-semibold">Atual</th>
                       <th className="px-3 py-2 text-right font-semibold">Alvo</th>
@@ -272,11 +304,11 @@ export function CarteiraRecomendada() {
               </div>
 
               <div className="rounded-lg border border-border">
-                <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/40 px-3 py-2">
-                  <span className="font-display text-xs font-bold tracking-wide uppercase">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border bg-muted/40 px-3 py-2">
+                  <span className="truncate font-display text-xs font-bold tracking-wide uppercase">
                     Detalhes por ativo
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="shrink-0 text-xs text-muted-foreground">
                     {ordens.length} {ordens.length === 1 ? "ordem estimada" : "ordens estimadas"}
                   </span>
                 </div>
@@ -285,56 +317,105 @@ export function CarteiraRecomendada() {
                     Nenhuma ordem necessária — a carteira já está próxima da recomendação.
                   </p>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[560px] border-collapse text-sm">
-                      <thead>
-                        <tr className="bg-muted/20 text-[0.875rem] tracking-wider text-muted-foreground uppercase">
-                          <th className="px-3 py-2 text-left font-semibold">Ativo</th>
-                          <th className="px-3 py-2 text-left font-semibold">Ação</th>
-                          <th className="px-3 py-2 text-right font-semibold">Qtd. estimada</th>
-                          <th className="px-3 py-2 text-right font-semibold">Preço atual</th>
-                          <th className="px-3 py-2 text-right font-semibold">Valor estimado</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {ordens.map((o) => (
-                          <tr key={`${o.classe}-${o.ticker}-${o.acao}`} className="border-t border-border">
-                            <td className="px-3 py-2">
-                              <span className="block font-display font-bold">{o.ticker}</span>
-                              <span className="block text-xs whitespace-pre-line text-muted-foreground">
-                                {o.nome || o.classe}
+                  <>
+                    {/* Mobile: lista em cards */}
+                    <ul className="divide-y divide-border sm:hidden">
+                      {ordens.map((o) => (
+                        <li key={`m-${o.classe}-${o.ticker}-${o.acao}`} className="px-3 py-3">
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                            <div className="min-w-0">
+                              <span className="block truncate font-display font-bold">{o.ticker}</span>
+                              <span className="block text-xs text-muted-foreground">{o.nome || o.classe}</span>
+                            </div>
+                            <span
+                              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                                o.acao === "Comprar"
+                                  ? "bg-success/15 text-success"
+                                  : "bg-destructive/15 text-destructive"
+                              }`}
+                            >
+                              {o.acao === "Comprar" ? (
+                                <ArrowUpRight className="size-3.5" />
+                              ) : (
+                                <ArrowDownRight className="size-3.5" />
+                              )}
+                              {o.acao}
+                            </span>
+                          </div>
+                          <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+                            <div>
+                              <span className="block text-muted-foreground">Qtd.</span>
+                              <span className="num font-medium">
+                                {o.quantidade > 0
+                                  ? o.quantidade.toLocaleString("pt-BR", { maximumFractionDigits: 4 })
+                                  : "—"}
                               </span>
-                            </td>
-                            <td className="px-3 py-2">
-                              <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                                  o.acao === "Comprar"
-                                    ? "bg-success/15 text-success"
-                                    : "bg-destructive/15 text-destructive"
-                                }`}
-                              >
-                                {o.acao === "Comprar" ? (
-                                  <ArrowUpRight className="size-3.5" />
-                                ) : (
-                                  <ArrowDownRight className="size-3.5" />
-                                )}
-                                {o.acao}
-                              </span>
-                            </td>
-                            <td className="num px-3 py-2 text-right">
-                              {o.quantidade > 0
-                                ? o.quantidade.toLocaleString("pt-BR", { maximumFractionDigits: 4 })
-                                : "—"}
-                            </td>
-                            <td className="num px-3 py-2 text-right text-muted-foreground">
-                              {o.preco > 0 ? brl(o.preco, 2) : "—"}
-                            </td>
-                            <td className="num px-3 py-2 text-right font-semibold">{brl(o.valor, 2)}</td>
+                            </div>
+                            <div>
+                              <span className="block text-muted-foreground">Preço</span>
+                              <span className="num font-medium">{o.preco > 0 ? brl(o.preco, 2) : "—"}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="block text-muted-foreground">Valor</span>
+                              <span className="num font-semibold">{brl(o.valor, 2)}</span>
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Desktop: tabela */}
+                    <div className="hidden sm:block">
+                      <table className="w-full border-collapse text-sm">
+                        <thead>
+                          <tr className="bg-muted/20 text-xs tracking-wider text-muted-foreground uppercase">
+                            <th className="px-3 py-2 text-left font-semibold">Ativo</th>
+                            <th className="px-3 py-2 text-left font-semibold">Ação</th>
+                            <th className="px-3 py-2 text-right font-semibold">Qtd.</th>
+                            <th className="px-3 py-2 text-right font-semibold">Preço atual</th>
+                            <th className="px-3 py-2 text-right font-semibold">Valor estimado</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody>
+                          {ordens.map((o) => (
+                            <tr key={`${o.classe}-${o.ticker}-${o.acao}`} className="border-t border-border align-top">
+                              <td className="max-w-[16rem] px-3 py-2">
+                                <span className="block font-display font-bold">{o.ticker}</span>
+                                <span className="block truncate text-xs text-muted-foreground">
+                                  {o.nome || o.classe}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2">
+                                <span
+                                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                                    o.acao === "Comprar"
+                                      ? "bg-success/15 text-success"
+                                      : "bg-destructive/15 text-destructive"
+                                  }`}
+                                >
+                                  {o.acao === "Comprar" ? (
+                                    <ArrowUpRight className="size-3.5" />
+                                  ) : (
+                                    <ArrowDownRight className="size-3.5" />
+                                  )}
+                                  {o.acao}
+                                </span>
+                              </td>
+                              <td className="num px-3 py-2 text-right">
+                                {o.quantidade > 0
+                                  ? o.quantidade.toLocaleString("pt-BR", { maximumFractionDigits: 4 })
+                                  : "—"}
+                              </td>
+                              <td className="num px-3 py-2 text-right text-muted-foreground">
+                                {o.preco > 0 ? brl(o.preco, 2) : "—"}
+                              </td>
+                              <td className="num px-3 py-2 text-right font-semibold">{brl(o.valor, 2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
                 )}
                 <p className="border-t border-border px-3 py-2 text-xs text-muted-foreground">
                   Quantidades estimadas pelo preço atual e arredondadas para baixo — valores podem variar na execução.
@@ -342,13 +423,15 @@ export function CarteiraRecomendada() {
               </div>
             </>
           )}
+          </div>
 
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+          <DialogFooter className="shrink-0 gap-2 border-t border-border bg-background px-4 py-3 sm:px-6">
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={aplicar}>Aplicar e rebalancear</Button>
+            <Button className="w-full sm:w-auto" onClick={aplicar}>
+              Aplicar e rebalancear
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
