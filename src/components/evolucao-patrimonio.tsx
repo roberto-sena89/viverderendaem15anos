@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
+  AreaChart as AreaChartIcon,
   ArrowDownRight,
   ArrowUpRight,
   CalendarDays,
   ChevronRight,
   Download,
+  History as HistoryIcon,
+  LineChart as LineChartIcon,
   Search,
   TrendingUp,
 } from "lucide-react";
