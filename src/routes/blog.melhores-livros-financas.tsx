@@ -3,11 +3,13 @@ import { ArrowRight, BookOpen, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import ogImagem from "@/assets/og-blog-livros.jpg.asset.json";
 
 const TITLE = "Os Melhores Livros de Finanças e Investimentos para 2026";
 const DESCRIPTION =
   "Comparativo dos melhores livros de finanças e investimentos: comportamento, renda passiva, análise fundamentalista e técnica, para todos os níveis.";
 const URL = "https://viverderendaem15anos.lovable.app/blog/melhores-livros-financas";
+const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
 
 interface Livro {
   titulo: string;
@@ -180,7 +182,12 @@ export const Route = createFileRoute("/blog/melhores-livros-financas")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "article" },
       { property: "og:url", content: URL },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Capa do guia dos melhores livros de finanças e investimentos" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [

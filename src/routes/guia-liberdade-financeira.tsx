@@ -2,11 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
+import ogImagem from "@/assets/og-guia-liberdade.jpg.asset.json";
 
 const TITLE = "Liberdade Financeira: Guia Passo a Passo (2026)";
 const DESCRIPTION =
   "Guia de liberdade financeira: quanto acumular, alocação de ativos, renda passiva com dividendos e o passo a passo para viver de renda.";
 const URL = "https://viverderendaem15anos.lovable.app/guia-liberdade-financeira";
+const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
 
 export const Route = createFileRoute("/guia-liberdade-financeira")({
   head: () => ({
@@ -17,7 +19,12 @@ export const Route = createFileRoute("/guia-liberdade-financeira")({
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "article" },
       { property: "og:url", content: URL },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Guia da liberdade financeira: viver de renda em 15 anos" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [
