@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CalculadoraJurosCompostosRouteImport } from './routes/calculadora-juros-compostos'
 import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as QuantoRende1MilhaoPorMesRouteImport } from './routes/quanto-rende-1-milhao-por-mes'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -70,6 +71,12 @@ const McpRoute = McpRouteImport.update({
   path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuantoRende1MilhaoPorMesRoute =
+  QuantoRende1MilhaoPorMesRouteImport.update({
+    id: '/quanto-rende-1-milhao-por-mes',
+    path: '/quanto-rende-1-milhao-por-mes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
   id: '/recuperar-senha',
   path: '/recuperar-senha',
@@ -205,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/quanto-rende-1-milhao-por-mes': typeof QuantoRende1MilhaoPorMesRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -236,6 +244,7 @@ export interface FileRoutesByTo {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/quanto-rende-1-milhao-por-mes': typeof QuantoRende1MilhaoPorMesRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -269,6 +278,7 @@ export interface FileRoutesById {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/quanto-rende-1-milhao-por-mes': typeof QuantoRende1MilhaoPorMesRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -302,6 +312,7 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/quanto-rende-1-milhao-por-mes'
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/sitemap.xml'
@@ -333,6 +344,7 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/quanto-rende-1-milhao-por-mes'
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/sitemap.xml'
@@ -365,6 +377,7 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/quanto-rende-1-milhao-por-mes'
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/sitemap.xml'
@@ -398,6 +411,7 @@ export interface RootRouteChildren {
   CalculadoraJurosCompostosRoute: typeof CalculadoraJurosCompostosRoute
   GuiaLiberdadeFinanceiraRoute: typeof GuiaLiberdadeFinanceiraRoute
   McpRoute: typeof McpRoute
+  QuantoRende1MilhaoPorMesRoute: typeof QuantoRende1MilhaoPorMesRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -454,6 +468,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quanto-rende-1-milhao-por-mes': {
+      id: '/quanto-rende-1-milhao-por-mes'
+      path: '/quanto-rende-1-milhao-por-mes'
+      fullPath: '/quanto-rende-1-milhao-por-mes'
+      preLoaderRoute: typeof QuantoRende1MilhaoPorMesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recuperar-senha': {
@@ -667,6 +688,7 @@ const rootRouteChildren: RootRouteChildren = {
   CalculadoraJurosCompostosRoute: CalculadoraJurosCompostosRoute,
   GuiaLiberdadeFinanceiraRoute: GuiaLiberdadeFinanceiraRoute,
   McpRoute: McpRoute,
+  QuantoRende1MilhaoPorMesRoute: QuantoRende1MilhaoPorMesRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

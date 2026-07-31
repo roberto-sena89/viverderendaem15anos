@@ -262,10 +262,16 @@ function HomePage() {
               </Link>
             </li>
             <li>
+              <Link className="text-primary hover:underline" to="/quanto-rende-1-milhao-por-mes">
+                Quanto rende 1 milhão por mês? Poupança x Tesouro Selic x FIIs
+              </Link>
+            </li>
+            <li>
               <Link className="text-primary hover:underline" to="/calculadora-juros-compostos">
                 Calculadora de juros compostos com aportes mensais
               </Link>
             </li>
+
             <li>
               <Link className="text-primary hover:underline" to="/blog/melhores-livros-financas">
                 Melhores livros de finanças e investimentos
