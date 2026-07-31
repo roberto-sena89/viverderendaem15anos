@@ -168,7 +168,11 @@ function Cotacoes() {
             <VisaoGeralMercado intervaloMs={intervalo} />
           </TabsContent>
 
-          {ABAS.filter((a) => a.categoria).map((a) => (
+          <TabsContent value="fiis" className="mt-4">
+            <PainelFiis intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+          </TabsContent>
+
+          {ABAS.filter((a) => a.categoria && a.id !== "fiis").map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
               <Panel title={a.rotulo} bodyClassName="p-0">
                 <GradeCotacoes
