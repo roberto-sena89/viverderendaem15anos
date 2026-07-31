@@ -163,13 +163,22 @@ function Dashboard() {
       if (c === "Renda Fixa") {
         return {
           name: "Renda Fixa - CDB, LCI, LCA (Tesouro SELIC, IPCA+, Prefixado)",
+          cor: corCategoria("Renda Fixa"),
           value: soma(["Renda Fixa", ...SUBCATEGORIAS_RF]),
-          subs: [{ name: "Tesouro Direto", value: soma(SUBCATEGORIAS_RF) }].filter((s) => s.value > 0),
+          subs: [
+            { name: "Tesouro Direto", cor: corCategoria("Tesouro Direto"), value: soma(SUBCATEGORIAS_RF) },
+          ].filter((s) => s.value > 0),
         };
       }
-      return { name: c, value: soma([c]), subs: [] as { name: string; value: number }[] };
+      return {
+        name: c,
+        cor: corCategoria(c),
+        value: soma([c]),
+        subs: [] as { name: string; cor: string; value: number }[],
+      };
     })
     .filter((c) => c.value > 0);
+
 
 
 
@@ -289,7 +298,7 @@ function Dashboard() {
                       strokeWidth={2}
                     >
                       {porCategoria.map((_, i) => (
-                        <Cell key={i} fill={corCategoria(porCategoria[i].name)} />
+                        <Cell key={i} fill={porCategoria[i].cor} />
                       ))}
                     </Pie>
                     <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} />
@@ -306,7 +315,7 @@ function Dashboard() {
               </div>
               <ul className="min-w-[15rem] flex-1 space-y-1.5 text-xs">
                 {porCategoria.map((c) => {
-                  const cor = corCategoria(c.name);
+                  const cor = c.cor;
                   const percentual = totalComposicao > 0 ? (c.value / totalComposicao) * 100 : 0;
                   return (
                     <li key={c.name} className="space-y-1.5">
@@ -328,7 +337,7 @@ function Dashboard() {
                       {c.subs.length > 0 && (
                         <ul className="ml-4 space-y-1.5 border-l border-border pl-3">
                           {c.subs.map((s) => {
-                            const corSub = corCategoria(s.name);
+                            const corSub = s.cor;
                             const pctSub = totalComposicao > 0 ? (s.value / totalComposicao) * 100 : 0;
                             return (
                               <li
