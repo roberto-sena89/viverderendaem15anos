@@ -106,7 +106,7 @@ function CarteiraPage() {
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  {f}
+                  {f === "ETF (Global)" ? "ETF (Global)" : f}
                   <span className={`tabular-nums ${ativo ? "opacity-80" : "opacity-60"}`}>{qtd}</span>
                 </button>
               );
