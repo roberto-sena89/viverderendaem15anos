@@ -1,8 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ListOrdered } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
-import { Button } from "@/components/ui/button";
 import { GraficoEvolucaoPatrimonio } from "@/components/grafico-evolucao-patrimonio";
 import { HistoricoMensalAportes } from "@/components/historico-mensal-aportes";
 import { useAportes } from "@/lib/data";
@@ -37,15 +35,6 @@ function AportesPage() {
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
 
-      <nav aria-label="Sub-páginas de Patrimônio" className="flex flex-wrap items-center gap-2">
-        <Button asChild variant="outline" size="sm">
-          <Link to="/historico-aportes">
-            <ListOrdered className="size-4" />
-            Aportes · Histórico de Aportes
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </nav>
 
 
 
