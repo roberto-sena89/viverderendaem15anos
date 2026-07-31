@@ -484,7 +484,7 @@ export function HistoricoMensalAportes() {
                                   {brl(i.taxas, 2)}
                                 </td>
                                 <td className="num py-1.5 pr-2 text-right font-semibold">{brl(i.total)}</td>
-                                <td className="py-1.5 pl-2 text-right">
+                                <td className="py-1.5 text-right">
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -498,7 +498,7 @@ export function HistoricoMensalAportes() {
                                     className="h-7 gap-1 px-2 text-[0.78rem]"
                                   >
                                     <Pencil className="size-3.5" />
-                                    Editar
+                                    <span className="hidden sm:inline">Editar</span>
                                   </Button>
                                 </td>
                               </tr>
