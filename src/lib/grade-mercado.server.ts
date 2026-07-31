@@ -63,10 +63,10 @@ export const ACOES: Def[] = [
   { ticker: "PETR4", nome: "Petrobras PN", grupo: "Energia" },
   { ticker: "PETR3", nome: "Petrobras ON", grupo: "Energia" },
   { ticker: "PRIO3", nome: "PRIO", grupo: "Energia" },
-  { ticker: "ELET3", nome: "Eletrobras", grupo: "Energia" },
+  { ticker: "AXIA3", nome: "Axia Energia (ex-Eletrobras)", grupo: "Energia" },
   { ticker: "EGIE3", nome: "Engie Brasil", grupo: "Energia" },
   { ticker: "TAEE11", nome: "Taesa", grupo: "Energia" },
-  { ticker: "CPLE6", nome: "Copel", grupo: "Energia" },
+  { ticker: "CPLE3", nome: "Copel", grupo: "Energia" },
   { ticker: "VALE3", nome: "Vale", grupo: "Commodities" },
   { ticker: "CSNA3", nome: "CSN", grupo: "Commodities" },
   { ticker: "GGBR4", nome: "Gerdau", grupo: "Commodities" },
@@ -77,12 +77,12 @@ export const ACOES: Def[] = [
   { ticker: "LREN3", nome: "Lojas Renner", grupo: "Consumo" },
   { ticker: "ASAI3", nome: "Assaí", grupo: "Consumo" },
   { ticker: "RADL3", nome: "Raia Drogasil", grupo: "Consumo" },
-  { ticker: "JBSS3", nome: "JBS", grupo: "Consumo" },
+  { ticker: "JBSS32", nome: "JBS", grupo: "Consumo" },
   { ticker: "RENT3", nome: "Localiza", grupo: "Consumo" },
   { ticker: "WEGE3", nome: "WEG", grupo: "Indústria" },
-  { ticker: "EMBR3", nome: "Embraer", grupo: "Indústria" },
+  { ticker: "EMBJ3", nome: "Embraer", grupo: "Indústria" },
   { ticker: "RAIL3", nome: "Rumo", grupo: "Indústria" },
-  { ticker: "CCRO3", nome: "CCR", grupo: "Indústria" },
+  { ticker: "MOTV3", nome: "Motiva (ex-CCR)", grupo: "Indústria" },
   { ticker: "TOTS3", nome: "Totvs", grupo: "Tecnologia" },
   { ticker: "VIVT3", nome: "Vivo", grupo: "Tecnologia" },
   { ticker: "CASH3", nome: "Méliuz", grupo: "Tecnologia" },
@@ -263,23 +263,82 @@ type BrapiQuote = {
   historicalDataPrice?: Array<{ close?: number | null }>;
 };
 
+/** Limite de tickers por requisição aprendido com a resposta da brapi. */
+let limiteBrapi = 0;
+/** Faixa/intervalo de histórico aceitos pelo plano da brapi (aprendido). */
+let historicoBrapi: { range: string; interval: string } = { range: "1d", interval: "30m" };
+
+async function brapiPagina(
+  tickers: string[],
+  token: string | undefined,
+  mapa: Map<string, BrapiQuote>,
+): Promise<"ok" | "limite" | "intervalo"> {
+  const params = new URLSearchParams(historicoBrapi);
+  if (token) params.set("token", token);
+  const url = `https://brapi.dev/api/quote/${tickers.join(",")}?${params}`;
+  // A brapi devolve 4xx com corpo JSON descrevendo o limite do plano;
+  // por isso lemos o corpo mesmo em respostas de erro.
+  type Resposta = { results?: BrapiQuote[]; error?: boolean; code?: string; message?: string };
+  let data: Resposta | null = null;
+  const cache = memoria.get(url);
+  if (cache && cache.expira > Date.now()) {
+    data = cache.valor as Resposta;
+  } else {
+    try {
+      const res = await fetch(url, { headers: { Accept: "application/json" } });
+      data = (await res.json()) as Resposta;
+      if (res.ok) memoria.set(url, { valor: data, expira: Date.now() + 120_000 });
+    } catch {
+      data = null;
+    }
+  }
+
+  if (data?.error) {
+    if (data.code === "QUOTES_PER_REQUEST_EXCEEDED") {
+      const permitido = Number(data.message?.match(/máximo\s+(\d+)/i)?.[1] ?? 1);
+      limiteBrapi = Math.max(1, permitido);
+      return "limite";
+    }
+    if (data.code === "INVALID_INTERVAL" || data.code === "INVALID_RANGE") {
+      historicoBrapi = { range: "1mo", interval: "1d" };
+      return "intervalo";
+    }
+    return "ok";
+  }
+  for (const r of data?.results ?? []) if (r.symbol) mapa.set(r.symbol.toUpperCase(), r);
+  // Tickers renomeados pela B3 voltam com outro símbolo: associa ao pedido.
+  if (tickers.length === 1 && data?.results?.length === 1) {
+    mapa.set(tickers[0].toUpperCase(), data.results[0]);
+  }
+  return "ok";
+}
+
+
+
 async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<LinhaCotacao[]> {
   const token = process.env.BRAPI_TOKEN;
-  // Sem token a brapi só aceita 2 tickers por chamada; com token, lotes maiores.
-  const tamanho = token ? 20 : 2;
+  if (!limiteBrapi) limiteBrapi = token ? 20 : 2;
   const mapa = new Map<string, BrapiQuote>();
 
-  const grupos: Def[][] = [];
-  for (let i = 0; i < defs.length; i += tamanho) grupos.push(defs.slice(i, i + tamanho));
+  const buscar = async (tamanho: number) => {
+    const grupos: string[][] = [];
+    const alvo = defs.filter((d) => !mapa.has(d.ticker.toUpperCase())).map((d) => d.ticker);
+    for (let i = 0; i < alvo.length; i += tamanho) grupos.push(alvo.slice(i, i + tamanho));
+    let refazer = false;
+    await emLotes(grupos, tamanho === 1 ? 8 : 4, async (lote) => {
+      if (refazer) return;
+      const r = await brapiPagina(lote, token, mapa);
+      if (r !== "ok") refazer = true;
+    });
+    return refazer;
+  };
 
-  await emLotes(grupos, 4, async (lote) => {
-    const params = new URLSearchParams({ range: "1d", interval: "30m" });
-    if (token) params.set("token", token);
-    const url = `https://brapi.dev/api/quote/${lote.map((d) => d.ticker).join(",")}?${params}`;
-    const data = await json<{ results?: BrapiQuote[]; error?: boolean }>(url, 60_000);
-    if (data?.error) return;
-    for (const r of data?.results ?? []) if (r.symbol) mapa.set(r.symbol.toUpperCase(), r);
-  });
+  // Reaprende limite de tickers / faixa de histórico do plano e refaz.
+  if (await buscar(limiteBrapi)) {
+    if (await buscar(limiteBrapi)) await buscar(limiteBrapi);
+  }
+
+
 
 
   const linhas = defs.map((d) => {
