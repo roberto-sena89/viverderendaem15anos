@@ -443,6 +443,7 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
           aoAbrir={setDetalhe}
           carregando={grade.isLoading}
           inicioRanking={inicio}
+          aoVisiveis={aoVisiveis}
         />
 
         {!grade.isLoading && !visiveis.length ? (
