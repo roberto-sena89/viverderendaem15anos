@@ -34,7 +34,7 @@ import {
   
 } from "@/lib/precos-ultimos";
 
-import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, type Ativo } from "@/lib/portfolio";
+import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, CLASSE_POS_FIXADO, type Ativo } from "@/lib/portfolio";
 import { useSalvarAtivo } from "@/lib/data";
 import { Input } from "@/components/ui/input";
 import { formatarNumeroBR, numeroBR } from "@/lib/formato-numero";
