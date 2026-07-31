@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { AlertTriangle, ArrowDown, ArrowUp, Info, Star } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -390,8 +390,6 @@ export function TabelaAcoes({
   favoritos,
   aoFavoritar,
   posicoes,
-  selecionados,
-  aoSelecionar,
   aoAbrir,
   carregando,
   inicioRanking,
@@ -436,7 +434,7 @@ export function TabelaAcoes({
   const alturaItem = ehMobile ? ALTURA_CARD : ALTURA_LINHA;
   const espacoTopo = janela.inicio * alturaItem;
   const espacoBase = Math.max(0, linhas.length - janela.fim) * alturaItem;
-  const colunasTotais = visiveis.length + 5;
+  const colunasTotais = visiveis.length + 4;
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -446,9 +444,6 @@ export function TabelaAcoes({
             <table className="w-full border-collapse text-sm">
               <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
                 <tr className="border-b border-border">
-                  <th scope="col" className="w-10 px-2 py-2 text-left">
-                    <span className="sr-only">Selecionar</span>
-                  </th>
                   <th scope="col" className="w-10 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
                     #
                   </th>
@@ -513,13 +508,6 @@ export function TabelaAcoes({
                         posicao ? "border-l-2 border-l-primary" : ""
                       }`}
                     >
-                      <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          checked={selecionados.includes(l.ticker)}
-                          onCheckedChange={() => aoSelecionar(l.ticker)}
-                          aria-label={`Selecionar ${l.ticker} para comparar`}
-                        />
-                      </td>
                       <td className="px-1 py-2 text-right text-xs text-muted-foreground tabular-nums">
                         {inicioRanking + janela.inicio + i + 1}
                       </td>
