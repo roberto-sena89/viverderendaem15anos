@@ -3,7 +3,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, Flame, Radar } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { agendaEconomica, type Noticia } from "@/lib/noticias.functions";
 import { BadgeCategoria, MarcaFonte, tempoRelativo } from "./cartoes";
 
