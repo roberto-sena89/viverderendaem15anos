@@ -335,6 +335,30 @@
   box-shadow: var(--shadow-soft);
 }
 
+/* Container central de 1280px com margens laterais fluidas (24px / 16px). */
+@utility container-app {
+  width: 100%;
+  max-width: var(--container-app);
+  margin-inline: auto;
+  padding-inline: var(--gutter-app);
+}
+
+/* Base de 12 colunas com gutter de 24px (16px em mobile). */
+@utility grid-app {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gap-grid);
+}
+
+/* Célula numérica: alinhada à direita e com números de largura fixa. */
+@utility col-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+
+
 /* Layout padrão das abas: sem overflow horizontal e cartões de altura uniforme */
 main#conteudo > * {
   min-width: 0;
