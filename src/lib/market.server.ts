@@ -872,8 +872,32 @@ const FAIXAS: Record<PeriodoPanorama, { range: string; interval: string }> = {
   "5A": { range: "5y", interval: "1mo" },
 };
 
+/** Cache em memória do panorama: evita repetir chamadas quando vários
+ *  clientes atualizam a cada 30s. Janela curta no pregão, longa fora dele. */
+const cachePanorama = new Map<string, { em: number; dados: PanoramaMercado }>();
+const emPregaoBR = () => {
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      weekday: "short",
+      hour: "2-digit",
+      hour12: false,
+    })
+      .formatToParts(new Date())
+      .map((x) => [x.type, x.value]),
+  );
+  const dia = String(p.weekday ?? "").toLowerCase();
+  const hora = Number(p.hour ?? 0);
+  return !(dia.startsWith("sáb") || dia.startsWith("sab") || dia.startsWith("dom")) && hora >= 9 && hora < 18;
+};
+
 export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Promise<PanoramaMercado> {
+  const ttl = emPregaoBR() ? 25_000 : 10 * 60_000;
+  const cacheado = cachePanorama.get(periodo);
+  if (cacheado && Date.now() - cacheado.em < ttl) return cacheado.dados;
+
   const faixa = FAIXAS[periodo] ?? FAIXAS["1D"];
+
 
   const indicePromise = getJson<ChartResponse>(
     `${YAHOO}/v8/finance/chart/%5EBVSP?range=${faixa.range}&interval=${faixa.interval}`,
@@ -920,7 +944,7 @@ export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Pr
 
   const ordenados = [...candidatos].sort((a, b) => b.variacaoPercent - a.variacaoPercent);
 
-  return {
+  const resultado: PanoramaMercado = {
     periodo,
     indice: {
       nome: "Ibovespa",
@@ -937,4 +961,9 @@ export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Pr
       .slice(0, 6),
     atualizadoEm: new Date().toISOString(),
   };
+
+  // Só guarda respostas úteis: falha total das fontes não deve virar cache.
+  if (preco !== null || ordenados.length > 0) cachePanorama.set(periodo, { em: Date.now(), dados: resultado });
+  return resultado;
 }
+

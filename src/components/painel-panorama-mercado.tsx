@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Clock, TrendingDown, TrendingUp } from "lucide-react";
+import { Clock, RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
 import { Panel, TickerMark } from "@/components/panel";
+import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { panoramaMercado } from "@/lib/market.functions";
 import type { ItemVariacao, PeriodoPanorama } from "@/lib/market.server";
+
 
 const PERIODOS: PeriodoPanorama[] = ["1D", "7D", "30D", "6M", "1A", "5A"];
 
@@ -84,25 +86,51 @@ export function PainelPanoramaMercado() {
   const [periodo, setPeriodo] = useState<PeriodoPanorama>("1D");
   const buscar = useServerFn(panoramaMercado);
 
-  const { data, isFetching, dataUpdatedAt } = useQuery({
+  // Reavalia o pregão a cada minuto para trocar a cadência sem recarregar.
+  const [pregao, setPregao] = useState(() => estadoPregao());
+  useEffect(() => {
+    const id = setInterval(() => setPregao(estadoPregao()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const intervalo = pregao.aberto ? 30_000 : 5 * 60_000;
+
+  const { data, isFetching, refetch } = useQuery({
     queryKey: ["panorama-mercado", periodo],
     queryFn: () => buscar({ data: { periodo } }),
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: pregao.aberto ? 15_000 : 5 * 60_000,
+    refetchInterval: intervalo,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
   });
 
   const indice = data?.indice;
   const variacao = indice?.variacaoPercent ?? null;
   const positivo = (variacao ?? 0) >= 0;
-  const hora = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleString("pt-BR", {
+
+  // Flash verde/vermelho quando os pontos do índice mudam.
+  const anterior = useRef<number | null>(null);
+  const [flash, setFlash] = useState<"alta" | "baixa" | null>(null);
+  const pontos = indice?.pontos ?? null;
+  useEffect(() => {
+    if (pontos === null) return;
+    const antes = anterior.current;
+    anterior.current = pontos;
+    if (antes === null || antes === pontos) return;
+    setFlash(pontos > antes ? "alta" : "baixa");
+    const id = setTimeout(() => setFlash(null), 1600);
+    return () => clearTimeout(id);
+  }, [pontos]);
+
+  const hora = data?.atualizadoEm
+    ? new Date(data.atualizadoEm).toLocaleString("pt-BR", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
+        second: "2-digit",
       })
     : null;
 
@@ -110,10 +138,36 @@ export function PainelPanoramaMercado() {
     <Panel>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div className="min-w-0">
-          <h2 className="font-display text-xl font-semibold">Ibovespa</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-display text-xl font-semibold">Ibovespa</h2>
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                pregao.aberto ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+              }`}
+            >
+              <span
+                className={`size-1.5 rounded-full ${pregao.aberto ? "animate-pulse bg-primary" : "bg-muted-foreground"}`}
+                aria-hidden="true"
+              />
+              {pregao.aberto ? "Ao vivo • pregão aberto" : `Fechado • abre ${pregao.proximaAbertura}`}
+            </span>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              disabled={isFetching}
+              aria-label="Atualizar panorama de mercado agora"
+              className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] font-semibold text-muted-foreground transition-colors hover:bg-muted disabled:opacity-60"
+            >
+              <RefreshCw className={`size-3.5 ${isFetching ? "animate-spin" : ""}`} aria-hidden="true" />
+              Atualizar
+            </button>
+          </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <p className="num text-2xl font-bold tabular-nums">
+            <p
+              className={`num rounded-md text-2xl font-bold tabular-nums ${flash ? `flash-${flash}` : ""}`}
+              aria-live="polite"
+            >
               {indice?.pontos === null || indice?.pontos === undefined ? "—" : `${num(indice.pontos)} pontos`}
             </p>
             {variacao !== null ? (
@@ -126,6 +180,7 @@ export function PainelPanoramaMercado() {
               </span>
             ) : null}
           </div>
+
 
           <p className="mt-1 text-xs text-muted-foreground">
             Fechamento anterior: {indice?.fechamentoAnterior ? num(indice.fechamentoAnterior) : "—"} • Abertura:{" "}
@@ -202,7 +257,10 @@ export function PainelPanoramaMercado() {
 
           <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="size-3.5 shrink-0" />
-            {hora ? `Atualizado em ${hora}.` : "Carregando dados de mercado…"}
+            {hora
+              ? `Atualizado em ${hora} • ${pregao.aberto ? "atualização automática a cada 30s" : "a cada 5min fora do pregão"}`
+              : "Carregando dados de mercado…"}
+
           </p>
         </div>
 
