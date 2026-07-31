@@ -173,10 +173,10 @@ function HomePage() {
     let ativo = true;
     // Carregamento tardio do cliente de autenticação: mantém o bundle crítico
     // da landing pequeno para o H1 (elemento LCP) pintar mais cedo.
-    const ocioso =
+    const ocioso: number =
       typeof window !== "undefined" && "requestIdleCallback" in window
         ? window.requestIdleCallback(verificarSessao)
-        : window.setTimeout(verificarSessao, 200);
+        : (setTimeout(verificarSessao, 200) as unknown as number);
 
     function verificarSessao() {
       import("@/integrations/supabase/client").then(({ supabase }) => {
@@ -190,9 +190,9 @@ function HomePage() {
     return () => {
       ativo = false;
       if (typeof window !== "undefined" && "cancelIdleCallback" in window) {
-        window.cancelIdleCallback(ocioso as number);
+        window.cancelIdleCallback(ocioso);
       } else {
-        window.clearTimeout(ocioso as number);
+        clearTimeout(ocioso);
       }
     };
   }, [navigate]);
