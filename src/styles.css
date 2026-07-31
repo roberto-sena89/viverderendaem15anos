@@ -155,6 +155,7 @@
   --fs-table-head: 0.6875rem;
 }
 
+/* Escala de gutter/tipografia por breakpoint: 320 → 1920 */
 @media (min-width: 641px) {
   :root {
     --gutter-app: 1.5rem; /* 24px */
@@ -163,6 +164,27 @@
     --fs-table-head: 0.75rem; /* 12px */
   }
 }
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter-app: 2rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --container-app: 1440px;
+    --gutter-app: 2.5rem;
+    --gap-grid: 1.75rem;
+  }
+}
+
+@media (min-width: 1800px) {
+  :root {
+    --container-app: 1600px;
+  }
+}
+
 
 :root {
 
@@ -696,6 +718,70 @@ table tfoot tr {
 @media (prefers-reduced-motion: reduce) {
   .flash-alta,
   .flash-baixa {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+ * Contenção global — nada pode estourar a viewport nem o cartão.
+ * --------------------------------------------------------------- */
+
+html,
+body {
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+}
+
+/* Mídia e SVG nunca ultrapassam o container pai. */
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+/* Gráficos (Recharts) sempre responsivos dentro do cartão, altura fluida. */
+.recharts-responsive-container,
+.recharts-wrapper {
+  max-width: 100% !important;
+}
+
+.recharts-wrapper svg {
+  overflow: visible;
+}
+
+/* Palavras longas (tickers, e-mails) quebram em vez de estourar. */
+@utility texto-seguro {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Alvo de toque mínimo de 44px em telas de toque. */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  [role="button"],
+  a[href] {
+    touch-action: manipulation;
+  }
+
+  button:not([data-slot="table"] button),
+  [role="tab"] {
+    min-height: 2.75rem;
+  }
+}
+
+/* Vidro leve — usar apenas em barras fixas e sobreposições. */
+@utility superficie-vidro {
+  background-color: color-mix(in oklab, var(--color-card) 72%, transparent);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--color-border) 90%, transparent);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Transição suave de entrada entre páginas (respeita reduced-motion). */
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise {
     animation: none;
   }
 }

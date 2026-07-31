@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
+import { NavMobile } from "@/components/nav-mobile";
+
 
 import { ThemeToggle } from "@/components/theme";
 
@@ -207,13 +209,17 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
 
 
-        <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
+        <header className="sticky top-0 z-20 border-b border-border bg-background/70 backdrop-blur-xl">
 
-          <div className="container-app grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-4 sm:py-5">
+          <div className="container-app grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-3 sm:gap-4 sm:py-5 lg:grid-cols-[minmax(0,1fr)_auto]">
+
+            <div className="lg:hidden">
+              <NavMobile grupos={grupos} usuario={user} onSair={handleSignOut} />
+            </div>
 
             <div className="min-w-0 space-y-1">
               <nav aria-label="Trilha de navegação">
-                <ol className="flex min-w-0 items-center gap-1.5 text-[0.78rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+                <ol className="flex min-w-0 items-center gap-1.5 text-[0.7rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase sm:text-[0.78rem]">
                   <li className="hidden sm:block">
                     <Link to="/" className="transition-colors hover:text-foreground">
                       Início
@@ -222,10 +228,10 @@ export function AppShell({
                   <li aria-hidden="true" className="hidden text-border sm:block">
                     /
                   </li>
-                  <li className="shrink-0">{grupoAtual}</li>
+                  <li className="hidden shrink-0 sm:block">{grupoAtual}</li>
                   {secaoAtual ? (
                     <>
-                      <li aria-hidden="true" className="text-border">
+                      <li aria-hidden="true" className="hidden text-border sm:block">
                         /
                       </li>
                       <li className="truncate text-foreground">{secaoAtual.rotulo}</li>
@@ -233,50 +239,24 @@ export function AppShell({
                   ) : null}
                 </ol>
               </nav>
-              <h1 className="truncate font-display text-[1.75rem] leading-tight font-bold tracking-[-0.02em] sm:text-[2rem]">
+              <h1 className="truncate font-display text-[1.375rem] leading-tight font-bold tracking-[-0.02em] sm:text-[1.75rem] xl:text-[2rem]">
                 {tituloPagina}
               </h1>
 
               {description ? (
-                <p className="line-clamp-2 max-w-2xl text-xs leading-snug text-muted-foreground sm:text-sm">
+                <p className="line-clamp-2 hidden max-w-2xl text-xs leading-snug text-muted-foreground sm:block sm:text-sm">
                   {description}
                 </p>
               ) : null}
             </div>
 
-            <div className="flex shrink-0 items-center gap-1 self-start sm:self-center">
+            <div className="flex shrink-0 items-center gap-1 self-center">
               <SinoAlertas />
               <ThemeToggle />
-
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Sair da conta"
-                onClick={handleSignOut}
-                className="lg:hidden"
-              >
-                <LogOut className="size-4" />
-              </Button>
             </div>
           </div>
-
-          <nav className="container-app scrollbar-none flex max-w-full min-w-0 gap-2 overflow-x-auto pb-3 lg:hidden">
-            {nav.map(({ to, label, icon: Icon }) => (
-              <Link
-                key={to}
-                to={to}
-                className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-xs transition-colors ${
-                  pathname === to
-                    ? "bg-accent font-medium text-accent-foreground"
-                    : "text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                <Icon className="size-4 shrink-0" />
-                {label}
-              </Link>
-            ))}
-          </nav>
         </header>
+
 
         <main
           id="conteudo"
