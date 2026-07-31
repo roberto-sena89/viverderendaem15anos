@@ -364,7 +364,7 @@ async function brapiPagina(
     data = cache.valor as Resposta;
   } else {
     try {
-      const res = await fetch(url, { headers: CABECALHOS });
+      const res = await fetch(url, { headers: PADRAO });
       data = (await res.json()) as Resposta;
       if (res.ok) memoria.set(url, { valor: data, expira: Date.now() + 120_000 });
     } catch {
@@ -485,10 +485,20 @@ type YahooChart = {
 
 async function yahooLinha(d: Def, categoria: CategoriaMercado): Promise<LinhaCotacao> {
   const simbolo = d.simbolo ?? d.ticker;
-  const hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
-  for (const host of hosts) {
+  // Tenta os dois hosts do Yahoo e, por último, com cabeçalhos de navegador
+  // (alguns contratos futuros/commodities só respondem dessa forma).
+  const tentativas: Array<[string, Record<string, string>]> = [
+    ["query1.finance.yahoo.com", PADRAO],
+    ["query2.finance.yahoo.com", PADRAO],
+    ["query2.finance.yahoo.com", CABECALHOS],
+    ["query1.finance.yahoo.com", CABECALHOS],
+  ];
+  for (const [host, headers] of tentativas) {
     const data = await json<YahooChart>(
       `https://${host}/v8/finance/chart/${encodeURIComponent(simbolo)}?range=1d&interval=15m`,
+      TTL,
+      12_000,
+      headers,
     );
     const r = data?.chart?.result?.[0];
     const preco = r?.meta?.regularMarketPrice;
