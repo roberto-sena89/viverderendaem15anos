@@ -143,6 +143,25 @@ export function CarteiraGrupos({
 }) {
   const { alvo } = useAlocacaoAlvo();
   const { flash, mapa: cotacoes } = useCotacoesTempoReal();
+  const brapi = usePrecosBrapiCarteira(useMemo(() => ativosBase.map((a) => a.ticker), [ativosBase]));
+
+  /** Variação do dia: prioriza o provedor em tempo real, com fallback na BRAPI. */
+  const variacaoDiaDe = (ticker: string): number | null =>
+    cotacoes.get(chaveTicker(ticker))?.variacaoPercent ??
+    brapi.get(chaveBrapi(ticker))?.variacaoPercent ??
+    null;
+
+  /** Ativos com o preço atual sincronizado com a cotação de mercado. */
+  const ativos = useMemo(
+    () =>
+      ativosBase.map((a) => {
+        const preco =
+          brapi.get(chaveBrapi(a.ticker))?.preco ?? cotacoes.get(chaveTicker(a.ticker))?.preco ?? null;
+        return preco && preco > 0 ? { ...a, precoAtual: preco } : a;
+      }),
+    [ativosBase, brapi, cotacoes],
+  );
+
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
   const colunas = PADRAO;
   const compacto = minimal;
