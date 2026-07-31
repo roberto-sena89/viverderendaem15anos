@@ -274,7 +274,7 @@ function CarteiraRecomendadaPage() {
                         style={
                           {
                             "--range-progress": `${Math.min(100, Math.max(0, l.alvo))}%`,
-                          } as React.CSSProperties
+                          } as CSSProperties
                         }
                       />
 
