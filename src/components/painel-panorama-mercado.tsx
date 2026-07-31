@@ -257,7 +257,10 @@ export function PainelPanoramaMercado() {
 
           <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="size-3.5 shrink-0" />
-            {hora ? `Atualizado em ${hora}.` : "Carregando dados de mercado…"}
+            {hora
+              ? `Atualizado em ${hora} • ${pregao.aberto ? "atualização automática a cada 30s" : "a cada 5min fora do pregão"}`
+              : "Carregando dados de mercado…"}
+
           </p>
         </div>
 
