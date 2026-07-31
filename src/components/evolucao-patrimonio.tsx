@@ -557,7 +557,9 @@ export function EvolucaoPatrimonio() {
               ) : null}
             </ComposedChart>
           </ResponsiveContainer>
+          </div>
         </div>
+
       </Panel>
 
 
