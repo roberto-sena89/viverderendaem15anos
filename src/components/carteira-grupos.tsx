@@ -506,39 +506,40 @@ export function CarteiraGrupos({
                 <div className="border-t">
                 <Table
                   wrapperClassName="w-full max-w-full overflow-x-auto overscroll-x-contain scrollbar-none"
-                  className="w-full table-auto text-sm [&_th]:px-2 [&_td]:px-2 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.65rem] sm:[&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
+                  className="w-full min-w-0 table-auto text-[0.8rem] sm:text-sm [&_th]:px-1.5 [&_td]:px-1.5 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.62rem] sm:[&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
                 >
                     <TableHeader>
                       <TableRow className="bg-muted/40">
                         {/* Coluna elástica: absorve todo o espaço livre para as colunas numéricas ficarem coladas à direita. */}
-                        <TableHead className="w-full min-w-[8.5rem] sm:min-w-[11rem]">Ticker / Ativo</TableHead>
+                        <TableHead className="w-full min-w-[7rem] sm:min-w-[10rem]">Ticker / Ativo</TableHead>
 
                         {colunas.quantidade && (
-                          <TableHead className={`min-w-[5rem] text-right ${colSm}`}>Quant.</TableHead>
+                          <TableHead className={`min-w-[4rem] text-right ${colSm}`}>Quant.</TableHead>
                         )}
-                        {colunas.precoMedio && <TableHead className={`min-w-[6rem] text-right ${colMd}`}>P. médio</TableHead>}
+                        {colunas.precoMedio && <TableHead className={`min-w-[5rem] text-right ${colMd}`}>P. médio</TableHead>}
                         {colunas.precoAtual && (
-                          <TableHead className="min-w-[5.5rem] text-right sm:min-w-[6.5rem]">P. atual</TableHead>
+                          <TableHead className="min-w-[4.75rem] text-right sm:min-w-[5.75rem]">P. atual</TableHead>
                         )}
                         {colunas.variacaoDia && (
-                          <TableHead className="min-w-[5rem] text-right sm:min-w-[5.5rem]" title="Variação do dia vinda das cotações ao vivo">
+                          <TableHead className="min-w-[4.25rem] text-right sm:min-w-[5rem]" title="Variação do dia vinda das cotações ao vivo">
                             Var. dia
                           </TableHead>
                         )}
-                        {colunas.variacao && <TableHead className={`min-w-[5.5rem] text-right ${colLg}`}>Var. (%)</TableHead>}
-                        {colunas.rentabilidade && <TableHead className={`min-w-[6.5rem] text-right ${colMd}`}>Rent. (R$)</TableHead>}
+                        {colunas.variacao && <TableHead className={`min-w-[4.5rem] text-right ${colLg}`}>Var. (%)</TableHead>}
+                        {colunas.rentabilidade && <TableHead className={`min-w-[5.5rem] text-right ${colMd}`}>Rent. (R$)</TableHead>}
                         {colunas.saldo && (
-                          <TableHead className="min-w-[6rem] text-right sm:min-w-[7rem]">Saldo</TableHead>
+                          <TableHead className="min-w-[5.25rem] text-right sm:min-w-[6.25rem]">Saldo</TableHead>
                         )}
                         {colunas.participacao && (
-                          <TableHead className={`min-w-[5rem] text-right ${colSm}`}>% Cart.</TableHead>
+                          <TableHead className={`min-w-[4.25rem] text-right ${colSm}`}>% Cart.</TableHead>
                         )}
-                        {colunas.ideal && <TableHead className={`min-w-[5rem] text-right ${colLg}`}>% Ideal</TableHead>}
-                        {colunas.comprar && <TableHead className={`min-w-[5.5rem] text-center ${colLg}`}>Comprar</TableHead>}
+                        {colunas.ideal && <TableHead className={`min-w-[4.25rem] text-right ${colLg}`}>% Ideal</TableHead>}
+                        {colunas.comprar && <TableHead className={`min-w-[4.5rem] text-center ${colLg}`}>Comprar</TableHead>}
 
-                        {onEditar && onExcluir ? <TableHead className="w-px text-center">Opções</TableHead> : null}
+                        {onEditar && onExcluir ? <TableHead className="w-px pr-2 text-center sm:pr-3">Opções</TableHead> : null}
                       </TableRow>
                     </TableHeader>
+
                     <TableBody>
                       {g.ativos.map((a) => {
                         const live = cotacoes.get(chaveTicker(a.ticker));
