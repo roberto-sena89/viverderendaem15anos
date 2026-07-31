@@ -718,11 +718,14 @@ export async function buscarGrade(categoria: CategoriaMercado): Promise<Resposta
 
 /** Painel resumido da Visão Geral: índices + destaques de cada classe. */
 export async function buscarVisaoGeral() {
+  // Usa o cache compartilhado: a Visão Geral combina 4 grades e não pode
+  // disparar centenas de chamadas externas a cada acesso.
+  const { gradeComCache } = await import("@/lib/cotacoes-cache.server");
   const [indices, acoes, fiis, criptos] = await Promise.all([
-    buscarGrade("indices"),
-    buscarGrade("acoes"),
-    buscarGrade("fiis"),
-    buscarGrade("cripto"),
+    gradeComCache("indices"),
+    gradeComCache("acoes"),
+    gradeComCache("fiis"),
+    gradeComCache("cripto"),
   ]);
 
   const todos = [...acoes.linhas, ...fiis.linhas, ...criptos.linhas].filter(
