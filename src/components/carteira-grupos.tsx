@@ -659,7 +659,7 @@ export function CarteiraGrupos({
                             )}
                             {colunas.ideal && (
                               <TableCell className={`text-right text-muted-foreground tabular-nums ${colLg} ${cel}`}>
-                                {pct(idealAtivo)}
+                                {pct(idealLinha)}
                               </TableCell>
                             )}
                             {colunas.comprar && (
