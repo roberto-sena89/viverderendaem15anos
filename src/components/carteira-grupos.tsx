@@ -52,14 +52,6 @@ const PADRAO: Record<ColunaId, boolean> = {
   comprar: true,
 };
 
-/** Hora local (HH:mm) da última cotação recebida do provedor. */
-const horaCotacao = (iso?: string) => {
-  if (!iso) return null;
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime())
-    ? null
-    : d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-};
 
 
 interface Grupo {
