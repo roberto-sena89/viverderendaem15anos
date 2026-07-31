@@ -3,7 +3,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, LineChart, PiggyBank, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
-import { supabase } from "@/integrations/supabase/client";
 import logoIcone from "@/assets/logo-icone.webp";
 import heroFundo from "@/assets/hero-mercado-fundo.webp";
 import ogImagem from "@/assets/og-home.jpg.asset.json";
@@ -172,11 +171,29 @@ function HomePage() {
 
   useEffect(() => {
     let ativo = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (ativo && data.session) navigate({ to: "/dashboard" });
-    });
+    // Carregamento tardio do cliente de autenticação: mantém o bundle crítico
+    // da landing pequeno para o H1 (elemento LCP) pintar mais cedo.
+    const ocioso =
+      typeof window !== "undefined" && "requestIdleCallback" in window
+        ? window.requestIdleCallback(verificarSessao)
+        : window.setTimeout(verificarSessao, 200);
+
+    function verificarSessao() {
+      import("@/integrations/supabase/client").then(({ supabase }) => {
+        if (!ativo) return;
+        supabase.auth.getSession().then(({ data }) => {
+          if (ativo && data.session) navigate({ to: "/dashboard" });
+        });
+      });
+    }
+
     return () => {
       ativo = false;
+      if (typeof window !== "undefined" && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(ocioso as number);
+      } else {
+        window.clearTimeout(ocioso as number);
+      }
     };
   }, [navigate]);
 
