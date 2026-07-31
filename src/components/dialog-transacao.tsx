@@ -389,21 +389,28 @@ export function DialogTransacao({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="preco">Preço *</Label>
-              <Input
-                id="preco"
-                inputMode="decimal"
-                placeholder="R$ 0,00"
-                value={preco}
-                aria-invalid={!!erros.preco}
-                aria-describedby={erros.preco ? "erro-preco" : undefined}
-                onChange={(e) => {
-                  setPreco(e.target.value);
-                  limparErro("preco");
-                }}
-                onBlur={(e) => setPreco(formatarMoeda(e.target.value))}
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                  R$
+                </span>
+                <Input
+                  id="preco"
+                  inputMode="decimal"
+                  placeholder="0,00"
+                  value={preco}
+                  aria-invalid={!!erros.preco}
+                  aria-describedby={erros.preco ? "erro-preco" : undefined}
+                  onChange={(e) => {
+                    setPreco(e.target.value);
+                    limparErro("preco");
+                  }}
+                  onBlur={(e) => setPreco(formatarMoeda(e.target.value))}
+                  className="pl-9 text-right tabular-nums"
+                />
+              </div>
               <MensagemErro id="erro-preco" texto={erros.preco} />
             </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="qtd">Quantidade *</Label>
               <Input
