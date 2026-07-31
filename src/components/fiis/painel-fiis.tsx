@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Building2,
@@ -49,6 +49,7 @@ import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { mesclarPrecos, useFiisAoVivo } from "@/lib/fiis-tempo-real";
+import { useValorAtrasado } from "@/lib/fiis-virtualizacao";
 
 const CHAVE_COLUNAS = "fiis:colunas";
 const COLUNAS_PADRAO: ColunaId[] = ["patrimonio", "pvp", "dy12", "liquidez", "tipo", "var12m", "segmento"];
