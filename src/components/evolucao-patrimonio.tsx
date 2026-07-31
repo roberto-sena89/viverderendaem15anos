@@ -14,8 +14,12 @@ import {
 } from "lucide-react";
 import {
   Area,
+  Bar,
   CartesianGrid,
   Cell,
+  ComposedChart,
+  LabelList,
+
   ComposedChart,
   Line,
   Pie,
