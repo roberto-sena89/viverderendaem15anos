@@ -21,17 +21,22 @@ export type CotacaoTicker = {
 export type AtivoTicker = {
   id: string;
   rotulo: string;
+  /** Símbolo na BRAPI. */
   simbolo: string;
   grupo: CotacaoTicker["grupo"];
-  fonte: "quote" | "crypto" | "currency";
+  fonte: "quote";
+  /** Símbolo na fonte complementar (índices, cripto e câmbio). */
+  alternativo?: string;
+  /** Quando true, a fonte complementar é a principal do ativo. */
+  alternativoPrimario?: boolean;
   pontos?: boolean;
 };
 
 /** Universo exibido na fita. Para incluir um novo ativo, basta adicionar aqui. */
 export const ATIVOS_TICKER: AtivoTicker[] = [
-  { id: "IBOV", rotulo: "IBOV", simbolo: "^BVSP", grupo: "indice", fonte: "quote", pontos: true },
-  { id: "IFIX", rotulo: "IFIX", simbolo: "IFIX.SA", grupo: "indice", fonte: "quote", pontos: true },
-  { id: "SMLL", rotulo: "SMLL", simbolo: "SMLL.SA", grupo: "indice", fonte: "quote", pontos: true },
+  { id: "IBOV", rotulo: "IBOV", simbolo: "^BVSP", grupo: "indice", fonte: "quote", alternativo: "^BVSP", alternativoPrimario: true, pontos: true },
+  { id: "IFIX", rotulo: "IFIX", simbolo: "IFIX", grupo: "indice", fonte: "quote", alternativo: "IFIX.SA", alternativoPrimario: true, pontos: true },
+  { id: "SMLL", rotulo: "SMLL", simbolo: "SMLL", grupo: "indice", fonte: "quote", alternativo: "SMLL.SA", alternativoPrimario: true, pontos: true },
 
   { id: "PETR4", rotulo: "PETR4", simbolo: "PETR4", grupo: "acao", fonte: "quote" },
   { id: "VALE3", rotulo: "VALE3", simbolo: "VALE3", grupo: "acao", fonte: "quote" },
@@ -51,13 +56,14 @@ export const ATIVOS_TICKER: AtivoTicker[] = [
   { id: "SMAL11", rotulo: "SMAL11", simbolo: "SMAL11", grupo: "etf", fonte: "quote" },
   { id: "HASH11", rotulo: "HASH11", simbolo: "HASH11", grupo: "etf", fonte: "quote" },
 
-  { id: "BTC", rotulo: "BTC", simbolo: "BTC", grupo: "cripto", fonte: "crypto" },
-  { id: "ETH", rotulo: "ETH", simbolo: "ETH", grupo: "cripto", fonte: "crypto" },
-  { id: "SOL", rotulo: "SOL", simbolo: "SOL", grupo: "cripto", fonte: "crypto" },
+  { id: "BTC", rotulo: "BTC", simbolo: "BTC", grupo: "cripto", fonte: "quote", alternativo: "BTC-BRL", alternativoPrimario: true },
+  { id: "ETH", rotulo: "ETH", simbolo: "ETH", grupo: "cripto", fonte: "quote", alternativo: "ETH-BRL", alternativoPrimario: true },
+  { id: "SOL", rotulo: "SOL", simbolo: "SOL", grupo: "cripto", fonte: "quote", alternativo: "SOL-BRL", alternativoPrimario: true },
 
-  { id: "USD-BRL", rotulo: "USD", simbolo: "USD-BRL", grupo: "cambio", fonte: "currency" },
-  { id: "EUR-BRL", rotulo: "EUR", simbolo: "EUR-BRL", grupo: "cambio", fonte: "currency" },
+  { id: "USD-BRL", rotulo: "USD", simbolo: "USDBRL", grupo: "cambio", fonte: "quote", alternativo: "BRL=X", alternativoPrimario: true },
+  { id: "EUR-BRL", rotulo: "EUR", simbolo: "EURBRL", grupo: "cambio", fonte: "quote", alternativo: "EURBRL=X", alternativoPrimario: true },
 ];
+
 
 const TTL_MS = 5_000;
 /** Cada ativo é revalidado na BRAPI no máximo a cada 20s (plano gratuito: 1 ativo/requisição). */
