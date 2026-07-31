@@ -11,7 +11,6 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import manropeLatin from "@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url";
-import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -109,13 +108,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         crossOrigin: "anonymous",
         fetchPriority: "high",
       },
+      // Inter (corpo de texto) carrega sob demanda: pré-carregá-la competia
+      // banda com o CSS crítico e atrasava a pintura do H1 (elemento LCP).
       {
-        rel: "preload",
-        as: "font",
-        type: "font/woff2",
-        href: interLatin,
+        rel: "preconnect",
+        href: "https://huyaffyqgrrsgznduwll.supabase.co",
         crossOrigin: "anonymous",
-        fetchPriority: "low",
       },
 
       {

@@ -206,6 +206,7 @@ function HomePage() {
           height={1088}
           className="absolute inset-0 -z-10 size-full object-cover"
           decoding="async"
+          loading="lazy"
           fetchPriority="low"
         />
 
