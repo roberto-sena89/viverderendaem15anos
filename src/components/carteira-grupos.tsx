@@ -400,6 +400,7 @@ export function CarteiraGrupos({
                     </TableHeader>
                     <TableBody>
                       {g.ativos.map((a) => {
+                        const live = cotacoes.get(chaveTicker(a.ticker));
                         const saldo = valorAtual(a);
                         const investido = valorInvestido(a);
                         const variacao = variacaoAtivo(a);
