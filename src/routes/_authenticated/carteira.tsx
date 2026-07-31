@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
-import { CarteiraRecomendada } from "@/components/carteira-recomendada";
+
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
 import { InputNumeroBR } from "@/components/input-numero-br";
@@ -130,7 +130,6 @@ function CarteiraPage() {
       )}
 
 
-      <CarteiraRecomendada />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-2xl">
