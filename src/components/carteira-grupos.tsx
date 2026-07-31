@@ -418,7 +418,7 @@ export function CarteiraGrupos({
                   </div>
                 </div>
 
-                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-6">
+                <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
                   <div className="min-w-0">
                     <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Ativos
