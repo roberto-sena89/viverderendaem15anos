@@ -3,13 +3,13 @@ import { useMemo, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
+  CalendarDays,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Download,
   Pencil,
   PiggyBank,
-  
   Search,
   Trash2,
 } from "lucide-react";
@@ -21,6 +21,7 @@ import { Panel } from "@/components/panel";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes, useAtivos, useExcluirAporte } from "@/lib/data";
@@ -70,6 +71,12 @@ const rotuloMes = (chave: string) => {
   return `${nome.charAt(0).toUpperCase()}${nome.slice(1)} de ${ano}`;
 };
 const total = (a: Aporte) => a.quantidade * a.preco + a.taxas;
+const ANOS_OPCOES = (atual: string, existentes: string[]) => {
+  const base = Number(atual);
+  const lista = new Set<string>([atual, ...existentes]);
+  for (let y = base - 10; y <= base + 10; y++) lista.add(String(y));
+  return [...lista].sort((x, y) => Number(y) - Number(x));
+};
 const num = (v: number, casas = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: casas });
 
@@ -114,10 +121,11 @@ function HistoricoAportesPage() {
 
   const [mesSel, setMesSel] = useState<string | null>(null);
   const [anoSel, setAnoSel] = useState<string | null>(null);
+  const [diaSel, setDiaSel] = useState<string | null>(null);
   const mes = mesSel ?? meses[0] ?? new Date().toISOString().slice(0, 7);
   const ano = anoSel ?? anos[0] ?? String(new Date().getFullYear());
 
-  const periodo = modo === "mensal" ? mes : ano;
+  const periodo = modo === "mensal" ? (diaSel ? `${mes}-${diaSel}` : mes) : ano;
   const doPeriodo = useMemo(
     () => aportes.filter((a) => a.data.startsWith(periodo)),
     [aportes, periodo],
@@ -202,6 +210,12 @@ function HistoricoAportesPage() {
       return;
     }
     const [a, m] = mes.split("-").map(Number);
+    if (diaSel) {
+      const d = new Date(a, m - 1, Number(diaSel) + passo);
+      setMesSel(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+      setDiaSel(String(d.getDate()).padStart(2, "0"));
+      return;
+    }
     const d = new Date(a, m - 1 + passo, 1);
     setMesSel(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
   };
@@ -275,21 +289,141 @@ function HistoricoAportesPage() {
             <Button variant="ghost" size="icon" className="size-8" onClick={() => navegar(-1)} aria-label="Período anterior">
               <ChevronLeft className="size-4" />
             </Button>
-            <select
-              value={modo === "mensal" ? mes : ano}
-              onChange={(e) => (modo === "mensal" ? setMesSel(e.target.value) : setAnoSel(e.target.value))}
-              aria-label="Selecionar período"
-              className="min-w-[10rem] bg-transparent px-2 py-1 text-sm font-semibold text-foreground outline-none"
-            >
-              {(modo === "mensal"
-                ? [...new Set([mes, ...meses])].sort((x, y) => (x < y ? 1 : -1))
-                : [...new Set([ano, ...anos])].sort((x, y) => (x < y ? 1 : -1))
-              ).map((p) => (
-                <option key={p} value={p} className="bg-background">
-                  {modo === "mensal" ? `${rotuloMes(p)} · ${p.split("-").reverse().join("/")}` : p}
-                </option>
-              ))}
-            </select>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Selecionar período"
+                  className="inline-flex min-w-[11rem] items-center justify-center gap-2 rounded-md px-2 py-1 text-sm font-semibold text-foreground transition-colors hover:bg-muted/60"
+                >
+                  <CalendarDays className="size-4 text-primary" />
+                  {modo === "mensal"
+                    ? diaSel
+                      ? `${diaSel}/${mes.split("-").reverse().join("/")}`
+                      : rotuloMes(mes)
+                    : ano}
+                  <ChevronDown className="size-3.5 text-muted-foreground" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="center" className="w-[320px] p-3">
+                {/* Ano */}
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    aria-label="Ano anterior"
+                    onClick={() =>
+                      modo === "mensal"
+                        ? setMesSel(`${Number(mes.slice(0, 4)) - 1}-${mes.slice(5, 7)}`)
+                        : setAnoSel(String(Number(ano) - 1))
+                    }
+                  >
+                    <ChevronLeft className="size-4" />
+                  </Button>
+                  <select
+                    value={modo === "mensal" ? mes.slice(0, 4) : ano}
+                    onChange={(e) =>
+                      modo === "mensal"
+                        ? setMesSel(`${e.target.value}-${mes.slice(5, 7)}`)
+                        : setAnoSel(e.target.value)
+                    }
+                    aria-label="Selecionar ano"
+                    className="rounded-md border border-border bg-background px-3 py-1 text-sm font-semibold outline-none"
+                  >
+                    {ANOS_OPCOES(modo === "mensal" ? mes.slice(0, 4) : ano, anos).map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    aria-label="Próximo ano"
+                    onClick={() =>
+                      modo === "mensal"
+                        ? setMesSel(`${Number(mes.slice(0, 4)) + 1}-${mes.slice(5, 7)}`)
+                        : setAnoSel(String(Number(ano) + 1))
+                    }
+                  >
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+
+                {/* Meses */}
+                <div className="mt-3 grid grid-cols-4 gap-1">
+                  {MESES.map((nome, i) => {
+                    const chave = `${mes.slice(0, 4)}-${String(i + 1).padStart(2, "0")}`;
+                    const ativo = modo === "mensal" && chave === mes;
+                    return (
+                      <button
+                        key={nome}
+                        type="button"
+                        onClick={() => {
+                          setModo("mensal");
+                          setMesSel(chave);
+                          setDiaSel(null);
+                        }}
+                        className={cn(
+                          "rounded-md px-1 py-1.5 text-xs font-medium capitalize transition-colors",
+                          ativo
+                            ? "bg-primary text-primary-foreground"
+                            : totaisPorMes.get(chave)
+                              ? "text-foreground hover:bg-muted"
+                              : "text-muted-foreground hover:bg-muted",
+                        )}
+                      >
+                        {nome.slice(0, 3)}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Dias */}
+                {modo === "mensal" ? (
+                  <>
+                    <div className="mt-3 grid grid-cols-7 gap-1">
+                      {Array.from(
+                        { length: new Date(Number(mes.slice(0, 4)), Number(mes.slice(5, 7)), 0).getDate() },
+                        (_, i) => String(i + 1).padStart(2, "0"),
+                      ).map((d) => {
+                        const temAporte = aportes.some((a) => a.data === `${mes}-${d}`);
+                        const ativo = diaSel === d;
+                        return (
+                          <button
+                            key={d}
+                            type="button"
+                            onClick={() => setDiaSel(ativo ? null : d)}
+                            className={cn(
+                              "relative rounded-md py-1 text-xs tabular-nums transition-colors",
+                              ativo
+                                ? "bg-primary font-semibold text-primary-foreground"
+                                : "text-foreground hover:bg-muted",
+                            )}
+                          >
+                            {Number(d)}
+                            {temAporte && !ativo ? (
+                              <span className="absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-primary" />
+                            ) : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-3 w-full"
+                      onClick={() => setDiaSel(null)}
+                      disabled={!diaSel}
+                    >
+                      Ver mês inteiro
+                    </Button>
+                  </>
+                ) : null}
+              </PopoverContent>
+            </Popover>
             <Button variant="ghost" size="icon" className="size-8" onClick={() => navegar(1)} aria-label="Próximo período">
               <ChevronRight className="size-4" />
             </Button>
