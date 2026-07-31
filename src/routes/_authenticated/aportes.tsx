@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AbasCarteira } from "@/components/abas-carteira";
+import { EvolucaoPatrimonio } from "@/components/evolucao-patrimonio";
 import { AppShell } from "@/components/app-shell";
 import { useAportes } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
@@ -32,6 +33,8 @@ function AportesPage() {
   return (
     <AppShell title="Patrimônio" description={`Último mês registrado: ${brl(totalMes)}`}>
       <AbasCarteira />
+
+      <EvolucaoPatrimonio />
 
 
 
