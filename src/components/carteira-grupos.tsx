@@ -631,7 +631,7 @@ export function CarteiraGrupos({
                             )}
 
                             {colunas.participacao && (
-                              <TableCell className={`text-right tabular-nums ${cel}`}>{pct(participacao)}</TableCell>
+                              <TableCell className={`text-right tabular-nums ${colSm} ${cel}`}>{pct(participacao)}</TableCell>
                             )}
                             {colunas.ideal && (
                               <TableCell className={`text-right text-muted-foreground tabular-nums ${colLg} ${cel}`}>
