@@ -144,6 +144,27 @@
 :root {
   --radius: 0.875rem;
 
+  /* Tokens de layout — container, gutter e escala de 8px */
+  --container-app: 1280px;
+  --gutter-app: 1rem; /* 16px em mobile */
+  --gap-grid: 1rem;
+  --transition-fast: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Escala tipográfica de tabela */
+  --fs-table: 0.8125rem; /* 13px em mobile */
+  --fs-table-head: 0.6875rem;
+}
+
+@media (min-width: 641px) {
+  :root {
+    --gutter-app: 1.5rem; /* 24px */
+    --gap-grid: 1.5rem;
+    --fs-table: 0.875rem; /* 14px */
+    --fs-table-head: 0.75rem; /* 12px */
+  }
+}
+
+
   --background: oklch(0.995 0.002 145);
   --foreground: oklch(0.16 0.012 160);
   --card: oklch(1 0 0);
