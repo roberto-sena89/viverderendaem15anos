@@ -435,7 +435,23 @@ export function EvolucaoPatrimonio() {
         title="Patrimônio x total aportado"
         hint="Área verde: patrimônio total. Linha tracejada: dinheiro investido acumulado."
       >
-        <div className="-mx-2 h-64 sm:h-80">
+        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.72rem] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block size-2.5 rounded-[3px] bg-primary" aria-hidden />
+            Patrimônio
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block h-0 w-4 border-t-2 border-dashed border-muted-foreground" aria-hidden />
+            Total investido
+          </span>
+          {comparar ? (
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-0.5 w-4 rounded bg-chart-12" aria-hidden />
+              Período anterior
+            </span>
+          ) : null}
+        </div>
+        <div className="-mx-1 h-[260px] sm:-mx-2 sm:h-[340px] xl:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={dadosGrafico} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <defs>
@@ -450,14 +466,17 @@ export function EvolucaoPatrimonio() {
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
                 axisLine={false}
-                minTickGap={16}
+                minTickGap={20}
+                interval="preserveStartEnd"
+                tickMargin={8}
               />
               <YAxis
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
                 axisLine={false}
-                width={64}
-                tickFormatter={(v: number) => brl(v)}
+                width={52}
+                tickMargin={4}
+                tickFormatter={compacto}
               />
               <Tooltip
                 contentStyle={tooltipStyle}
