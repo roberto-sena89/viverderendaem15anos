@@ -25,6 +25,9 @@ import { useAtivos } from "@/lib/data";
 /** Cripto negocia 24/7: mantemos uma atualização mínima mesmo no modo manual. */
 const INTERVALO_MINIMO = 30_000;
 
+/** Quantidade inicial de moedas exibidas e passo do botão "Mostrar mais". */
+const PAGINA = 25;
+
 const ORDEM_POR_RANKING: Record<RankingCripto, OrdemCripto> = {
   capitalizacao: { coluna: "capitalizacao", desc: true },
   altas1h: { coluna: "variacao1h", desc: true },
@@ -108,6 +111,16 @@ export function PainelCripto({
       return fator * (va - vb);
     });
   }, [data, busca, apenasFavoritos, favoritos, categorias, faixas, ordem, ranking]);
+
+  const [visiveis, setVisiveis] = useState(PAGINA);
+
+  // Volta para a primeira página sempre que filtros/ordenação mudam
+  useEffect(() => {
+    setVisiveis(PAGINA);
+  }, [busca, apenasFavoritos, categorias, faixas, ordem, ranking]);
+
+  const linhasVisiveis = useMemo(() => linhas.slice(0, visiveis), [linhas, visiveis]);
+  const restantes = linhas.length - linhasVisiveis.length;
 
   const comparadas = useMemo(
     () => (data?.linhas ?? []).filter((l) => selecionados.includes(l.id)),
@@ -238,7 +251,7 @@ export function PainelCripto({
               <>
                 <div className="hidden md:block">
                   <TabelaCripto
-                    linhas={linhas}
+                    linhas={linhasVisiveis}
                     usdBrl={usdBrl}
                     ordem={ordem}
                     aoOrdenar={ordenar}
@@ -250,13 +263,62 @@ export function PainelCripto({
                 </div>
                 <div className="md:hidden">
                   <CardsCripto
-                    linhas={linhas}
+                    linhas={linhasVisiveis}
                     usdBrl={usdBrl}
                     favoritos={favoritos}
                     aoFavoritar={alternar}
                     posicoes={posicoes}
                     aoAbrir={setDetalhe}
                   />
+                </div>
+
+                {/* Paginação incremental */}
+                <div className="flex flex-col items-center gap-2 border-t border-border px-3 py-3 sm:flex-row sm:justify-between sm:px-4">
+                  <p className="text-xs text-muted-foreground tabular-nums">
+                    Mostrando {linhasVisiveis.length} de {linhas.length} moedas
+                  </p>
+                  {restantes > 0 && (
+                    <div className="flex flex-wrap items-center justify-center gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8"
+                        onClick={() => setVisiveis((v) => v + PAGINA)}
+                      >
+                        Mostrar mais {Math.min(PAGINA, restantes)}
+                      </Button>
+                      {restantes > PAGINA && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => setVisiveis((v) => v + PAGINA * 4)}
+                          >
+                            +{Math.min(PAGINA * 4, restantes)}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => setVisiveis(linhas.length)}
+                          >
+                            Ver todas
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  {restantes === 0 && visiveis > PAGINA && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8"
+                      onClick={() => setVisiveis(PAGINA)}
+                    >
+                      Mostrar menos
+                    </Button>
+                  )}
                 </div>
               </>
             )}
