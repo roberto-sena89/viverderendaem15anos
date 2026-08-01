@@ -2,7 +2,10 @@ import { Star } from "lucide-react";
 import { BadgeCategoria } from "@/components/cripto/badge-categoria";
 import { useFlashPrecos, type PosicaoCarteira } from "@/components/cripto/tabela-cripto";
 import { corVar, fmtCompacto, fmtPct, fmtPreco } from "@/components/cripto/formatos-cripto";
+import { CelulaVariacao, useDirecaoVariacoes } from "@/components/cripto/variacao-cripto";
 import { ehStablecoin, type LinhaCripto } from "@/lib/cripto-base";
+
+const CAMPOS_AO_VIVO = ["variacao1h", "variacao24h", "variacao7d"] as const;
 
 /** Layout mobile: cada criptomoeda em um cartão compacto. */
 export function CardsCripto({
@@ -21,6 +24,7 @@ export function CardsCripto({
   aoAbrir: (l: LinhaCripto) => void;
 }) {
   const flash = useFlashPrecos(linhas);
+  const direcao = useDirecaoVariacoes(linhas, CAMPOS_AO_VIVO);
 
   return (
     <ul className="space-y-2 p-2">
@@ -79,8 +83,12 @@ export function CardsCripto({
                   >
                     {fmtPreco(brl, "R$")}
                   </p>
-                  <p className={`text-sm font-medium tabular-nums ${corVar(l.variacao24h, stable)}`}>
-                    {fmtPct(l.variacao24h)}
+                  <p className="text-sm font-medium">
+                    <CelulaVariacao
+                      valor={l.variacao24h}
+                      stable={stable}
+                      movimento={direcao[`${l.id}:variacao24h`]}
+                    />
                   </p>
                 </div>
               </div>
@@ -93,6 +101,22 @@ export function CardsCripto({
                 <p className="flex justify-between gap-2">
                   <span className="text-muted-foreground">Vol. 24h</span>
                   <span className="tabular-nums">{fmtCompacto(l.volume24h)}</span>
+                </p>
+                <p className="flex justify-between gap-2">
+                  <span className="text-muted-foreground">Var. 1h</span>
+                  <CelulaVariacao
+                    valor={l.variacao1h}
+                    stable={stable}
+                    movimento={direcao[`${l.id}:variacao1h`]}
+                  />
+                </p>
+                <p className="flex justify-between gap-2">
+                  <span className="text-muted-foreground">Var. 7D</span>
+                  <CelulaVariacao
+                    valor={l.variacao7d}
+                    stable={stable}
+                    movimento={direcao[`${l.id}:variacao7d`]}
+                  />
                 </p>
                 <p className="flex justify-between gap-2">
                   <span className="text-muted-foreground">Cotação USD</span>

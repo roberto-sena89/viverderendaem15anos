@@ -27,7 +27,9 @@ const INTERVALO_MINIMO = 30_000;
 
 const ORDEM_POR_RANKING: Record<RankingCripto, OrdemCripto> = {
   capitalizacao: { coluna: "capitalizacao", desc: true },
+  altas1h: { coluna: "variacao1h", desc: true },
   altas24h: { coluna: "variacao24h", desc: true },
+  altas7d: { coluna: "variacao7d", desc: true },
   altas30d: { coluna: "variacao30d", desc: true },
   volume24h: { coluna: "volume24h", desc: true },
   baixas24h: { coluna: "variacao24h", desc: false },

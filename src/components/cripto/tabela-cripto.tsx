@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { BadgeCategoria } from "@/components/cripto/badge-categoria";
 import { corVar, fmtCompacto, fmtPct, fmtPreco } from "@/components/cripto/formatos-cripto";
+import { CelulaVariacao, useDirecaoVariacoes } from "@/components/cripto/variacao-cripto";
 import { ehStablecoin, type LinhaCripto } from "@/lib/cripto-base";
 
 export type ColunaOrdem =
@@ -13,6 +14,7 @@ export type ColunaOrdem =
   | "precoUsd"
   | "capitalizacao"
   | "volume24h"
+  | "variacao1h"
   | "variacao24h"
   | "variacao7d"
   | "variacao30d"
@@ -53,6 +55,9 @@ export function useFlashPrecos(linhas: LinhaCripto[]) {
   return flash;
 }
 
+/** Variações acompanhadas em tempo real (seta pisca quando o valor muda). */
+const CAMPOS_AO_VIVO = ["variacao1h", "variacao24h", "variacao7d"] as const;
+
 const COLUNAS_VAR: { id: ColunaOrdem; rotulo: string; campo: keyof LinhaCripto }[] = [
   { id: "variacao7d", rotulo: "Var. 7D", campo: "variacao7d" },
   { id: "variacao30d", rotulo: "Var. 30D", campo: "variacao30d" },
@@ -81,6 +86,7 @@ export function TabelaCripto({
   aoAbrir: (l: LinhaCripto) => void;
 }) {
   const flash = useFlashPrecos(linhas);
+  const direcao = useDirecaoVariacoes(linhas, CAMPOS_AO_VIVO);
 
   const Cabecalho = ({
     coluna,
@@ -115,7 +121,7 @@ export function TabelaCripto({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[1040px] border-separate border-spacing-0 text-sm">
+      <table className="w-full min-w-[1140px] border-separate border-spacing-0 text-sm">
         <thead className="text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr>
             <Cabecalho coluna="rank" className="sticky left-0 z-20 w-12 bg-muted/60 text-left backdrop-blur">
@@ -234,8 +240,19 @@ export function TabelaCripto({
                   )}
                 </td>
                 <td className="px-2 py-2 text-right tabular-nums">{fmtPreco(brl, "R$")}</td>
-                <td className={`px-2 py-2 text-right font-medium tabular-nums ${corVar(l.variacao24h, stable)}`}>
-                  {fmtPct(l.variacao24h)}
+                <td className="px-2 py-2 text-right font-medium">
+                  <CelulaVariacao
+                    valor={l.variacao1h}
+                    stable={stable}
+                    movimento={direcao[`${l.id}:variacao1h`]}
+                  />
+                </td>
+                <td className="px-2 py-2 text-right font-medium">
+                  <CelulaVariacao
+                    valor={l.variacao24h}
+                    stable={stable}
+                    movimento={direcao[`${l.id}:variacao24h`]}
+                  />
                 </td>
                 <td className="px-2 py-2 text-right text-muted-foreground tabular-nums">
                   {fmtCompacto(l.capitalizacao)}
@@ -246,8 +263,8 @@ export function TabelaCripto({
                 {COLUNAS_VAR.map((c) => {
                   const v = l[c.campo] as number | null;
                   return (
-                    <td key={c.id} className={`px-2 py-2 text-right tabular-nums ${corVar(v, stable)}`}>
-                      {fmtPct(v)}
+                    <td key={c.id} className="px-2 py-2 text-right">
+                      <CelulaVariacao valor={v} stable={stable} movimento={direcao[`${l.id}:${c.id}`]} />
                     </td>
                   );
                 })}
