@@ -93,42 +93,50 @@ export function CardsCripto({
                 </div>
               </div>
 
-              <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-                <p className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">Capitalização</span>
-                  <span className="tabular-nums">{fmtCompacto(l.capitalizacao)}</span>
-                </p>
-                <p className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">Vol. 24h</span>
-                  <span className="tabular-nums">{fmtCompacto(l.volume24h)}</span>
-                </p>
-                <p className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">Var. 1h</span>
-                  <CelulaVariacao
-                    valor={l.variacao1h}
-                    stable={stable}
-                    movimento={direcao[`${l.id}:variacao1h`]}
-                  />
-                </p>
-                <p className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">Var. 7D</span>
-                  <CelulaVariacao
-                    valor={l.variacao7d}
-                    stable={stable}
-                    movimento={direcao[`${l.id}:variacao7d`]}
-                  />
-                </p>
-                <p className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">Cotação USD</span>
-                  <span className="tabular-nums">{fmtPreco(l.precoUsd, "US$")}</span>
-                </p>
-                <p className="flex justify-between gap-2">
-                  <span className="text-muted-foreground">Var. 30D</span>
-                  <span className={`tabular-nums ${corVar(l.variacao30d, stable)}`}>
+              <div className="mt-3 grid grid-cols-3 divide-x divide-border/60 rounded-lg bg-muted/20 py-2 text-center">
+                <div className="min-w-0 px-1">
+                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Var. 1h</p>
+                  <div className="mt-0.5 flex justify-center text-xs font-medium tabular-nums">
+                    <CelulaVariacao
+                      valor={l.variacao1h}
+                      stable={stable}
+                      movimento={direcao[`${l.id}:variacao1h`]}
+                    />
+                  </div>
+                </div>
+                <div className="min-w-0 px-1">
+                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Var. 7D</p>
+                  <div className="mt-0.5 flex justify-center text-xs font-medium tabular-nums">
+                    <CelulaVariacao
+                      valor={l.variacao7d}
+                      stable={stable}
+                      movimento={direcao[`${l.id}:variacao7d`]}
+                    />
+                  </div>
+                </div>
+                <div className="min-w-0 px-1">
+                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Var. 30D</p>
+                  <p className={`mt-0.5 text-xs font-medium tabular-nums ${corVar(l.variacao30d, stable)}`}>
                     {fmtPct(l.variacao30d)}
-                  </span>
-                </p>
+                  </p>
+                </div>
               </div>
+
+              <div className="mt-2 grid grid-cols-3 gap-1 text-center">
+                <div className="min-w-0">
+                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Cap.</p>
+                  <p className="truncate text-xs tabular-nums">{fmtCompacto(l.capitalizacao)}</p>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Vol. 24h</p>
+                  <p className="truncate text-xs tabular-nums">{fmtCompacto(l.volume24h)}</p>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">USD</p>
+                  <p className="truncate text-xs tabular-nums">{fmtPreco(l.precoUsd, "US$")}</p>
+                </div>
+              </div>
+
 
               <div className="mt-2 flex items-center justify-between gap-2">
                 <BadgeCategoria categoria={l.categoria} rede={l.rede} />

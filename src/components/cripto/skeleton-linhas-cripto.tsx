@@ -45,10 +45,16 @@ export function SkeletonLinhasCripto({ quantidade }: { quantidade: number }) {
               <Skeleton className="h-4 w-20 shrink-0 rounded" />
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2">
-              <Skeleton className="h-8 rounded-lg" />
-              <Skeleton className="h-8 rounded-lg" />
-              <Skeleton className="h-8 rounded-lg" />
+              <Skeleton className="h-9 rounded-lg" />
+              <Skeleton className="h-9 rounded-lg" />
+              <Skeleton className="h-9 rounded-lg" />
             </div>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              <Skeleton className="h-7 rounded-lg" />
+              <Skeleton className="h-7 rounded-lg" />
+              <Skeleton className="h-7 rounded-lg" />
+            </div>
+
           </div>
         ))}
       </div>
