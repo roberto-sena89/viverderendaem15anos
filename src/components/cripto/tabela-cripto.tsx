@@ -165,7 +165,7 @@ export function TabelaCripto({
       >
         <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
-          <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted/80 [&>th]:backdrop-blur">
+          <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted [&>th]:backdrop-blur">
             <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
               #
             </Cabecalho>
@@ -194,7 +194,7 @@ export function TabelaCripto({
             <Cabecalho coluna="volume24h" className="hidden w-[80px] text-right md:table-cell">
               Vol. 24h
             </Cabecalho>
-            <th className="hidden w-[70px] border-b border-border bg-muted/80 px-2 py-2 text-right backdrop-blur sm:table-cell">
+            <th className="hidden w-[70px] border-b border-border bg-muted px-2 py-2 text-right backdrop-blur sm:table-cell">
               7 dias
             </th>
           </tr>
