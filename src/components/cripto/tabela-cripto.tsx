@@ -137,14 +137,14 @@ export function TabelaCripto({
             </Cabecalho>
             <Cabecalho
               coluna="ticker"
-              className="sticky left-10 z-40 w-[190px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
+              className="sticky left-10 z-40 w-[176px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
             >
               Ativo
             </Cabecalho>
-            <Cabecalho coluna="precoUsd" className="w-[94px] text-right">
+            <Cabecalho coluna="precoUsd" className="w-[104px] text-right">
               Preço (US$)
             </Cabecalho>
-            <Cabecalho className="w-[94px] text-right">Preço (R$)</Cabecalho>
+            <Cabecalho className="w-[104px] text-right">Preço (R$)</Cabecalho>
             {COLUNAS_VAR.map((c, i) => (
               <Cabecalho
                 key={c.id}
@@ -154,13 +154,13 @@ export function TabelaCripto({
                 {c.rotulo}
               </Cabecalho>
             ))}
-            <Cabecalho coluna="capitalizacao" className="w-[88px] border-l border-border/70 text-right">
+            <Cabecalho coluna="capitalizacao" className="w-[84px] border-l border-border/70 text-right">
               Cap. mercado
             </Cabecalho>
-            <Cabecalho coluna="volume24h" className="hidden w-[84px] text-right md:table-cell">
+            <Cabecalho coluna="volume24h" className="hidden w-[80px] text-right md:table-cell">
               Vol. 24h
             </Cabecalho>
-            <th className="hidden w-[76px] border-b border-border bg-muted/80 px-2 py-2 text-right backdrop-blur sm:table-cell">
+            <th className="hidden w-[70px] border-b border-border bg-muted/80 px-2 py-2 text-right backdrop-blur sm:table-cell">
               7 dias
             </th>
           </tr>
