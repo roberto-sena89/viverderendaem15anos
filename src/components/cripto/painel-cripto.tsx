@@ -208,9 +208,9 @@ export function PainelCripto({
 
 
         <div className="panel overflow-hidden rounded-xl">
-          {/* Cabeçalho da grade: título + contagem à esquerda, ações à direita */}
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border px-3 py-2.5 sm:px-4">
-            <div className="flex min-w-0 items-center gap-2">
+          {/* Cabeçalho da grade: título + contagem, busca e ações */}
+          <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2.5 sm:px-4">
+            <div className="flex min-w-0 flex-1 items-center gap-2">
               <h2 className="truncate text-sm font-semibold tracking-tight sm:text-base">
                 Ranking de criptomoedas
               </h2>
@@ -218,21 +218,47 @@ export function PainelCripto({
                 {linhas.length} moeda{linhas.length === 1 ? "" : "s"}
               </span>
             </div>
-            <div className="flex shrink-0 items-center gap-1.5">
+
+            <div className="order-last flex w-full items-center gap-1.5 sm:order-none sm:w-auto">
+              <div className="relative flex-1 sm:w-56 sm:flex-none lg:w-64">
+                <Search
+                  aria-hidden
+                  className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+                />
+                <input
+                  type="search"
+                  value={buscaLocal}
+                  onChange={(e) => setBuscaLocal(e.target.value)}
+                  placeholder="Pesquisar ativo (nome ou ticker)"
+                  aria-label="Pesquisar criptomoeda"
+                  className="h-8 w-full rounded-lg border border-border bg-background pr-7 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+                />
+                {buscaLocal ? (
+                  <button
+                    type="button"
+                    aria-label="Limpar busca"
+                    onClick={() => setBuscaLocal("")}
+                    className="absolute top-1/2 right-1.5 grid size-5 -translate-y-1/2 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <X className="size-3" />
+                  </button>
+                ) : null}
+              </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 lg:hidden"
+                className="h-8 shrink-0 lg:hidden"
                 onClick={() => setMostrarFiltros((v) => !v)}
               >
                 Filtros
               </Button>
-              <Button variant="ghost" size="sm" className="h-8" onClick={() => refetch()}>
+              <Button variant="ghost" size="sm" className="h-8 shrink-0" onClick={() => refetch()}>
                 <RefreshCw className={`size-3.5 ${isFetching ? "animate-spin" : ""}`} />
                 <span className="hidden sm:inline">Atualizar</span>
               </Button>
             </div>
           </div>
+
 
           {/* Rankings: rolagem horizontal no mobile, quebra natural no desktop */}
           <div className="border-b border-border bg-muted/20 px-3 py-2 sm:px-4">
