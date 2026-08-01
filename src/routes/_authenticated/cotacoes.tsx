@@ -11,6 +11,7 @@ import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { PainelAcoes } from "@/components/acoes/painel-acoes";
 import { PainelEtfs } from "@/components/etfs/painel-etfs";
 import { PainelCripto } from "@/components/cripto/painel-cripto";
+import { PainelCommodities } from "@/components/commodities/painel-commodities";
 import { PainelIndices } from "@/components/indices/painel-indices";
 import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
@@ -46,6 +47,7 @@ const ABAS: { id: string; rotulo: string; categoria?: CategoriaMercado }[] = [
   { id: "tesouro", rotulo: "Tesouro Direto" },
   { id: "etfs", rotulo: "ETFs", categoria: "etfs" },
   { id: "cripto", rotulo: "Criptomoedas", categoria: "cripto" },
+  { id: "commodities", rotulo: "Commodities" },
   { id: "cambio", rotulo: "Câmbio", categoria: "cambio" },
 ];
 
@@ -205,6 +207,15 @@ function Cotacoes() {
           </TabsContent>
 
 
+
+          <TabsContent value="commodities" className="mt-4">
+            <PainelCommodities
+              intervaloMs={intervalo}
+              busca={busca}
+              apenasFavoritos={favoritos}
+              aoAtualizar={aoAtualizar}
+            />
+          </TabsContent>
 
           {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes" && a.id !== "etfs" && a.id !== "cripto").map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
