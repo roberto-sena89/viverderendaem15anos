@@ -103,9 +103,11 @@ async function buscarNaBrapi(symbol: string): Promise<CotacaoBrapi> {
       continue;
     }
     if (res.status === 429 || res.status >= 500) {
+      if (res.status === 429) bloqueadoAte = Date.now() + COOLDOWN_429_MS;
       ultimoErro = erroDeStatus(res.status);
       continue;
     }
+
     if (!res.ok) {
       const detalhe = await res.text().catch(() => "");
       if (res.status === 400 && comHistorico) {
