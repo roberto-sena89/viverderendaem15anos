@@ -201,8 +201,9 @@ export function TabelaCripto({
                 >
                   {l.rank ?? "—"}
                 </td>
-                <td className="sticky left-10 z-10 min-w-[200px] bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30">
-                  <div className="flex items-center gap-2">
+                <td className="sticky left-10 z-10 bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30">
+                  <div className="flex min-w-0 items-center gap-2">
+
                     <button
                       type="button"
                       aria-label={favorito ? `Remover ${l.ticker} dos favoritos` : `Favoritar ${l.ticker}`}
