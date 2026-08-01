@@ -109,6 +109,16 @@ export function PainelCripto({
     });
   }, [data, busca, apenasFavoritos, favoritos, categorias, faixas, ordem, ranking]);
 
+  const [visiveis, setVisiveis] = useState(PAGINA);
+
+  // Volta para a primeira página sempre que filtros/ordenação mudam
+  useEffect(() => {
+    setVisiveis(PAGINA);
+  }, [busca, apenasFavoritos, categorias, faixas, ordem, ranking]);
+
+  const linhasVisiveis = useMemo(() => linhas.slice(0, visiveis), [linhas, visiveis]);
+  const restantes = linhas.length - linhasVisiveis.length;
+
   const comparadas = useMemo(
     () => (data?.linhas ?? []).filter((l) => selecionados.includes(l.id)),
     [data, selecionados],
