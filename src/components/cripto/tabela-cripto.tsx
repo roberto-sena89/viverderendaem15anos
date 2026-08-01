@@ -124,7 +124,7 @@ export function TabelaCripto({
     children: React.ReactNode;
     className?: string;
   }) => (
-    <th className={`px-2 py-2 whitespace-nowrap ${className ?? ""}`}>
+    <th className={`px-2 py-2 leading-tight break-words hyphens-auto ${className ?? ""}`}>
       {coluna ? (
         <button
           type="button"
@@ -183,18 +183,18 @@ export function TabelaCripto({
               <Cabecalho
                 key={c.id}
                 coluna={c.id}
-                className={`w-[70px] text-right ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
+                className={`w-[72px] text-center ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
               >
                 {c.rotulo}
               </Cabecalho>
             ))}
-            <Cabecalho coluna="capitalizacao" className="w-[84px] border-l border-border/70 text-right">
+            <Cabecalho coluna="capitalizacao" className="w-[104px] border-l border-border/70 text-center">
               Cap. mercado
             </Cabecalho>
-            <Cabecalho coluna="volume24h" className="hidden w-[80px] text-right md:table-cell">
+            <Cabecalho coluna="volume24h" className="hidden w-[96px] text-center md:table-cell">
               Vol. 24h
             </Cabecalho>
-            <th className="hidden w-[70px] border-b border-border bg-muted px-2 py-2 text-right backdrop-blur sm:table-cell">
+            <th className="hidden w-[80px] border-b border-border bg-muted px-2 py-2 text-center backdrop-blur sm:table-cell">
               7 dias
             </th>
           </tr>
