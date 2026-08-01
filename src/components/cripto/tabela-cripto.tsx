@@ -166,12 +166,15 @@ export function TabelaCripto({
         <table className="w-full min-w-[880px] table-fixed border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted [&>th]:backdrop-blur">
-            <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
+            <Cabecalho
+              coluna="rank"
+              className="sticky left-0 z-40 w-9 px-1.5 text-center text-[0.6rem] sm:w-11 sm:px-2"
+            >
               #
             </Cabecalho>
             <Cabecalho
               coluna="ticker"
-              className={`sticky left-10 z-40 w-[176px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border ${sombra}`}
+              className={`sticky left-9 z-40 w-[152px] px-2 text-left text-[0.62rem] after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border sm:left-11 sm:w-[196px] sm:text-[0.68rem] ${sombra}`}
             >
               Ativo
             </Cabecalho>
@@ -219,13 +222,12 @@ export function TabelaCripto({
                 }`}
               >
                 <td
-                  className={`sticky left-0 z-10 bg-background px-2 py-2.5 text-xs text-muted-foreground tabular-nums group-hover:bg-muted/30 ${posicao ? "border-l-2 border-l-primary" : ""}`}
+                  className={`sticky left-0 z-10 bg-background px-1.5 py-2.5 text-center text-[0.7rem] text-muted-foreground tabular-nums group-hover:bg-muted/30 sm:px-2 sm:text-xs ${posicao ? "border-l-2 border-l-primary" : ""}`}
                 >
                   {l.rank ?? "—"}
                 </td>
-                <td className={`sticky left-10 z-10 bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30 ${sombra}`}>
-                  <div className="flex min-w-0 items-center gap-2">
-
+                <td className={`sticky left-9 z-10 bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30 sm:left-11 ${sombra}`}>
+                  <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
                     <button
                       type="button"
                       aria-label={favorito ? `Remover ${l.ticker} dos favoritos` : `Favoritar ${l.ticker}`}
@@ -234,7 +236,7 @@ export function TabelaCripto({
                         e.stopPropagation();
                         aoFavoritar(l.ticker);
                       }}
-                      className="grid size-6 shrink-0 place-items-center rounded-md hover:bg-muted"
+                      className="grid size-5 shrink-0 place-items-center rounded-md hover:bg-muted sm:size-6"
                     >
                       <Star
                         className={`size-3.5 transition-all duration-200 ${
@@ -243,12 +245,12 @@ export function TabelaCripto({
                       />
                     </button>
                     {l.imagem ? (
-                      <img src={l.imagem} alt="" className="size-6 shrink-0 rounded-full" loading="lazy" />
+                      <img src={l.imagem} alt="" className="size-5 shrink-0 rounded-full sm:size-6" loading="lazy" />
                     ) : null}
-                    <div className="min-w-0">
-                      <p className="flex items-baseline gap-1.5 truncate font-semibold">
+                    <div className="min-w-0 flex-1">
+                      <p className="flex min-w-0 items-baseline gap-1.5 text-[0.78rem] leading-tight font-semibold sm:text-sm">
                         <span className="truncate">{l.nome}</span>
-                        <span className="shrink-0 text-[0.68rem] font-medium tracking-wide text-muted-foreground uppercase">
+                        <span className="shrink-0 text-[0.62rem] font-medium tracking-wide text-muted-foreground uppercase sm:text-[0.68rem]">
                           {l.ticker}
                         </span>
                       </p>
