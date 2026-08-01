@@ -67,9 +67,9 @@ const COLUNAS_VAR: {
   { id: "variacao1h", rotulo: "1h", campo: "variacao1h" },
   { id: "variacao24h", rotulo: "24h", campo: "variacao24h" },
   { id: "variacao7d", rotulo: "7D", campo: "variacao7d" },
-  { id: "variacao30d", rotulo: "30D", campo: "variacao30d", classe: "hidden lg:table-cell" },
-  { id: "variacao6m", rotulo: "6M", campo: "variacao6m", classe: "hidden xl:table-cell" },
-  { id: "variacao12m", rotulo: "12M", campo: "variacao12m", classe: "hidden xl:table-cell" },
+  { id: "variacao30d", rotulo: "30D", campo: "variacao30d", classe: "hidden xl:table-cell" },
+  { id: "variacao6m", rotulo: "6M", campo: "variacao6m", classe: "hidden 2xl:table-cell" },
+  { id: "variacao12m", rotulo: "12M", campo: "variacao12m", classe: "hidden 2xl:table-cell" },
 ];
 
 
