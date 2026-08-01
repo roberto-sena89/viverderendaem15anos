@@ -25,6 +25,9 @@ import { useAtivos } from "@/lib/data";
 /** Cripto negocia 24/7: mantemos uma atualização mínima mesmo no modo manual. */
 const INTERVALO_MINIMO = 30_000;
 
+/** Quantidade inicial de moedas exibidas e passo do botão "Mostrar mais". */
+const PAGINA = 25;
+
 const ORDEM_POR_RANKING: Record<RankingCripto, OrdemCripto> = {
   capitalizacao: { coluna: "capitalizacao", desc: true },
   altas1h: { coluna: "variacao1h", desc: true },
