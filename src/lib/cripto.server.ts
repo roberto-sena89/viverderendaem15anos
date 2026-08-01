@@ -80,6 +80,7 @@ type MoedaCG = {
   high_24h?: number | null;
   low_24h?: number | null;
   circulating_supply?: number | null;
+  price_change_percentage_1h_in_currency?: number | null;
   price_change_percentage_24h_in_currency?: number | null;
   price_change_percentage_7d_in_currency?: number | null;
   price_change_percentage_30d_in_currency?: number | null;
@@ -103,6 +104,7 @@ function converter(m: MoedaCG): LinhaCripto {
     categoria,
     rede,
     precoUsd: num(m.current_price),
+    variacao1h: num(m.price_change_percentage_1h_in_currency),
     variacao24h: num(m.price_change_percentage_24h_in_currency),
     variacao7d: num(m.price_change_percentage_7d_in_currency),
     variacao30d: num(m.price_change_percentage_30d_in_currency),
@@ -136,7 +138,7 @@ export async function cambioUsdBrl(): Promise<number> {
 
 async function buscar(): Promise<RespostaCripto> {
   const params =
-    "vs_currency=usd&order=market_cap_desc&sparkline=true&price_change_percentage=24h%2C7d%2C30d%2C200d%2C1y";
+    "vs_currency=usd&order=market_cap_desc&sparkline=true&price_change_percentage=1h%2C24h%2C7d%2C30d%2C200d%2C1y";
 
   const paginas = await Promise.all(
     Array.from({ length: PAGINAS }, (_, i) =>
