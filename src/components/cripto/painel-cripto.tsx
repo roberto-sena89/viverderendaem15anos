@@ -290,10 +290,19 @@ export function PainelCripto({
                   />
                 </div>
 
+                {/* Skeletons do próximo lote: evita área vazia durante a expansão */}
+                {carregandoMais > 0 && <SkeletonLinhasCripto quantidade={carregandoMais} />}
+
                 {/* Paginação incremental */}
                 <div className="flex flex-col items-center gap-2 border-t border-border px-3 py-3 sm:flex-row sm:justify-between sm:px-4">
-                  <p className="text-xs text-muted-foreground tabular-nums">
-                    Mostrando {linhasVisiveis.length} de {linhas.length} moedas
+                  <p
+                    className="text-xs text-muted-foreground tabular-nums"
+                    aria-live="polite"
+                    aria-busy={carregandoMais > 0}
+                  >
+                    {carregandoMais > 0
+                      ? `Carregando mais ${carregandoMais} moedas…`
+                      : `Mostrando ${linhasVisiveis.length} de ${linhas.length} moedas`}
                   </p>
                   {restantes > 0 && (
                     <div className="flex flex-wrap items-center justify-center gap-1.5">
@@ -301,9 +310,13 @@ export function PainelCripto({
                         variant="outline"
                         size="sm"
                         className="h-8"
-                        onClick={() => setVisiveis((v) => v + PAGINA)}
+                        disabled={carregandoMais > 0}
+                        onClick={() => carregarMais(PAGINA)}
                       >
-                        Mostrar mais {Math.min(PAGINA, restantes)}
+                        {carregandoMais > 0 && <Loader2 className="size-3.5 animate-spin" />}
+                        {carregandoMais > 0
+                          ? "Carregando…"
+                          : `Mostrar mais ${Math.min(PAGINA, restantes)}`}
                       </Button>
                       {restantes > PAGINA && (
                         <>
@@ -311,7 +324,8 @@ export function PainelCripto({
                             variant="ghost"
                             size="sm"
                             className="h-8"
-                            onClick={() => setVisiveis((v) => v + PAGINA * 4)}
+                            disabled={carregandoMais > 0}
+                            onClick={() => carregarMais(PAGINA * 4)}
                           >
                             +{Math.min(PAGINA * 4, restantes)}
                           </Button>
@@ -319,7 +333,8 @@ export function PainelCripto({
                             variant="ghost"
                             size="sm"
                             className="h-8"
-                            onClick={() => setVisiveis(linhas.length)}
+                            disabled={carregandoMais > 0}
+                            onClick={() => carregarMais(restantes)}
                           >
                             Ver todas
                           </Button>
@@ -327,7 +342,7 @@ export function PainelCripto({
                       )}
                     </div>
                   )}
-                  {restantes === 0 && visiveis > PAGINA && (
+                  {restantes === 0 && visiveis > PAGINA && carregandoMais === 0 && (
                     <Button
                       variant="ghost"
                       size="sm"
