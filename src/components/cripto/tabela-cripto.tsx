@@ -165,8 +165,6 @@ export function TabelaCripto({
             </th>
           </tr>
         </thead>
-          </tr>
-        </thead>
         <tbody>
           {linhas.map((l) => {
             const stable = ehStablecoin(l);
