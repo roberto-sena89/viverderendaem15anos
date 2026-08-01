@@ -128,8 +128,23 @@ export function TabelaCripto({
   );
 
   return (
-    <div className="w-full overflow-x-auto">
-      <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
+    <div className="relative w-full">
+      {/* Véu à direita: indica que há mais colunas para rolar (some no fim) */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-y-0 right-0 z-20 w-10 bg-gradient-to-l from-background to-transparent transition-opacity duration-200 ${
+          fim ? "opacity-0" : "opacity-100"
+        }`}
+      />
+      <div
+        ref={rolagem}
+        onScroll={aoRolar}
+        tabIndex={0}
+        role="region"
+        aria-label="Tabela de criptomoedas — role na horizontal para ver mais colunas"
+        className="w-full snap-x snap-proximity scroll-pl-[216px] overflow-x-auto overscroll-x-contain scroll-smooth [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] focus:outline-none [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
+      >
+        <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted/80 [&>th]:backdrop-blur">
             <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
@@ -137,11 +152,11 @@ export function TabelaCripto({
             </Cabecalho>
             <Cabecalho
               coluna="ticker"
-              className="sticky left-10 z-40 w-[176px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
+              className={`sticky left-10 z-40 w-[176px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border ${sombra}`}
             >
               Ativo
             </Cabecalho>
-            <Cabecalho coluna="precoUsd" className="w-[104px] text-right">
+            <Cabecalho coluna="precoUsd" className="w-[104px] snap-start text-right">
               Preço (US$)
             </Cabecalho>
             <Cabecalho className="w-[104px] text-right">Preço (R$)</Cabecalho>
