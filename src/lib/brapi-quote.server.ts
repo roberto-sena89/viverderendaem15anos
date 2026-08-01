@@ -28,7 +28,9 @@ export type CotacaoBrapi = {
   spark: number[];
 };
 
-const TTL_MS = 5_000;
+const TTL_MS = 30_000;
+/** Após um 429, para de bater na BRAPI por este período (serve cache antigo). */
+const COOLDOWN_429_MS = 60_000;
 const NAVEGADOR = {
   "User-Agent":
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
@@ -37,6 +39,28 @@ const NAVEGADOR = {
 
 const cache = new Map<string, { em: number; valor: CotacaoBrapi }>();
 const emVoo = new Map<string, Promise<CotacaoBrapi>>();
+let bloqueadoAte = 0;
+
+function vazio(symbol: string): CotacaoBrapi {
+  return {
+    symbol: symbol.toUpperCase(),
+    shortName: null,
+    longName: null,
+    currency: "BRL",
+    regularMarketPrice: null,
+    regularMarketChange: null,
+    regularMarketChangePercent: null,
+    regularMarketOpen: null,
+    regularMarketDayHigh: null,
+    regularMarketDayLow: null,
+    regularMarketPreviousClose: null,
+    regularMarketVolume: null,
+    regularMarketTime: null,
+    marketState: null,
+    spark: [],
+  };
+}
+
 
 function erroDeStatus(status: number): string {
   if (status === 401 || status === 403) return "Token da BRAPI inválido ou sem permissão.";
