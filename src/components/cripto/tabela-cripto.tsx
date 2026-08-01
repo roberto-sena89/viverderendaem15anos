@@ -128,42 +128,41 @@ export function TabelaCripto({
   );
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[1140px] border-separate border-spacing-0 text-sm">
-        <thead className="text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
-          <tr>
-            <Cabecalho coluna="rank" className="sticky left-0 z-20 w-12 bg-muted/60 text-left backdrop-blur">
+    <div className="-mx-1 overflow-x-auto px-1">
+      <table className="w-full min-w-[900px] border-separate border-spacing-0 text-sm">
+        <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
+          <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted/80 [&>th]:backdrop-blur">
+            <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
               #
             </Cabecalho>
             <Cabecalho
               coluna="ticker"
-              className="sticky left-12 z-20 min-w-[210px] bg-muted/60 text-left backdrop-blur"
+              className="sticky left-10 z-40 min-w-[200px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
             >
               Ativo
             </Cabecalho>
-            <Cabecalho coluna="precoUsd" className="bg-muted/60 text-right">
-              Cotação (USD)
+            <Cabecalho coluna="precoUsd" className="text-right">
+              Preço (US$)
             </Cabecalho>
-            <Cabecalho className="bg-muted/60 text-right">Cotação (R$)</Cabecalho>
-            <Cabecalho coluna="variacao1h" className="bg-muted/60 text-right">
-              Var. 1h
-            </Cabecalho>
-            <Cabecalho coluna="variacao24h" className="bg-muted/60 text-right">
-              Var. 24h
-            </Cabecalho>
-
-            <Cabecalho coluna="capitalizacao" className="bg-muted/60 text-right">
-              Capitalização
-            </Cabecalho>
-            <Cabecalho coluna="volume24h" className="bg-muted/60 text-right">
-              Vol. 24h
-            </Cabecalho>
-            {COLUNAS_VAR.map((c) => (
-              <Cabecalho key={c.id} coluna={c.id} className="bg-muted/60 text-right">
+            <Cabecalho className="text-right">Preço (R$)</Cabecalho>
+            {COLUNAS_VAR.map((c, i) => (
+              <Cabecalho
+                key={c.id}
+                coluna={c.id}
+                className={`text-right ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
+              >
                 {c.rotulo}
               </Cabecalho>
             ))}
-            <th className="bg-muted/60 px-2 py-2 text-right">7 dias</th>
+            <Cabecalho coluna="capitalizacao" className="border-l border-border/70 text-right">
+              Cap. mercado
+            </Cabecalho>
+            <Cabecalho coluna="volume24h" className="hidden text-right md:table-cell">
+              Vol. 24h
+            </Cabecalho>
+            <th className="hidden border-b border-border bg-muted/80 px-2 py-2 text-right backdrop-blur sm:table-cell">
+              7 dias
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -181,17 +180,16 @@ export function TabelaCripto({
               <tr
                 key={l.id}
                 onClick={() => aoAbrir(l)}
-                className={`cursor-pointer border-b border-border/60 transition-colors hover:bg-muted/30 ${
+                className={`group cursor-pointer border-b border-border/60 transition-colors hover:bg-muted/30 ${
                   posicao ? "bg-primary/[0.04]" : ""
                 }`}
               >
                 <td
-                  className={`sticky left-0 z-10 bg-background px-2 py-2 text-xs text-muted-foreground tabular-nums ${posicao ? "border-l-2 border-l-primary" : ""}`}
+                  className={`sticky left-0 z-10 bg-background px-2 py-2.5 text-xs text-muted-foreground tabular-nums group-hover:bg-muted/30 ${posicao ? "border-l-2 border-l-primary" : ""}`}
                 >
                   {l.rank ?? "—"}
                 </td>
-                <td className="sticky left-12 z-10 min-w-[210px] bg-background px-2 py-2">
-
+                <td className="sticky left-10 z-10 min-w-[200px] bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30">
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -213,8 +211,11 @@ export function TabelaCripto({
                       <img src={l.imagem} alt="" className="size-6 shrink-0 rounded-full" loading="lazy" />
                     ) : null}
                     <div className="min-w-0">
-                      <p className="truncate font-medium">
-                        {l.nome} <span className="text-muted-foreground">— {l.ticker}</span>
+                      <p className="flex items-baseline gap-1.5 truncate font-semibold">
+                        <span className="truncate">{l.nome}</span>
+                        <span className="shrink-0 text-[0.68rem] font-medium tracking-wide text-muted-foreground uppercase">
+                          {l.ticker}
+                        </span>
                       </p>
                       <div className="mt-0.5 flex items-center gap-1">
                         <BadgeCategoria categoria={l.categoria} rede={l.rede} compacta />
@@ -228,7 +229,7 @@ export function TabelaCripto({
                   </div>
                 </td>
                 <td
-                  className={`px-2 py-2 text-right font-medium tabular-nums ${
+                  className={`px-2 py-2.5 text-right font-semibold tabular-nums ${
                     flash[l.id] === "alta" ? "flash-alta" : flash[l.id] === "baixa" ? "flash-baixa" : ""
                   }`}
                 >
@@ -247,36 +248,27 @@ export function TabelaCripto({
                     fmtPreco(l.precoUsd, "US$")
                   )}
                 </td>
-                <td className="px-2 py-2 text-right tabular-nums">{fmtPreco(brl, "R$")}</td>
-                <td className="px-2 py-2 text-right font-medium">
-                  <CelulaVariacao
-                    valor={l.variacao1h}
-                    stable={stable}
-                    movimento={direcao[`${l.id}:variacao1h`]}
-                  />
+                <td className="px-2 py-2.5 text-right text-muted-foreground tabular-nums">
+                  {fmtPreco(brl, "R$")}
                 </td>
-                <td className="px-2 py-2 text-right font-medium">
-                  <CelulaVariacao
-                    valor={l.variacao24h}
-                    stable={stable}
-                    movimento={direcao[`${l.id}:variacao24h`]}
-                  />
-                </td>
-                <td className="px-2 py-2 text-right text-muted-foreground tabular-nums">
-                  {fmtCompacto(l.capitalizacao)}
-                </td>
-                <td className="px-2 py-2 text-right text-muted-foreground tabular-nums">
-                  {fmtCompacto(l.volume24h)}
-                </td>
-                {COLUNAS_VAR.map((c) => {
+                {COLUNAS_VAR.map((c, i) => {
                   const v = l[c.campo] as number | null;
                   return (
-                    <td key={c.id} className="px-2 py-2 text-right">
+                    <td
+                      key={c.id}
+                      className={`px-2 py-2.5 text-right font-medium ${i === 0 ? "border-l border-border/50" : ""} ${c.classe ?? ""}`}
+                    >
                       <CelulaVariacao valor={v} stable={stable} movimento={direcao[`${l.id}:${c.id}`]} />
                     </td>
                   );
                 })}
-                <td className="px-2 py-2 text-right">
+                <td className="border-l border-border/50 px-2 py-2.5 text-right text-muted-foreground tabular-nums">
+                  {fmtCompacto(l.capitalizacao)}
+                </td>
+                <td className="hidden px-2 py-2.5 text-right text-muted-foreground tabular-nums md:table-cell">
+                  {fmtCompacto(l.volume24h)}
+                </td>
+                <td className="hidden px-2 py-2.5 text-right sm:table-cell">
                   <div className="flex justify-end">
                     <Sparkline serie={l.spark} positivo={(l.variacao7d ?? 0) >= 0} largura={80} altura={24} />
                   </div>
@@ -289,3 +281,4 @@ export function TabelaCripto({
     </div>
   );
 }
+
