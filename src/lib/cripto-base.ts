@@ -26,6 +26,7 @@ export type LinhaCripto = {
   /** Rede/ponte quando o token representa outro ativo (ex.: "Ethereum"). */
   rede: string | null;
   precoUsd: number | null;
+  variacao1h: number | null;
   variacao24h: number | null;
   variacao7d: number | null;
   variacao30d: number | null;
