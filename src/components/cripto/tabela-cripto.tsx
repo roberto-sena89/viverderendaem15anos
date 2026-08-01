@@ -124,7 +124,7 @@ export function TabelaCripto({
     children: React.ReactNode;
     className?: string;
   }) => (
-    <th className={`px-2 py-2 whitespace-nowrap ${className ?? ""}`}>
+    <th className={`px-2 py-2 leading-tight break-words hyphens-auto ${className ?? ""}`}>
       {coluna ? (
         <button
           type="button"
@@ -163,7 +163,7 @@ export function TabelaCripto({
         aria-label="Tabela de criptomoedas — role na horizontal para ver mais colunas"
         className="w-full overflow-x-auto overscroll-x-contain scroll-smooth [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] focus:outline-none [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
       >
-        <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
+        <table className="w-full min-w-[880px] table-fixed border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted [&>th]:backdrop-blur">
             <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
@@ -183,18 +183,18 @@ export function TabelaCripto({
               <Cabecalho
                 key={c.id}
                 coluna={c.id}
-                className={`w-[70px] text-right ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
+                className={`w-[72px] text-center ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
               >
                 {c.rotulo}
               </Cabecalho>
             ))}
-            <Cabecalho coluna="capitalizacao" className="w-[84px] border-l border-border/70 text-right">
+            <Cabecalho coluna="capitalizacao" className="w-[104px] border-l border-border/70 text-center">
               Cap. mercado
             </Cabecalho>
-            <Cabecalho coluna="volume24h" className="hidden w-[80px] text-right md:table-cell">
+            <Cabecalho coluna="volume24h" className="hidden w-[96px] text-center md:table-cell">
               Vol. 24h
             </Cabecalho>
-            <th className="hidden w-[70px] border-b border-border bg-muted px-2 py-2 text-right backdrop-blur sm:table-cell">
+            <th className="hidden w-[80px] border-b border-border bg-muted px-2 py-2 text-center backdrop-blur sm:table-cell">
               7 dias
             </th>
           </tr>
@@ -291,20 +291,20 @@ export function TabelaCripto({
                   return (
                     <td
                       key={c.id}
-                      className={`px-2 py-2.5 text-right font-medium ${i === 0 ? "border-l border-border/50" : ""} ${c.classe ?? ""}`}
+                      className={`px-2 py-2.5 text-center font-medium ${i === 0 ? "border-l border-border/50" : ""} ${c.classe ?? ""}`}
                     >
                       <CelulaVariacao valor={v} stable={stable} movimento={direcao[`${l.id}:${c.id}`]} />
                     </td>
                   );
                 })}
-                <td className="border-l border-border/50 px-2 py-2.5 text-right text-muted-foreground tabular-nums">
+                <td className="border-l border-border/50 px-2 py-2.5 text-center text-muted-foreground tabular-nums">
                   {fmtCompacto(l.capitalizacao)}
                 </td>
-                <td className="hidden px-2 py-2.5 text-right text-muted-foreground tabular-nums md:table-cell">
+                <td className="hidden px-2 py-2.5 text-center text-muted-foreground tabular-nums md:table-cell">
                   {fmtCompacto(l.volume24h)}
                 </td>
-                <td className="hidden px-2 py-2.5 text-right sm:table-cell">
-                  <div className="flex justify-end">
+                <td className="hidden px-2 py-2.5 text-center sm:table-cell">
+                  <div className="flex justify-center">
                     <Sparkline serie={l.spark} positivo={(l.variacao7d ?? 0) >= 0} largura={80} altura={24} />
                   </div>
                 </td>
