@@ -291,20 +291,20 @@ export function TabelaCripto({
                   return (
                     <td
                       key={c.id}
-                      className={`px-2 py-2.5 text-right font-medium ${i === 0 ? "border-l border-border/50" : ""} ${c.classe ?? ""}`}
+                      className={`px-2 py-2.5 text-center font-medium ${i === 0 ? "border-l border-border/50" : ""} ${c.classe ?? ""}`}
                     >
                       <CelulaVariacao valor={v} stable={stable} movimento={direcao[`${l.id}:${c.id}`]} />
                     </td>
                   );
                 })}
-                <td className="border-l border-border/50 px-2 py-2.5 text-right text-muted-foreground tabular-nums">
+                <td className="border-l border-border/50 px-2 py-2.5 text-center text-muted-foreground tabular-nums">
                   {fmtCompacto(l.capitalizacao)}
                 </td>
-                <td className="hidden px-2 py-2.5 text-right text-muted-foreground tabular-nums md:table-cell">
+                <td className="hidden px-2 py-2.5 text-center text-muted-foreground tabular-nums md:table-cell">
                   {fmtCompacto(l.volume24h)}
                 </td>
-                <td className="hidden px-2 py-2.5 text-right sm:table-cell">
-                  <div className="flex justify-end">
+                <td className="hidden px-2 py-2.5 text-center sm:table-cell">
+                  <div className="flex justify-center">
                     <Sparkline serie={l.spark} positivo={(l.variacao7d ?? 0) >= 0} largura={80} altura={24} />
                   </div>
                 </td>
