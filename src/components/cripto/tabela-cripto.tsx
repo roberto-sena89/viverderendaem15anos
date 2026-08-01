@@ -312,8 +312,10 @@ export function TabelaCripto({
             );
           })}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
+
   );
 }
 
