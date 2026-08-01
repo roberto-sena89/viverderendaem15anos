@@ -226,8 +226,8 @@ export function PainelCripto({
                       aoOrdenar={ordenar}
                       favoritos={favoritos}
                       aoFavoritar={alternar}
-                      selecionados={selecionados}
-                      aoSelecionar={alternarSelecao}
+                      posicoes={posicoes}
+
                       posicoes={posicoes}
                       aoAbrir={setDetalhe}
                     />
