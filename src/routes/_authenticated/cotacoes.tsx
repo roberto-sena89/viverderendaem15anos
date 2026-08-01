@@ -10,6 +10,7 @@ import { VisaoGeralMercado } from "@/components/cotacoes/visao-geral";
 import { PainelFiis } from "@/components/fiis/painel-fiis";
 import { PainelAcoes } from "@/components/acoes/painel-acoes";
 import { PainelEtfs } from "@/components/etfs/painel-etfs";
+import { PainelCripto } from "@/components/cripto/painel-cripto";
 import { PainelIndices } from "@/components/indices/painel-indices";
 import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
@@ -194,9 +195,18 @@ function Cotacoes() {
             <PainelTesouro busca={busca} apenasFavoritos={favoritos} />
           </TabsContent>
 
+          <TabsContent value="cripto" className="mt-4">
+            <PainelCripto
+              intervaloMs={intervalo}
+              busca={busca}
+              apenasFavoritos={favoritos}
+              aoAtualizar={aoAtualizar}
+            />
+          </TabsContent>
 
 
-          {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes" && a.id !== "etfs").map((a) => (
+
+          {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes" && a.id !== "etfs" && a.id !== "cripto").map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
               <PainelCategoria
                 categoria={a.categoria as CategoriaMercado}
