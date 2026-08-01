@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, AlertTriangle, Star } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip as _T0 } from "@/components/ui/tooltip";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { BadgeCategoria } from "@/components/cripto/badge-categoria";
