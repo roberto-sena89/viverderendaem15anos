@@ -128,8 +128,20 @@ export function TabelaCripto({
   );
 
   return (
-    <div className="-mx-1 overflow-x-auto px-1">
-      <table className="w-full min-w-[900px] border-separate border-spacing-0 text-sm">
+    <div className="w-full overflow-x-auto">
+      <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
+        <colgroup>
+          <col className="w-10" />
+          <col className="w-[210px]" />
+          <col className="w-[104px]" />
+          <col className="w-[104px]" />
+          {COLUNAS_VAR.map((c) => (
+            <col key={c.id} className={`w-[76px] ${c.classe ?? ""}`} />
+          ))}
+          <col className="w-[104px]" />
+          <col className="hidden w-[92px] md:table-column" />
+          <col className="hidden w-[92px] sm:table-column" />
+        </colgroup>
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted/80 [&>th]:backdrop-blur">
             <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
@@ -137,7 +149,7 @@ export function TabelaCripto({
             </Cabecalho>
             <Cabecalho
               coluna="ticker"
-              className="sticky left-10 z-40 min-w-[200px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
+              className="sticky left-10 z-40 text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
             >
               Ativo
             </Cabecalho>
