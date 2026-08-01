@@ -98,9 +98,9 @@ export function FiltrosCripto({
   aoLimpar: () => void;
 }) {
   return (
-    <div className="space-y-5">
-      <div>
-        <p className="mb-2 text-xs tracking-[0.08em] text-muted-foreground uppercase">Categoria</p>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <p className="text-xs tracking-[0.08em] text-muted-foreground uppercase">Categoria</p>
         <div className="flex flex-wrap gap-1.5">
           {CATEGORIAS.map((c) => {
             const ativa = categorias.includes(c);
@@ -123,7 +123,7 @@ export function FiltrosCripto({
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Capitalização mínima</span>
@@ -166,7 +166,7 @@ export function FiltrosCripto({
         />
       </div>
 
-      <Button variant="outline" size="sm" className="w-full" onClick={aoLimpar}>
+      <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={aoLimpar}>
         Limpar filtros
       </Button>
     </div>

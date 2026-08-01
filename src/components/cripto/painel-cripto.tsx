@@ -146,11 +146,27 @@ export function PainelCripto({
 
         <ConversorCripto linhas={data?.linhas ?? []} usdBrl={usdBrl} />
 
+        <div className={`panel rounded-xl p-3 ${mostrarFiltros ? "" : "hidden lg:block"}`}>
+          <FiltrosCripto
+            categorias={categorias}
+            alternarCategoria={(c) =>
+              setCategorias((cs) => (cs.includes(c) ? cs.filter((x) => x !== c) : [...cs, c]))
+            }
+            faixas={faixas}
+            definirFaixas={setFaixas}
+            aoLimpar={() => {
+              setCategorias([]);
+              setFaixas(FAIXAS_PADRAO);
+            }}
+          />
+        </div>
+
         <ComparadorCripto
           linhas={comparadas}
           usdBrl={usdBrl}
           aoRemover={(id) => setSelecionados((s) => s.filter((x) => x !== id))}
         />
+
 
         <div className="panel overflow-hidden rounded-xl">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2.5">
@@ -193,60 +209,39 @@ export function PainelCripto({
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-[240px_minmax(0,1fr)]">
-            <aside
-              className={`border-b border-border p-3 lg:border-r lg:border-b-0 ${
-                mostrarFiltros ? "" : "hidden lg:block"
-              }`}
-            >
-              <FiltrosCripto
-                categorias={categorias}
-                alternarCategoria={(c) =>
-                  setCategorias((cs) => (cs.includes(c) ? cs.filter((x) => x !== c) : [...cs, c]))
-                }
-                faixas={faixas}
-                definirFaixas={setFaixas}
-                aoLimpar={() => {
-                  setCategorias([]);
-                  setFaixas(FAIXAS_PADRAO);
-                }}
-              />
-            </aside>
-
-            <div className="min-w-0">
-              {linhas.length === 0 ? (
-                <p className="p-6 text-sm text-muted-foreground">
-                  Nenhuma criptomoeda corresponde aos filtros aplicados.
-                </p>
-              ) : (
-                <>
-                  <div className="hidden md:block">
-                    <TabelaCripto
-                      linhas={linhas}
-                      usdBrl={usdBrl}
-                      ordem={ordem}
-                      aoOrdenar={ordenar}
-                      favoritos={favoritos}
-                      aoFavoritar={alternar}
-                      posicoes={posicoes}
-
-                      aoAbrir={setDetalhe}
-                    />
-                  </div>
-                  <div className="md:hidden">
-                    <CardsCripto
-                      linhas={linhas}
-                      usdBrl={usdBrl}
-                      favoritos={favoritos}
-                      aoFavoritar={alternar}
-                      posicoes={posicoes}
-                      aoAbrir={setDetalhe}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
+          <div className="min-w-0">
+            {linhas.length === 0 ? (
+              <p className="p-6 text-sm text-muted-foreground">
+                Nenhuma criptomoeda corresponde aos filtros aplicados.
+              </p>
+            ) : (
+              <>
+                <div className="hidden md:block">
+                  <TabelaCripto
+                    linhas={linhas}
+                    usdBrl={usdBrl}
+                    ordem={ordem}
+                    aoOrdenar={ordenar}
+                    favoritos={favoritos}
+                    aoFavoritar={alternar}
+                    posicoes={posicoes}
+                    aoAbrir={setDetalhe}
+                  />
+                </div>
+                <div className="md:hidden">
+                  <CardsCripto
+                    linhas={linhas}
+                    usdBrl={usdBrl}
+                    favoritos={favoritos}
+                    aoFavoritar={alternar}
+                    posicoes={posicoes}
+                    aoAbrir={setDetalhe}
+                  />
+                </div>
+              </>
+            )}
           </div>
+
         </div>
 
         <p className="text-xs text-muted-foreground">
