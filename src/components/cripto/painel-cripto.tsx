@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +15,7 @@ import {
 } from "@/components/cripto/filtros-cripto";
 import { TabelaCripto, type ColunaOrdem, type OrdemCripto, type PosicaoCarteira } from "@/components/cripto/tabela-cripto";
 import { CardsCripto } from "@/components/cripto/cards-cripto";
+import { SkeletonLinhasCripto } from "@/components/cripto/skeleton-linhas-cripto";
 import { ModalCripto } from "@/components/cripto/modal-cripto";
 import { ComparadorCripto, ConversorCripto } from "@/components/cripto/conversor-cripto";
 import { gradeCripto } from "@/lib/cripto.functions";
