@@ -131,10 +131,13 @@ export function TabelaCripto({
               Cotação (USD)
             </Cabecalho>
             <Cabecalho className="bg-muted/60 text-right">Cotação (R$)</Cabecalho>
-
+            <Cabecalho coluna="variacao1h" className="bg-muted/60 text-right">
+              Var. 1h
+            </Cabecalho>
             <Cabecalho coluna="variacao24h" className="bg-muted/60 text-right">
               Var. 24h
             </Cabecalho>
+
             <Cabecalho coluna="capitalizacao" className="bg-muted/60 text-right">
               Capitalização
             </Cabecalho>
