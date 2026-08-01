@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, AlertTriangle, Star } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { BadgeCategoria } from "@/components/cripto/badge-categoria";
 import { corVar, fmtCompacto, fmtPct, fmtPreco } from "@/components/cripto/formatos-cripto";
@@ -67,8 +67,6 @@ export function TabelaCripto({
   aoOrdenar,
   favoritos,
   aoFavoritar,
-  selecionados,
-  aoSelecionar,
   posicoes,
   aoAbrir,
 }: {
@@ -78,9 +76,8 @@ export function TabelaCripto({
   aoOrdenar: (c: ColunaOrdem) => void;
   favoritos: string[];
   aoFavoritar: (ticker: string) => void;
-  selecionados: string[];
-  aoSelecionar: (id: string) => void;
   posicoes: Map<string, PosicaoCarteira>;
+
   aoAbrir: (l: LinhaCripto) => void;
 }) {
   const flash = useFlashPrecos(linhas);
@@ -118,16 +115,15 @@ export function TabelaCripto({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[1080px] border-separate border-spacing-0 text-sm">
+      <table className="w-full min-w-[1040px] border-separate border-spacing-0 text-sm">
         <thead className="text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr>
-            <th className="sticky left-0 z-20 w-8 bg-muted/60 px-2 py-2 backdrop-blur" />
-            <Cabecalho coluna="rank" className="sticky left-8 z-20 w-12 bg-muted/60 text-left backdrop-blur">
+            <Cabecalho coluna="rank" className="sticky left-0 z-20 w-12 bg-muted/60 text-left backdrop-blur">
               #
             </Cabecalho>
             <Cabecalho
               coluna="ticker"
-              className="sticky left-20 z-20 min-w-[210px] bg-muted/60 text-left backdrop-blur"
+              className="sticky left-12 z-20 min-w-[210px] bg-muted/60 text-left backdrop-blur"
             >
               Ativo
             </Cabecalho>
@@ -135,6 +131,7 @@ export function TabelaCripto({
               Cotação (USD)
             </Cabecalho>
             <Cabecalho className="bg-muted/60 text-right">Cotação (R$)</Cabecalho>
+
             <Cabecalho coluna="variacao24h" className="bg-muted/60 text-right">
               Var. 24h
             </Cabecalho>
@@ -162,7 +159,6 @@ export function TabelaCripto({
               posicao && posicao.precoMedio > 0 && brl !== null
                 ? (brl / posicao.precoMedio - 1) * 100
                 : null;
-            const marcado = selecionados.includes(l.id);
 
             return (
               <tr
@@ -173,19 +169,12 @@ export function TabelaCripto({
                 }`}
               >
                 <td
-                  className={`sticky left-0 z-10 bg-background px-2 py-2 ${posicao ? "border-l-2 border-l-primary" : ""}`}
-                  onClick={(e) => e.stopPropagation()}
+                  className={`sticky left-0 z-10 bg-background px-2 py-2 text-xs text-muted-foreground tabular-nums ${posicao ? "border-l-2 border-l-primary" : ""}`}
                 >
-                  <Checkbox
-                    checked={marcado}
-                    onCheckedChange={() => aoSelecionar(l.id)}
-                    aria-label={`Selecionar ${l.nome} para comparação`}
-                  />
-                </td>
-                <td className="sticky left-8 z-10 bg-background px-2 py-2 text-xs text-muted-foreground tabular-nums">
                   {l.rank ?? "—"}
                 </td>
-                <td className="sticky left-20 z-10 min-w-[210px] bg-background px-2 py-2">
+                <td className="sticky left-12 z-10 min-w-[210px] bg-background px-2 py-2">
+
                   <div className="flex items-center gap-2">
                     <button
                       type="button"

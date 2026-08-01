@@ -115,8 +115,8 @@ export function PainelCripto({
   const ordenar = (coluna: ColunaOrdem) =>
     setOrdem((o) => (o.coluna === coluna ? { coluna, desc: !o.desc } : { coluna, desc: true }));
 
-  const alternarSelecao = (id: string) =>
-    setSelecionados((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id].slice(-4)));
+
+
 
   if (isLoading) {
     return (
@@ -226,9 +226,8 @@ export function PainelCripto({
                       aoOrdenar={ordenar}
                       favoritos={favoritos}
                       aoFavoritar={alternar}
-                      selecionados={selecionados}
-                      aoSelecionar={alternarSelecao}
                       posicoes={posicoes}
+
                       aoAbrir={setDetalhe}
                     />
                   </div>
