@@ -113,14 +113,32 @@ export function PainelCripto({
   }, [data, busca, apenasFavoritos, favoritos, categorias, faixas, ordem, ranking]);
 
   const [visiveis, setVisiveis] = useState(PAGINA);
+  /** Quantas linhas-fantasma mostrar enquanto o próximo lote entra na grade. */
+  const [carregandoMais, setCarregandoMais] = useState(0);
 
   // Volta para a primeira página sempre que filtros/ordenação mudam
   useEffect(() => {
     setVisiveis(PAGINA);
+    setCarregandoMais(0);
   }, [busca, apenasFavoritos, categorias, faixas, ordem, ranking]);
+
+  // Limpa qualquer lote pendente ao desmontar
+  useEffect(() => () => setCarregandoMais(0), []);
 
   const linhasVisiveis = useMemo(() => linhas.slice(0, visiveis), [linhas, visiveis]);
   const restantes = linhas.length - linhasVisiveis.length;
+
+  /** Revela mais moedas exibindo skeletons por um instante (percepção de carregamento). */
+  const carregarMais = (quantidade: number) => {
+    if (carregandoMais > 0) return;
+    const lote = Math.min(quantidade, restantes);
+    if (lote <= 0) return;
+    setCarregandoMais(lote);
+    window.setTimeout(() => {
+      setVisiveis((v) => v + lote);
+      setCarregandoMais(0);
+    }, 400);
+  };
 
   const comparadas = useMemo(
     () => (data?.linhas ?? []).filter((l) => selecionados.includes(l.id)),
