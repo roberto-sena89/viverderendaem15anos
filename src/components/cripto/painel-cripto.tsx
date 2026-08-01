@@ -114,7 +114,7 @@ export function PainelCripto({
       const vb = (b[ordem.coluna] as number | null) ?? (ordem.desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY);
       return fator * (va - vb);
     });
-  }, [data, busca, apenasFavoritos, favoritos, categorias, faixas, ordem, ranking]);
+  }, [data, busca, buscaLocal, apenasFavoritos, favoritos, categorias, faixas, ordem, ranking]);
 
   const [visiveis, setVisiveis] = useState(PAGINA);
   /** Quantas linhas-fantasma mostrar enquanto o próximo lote entra na grade. */
@@ -124,7 +124,7 @@ export function PainelCripto({
   useEffect(() => {
     setVisiveis(PAGINA);
     setCarregandoMais(0);
-  }, [busca, apenasFavoritos, categorias, faixas, ordem, ranking]);
+  }, [busca, buscaLocal, apenasFavoritos, categorias, faixas, ordem, ranking]);
 
   // Limpa qualquer lote pendente ao desmontar
   useEffect(() => () => setCarregandoMais(0), []);
