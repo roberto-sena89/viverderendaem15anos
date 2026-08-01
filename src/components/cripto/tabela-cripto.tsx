@@ -161,7 +161,7 @@ export function TabelaCripto({
         tabIndex={0}
         role="region"
         aria-label="Tabela de criptomoedas — role na horizontal para ver mais colunas"
-        className="w-full snap-x snap-proximity scroll-pl-[216px] overflow-x-auto overscroll-x-contain scroll-smooth [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] focus:outline-none [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
+        className="w-full overflow-x-auto overscroll-x-contain scroll-smooth [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] focus:outline-none [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
       >
         <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
@@ -175,7 +175,7 @@ export function TabelaCripto({
             >
               Ativo
             </Cabecalho>
-            <Cabecalho coluna="precoUsd" className="w-[104px] snap-start text-right">
+            <Cabecalho coluna="precoUsd" className="w-[104px] text-right">
               Preço (US$)
             </Cabecalho>
             <Cabecalho className="w-[104px] text-right">Preço (R$)</Cabecalho>
