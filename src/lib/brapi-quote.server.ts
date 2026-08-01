@@ -28,7 +28,9 @@ export type CotacaoBrapi = {
   spark: number[];
 };
 
-const TTL_MS = 5_000;
+const TTL_MS = 30_000;
+/** Após um 429, para de bater na BRAPI por este período (serve cache antigo). */
+const COOLDOWN_429_MS = 60_000;
 const NAVEGADOR = {
   "User-Agent":
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
@@ -37,6 +39,28 @@ const NAVEGADOR = {
 
 const cache = new Map<string, { em: number; valor: CotacaoBrapi }>();
 const emVoo = new Map<string, Promise<CotacaoBrapi>>();
+let bloqueadoAte = 0;
+
+function vazio(symbol: string): CotacaoBrapi {
+  return {
+    symbol: symbol.toUpperCase(),
+    shortName: null,
+    longName: null,
+    currency: "BRL",
+    regularMarketPrice: null,
+    regularMarketChange: null,
+    regularMarketChangePercent: null,
+    regularMarketOpen: null,
+    regularMarketDayHigh: null,
+    regularMarketDayLow: null,
+    regularMarketPreviousClose: null,
+    regularMarketVolume: null,
+    regularMarketTime: null,
+    marketState: null,
+    spark: [],
+  };
+}
+
 
 function erroDeStatus(status: number): string {
   if (status === 401 || status === 403) return "Token da BRAPI inválido ou sem permissão.";
@@ -79,9 +103,11 @@ async function buscarNaBrapi(symbol: string): Promise<CotacaoBrapi> {
       continue;
     }
     if (res.status === 429 || res.status >= 500) {
+      if (res.status === 429) bloqueadoAte = Date.now() + COOLDOWN_429_MS;
       ultimoErro = erroDeStatus(res.status);
       continue;
     }
+
     if (!res.ok) {
       const detalhe = await res.text().catch(() => "");
       if (res.status === 400 && comHistorico) {
@@ -132,12 +158,16 @@ async function buscarNaBrapi(symbol: string): Promise<CotacaoBrapi> {
   throw new Error(ultimoErro);
 }
 
-/** Cotação de um ativo com cache de 5s e deduplicação de chamadas simultâneas. */
+/** Cotação com cache, deduplicação e degradação suave em caso de limite (429). */
 export async function getQuote(symbol: string): Promise<CotacaoBrapi> {
   const chave = symbol.trim().toUpperCase();
   const agora = Date.now();
   const salvo = cache.get(chave);
   if (salvo && agora - salvo.em < TTL_MS) return salvo.valor;
+
+  // Em cooldown por excesso de requisições: serve o último preço conhecido
+  // (ou um registro vazio) em vez de derrubar a tela com erro.
+  if (agora < bloqueadoAte) return salvo?.valor ?? vazio(chave);
 
   const pendente = emVoo.get(chave);
   if (pendente) return pendente;
@@ -147,10 +177,8 @@ export async function getQuote(symbol: string): Promise<CotacaoBrapi> {
       cache.set(chave, { em: Date.now(), valor });
       return valor;
     })
-    .catch((e) => {
-      if (salvo) return salvo.valor; // degrada para o último preço conhecido
-      throw e;
-    })
+    .catch(() => salvo?.valor ?? vazio(chave)) // nunca propaga o erro para a UI
+
     .finally(() => emVoo.delete(chave));
 
   emVoo.set(chave, promessa);
