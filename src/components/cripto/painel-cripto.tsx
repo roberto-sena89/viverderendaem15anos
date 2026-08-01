@@ -228,7 +228,6 @@ export function PainelCripto({
                       aoFavoritar={alternar}
                       posicoes={posicoes}
 
-                      posicoes={posicoes}
                       aoAbrir={setDetalhe}
                     />
                   </div>
