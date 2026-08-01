@@ -158,12 +158,16 @@ async function buscarNaBrapi(symbol: string): Promise<CotacaoBrapi> {
   throw new Error(ultimoErro);
 }
 
-/** Cotação de um ativo com cache de 5s e deduplicação de chamadas simultâneas. */
+/** Cotação com cache, deduplicação e degradação suave em caso de limite (429). */
 export async function getQuote(symbol: string): Promise<CotacaoBrapi> {
   const chave = symbol.trim().toUpperCase();
   const agora = Date.now();
   const salvo = cache.get(chave);
   if (salvo && agora - salvo.em < TTL_MS) return salvo.valor;
+
+  // Em cooldown por excesso de requisições: serve o último preço conhecido
+  // (ou um registro vazio) em vez de derrubar a tela com erro.
+  if (agora < bloqueadoAte) return salvo?.valor ?? vazio(chave);
 
   const pendente = emVoo.get(chave);
   if (pendente) return pendente;
@@ -173,10 +177,8 @@ export async function getQuote(symbol: string): Promise<CotacaoBrapi> {
       cache.set(chave, { em: Date.now(), valor });
       return valor;
     })
-    .catch((e) => {
-      if (salvo) return salvo.valor; // degrada para o último preço conhecido
-      throw e;
-    })
+    .catch(() => salvo?.valor ?? vazio(chave)) // nunca propaga o erro para a UI
+
     .finally(() => emVoo.delete(chave));
 
   emVoo.set(chave, promessa);
