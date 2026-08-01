@@ -130,18 +130,6 @@ export function TabelaCripto({
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
-        <colgroup>
-          <col className="w-10" />
-          <col className="w-[210px]" />
-          <col className="w-[104px]" />
-          <col className="w-[104px]" />
-          {COLUNAS_VAR.map((c) => (
-            <col key={c.id} className={`w-[76px] ${c.classe ?? ""}`} />
-          ))}
-          <col className="w-[104px]" />
-          <col className="hidden w-[92px] md:table-column" />
-          <col className="hidden w-[92px] sm:table-column" />
-        </colgroup>
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted/80 [&>th]:backdrop-blur">
             <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
@@ -149,32 +137,34 @@ export function TabelaCripto({
             </Cabecalho>
             <Cabecalho
               coluna="ticker"
-              className="sticky left-10 z-40 text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
+              className="sticky left-10 z-40 w-[190px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
             >
               Ativo
             </Cabecalho>
-            <Cabecalho coluna="precoUsd" className="text-right">
+            <Cabecalho coluna="precoUsd" className="w-[94px] text-right">
               Preço (US$)
             </Cabecalho>
-            <Cabecalho className="text-right">Preço (R$)</Cabecalho>
+            <Cabecalho className="w-[94px] text-right">Preço (R$)</Cabecalho>
             {COLUNAS_VAR.map((c, i) => (
               <Cabecalho
                 key={c.id}
                 coluna={c.id}
-                className={`text-right ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
+                className={`w-[70px] text-right ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
               >
                 {c.rotulo}
               </Cabecalho>
             ))}
-            <Cabecalho coluna="capitalizacao" className="border-l border-border/70 text-right">
+            <Cabecalho coluna="capitalizacao" className="w-[88px] border-l border-border/70 text-right">
               Cap. mercado
             </Cabecalho>
-            <Cabecalho coluna="volume24h" className="hidden text-right md:table-cell">
+            <Cabecalho coluna="volume24h" className="hidden w-[84px] text-right md:table-cell">
               Vol. 24h
             </Cabecalho>
-            <th className="hidden border-b border-border bg-muted/80 px-2 py-2 text-right backdrop-blur sm:table-cell">
+            <th className="hidden w-[76px] border-b border-border bg-muted/80 px-2 py-2 text-right backdrop-blur sm:table-cell">
               7 dias
             </th>
+          </tr>
+        </thead>
           </tr>
         </thead>
         <tbody>
