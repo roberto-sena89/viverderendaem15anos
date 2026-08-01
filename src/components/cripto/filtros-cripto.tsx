@@ -166,7 +166,7 @@ export function FiltrosCripto({
         />
       </div>
 
-      <Button variant="outline" size="sm" className="w-full" onClick={aoLimpar}>
+      <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={aoLimpar}>
         Limpar filtros
       </Button>
     </div>
