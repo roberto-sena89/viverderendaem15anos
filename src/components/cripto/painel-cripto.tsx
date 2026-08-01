@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -62,6 +62,7 @@ export function PainelCripto({
   const [selecionados, setSelecionados] = useState<string[]>([]);
   const [detalhe, setDetalhe] = useState<LinhaCripto | null>(null);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [buscaLocal, setBuscaLocal] = useState("");
 
   const intervalo = intervaloMs > 0 ? Math.max(intervaloMs, 15_000) : INTERVALO_MINIMO;
 
@@ -89,10 +90,12 @@ export function PainelCripto({
   const usdBrl = data?.usdBrl ?? 0;
 
   const linhas = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
+    const termo = `${busca} ${buscaLocal}`.trim().toLowerCase();
+    const termos = termo.split(/\s+/).filter(Boolean);
     const base = (data?.linhas ?? []).filter((l) => {
       if (apenasFavoritos && !favoritos.includes(l.ticker)) return false;
-      if (termo && !`${l.ticker} ${l.nome}`.toLowerCase().includes(termo)) return false;
+      const alvo = `${l.ticker} ${l.nome}`.toLowerCase();
+      if (termos.length && !termos.every((t) => alvo.includes(t))) return false;
       if (categorias.length > 0 && !categorias.includes(l.categoria)) return false;
       if ((l.capitalizacao ?? 0) < faixas.capMin * 1e6) return false;
       const dentro = (v: number | null, [min, max]: [number, number]) =>
