@@ -67,8 +67,6 @@ export function TabelaCripto({
   aoOrdenar,
   favoritos,
   aoFavoritar,
-  selecionados,
-  aoSelecionar,
   posicoes,
   aoAbrir,
 }: {
@@ -78,9 +76,8 @@ export function TabelaCripto({
   aoOrdenar: (c: ColunaOrdem) => void;
   favoritos: string[];
   aoFavoritar: (ticker: string) => void;
-  selecionados: string[];
-  aoSelecionar: (id: string) => void;
   posicoes: Map<string, PosicaoCarteira>;
+
   aoAbrir: (l: LinhaCripto) => void;
 }) {
   const flash = useFlashPrecos(linhas);
