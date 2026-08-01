@@ -1,6 +1,4 @@
-# Future Wealth Navigator
-
-Excelente ideia. Se você vai utilizar o Lovable, não peça apenas um site. Peça um produto SaaS. O Lovable entrega resultados muito melhores quando recebe contexto completo sobre UX, arquitetura, identidade visual, funcionalidades e banco de dados.
+# VIVER DE RENDA EM 15 ANOS
 
 Abaixo está um prompt profissional, escrito como se fosse um Product Manager de uma fintech.
 
