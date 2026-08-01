@@ -144,7 +144,11 @@ export function PainelCripto({
           aoAbrir={setDetalhe}
         />
 
-        <ConversorCripto linhas={data?.linhas ?? []} usdBrl={usdBrl} />
+        {/* Conversor fixo no topo (abaixo do cabeçalho) para comparar com a grade ao rolar */}
+        <div className="sticky top-[4.25rem] z-10 -mx-1 rounded-xl bg-background/80 px-1 py-1 backdrop-blur-xl sm:top-[5.75rem]">
+          <ConversorCripto linhas={data?.linhas ?? []} usdBrl={usdBrl} />
+        </div>
+
 
         <div className={`panel rounded-xl p-3 ${mostrarFiltros ? "" : "hidden lg:block"}`}>
           <FiltrosCripto
