@@ -58,12 +58,20 @@ export function useFlashPrecos(linhas: LinhaCripto[]) {
 /** Variações acompanhadas em tempo real (seta pisca quando o valor muda). */
 const CAMPOS_AO_VIVO = ["variacao1h", "variacao24h", "variacao7d"] as const;
 
-const COLUNAS_VAR: { id: ColunaOrdem; rotulo: string; campo: keyof LinhaCripto }[] = [
-  { id: "variacao7d", rotulo: "Var. 7D", campo: "variacao7d" },
-  { id: "variacao30d", rotulo: "Var. 30D", campo: "variacao30d" },
-  { id: "variacao6m", rotulo: "Var. 6M", campo: "variacao6m" },
-  { id: "variacao12m", rotulo: "Var. 12M", campo: "variacao12m" },
+const COLUNAS_VAR: {
+  id: ColunaOrdem;
+  rotulo: string;
+  campo: keyof LinhaCripto;
+  classe?: string;
+}[] = [
+  { id: "variacao1h", rotulo: "1h", campo: "variacao1h" },
+  { id: "variacao24h", rotulo: "24h", campo: "variacao24h" },
+  { id: "variacao7d", rotulo: "7D", campo: "variacao7d" },
+  { id: "variacao30d", rotulo: "30D", campo: "variacao30d", classe: "hidden lg:table-cell" },
+  { id: "variacao6m", rotulo: "6M", campo: "variacao6m", classe: "hidden xl:table-cell" },
+  { id: "variacao12m", rotulo: "12M", campo: "variacao12m", classe: "hidden xl:table-cell" },
 ];
+
 
 export function TabelaCripto({
   linhas,
