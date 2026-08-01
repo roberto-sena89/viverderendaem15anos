@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +15,7 @@ import {
 } from "@/components/cripto/filtros-cripto";
 import { TabelaCripto, type ColunaOrdem, type OrdemCripto, type PosicaoCarteira } from "@/components/cripto/tabela-cripto";
 import { CardsCripto } from "@/components/cripto/cards-cripto";
+import { SkeletonLinhasCripto } from "@/components/cripto/skeleton-linhas-cripto";
 import { ModalCripto } from "@/components/cripto/modal-cripto";
 import { ComparadorCripto, ConversorCripto } from "@/components/cripto/conversor-cripto";
 import { gradeCripto } from "@/lib/cripto.functions";
@@ -113,14 +114,32 @@ export function PainelCripto({
   }, [data, busca, apenasFavoritos, favoritos, categorias, faixas, ordem, ranking]);
 
   const [visiveis, setVisiveis] = useState(PAGINA);
+  /** Quantas linhas-fantasma mostrar enquanto o próximo lote entra na grade. */
+  const [carregandoMais, setCarregandoMais] = useState(0);
 
   // Volta para a primeira página sempre que filtros/ordenação mudam
   useEffect(() => {
     setVisiveis(PAGINA);
+    setCarregandoMais(0);
   }, [busca, apenasFavoritos, categorias, faixas, ordem, ranking]);
+
+  // Limpa qualquer lote pendente ao desmontar
+  useEffect(() => () => setCarregandoMais(0), []);
 
   const linhasVisiveis = useMemo(() => linhas.slice(0, visiveis), [linhas, visiveis]);
   const restantes = linhas.length - linhasVisiveis.length;
+
+  /** Revela mais moedas exibindo skeletons por um instante (percepção de carregamento). */
+  const carregarMais = (quantidade: number) => {
+    if (carregandoMais > 0) return;
+    const lote = Math.min(quantidade, restantes);
+    if (lote <= 0) return;
+    setCarregandoMais(lote);
+    window.setTimeout(() => {
+      setVisiveis((v) => v + lote);
+      setCarregandoMais(0);
+    }, 400);
+  };
 
   const comparadas = useMemo(
     () => (data?.linhas ?? []).filter((l) => selecionados.includes(l.id)),
@@ -272,10 +291,19 @@ export function PainelCripto({
                   />
                 </div>
 
+                {/* Skeletons do próximo lote: evita área vazia durante a expansão */}
+                {carregandoMais > 0 && <SkeletonLinhasCripto quantidade={carregandoMais} />}
+
                 {/* Paginação incremental */}
                 <div className="flex flex-col items-center gap-2 border-t border-border px-3 py-3 sm:flex-row sm:justify-between sm:px-4">
-                  <p className="text-xs text-muted-foreground tabular-nums">
-                    Mostrando {linhasVisiveis.length} de {linhas.length} moedas
+                  <p
+                    className="text-xs text-muted-foreground tabular-nums"
+                    aria-live="polite"
+                    aria-busy={carregandoMais > 0}
+                  >
+                    {carregandoMais > 0
+                      ? `Carregando mais ${carregandoMais} moedas…`
+                      : `Mostrando ${linhasVisiveis.length} de ${linhas.length} moedas`}
                   </p>
                   {restantes > 0 && (
                     <div className="flex flex-wrap items-center justify-center gap-1.5">
@@ -283,9 +311,13 @@ export function PainelCripto({
                         variant="outline"
                         size="sm"
                         className="h-8"
-                        onClick={() => setVisiveis((v) => v + PAGINA)}
+                        disabled={carregandoMais > 0}
+                        onClick={() => carregarMais(PAGINA)}
                       >
-                        Mostrar mais {Math.min(PAGINA, restantes)}
+                        {carregandoMais > 0 && <Loader2 className="size-3.5 animate-spin" />}
+                        {carregandoMais > 0
+                          ? "Carregando…"
+                          : `Mostrar mais ${Math.min(PAGINA, restantes)}`}
                       </Button>
                       {restantes > PAGINA && (
                         <>
@@ -293,7 +325,8 @@ export function PainelCripto({
                             variant="ghost"
                             size="sm"
                             className="h-8"
-                            onClick={() => setVisiveis((v) => v + PAGINA * 4)}
+                            disabled={carregandoMais > 0}
+                            onClick={() => carregarMais(PAGINA * 4)}
                           >
                             +{Math.min(PAGINA * 4, restantes)}
                           </Button>
@@ -301,7 +334,8 @@ export function PainelCripto({
                             variant="ghost"
                             size="sm"
                             className="h-8"
-                            onClick={() => setVisiveis(linhas.length)}
+                            disabled={carregandoMais > 0}
+                            onClick={() => carregarMais(restantes)}
                           >
                             Ver todas
                           </Button>
@@ -309,7 +343,7 @@ export function PainelCripto({
                       )}
                     </div>
                   )}
-                  {restantes === 0 && visiveis > PAGINA && (
+                  {restantes === 0 && visiveis > PAGINA && carregandoMais === 0 && (
                     <Button
                       variant="ghost"
                       size="sm"
