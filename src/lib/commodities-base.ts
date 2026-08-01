@@ -219,7 +219,6 @@ export const COMMODITIES: DefCommodity[] = [
     bolsa: "COMEX",
     unidade: "libra-peso",
     simbolos: ["HG=F"],
-    fator: CENTAVOS_LB,
     descricao:
       'Chamado de "doutor cobre" por antecipar ciclos econômicos: é insumo de energia, construção e eletrificação.',
   },

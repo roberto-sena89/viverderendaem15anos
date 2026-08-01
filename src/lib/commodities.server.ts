@@ -99,6 +99,9 @@ async function usdBrl(): Promise<number> {
  * Uma commodity
  * ------------------------------------------------------------------ */
 
+/** Descarta variações diárias implausíveis (série com furos na fonte). */
+const sanear = (v: number | null) => (v === null || Math.abs(v) > 25 ? null : v);
+
 async function commodity(def: DefCommodity): Promise<LinhaCommodity> {
   const base: LinhaCommodity = {
     codigo: def.codigo,
@@ -148,7 +151,9 @@ async function commodity(def: DefCommodity): Promise<LinhaCommodity> {
         ...base,
         precoUsd: preco,
         fechamentoAnterior: anteriorConv,
-        variacaoDia: anteriorConv && anteriorConv > 0 ? ((preco - anteriorConv) / anteriorConv) * 100 : null,
+        // Contratos pouco líquidos têm falhas na série diária: uma "variação"
+        // absurda indica ponto anterior inválido, não movimento real de preço.
+        variacaoDia: sanear(anteriorConv && anteriorConv > 0 ? ((preco - anteriorConv) / anteriorConv) * 100 : null),
         variacao12m: primeiro && primeiro > 0 ? ((preco - primeiro) / primeiro) * 100 : null,
         variacao30d: trintaAtras && trintaAtras > 0 ? ((preco - trintaAtras) / trintaAtras) * 100 : null,
         minima12m: convertida.length ? Math.min(...convertida) : null,
