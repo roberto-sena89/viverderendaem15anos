@@ -173,31 +173,17 @@ export function PainelCripto({
 
 
         <div className="panel overflow-hidden rounded-xl">
-          <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2.5">
-            <div className="flex flex-wrap gap-1.5">
-              {RANKINGS.map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  aria-pressed={ranking === r.id}
-                  onClick={() => {
-                    setRanking(r.id);
-                    setOrdem(ORDEM_POR_RANKING[r.id]);
-                  }}
-                  className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                    ranking === r.id
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  {r.rotulo}
-                </button>
-              ))}
-            </div>
-            <div className="ml-auto flex items-center gap-2">
-              <span className="text-xs text-muted-foreground tabular-nums">
+          {/* Cabeçalho da grade: título + contagem à esquerda, ações à direita */}
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border px-3 py-2.5 sm:px-4">
+            <div className="flex min-w-0 items-center gap-2">
+              <h2 className="truncate text-sm font-semibold tracking-tight sm:text-base">
+                Ranking de criptomoedas
+              </h2>
+              <span className="shrink-0 rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[0.68rem] font-semibold tabular-nums text-muted-foreground">
                 {linhas.length} moeda{linhas.length === 1 ? "" : "s"}
               </span>
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5">
               <Button
                 variant="outline"
                 size="sm"
@@ -208,10 +194,40 @@ export function PainelCripto({
               </Button>
               <Button variant="ghost" size="sm" className="h-8" onClick={() => refetch()}>
                 <RefreshCw className={`size-3.5 ${isFetching ? "animate-spin" : ""}`} />
-                Atualizar
+                <span className="hidden sm:inline">Atualizar</span>
               </Button>
             </div>
           </div>
+
+          {/* Rankings: rolagem horizontal no mobile, quebra natural no desktop */}
+          <div className="border-b border-border bg-muted/20 px-3 py-2 sm:px-4">
+            <div
+              role="tablist"
+              aria-label="Rankings de criptomoedas"
+              className="-mx-1 flex snap-x gap-1.5 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none] lg:flex-wrap lg:overflow-visible [&::-webkit-scrollbar]:hidden"
+            >
+              {RANKINGS.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={ranking === r.id}
+                  onClick={() => {
+                    setRanking(r.id);
+                    setOrdem(ORDEM_POR_RANKING[r.id]);
+                  }}
+                  className={`shrink-0 snap-start rounded-full border px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
+                    ranking === r.id
+                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                      : "border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {r.rotulo}
+                </button>
+              ))}
+            </div>
+          </div>
+
 
           <div className="min-w-0">
             {linhas.length === 0 ? (
