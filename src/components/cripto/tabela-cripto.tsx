@@ -163,7 +163,7 @@ export function TabelaCripto({
         aria-label="Tabela de criptomoedas — role na horizontal para ver mais colunas"
         className="w-full overflow-x-auto overscroll-x-contain scroll-smooth [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] focus:outline-none [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
       >
-        <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
+        <table className="w-full min-w-[880px] table-fixed border-separate border-spacing-0 text-sm">to
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted [&>th]:backdrop-blur">
             <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
