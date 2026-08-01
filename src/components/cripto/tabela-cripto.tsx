@@ -67,9 +67,9 @@ const COLUNAS_VAR: {
   { id: "variacao1h", rotulo: "1h", campo: "variacao1h" },
   { id: "variacao24h", rotulo: "24h", campo: "variacao24h" },
   { id: "variacao7d", rotulo: "7D", campo: "variacao7d" },
-  { id: "variacao30d", rotulo: "30D", campo: "variacao30d", classe: "hidden lg:table-cell" },
-  { id: "variacao6m", rotulo: "6M", campo: "variacao6m", classe: "hidden xl:table-cell" },
-  { id: "variacao12m", rotulo: "12M", campo: "variacao12m", classe: "hidden xl:table-cell" },
+  { id: "variacao30d", rotulo: "30D", campo: "variacao30d", classe: "hidden xl:table-cell" },
+  { id: "variacao6m", rotulo: "6M", campo: "variacao6m", classe: "hidden 2xl:table-cell" },
+  { id: "variacao12m", rotulo: "12M", campo: "variacao12m", classe: "hidden 2xl:table-cell" },
 ];
 
 
@@ -128,8 +128,8 @@ export function TabelaCripto({
   );
 
   return (
-    <div className="-mx-1 overflow-x-auto px-1">
-      <table className="w-full min-w-[900px] border-separate border-spacing-0 text-sm">
+    <div className="w-full overflow-x-auto">
+      <table className="w-full min-w-[820px] table-fixed border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
           <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted/80 [&>th]:backdrop-blur">
             <Cabecalho coluna="rank" className="sticky left-0 z-40 w-10 text-left">
@@ -137,30 +137,30 @@ export function TabelaCripto({
             </Cabecalho>
             <Cabecalho
               coluna="ticker"
-              className="sticky left-10 z-40 min-w-[200px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
+              className="sticky left-10 z-40 w-[176px] text-left after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border"
             >
               Ativo
             </Cabecalho>
-            <Cabecalho coluna="precoUsd" className="text-right">
+            <Cabecalho coluna="precoUsd" className="w-[104px] text-right">
               Preço (US$)
             </Cabecalho>
-            <Cabecalho className="text-right">Preço (R$)</Cabecalho>
+            <Cabecalho className="w-[104px] text-right">Preço (R$)</Cabecalho>
             {COLUNAS_VAR.map((c, i) => (
               <Cabecalho
                 key={c.id}
                 coluna={c.id}
-                className={`text-right ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
+                className={`w-[70px] text-right ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
               >
                 {c.rotulo}
               </Cabecalho>
             ))}
-            <Cabecalho coluna="capitalizacao" className="border-l border-border/70 text-right">
+            <Cabecalho coluna="capitalizacao" className="w-[84px] border-l border-border/70 text-right">
               Cap. mercado
             </Cabecalho>
-            <Cabecalho coluna="volume24h" className="hidden text-right md:table-cell">
+            <Cabecalho coluna="volume24h" className="hidden w-[80px] text-right md:table-cell">
               Vol. 24h
             </Cabecalho>
-            <th className="hidden border-b border-border bg-muted/80 px-2 py-2 text-right backdrop-blur sm:table-cell">
+            <th className="hidden w-[70px] border-b border-border bg-muted/80 px-2 py-2 text-right backdrop-blur sm:table-cell">
               7 dias
             </th>
           </tr>
@@ -189,8 +189,9 @@ export function TabelaCripto({
                 >
                   {l.rank ?? "—"}
                 </td>
-                <td className="sticky left-10 z-10 min-w-[200px] bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30">
-                  <div className="flex items-center gap-2">
+                <td className="sticky left-10 z-10 bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30">
+                  <div className="flex min-w-0 items-center gap-2">
+
                     <button
                       type="button"
                       aria-label={favorito ? `Remover ${l.ticker} dos favoritos` : `Favoritar ${l.ticker}`}
