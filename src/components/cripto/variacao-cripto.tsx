@@ -59,7 +59,7 @@ export function CelulaVariacao({
 
   return (
     <span
-      className={`inline-flex items-center justify-end gap-1 tabular-nums ${corVar(valor, stable)} ${
+      className={`inline-flex items-center justify-center gap-1 tabular-nums ${corVar(valor, stable)} ${
         movimento === "alta" ? "flash-alta" : movimento === "baixa" ? "flash-baixa" : ""
       } ${className ?? ""}`}
     >
