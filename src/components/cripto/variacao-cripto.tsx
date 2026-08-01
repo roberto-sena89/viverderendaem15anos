@@ -11,7 +11,7 @@ export type DirecaoVar = Record<string, "alta" | "baixa">;
  * Detecta em qual direção cada variação se moveu entre duas sincronizações,
  * para piscar a seta em tempo real (dura ~1,6s, mesma janela do flash de preço).
  */
-export function useDirecaoVariacoes(linhas: LinhaCripto[], campos: Campo[]): DirecaoVar {
+export function useDirecaoVariacoes(linhas: LinhaCripto[], campos: readonly Campo[]): DirecaoVar {
   const [direcao, setDirecao] = useState<DirecaoVar>({});
   const anteriores = useRef<Record<string, number>>({});
 
