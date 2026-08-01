@@ -96,6 +96,25 @@ export function TabelaCripto({
   const flash = useFlashPrecos(linhas);
   const direcao = useDirecaoVariacoes(linhas, CAMPOS_AO_VIVO);
 
+  // Rolagem horizontal: sombra na coluna fixa quando há conteúdo escondido à esquerda
+  const rolagem = useRef<HTMLDivElement>(null);
+  const [inicio, setInicio] = useState(true);
+  const [fim, setFim] = useState(false);
+
+  const aoRolar = () => {
+    const el = rolagem.current;
+    if (!el) return;
+    setInicio(el.scrollLeft <= 4);
+    setFim(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    aoRolar();
+  }, [linhas.length]);
+
+  const sombra = inicio ? "" : "shadow-[8px_0_12px_-8px_rgba(0,0,0,0.55)]";
+
+
   const Cabecalho = ({
     coluna,
     children,
