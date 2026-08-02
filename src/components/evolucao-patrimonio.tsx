@@ -172,21 +172,37 @@ function TooltipCategoria({ active, payload }: { active?: boolean; payload?: any
 }
 
 
-/** Tooltip com destaque da série sob o cursor e sem sobreposição de rótulos. */
+/** Tooltip com destaque da série sob o cursor, variação mês a mês e ganho acumulado. */
 function TooltipEvolucao({
   active,
   payload,
   label,
   destaque,
+  serie,
 }: {
   active?: boolean;
-  payload?: Array<{ dataKey?: string | number; name?: string; value?: number }>;
+  payload?: Array<{ dataKey?: string | number; name?: string; value?: number; payload?: Record<string, unknown> }>;
   label?: string;
   destaque: SerieChave | null;
+  serie?: Array<{ id?: string; rotulo?: string; patrimonio?: number; aportadoAcum?: number }>;
 }) {
   if (!active || !payload?.length) return null;
+
+  const linha = (payload[0]?.payload ?? {}) as { id?: string; rotulo?: string; patrimonio?: number; aportadoAcum?: number };
+  const patrimonio = Number(linha.patrimonio ?? 0);
+  const investido = Number(linha.aportadoAcum ?? 0);
+  const ganho = patrimonio - investido;
+  const ganhoPct = investido > 0 ? (ganho / investido) * 100 : null;
+
+  const idx = serie?.findIndex((p) => (linha.id ? p.id === linha.id : p.rotulo === linha.rotulo)) ?? -1;
+  const antes = idx > 0 ? serie?.[idx - 1] : undefined;
+  const baseAntes = Number(antes?.patrimonio ?? 0);
+  const deltaAbs = antes ? patrimonio - baseAntes : null;
+  const deltaPct = antes && baseAntes > 0 ? ((deltaAbs as number) / baseAntes) * 100 : null;
+  const fmtPct = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
+
   return (
-    <div className="pointer-events-none min-w-[11rem] rounded-xl border border-border bg-popover/95 p-3 shadow-lg backdrop-blur-sm">
+    <div className="pointer-events-none min-w-[15rem] rounded-xl border border-border bg-popover/95 p-3 shadow-lg backdrop-blur-sm">
       <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <ul className="space-y-1.5">
         {payload.map((item) => {
@@ -221,6 +237,36 @@ function TooltipEvolucao({
           );
         })}
       </ul>
+
+      <div className="mt-2 space-y-1 border-t border-border pt-2 text-[0.72rem]">
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-muted-foreground">Ganho de capital</span>
+          <span
+            className={cn("font-semibold tabular-nums", ganho >= 0 ? "text-emerald-500" : "text-destructive")}
+          >
+            {brl(ganho, 2)}
+            {ganhoPct !== null ? <span className="ml-1 text-[0.68rem]">({fmtPct(ganhoPct)})</span> : null}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-muted-foreground">Vs. mês anterior</span>
+          {deltaAbs === null ? (
+            <span className="text-muted-foreground">—</span>
+          ) : (
+            <span
+              className={cn("font-semibold tabular-nums", deltaAbs >= 0 ? "text-emerald-500" : "text-destructive")}
+            >
+              {deltaAbs >= 0 ? "+" : ""}
+              {brl(deltaAbs, 2)}
+              {deltaPct !== null ? <span className="ml-1 text-[0.68rem]">({fmtPct(deltaPct)})</span> : null}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center justify-between gap-4 font-semibold">
+          <span>Patrimônio no mês</span>
+          <span className="tabular-nums">{brl(patrimonio, 2)}</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -690,7 +736,7 @@ export function EvolucaoPatrimonio() {
                 wrapperStyle={{ outline: "none", zIndex: 30 }}
                 allowEscapeViewBox={{ x: false, y: true }}
                 offset={16}
-                content={<TooltipEvolucao destaque={destaque} />}
+                content={<TooltipEvolucao destaque={destaque} serie={dadosGrafico} />}
               />
               <Bar
                 dataKey="patrimonio"
