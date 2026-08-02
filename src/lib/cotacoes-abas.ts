@@ -36,5 +36,5 @@ export const CLASSES_LISTA_ABAS =
   "grid h-auto w-full grid-cols-2 items-stretch gap-1.5 p-1 sm:flex sm:w-max sm:gap-1";
 export const CLASSES_GATILHO_ABA =
   "block w-full min-w-0 truncate whitespace-nowrap px-2 py-1.5 text-center text-[0.6875rem] leading-tight sm:w-auto sm:px-3 sm:text-sm";
-/** Busca ocupa a largura total no mobile e largura fixa no desktop. */
-export const CLASSES_BUSCA = "h-9 w-full pl-8 text-sm sm:w-[220px]";
+/** Busca ocupa a largura total, alinhada à grade das abas (mín. 220px no desktop). */
+export const CLASSES_BUSCA = "h-9 w-full pl-8 text-sm sm:w-full sm:min-w-[220px]";
