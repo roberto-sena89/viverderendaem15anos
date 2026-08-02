@@ -113,6 +113,7 @@ function Dashboard() {
   void proventos;
 
   const [periodo, setPeriodo] = useState("12");
+  const [detalheAberto, setDetalheAberto] = useState(false);
   const [inicioCustom, setInicioCustom] = useState("");
   const [fimCustom, setFimCustom] = useState("");
   const [tipoEvolucao, setTipoEvolucao] = useState("todos");
