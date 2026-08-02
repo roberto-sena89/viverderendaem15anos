@@ -48,7 +48,7 @@ const ABAS: { id: string; rotulo: string; categoria?: CategoriaMercado }[] = [
   { id: "etfs", rotulo: "ETFs", categoria: "etfs" },
   { id: "cripto", rotulo: "Criptomoedas", categoria: "cripto" },
   { id: "commodities", rotulo: "Commodities" },
-  { id: "cambio", rotulo: "Câmbio", categoria: "cambio" },
+  
 ];
 
 const INTERVALOS = [
