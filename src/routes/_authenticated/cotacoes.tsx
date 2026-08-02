@@ -112,7 +112,7 @@ function Cotacoes() {
             </span>
           ) : null}
 
-          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:ml-auto sm:w-auto">
+          <div className="flex w-full min-w-0 basis-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto sm:basis-auto">
             <div className="relative w-full min-w-0 sm:w-auto">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
