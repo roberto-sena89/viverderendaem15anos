@@ -41,10 +41,8 @@ const normalizar = (t: string) =>
 /** Grade completa dos títulos públicos do Tesouro Direto. */
 export function PainelTesouro({
   busca,
-  apenasFavoritos,
 }: {
   busca: string;
-  apenasFavoritos: boolean;
 }) {
   const buscar = useServerFn(gradeTesouro);
   const { favoritos, alternar } = useFavoritos();
@@ -92,7 +90,6 @@ export function PainelTesouro({
   const filtradas = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     let lista = linhas.filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(`TD:${l.id}`)) return false;
       if (indexadores.length && !indexadores.includes(l.indexador)) return false;
       if (prazo !== "todos" && faixaPrazo(l.anosAteVencimento) !== prazo) return false;
       if (comCupom !== "todos" && l.jurosSemestrais !== (comCupom === "sim")) return false;
@@ -107,7 +104,7 @@ export function PainelTesouro({
       menorMinimo: (a, b) => (a.investimentoMinimo ?? Infinity) - (b.investimentoMinimo ?? Infinity),
     };
     return [...lista].sort(por[ordem]);
-  }, [linhas, busca, apenasFavoritos, favoritos, indexadores, prazo, comCupom, ordem]);
+  }, [linhas, busca, favoritos, indexadores, prazo, comCupom, ordem]);
 
   const alternarIndexador = (id: IndexadorTitulo) =>
     setIndexadores((atual) =>

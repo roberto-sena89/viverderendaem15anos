@@ -14,7 +14,6 @@ import { PainelCommodities } from "@/components/commodities/painel-commodities";
 import { PainelIndices } from "@/components/indices/painel-indices";
 import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
-import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
 import {
   ABAS_COTACOES,
   ABAS_CATEGORIA_GENERICA,
@@ -53,7 +52,6 @@ function Cotacoes() {
   const [aba, setAba] = useState("geral");
   const [busca, setBusca] = useState("");
   // Preferência do perfil: acompanha o usuário entre sessões e dispositivos.
-  const [favoritos] = useFiltroFavoritos();
   const intervalo = 30_000;
   const [pregao, setPregao] = useState(() => estadoPregao());
   const [ultima, setUltima] = useState<number | null>(null);
@@ -142,30 +140,29 @@ function Cotacoes() {
           </TabsContent>
 
           <TabsContent value="fiis" className="mt-4">
-            <PainelFiis intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+            <PainelFiis intervaloMs={intervalo} busca={busca} />
           </TabsContent>
 
           <TabsContent value="acoes" className="mt-4">
-            <PainelAcoes intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+            <PainelAcoes intervaloMs={intervalo} busca={busca} />
           </TabsContent>
 
           <TabsContent value="etfs" className="mt-4">
-            <PainelEtfs intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+            <PainelEtfs intervaloMs={intervalo} busca={busca} />
           </TabsContent>
 
           <TabsContent value="indices" className="mt-4">
-            <PainelIndices intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+            <PainelIndices intervaloMs={intervalo} busca={busca} />
           </TabsContent>
 
           <TabsContent value="tesouro" className="mt-4">
-            <PainelTesouro busca={busca} apenasFavoritos={favoritos} />
+            <PainelTesouro busca={busca} />
           </TabsContent>
 
           <TabsContent value="cripto" className="mt-4">
             <PainelCripto
               intervaloMs={intervalo}
               busca={busca}
-              apenasFavoritos={favoritos}
               aoAtualizar={aoAtualizar}
             />
           </TabsContent>
@@ -176,7 +173,6 @@ function Cotacoes() {
             <PainelCommodities
               intervaloMs={intervalo}
               busca={busca}
-              apenasFavoritos={favoritos}
               aoAtualizar={aoAtualizar}
             />
           </TabsContent>
@@ -188,7 +184,6 @@ function Cotacoes() {
                 titulo={a.rotulo}
                 intervaloMs={intervalo}
                 busca={busca}
-                apenasFavoritos={favoritos}
                 aoAtualizar={aoAtualizar}
               />
             </TabsContent>

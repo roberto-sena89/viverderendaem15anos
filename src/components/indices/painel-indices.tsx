@@ -34,11 +34,9 @@ const chaveFavorito = (codigo: string) => `IDX:${codigo}`;
 export function PainelIndices({
   intervaloMs,
   busca,
-  apenasFavoritos,
 }: {
   intervaloMs: number;
   busca: string;
-  apenasFavoritos: boolean;
 }) {
   const buscarIndices = useServerFn(gradeIndices);
   const pregao = estadoPregao();
@@ -62,7 +60,6 @@ export function PainelIndices({
   const filtradas = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     let lista = linhas.filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(chaveFavorito(l.codigo))) return false;
       if (categoria !== "todas" && l.categoria !== categoria) return false;
       if (!termo) return true;
       return l.codigo.toLowerCase().includes(termo) || l.nome.toLowerCase().includes(termo);
@@ -80,7 +77,7 @@ export function PainelIndices({
       });
     }
     return lista;
-  }, [linhas, busca, apenasFavoritos, favoritos, categoria, ordem]);
+  }, [linhas, busca, favoritos, categoria, ordem]);
 
   const destaques = useMemo(
     () =>
@@ -181,9 +178,7 @@ export function PainelIndices({
             </div>
           ) : secoes.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              {apenasFavoritos
-                ? "Nenhum índice favoritado ainda — toque na estrela de um card para acompanhá-lo aqui."
-                : "Nenhum índice encontrado para a busca."}
+              Nenhum índice encontrado para a busca.
             </p>
           ) : (
             secoes.map((s) => {

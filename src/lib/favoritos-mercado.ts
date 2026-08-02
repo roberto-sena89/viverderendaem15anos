@@ -253,16 +253,3 @@ export function useFavoritos() {
   return { favoritos, alternar, ehFavorito, sincronizado };
 }
 
-/** Estado do filtro "Meus Favoritos", também salvo no perfil. */
-export function useFiltroFavoritos(): [boolean, (valor?: boolean) => void] {
-  const { filtroFavoritos } = usePreferencias();
-
-  const definir = useCallback((valor?: boolean) => {
-    aplicar({
-      favoritos: estado.favoritos,
-      filtroFavoritos: valor ?? !estado.filtroFavoritos,
-    });
-  }, []);
-
-  return [filtroFavoritos, definir];
-}

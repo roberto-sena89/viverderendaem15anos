@@ -60,12 +60,10 @@ const chaveFavorito = (codigo: string) => `CMD:${codigo}`;
 export function PainelCommodities({
   intervaloMs,
   busca,
-  apenasFavoritos,
   aoAtualizar,
 }: {
   intervaloMs: number;
   busca: string;
-  apenasFavoritos: boolean;
   aoAtualizar?: (quando: number, parcial: boolean) => void;
 }) {
   const buscar = useServerFn(gradeCommodities);
@@ -115,7 +113,6 @@ export function PainelCommodities({
   const filtradas = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     let lista = linhas.filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(chaveFavorito(l.codigo))) return false;
       if (categoria !== "todas" && l.categoria !== categoria) return false;
       if (somenteAbertas && !mercadoCategoria(l.categoria).aberto) return false;
       if (bolsas.length > 0) {
@@ -138,7 +135,7 @@ export function PainelCommodities({
       });
     }
     return lista;
-  }, [linhas, busca, apenasFavoritos, favoritos, categoria, ordem, bolsas, somenteAbertas]);
+  }, [linhas, busca, favoritos, categoria, ordem, bolsas, somenteAbertas]);
 
   const destaques = useMemo(
     () =>
@@ -352,11 +349,9 @@ export function PainelCommodities({
             </div>
           ) : secoes.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              {apenasFavoritos
-                ? "Nenhuma commodity favoritada ainda — toque na estrela de um card para acompanhá-la aqui."
-                : filtrosAtivos > 0
-                  ? "Nenhuma commodity corresponde aos filtros de categoria, bolsa ou pregão selecionados."
-                  : "Nenhuma commodity encontrada para a busca."}
+              {filtrosAtivos > 0
+                ? "Nenhuma commodity corresponde aos filtros de categoria, bolsa ou pregão selecionados."
+                : "Nenhuma commodity encontrada para a busca."}
             </p>
           ) : (
             secoes.map((s) => {
