@@ -660,10 +660,10 @@ export function EvolucaoPatrimonio() {
         <div className="w-full max-w-full overflow-hidden pb-1 sm:-mx-2 sm:w-[calc(100%+1rem)] sm:max-w-none sm:overflow-x-auto sm:overflow-y-hidden sm:[scrollbar-width:thin]">
           <div
             className="h-[260px] w-full min-w-0 sm:h-[380px] sm:min-w-[var(--mw)] xl:h-[430px]"
-            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * 64)}px` } as Record<string, string>}
+            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * 44)}px` } as Record<string, string>}
           >
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={3} barCategoryGap="55%" maxBarSize={14}>
+            <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={1} barCategoryGap="14%" maxBarSize={14}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
@@ -757,6 +757,38 @@ export function EvolucaoPatrimonio() {
           </ResponsiveContainer>
           </div>
         </div>
+
+        {/* Escala horizontal de evolução mês a mês */}
+        <div className="mt-2 w-full overflow-x-auto pb-1 [scrollbar-width:thin]">
+          <ol className="flex min-w-full items-stretch gap-1">
+            {dadosGrafico.map((p, i) => {
+              const prev = i > 0 ? dadosGrafico[i - 1]?.patrimonio ?? 0 : 0;
+              const delta = i > 0 && prev > 0 ? ((p.patrimonio - prev) / prev) * 100 : null;
+              const up = (delta ?? 0) >= 0;
+              return (
+                <li
+                  key={p.id}
+                  className="flex min-w-[62px] flex-1 flex-col items-center gap-1 rounded-lg border border-border/60 bg-muted/20 px-1.5 py-1.5 text-center"
+                  title={p.titulo}
+                >
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                    {p.rotulo}
+                  </span>
+                  <span className="text-[0.68rem] font-bold serie-patrimonio">{compacto(p.patrimonio)}</span>
+                  <span
+                    className={cn(
+                      "text-[0.6rem] font-semibold tabular-nums",
+                      delta === null ? "text-muted-foreground" : up ? "text-emerald-500" : "text-destructive",
+                    )}
+                  >
+                    {delta === null ? "—" : `${up ? "+" : ""}${delta.toFixed(1)}%`}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+
 
       </Panel>
 
