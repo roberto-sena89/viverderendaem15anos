@@ -719,11 +719,13 @@ function PainelProventos({
   proventos,
   carteira,
   totalCarteira,
+  totalProventos,
   onRegistrar,
 }: {
   proventos: Dividendo[];
   carteira: Ativo[];
   totalCarteira: number;
+  totalProventos: number;
   onRegistrar?: () => void;
 }) {
   const [modo, setModo] = useState<"mensal" | "anual">("mensal");
