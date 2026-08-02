@@ -126,6 +126,8 @@
   --color-chart-15: var(--chart-15);
   --color-chart-16: var(--chart-16);
   --color-chart-17: var(--chart-17);
+  --color-evolucao-aplicado: var(--evolucao-aplicado);
+  --color-evolucao-ganho: var(--evolucao-ganho);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
