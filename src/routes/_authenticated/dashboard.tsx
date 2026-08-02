@@ -234,13 +234,13 @@ function Dashboard() {
             </div>
           }
         >
-          <div className="mb-3 flex items-center justify-center gap-5 text-xs text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: "var(--color-chart-1)" }} />
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-2 text-xs">
+            <span className="flex items-center gap-2 rounded-full border border-evolucao-aplicado/30 bg-evolucao-aplicado/10 px-3 py-1 font-semibold text-evolucao-aplicado">
+              <span className="size-2.5 rounded-[3px] bg-evolucao-aplicado" />
               Valor aplicado
             </span>
-            <span className="flex items-center gap-2">
-              <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: "var(--color-chart-2)" }} />
+            <span className="flex items-center gap-2 rounded-full border border-evolucao-ganho/35 bg-evolucao-ganho/10 px-3 py-1 font-semibold text-evolucao-ganho">
+              <span className="size-2.5 rounded-[3px] bg-evolucao-ganho" />
               Ganho de Capital
             </span>
           </div>
