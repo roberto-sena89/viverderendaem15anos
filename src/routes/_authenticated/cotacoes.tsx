@@ -118,11 +118,23 @@ function Cotacoes() {
           <div className={CLASSES_CABECALHO_FIXO}>
             <div className={CLASSES_BARRA_ABAS}>
               <TabsList className={CLASSES_LISTA_ABAS}>
-                {ABAS.map((a) => (
-                  <TabsTrigger key={a.id} value={a.id} className={CLASSES_GATILHO_ABA}>
-                    {a.rotulo}
-                  </TabsTrigger>
-                ))}
+                {ABAS.map((a) => {
+                  const Icone = a.icone;
+                  return (
+                    <TabsTrigger
+                      key={a.id}
+                      value={a.id}
+                      className={CLASSES_GATILHO_ABA}
+                      title={a.rotulo}
+                    >
+                      <Icone className={CLASSES_ICONE_ABA} aria-hidden />
+                      <span className={CLASSES_ROTULO_ABA}>
+                        <span className="sm:hidden">{a.rotuloCurto ?? a.rotulo}</span>
+                        <span className="hidden sm:inline">{a.rotulo}</span>
+                      </span>
+                    </TabsTrigger>
+                  );
+                })}
               </TabsList>
             </div>
 
