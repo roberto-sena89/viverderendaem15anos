@@ -18,6 +18,7 @@ import {
   ABAS_COTACOES,
   ABAS_CATEGORIA_GENERICA,
   CLASSES_BARRA_ABAS,
+  CLASSES_CABECALHO_FIXO,
   CLASSES_LISTA_ABAS,
   CLASSES_GATILHO_ABA,
   CLASSES_BUSCA,
@@ -80,10 +81,10 @@ function Cotacoes() {
   return (
     <AppShell title="Cotações" description={legenda}>
       <div className="space-y-4">
-        {/* Status e controles */}
+        {/* Status do pregão */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <span className="inline-flex items-center gap-2 text-sm">
-            <span className="relative flex size-2.5" aria-hidden>
+          <span className="inline-flex min-w-0 items-center gap-2 text-sm">
+            <span className="relative flex size-2.5 shrink-0" aria-hidden>
               <span
                 className={`absolute inline-flex size-full animate-ping rounded-full opacity-70 ${
                   pregao.aberto ? "bg-positive" : "bg-negative"
@@ -108,28 +109,31 @@ function Cotacoes() {
               Alguns ativos com dado desatualizado
             </span>
           ) : null}
-
-          <div className="relative w-full min-w-0 sm:ml-auto sm:w-auto">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar ticker ou nome"
-              aria-label="Buscar ativo na grade de cotações"
-              className={CLASSES_BUSCA}
-            />
-          </div>
         </div>
 
         <Tabs value={aba} onValueChange={setAba}>
-          <div className={CLASSES_BARRA_ABAS}>
-            <TabsList className={CLASSES_LISTA_ABAS}>
-              {ABAS.map((a) => (
-                <TabsTrigger key={a.id} value={a.id} className={CLASSES_GATILHO_ABA}>
-                  {a.rotulo}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+          {/* Cabeçalho fixo no mobile: busca + abas acompanham a rolagem */}
+          <div className={CLASSES_CABECALHO_FIXO}>
+            <div className="relative w-full min-w-0 sm:ml-auto sm:w-auto">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar ticker ou nome"
+                aria-label="Buscar ativo na grade de cotações"
+                className={CLASSES_BUSCA}
+              />
+            </div>
+
+            <div className={CLASSES_BARRA_ABAS}>
+              <TabsList className={CLASSES_LISTA_ABAS}>
+                {ABAS.map((a) => (
+                  <TabsTrigger key={a.id} value={a.id} className={CLASSES_GATILHO_ABA}>
+                    {a.rotulo}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
           </div>
 
 

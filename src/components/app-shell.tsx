@@ -17,7 +17,7 @@ import {
   Bot,
   LogOut,
 } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
 import { NavMobile } from "@/components/nav-mobile";
 
@@ -96,6 +96,23 @@ export function AppShell({
     return () => {
       active = false;
     };
+  }, []);
+
+  // Publica a altura real do cabeçalho para que blocos fixos das páginas
+  // (ex.: barra de cotações) fiquem logo abaixo dele, sem sobreposição.
+  const cabecalhoRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const el = cabecalhoRef.current;
+    if (!el) return;
+    const aplicar = () =>
+      document.documentElement.style.setProperty(
+        "--altura-cabecalho-app",
+        `${Math.round(el.getBoundingClientRect().height)}px`,
+      );
+    aplicar();
+    const ro = new ResizeObserver(aplicar);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
   async function handleSignOut() {
@@ -209,7 +226,10 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
 
 
-        <header className="sticky top-0 z-20 border-b border-border bg-background/70 backdrop-blur-xl">
+        <header
+          ref={cabecalhoRef}
+          className="sticky top-0 z-30 border-b border-border bg-background/70 backdrop-blur-xl"
+        >
 
           <div className="container-app grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-3 sm:gap-4 sm:py-5 lg:grid-cols-[minmax(0,1fr)_auto]">
 
