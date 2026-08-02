@@ -21,6 +21,8 @@ import {
   CLASSES_CABECALHO_FIXO,
   CLASSES_LISTA_ABAS,
   CLASSES_GATILHO_ABA,
+  CLASSES_ICONE_ABA,
+  CLASSES_ROTULO_ABA,
   CLASSES_BUSCA,
 } from "@/lib/cotacoes-abas";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
