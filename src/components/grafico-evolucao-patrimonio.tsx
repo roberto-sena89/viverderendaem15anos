@@ -188,8 +188,9 @@ export function GraficoEvolucaoPatrimonio() {
               formatter={(v: number, n: string) => [brl(v, 2), n]}
               cursor={{ fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" }}
             />
-            <Bar dataKey="aplicado" stackId="p" fill="var(--color-chart-1)" name="Valor aplicado" />
-            <Bar dataKey="ganho" stackId="p" fill="var(--color-chart-2)" name="Ganho de capital" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="aplicado" stackId="p" fill="var(--color-evolucao-aplicado)" name="Valor aplicado" />
+            <Bar dataKey="ganho" stackId="p" fill="var(--color-evolucao-ganho)" name="Ganho de capital" radius={[6, 6, 0, 0]} />
+
           </BarChart>
         </ResponsiveContainer>
       </div>
