@@ -25,14 +25,12 @@ export function GradeCotacoes({
   categoria,
   intervaloMs,
   busca,
-  apenasFavoritos,
   aoAtualizar,
   ocultarAtualizar,
 }: {
   categoria: CategoriaMercado;
   intervaloMs: number;
   busca: string;
-  apenasFavoritos: boolean;
   aoAtualizar?: (quando: number, parcial: boolean) => void;
   ocultarAtualizar?: boolean;
 }) {
@@ -86,7 +84,6 @@ export function GradeCotacoes({
     const termo = busca.trim().toLowerCase();
     const minimo = Number(volumeMin.replace(/\D/g, "")) || 0;
     const filtradas = (data?.linhas ?? []).filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(l.ticker)) return false;
       if (termo && !`${l.ticker} ${l.nome} ${l.grupo ?? ""}`.toLowerCase().includes(termo)) return false;
       const v = l.variacaoPercent ?? 0;
       if (filtroVar === "altas" && v <= 0) return false;
@@ -103,7 +100,7 @@ export function GradeCotacoes({
       const vb = (b[ordem.coluna] as number | null) ?? Number.NEGATIVE_INFINITY;
       return fator * (va - vb);
     });
-  }, [data, busca, apenasFavoritos, favoritos, filtroVar, volumeMin, ordem]);
+  }, [data, busca, favoritos, filtroVar, volumeMin, ordem]);
 
   const ordenar = (coluna: Ordem["coluna"]) =>
     setOrdem((o) => (o.coluna === coluna ? { coluna, desc: !o.desc } : { coluna, desc: true }));

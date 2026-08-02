@@ -45,12 +45,10 @@ const ORDEM_POR_RANKING: Record<RankingCripto, OrdemCripto> = {
 export function PainelCripto({
   intervaloMs,
   busca,
-  apenasFavoritos,
   aoAtualizar,
 }: {
   intervaloMs: number;
   busca: string;
-  apenasFavoritos: boolean;
   aoAtualizar?: (quando: number, parcial: boolean) => void;
 }) {
   const buscar = useServerFn(gradeCripto);
@@ -96,7 +94,6 @@ export function PainelCripto({
     const termo = `${busca} ${buscaLocal}`.trim().toLowerCase();
     const termos = termo.split(/\s+/).filter(Boolean);
     const base = (data?.linhas ?? []).filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(l.ticker)) return false;
       const alvo = `${l.ticker} ${l.nome}`.toLowerCase();
       if (termos.length && !termos.every((t) => alvo.includes(t))) return false;
       if (categorias.length > 0 && !categorias.includes(l.categoria)) return false;
@@ -117,7 +114,7 @@ export function PainelCripto({
       const vb = (b[ordem.coluna] as number | null) ?? (ordem.desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY);
       return fator * (va - vb);
     });
-  }, [data, busca, buscaLocal, apenasFavoritos, favoritos, categorias, faixas, ordem, ranking]);
+  }, [data, busca, buscaLocal, favoritos, categorias, faixas, ordem, ranking]);
 
   const [visiveis, setVisiveis] = useState(PAGINA);
   /** Quantas linhas-fantasma mostrar enquanto o próximo lote entra na grade. */
@@ -127,7 +124,7 @@ export function PainelCripto({
   useEffect(() => {
     setVisiveis(PAGINA);
     setCarregandoMais(0);
-  }, [busca, buscaLocal, apenasFavoritos, categorias, faixas, ordem, ranking]);
+  }, [busca, buscaLocal, categorias, faixas, ordem, ranking]);
 
   // Limpa qualquer lote pendente ao desmontar
   useEffect(() => () => setCarregandoMais(0), []);

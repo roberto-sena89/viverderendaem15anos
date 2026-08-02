@@ -93,10 +93,10 @@ function valorOrdem(l: LinhaEtf, c: OrdemColunaEtf): number | string | null {
   }
 }
 
-type Props = { intervaloMs: number; busca: string; apenasFavoritos: boolean };
+type Props = { intervaloMs: number; busca: string };
 
 /** Grade completa dos ETFs listados na B3 (e internacionais) com tempo real. */
-export function PainelEtfs({ intervaloMs, busca, apenasFavoritos }: Props) {
+export function PainelEtfs({ intervaloMs, busca }: Props) {
   const [buscaLocal, setBuscaLocal] = useState("");
   const [ranking, setRanking] = useState<RankingEtf>("capitalizacao");
   const [classes, setClasses] = useState<ClasseEtf[]>([]);
@@ -182,7 +182,6 @@ export function PainelEtfs({ intervaloMs, busca, apenasFavoritos }: Props) {
   const filtradas = useMemo(() => {
     const minPatrimonio = faixas.patrimonioMin * 1_000_000;
     return linhas.filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(l.ticker)) return false;
       if (termo && !`${l.ticker} ${l.nome}`.toLowerCase().includes(termo)) return false;
       if (classes.length && !classes.includes(l.classe)) return false;
       if (mercado !== "todos" && l.mercado !== mercado) return false;
@@ -197,7 +196,7 @@ export function PainelEtfs({ intervaloMs, busca, apenasFavoritos }: Props) {
         return false;
       return true;
     });
-  }, [linhas, apenasFavoritos, favoritos, termo, classes, mercado, gestora, faixas]);
+  }, [linhas, favoritos, termo, classes, mercado, gestora, faixas]);
 
   const ordenadas = useMemo(() => {
     const copia = [...filtradas];
@@ -234,7 +233,7 @@ export function PainelEtfs({ intervaloMs, busca, apenasFavoritos }: Props) {
 
   useEffect(() => {
     setPagina(0);
-  }, [termo, classes, mercado, gestora, faixas, apenasFavoritos, porPagina, ranking]);
+  }, [termo, classes, mercado, gestora, faixas, porPagina, ranking]);
 
   const aoOrdenar = useCallback((c: OrdemColunaEtf) => {
     setOrdem((atual) =>

@@ -83,10 +83,10 @@ function valorOrdem(l: LinhaFii, h: HistoricoFii | undefined, c: OrdemColuna): n
   }
 }
 
-type Props = { intervaloMs: number; busca: string; apenasFavoritos: boolean };
+type Props = { intervaloMs: number; busca: string };
 
 /** Grade completa dos FIIs listados na B3, com filtros, comparador e tempo real. */
-export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
+export function PainelFiis({ intervaloMs, busca }: Props) {
   const [buscaLocal, setBuscaLocal] = useState("");
   const [ranking, setRanking] = useState<Ranking>("patrimonio");
   const [tipos, setTipos] = useState<TipoFii[]>([]);
@@ -166,7 +166,6 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
 
   const filtradas = useMemo(() => {
     return linhas.filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(l.ticker)) return false;
       if (termo && !`${l.ticker} ${l.nome}`.toLowerCase().includes(termo)) return false;
       if (tipos.length && !tipos.includes(l.tipo)) return false;
       if (segmento !== "todos" && l.segmento !== segmento) return false;
@@ -176,7 +175,7 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
       if (liqMi < faixas.liquidez[0] || (faixas.liquidez[1] < 20 && liqMi > faixas.liquidez[1])) return false;
       return true;
     });
-  }, [linhas, apenasFavoritos, favoritos, termo, tipos, segmento, faixas]);
+  }, [linhas, favoritos, termo, tipos, segmento, faixas]);
 
   // Histórico apenas da página visível, para não sobrecarregar as fontes.
   const [historico, setHistorico] = useState(new Map<string, HistoricoFii>());
@@ -246,7 +245,7 @@ export function PainelFiis({ intervaloMs, busca, apenasFavoritos }: Props) {
 
   useEffect(() => {
     setPagina(0);
-  }, [termo, tipos, segmento, faixas, apenasFavoritos, porPagina, ranking]);
+  }, [termo, tipos, segmento, faixas, porPagina, ranking]);
 
   const aoOrdenar = useCallback((c: OrdemColuna) => {
     setOrdem((atual) => (atual.coluna === c ? { coluna: c, desc: !atual.desc } : { coluna: c, desc: true }));

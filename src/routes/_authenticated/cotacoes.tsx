@@ -142,30 +142,29 @@ function Cotacoes() {
           </TabsContent>
 
           <TabsContent value="fiis" className="mt-4">
-            <PainelFiis intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+            <PainelFiis intervaloMs={intervalo} busca={busca} />
           </TabsContent>
 
           <TabsContent value="acoes" className="mt-4">
-            <PainelAcoes intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+            <PainelAcoes intervaloMs={intervalo} busca={busca} />
           </TabsContent>
 
           <TabsContent value="etfs" className="mt-4">
-            <PainelEtfs intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+            <PainelEtfs intervaloMs={intervalo} busca={busca} />
           </TabsContent>
 
           <TabsContent value="indices" className="mt-4">
-            <PainelIndices intervaloMs={intervalo} busca={busca} apenasFavoritos={favoritos} />
+            <PainelIndices intervaloMs={intervalo} busca={busca} />
           </TabsContent>
 
           <TabsContent value="tesouro" className="mt-4">
-            <PainelTesouro busca={busca} apenasFavoritos={favoritos} />
+            <PainelTesouro busca={busca} />
           </TabsContent>
 
           <TabsContent value="cripto" className="mt-4">
             <PainelCripto
               intervaloMs={intervalo}
               busca={busca}
-              apenasFavoritos={favoritos}
               aoAtualizar={aoAtualizar}
             />
           </TabsContent>
@@ -176,7 +175,6 @@ function Cotacoes() {
             <PainelCommodities
               intervaloMs={intervalo}
               busca={busca}
-              apenasFavoritos={favoritos}
               aoAtualizar={aoAtualizar}
             />
           </TabsContent>
@@ -188,7 +186,6 @@ function Cotacoes() {
                 titulo={a.rotulo}
                 intervaloMs={intervalo}
                 busca={busca}
-                apenasFavoritos={favoritos}
                 aoAtualizar={aoAtualizar}
               />
             </TabsContent>

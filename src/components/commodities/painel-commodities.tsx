@@ -60,12 +60,10 @@ const chaveFavorito = (codigo: string) => `CMD:${codigo}`;
 export function PainelCommodities({
   intervaloMs,
   busca,
-  apenasFavoritos,
   aoAtualizar,
 }: {
   intervaloMs: number;
   busca: string;
-  apenasFavoritos: boolean;
   aoAtualizar?: (quando: number, parcial: boolean) => void;
 }) {
   const buscar = useServerFn(gradeCommodities);
@@ -115,7 +113,6 @@ export function PainelCommodities({
   const filtradas = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     let lista = linhas.filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(chaveFavorito(l.codigo))) return false;
       if (categoria !== "todas" && l.categoria !== categoria) return false;
       if (somenteAbertas && !mercadoCategoria(l.categoria).aberto) return false;
       if (bolsas.length > 0) {
@@ -138,7 +135,7 @@ export function PainelCommodities({
       });
     }
     return lista;
-  }, [linhas, busca, apenasFavoritos, favoritos, categoria, ordem, bolsas, somenteAbertas]);
+  }, [linhas, busca, favoritos, categoria, ordem, bolsas, somenteAbertas]);
 
   const destaques = useMemo(
     () =>

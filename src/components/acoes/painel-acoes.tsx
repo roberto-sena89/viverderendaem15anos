@@ -110,10 +110,10 @@ function valorOrdem(
   }
 }
 
-type Props = { intervaloMs: number; busca: string; apenasFavoritos: boolean };
+type Props = { intervaloMs: number; busca: string };
 
 /** Grade completa das ações listadas na B3: filtros, comparador e tempo real. */
-export function PainelAcoes({ intervaloMs, busca, apenasFavoritos }: Props) {
+export function PainelAcoes({ intervaloMs, busca }: Props) {
   const [buscaLocal, setBuscaLocal] = useState("");
   const [ranking, setRanking] = useState<RankingAcao>("valorMercado");
   const [setores, setSetores] = useState<SetorAcao[]>([]);
@@ -214,7 +214,6 @@ export function PainelAcoes({ intervaloMs, busca, apenasFavoritos }: Props) {
 
   const filtradas = useMemo(() => {
     return linhas.filter((l) => {
-      if (apenasFavoritos && !favoritos.includes(l.ticker)) return false;
       if (termo && !`${l.ticker} ${l.nome}`.toLowerCase().includes(termo)) return false;
       if (setores.length && !setores.includes(l.setor)) return false;
       if (subsetor !== "todos" && l.subsetor !== subsetor) return false;
@@ -234,7 +233,7 @@ export function PainelAcoes({ intervaloMs, busca, apenasFavoritos }: Props) {
         return false;
       return true;
     });
-  }, [linhas, apenasFavoritos, favoritos, termo, setores, subsetor, segmento, faixas]);
+  }, [linhas, favoritos, termo, setores, subsetor, segmento, faixas]);
 
   // Histórico apenas das ações visíveis, para não sobrecarregar as fontes.
   const [historico, setHistorico] = useState(new Map<string, HistoricoAcao>());
@@ -303,7 +302,7 @@ export function PainelAcoes({ intervaloMs, busca, apenasFavoritos }: Props) {
 
   useEffect(() => {
     setPagina(0);
-  }, [termo, setores, subsetor, segmento, faixas, apenasFavoritos, porPagina, ranking]);
+  }, [termo, setores, subsetor, segmento, faixas, porPagina, ranking]);
 
   const aoOrdenar = useCallback((c: OrdemColunaAcao) => {
     setOrdem((atual) => (atual.coluna === c ? { coluna: c, desc: !atual.desc } : { coluna: c, desc: true }));

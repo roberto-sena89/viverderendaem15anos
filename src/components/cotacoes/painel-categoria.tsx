@@ -52,14 +52,12 @@ export function PainelCategoria({
   titulo,
   intervaloMs,
   busca,
-  apenasFavoritos,
   aoAtualizar,
 }: {
   categoria: CategoriaMercado;
   titulo: string;
   intervaloMs: number;
   busca: string;
-  apenasFavoritos: boolean;
   aoAtualizar?: (quando: number, parcial: boolean) => void;
 }) {
   const buscarGrade = useServerFn(gradeMercado);
@@ -192,7 +190,6 @@ export function PainelCategoria({
           categoria={categoria}
           intervaloMs={intervaloMs}
           busca={busca}
-          apenasFavoritos={apenasFavoritos}
           aoAtualizar={aoAtualizar}
           ocultarAtualizar
         />
