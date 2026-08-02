@@ -660,10 +660,10 @@ export function EvolucaoPatrimonio() {
         <div className="w-full max-w-full overflow-hidden pb-1 sm:-mx-2 sm:w-[calc(100%+1rem)] sm:max-w-none sm:overflow-x-auto sm:overflow-y-hidden sm:[scrollbar-width:thin]">
           <div
             className="h-[260px] w-full min-w-0 sm:h-[380px] sm:min-w-[var(--mw)] xl:h-[430px]"
-            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * 78)}px` } as Record<string, string>}
+            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * 64)}px` } as Record<string, string>}
           >
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 22, right: 4, left: 0, bottom: 12 }} barGap={2} barCategoryGap="46%" maxBarSize={18}>
+            <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={3} barCategoryGap="55%" maxBarSize={14}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
