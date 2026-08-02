@@ -76,10 +76,9 @@ function Cotacoes() {
 
   const segundos = ultima ? Math.max(0, Math.round((agora - ultima) / 1000)) : null;
   const legenda = useMemo(() => {
-    if (intervalo === 0) return "Atualização manual";
     if (segundos === null) return "Sincronizando cotações…";
     return `Atualizado em tempo real · última sincronização há ${segundos}s`;
-  }, [intervalo, segundos]);
+  }, [segundos]);
 
   return (
     <AppShell title="Cotações" description={legenda}>
