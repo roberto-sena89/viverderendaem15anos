@@ -235,16 +235,37 @@ function Dashboard() {
             </div>
           }
         >
-          <div className="legenda-grafico mb-3 justify-center">
-            <span className="chip-legenda serie-aplicado">
-              <span className="ponto-legenda" aria-hidden />
-              Valor aplicado
-            </span>
-            <span className="chip-legenda serie-ganho">
-              <span className="ponto-legenda" aria-hidden />
-              Ganho de Capital
-            </span>
-          </div>
+          {(() => {
+            const ultimo = dadosEvolucao[dadosEvolucao.length - 1];
+            const totalAplicado = ultimo?.aplicado ?? 0;
+            const totalGanho = ultimo?.ganho ?? 0;
+            const variacao = totalAplicado > 0 ? (totalGanho / totalAplicado) * 100 : 0;
+            return (
+              <div className="mb-4 grid grid-cols-2 gap-3">
+                <div className="chip-legenda serie-aplicado flex-col items-start gap-0.5 rounded-lg px-3 py-2">
+                  <span className="flex items-center gap-2 text-xs font-medium">
+                    <span className="ponto-legenda" aria-hidden />
+                    Valor aplicado
+                  </span>
+                  <strong className="text-lg font-semibold tabular-nums">{brl(totalAplicado, 2)}</strong>
+                </div>
+                <div className="chip-legenda serie-ganho flex-col items-start gap-0.5 rounded-lg px-3 py-2">
+                  <span className="flex items-center gap-2 text-xs font-medium">
+                    <span className="ponto-legenda" aria-hidden />
+                    Ganho de Capital
+                  </span>
+                  <span className="flex flex-wrap items-baseline gap-2">
+                    <strong className="text-lg font-semibold tabular-nums">{brl(totalGanho, 2)}</strong>
+                    <span className="text-xs font-medium tabular-nums">
+                      {variacao >= 0 ? "+" : ""}
+                      {variacao.toFixed(2).replace(".", ",")}%
+                    </span>
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
+
 
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
