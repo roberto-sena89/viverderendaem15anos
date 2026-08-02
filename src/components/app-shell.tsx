@@ -98,6 +98,23 @@ export function AppShell({
     };
   }, []);
 
+  // Publica a altura real do cabeçalho para que blocos fixos das páginas
+  // (ex.: barra de cotações) fiquem logo abaixo dele, sem sobreposição.
+  const cabecalhoRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const el = cabecalhoRef.current;
+    if (!el) return;
+    const aplicar = () =>
+      document.documentElement.style.setProperty(
+        "--altura-cabecalho-app",
+        `${Math.round(el.getBoundingClientRect().height)}px`,
+      );
+    aplicar();
+    const ro = new ResizeObserver(aplicar);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
