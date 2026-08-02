@@ -54,7 +54,7 @@ function Cotacoes() {
   const [aba, setAba] = useState("geral");
   const [busca, setBusca] = useState("");
   // Preferência do perfil: acompanha o usuário entre sessões e dispositivos.
-  const [favoritos, definirFavoritos] = useFiltroFavoritos();
+  const [favoritos] = useFiltroFavoritos();
   const intervalo = 30_000;
   const [pregao, setPregao] = useState(() => estadoPregao());
   const [ultima, setUltima] = useState<number | null>(null);
@@ -123,16 +123,6 @@ function Cotacoes() {
                 className={CLASSES_BUSCA}
               />
             </div>
-
-            <Button
-              variant={favoritos ? "default" : "outline"}
-              size="sm"
-              aria-pressed={favoritos}
-              onClick={() => definirFavoritos()}
-            >
-              <Star className={`size-4 ${favoritos ? "fill-current" : ""}`} />
-              Favoritos
-            </Button>
           </div>
         </div>
 
