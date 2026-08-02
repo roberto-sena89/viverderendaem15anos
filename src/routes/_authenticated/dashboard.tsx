@@ -19,6 +19,7 @@ import { StatusCotacoes } from "@/components/status-cotacoes";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 
+import { DetalheEvolucaoMensal } from "@/components/detalhe-evolucao-mensal";
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { TooltipEvolucao } from "@/components/tooltip-evolucao";
