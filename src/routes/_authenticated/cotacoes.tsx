@@ -154,15 +154,16 @@ function Cotacoes() {
         </div>
 
         <Tabs value={aba} onValueChange={setAba}>
-          <div className="sticky top-0 z-20 -mx-1 overflow-x-auto bg-background/95 px-1 py-1 backdrop-blur">
-            <TabsList className="w-max">
+          <div className="sticky top-0 z-20 -mx-1 bg-background/95 px-1 py-1 backdrop-blur sm:overflow-x-auto">
+            <TabsList className="grid h-auto w-full grid-cols-2 gap-1 xs:grid-cols-3 sm:flex sm:w-max">
               {ABAS.map((a) => (
-                <TabsTrigger key={a.id} value={a.id}>
+                <TabsTrigger key={a.id} value={a.id} className="w-full min-w-0 truncate text-xs sm:w-auto sm:text-sm">
                   {a.rotulo}
                 </TabsTrigger>
               ))}
             </TabsList>
           </div>
+
 
           <TabsContent value="geral" className="mt-4">
             <VisaoGeralMercado intervaloMs={intervalo} />
