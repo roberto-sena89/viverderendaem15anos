@@ -46,7 +46,7 @@ export function TooltipEvolucao({
         {payload.map((p) => {
           const chave = String(p.dataKey ?? "");
           return (
-            <li key={chave} className={chave === "ganho" ? "serie-ganho" : "serie-aplicado"}>
+            <li key={chave} className={CLASSES_SERIE[chave] ?? "serie-investido"}>
               <div className="flex items-center justify-between gap-3">
                 <span className="flex items-center gap-1.5 font-medium">
                   <span className="ponto-legenda" aria-hidden />
