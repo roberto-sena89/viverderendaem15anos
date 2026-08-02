@@ -47,16 +47,17 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
         <p className="text-[0.82rem] font-bold tracking-[0.06em] text-muted-foreground uppercase">
           Evolução dos aportes
         </p>
-        <div className="flex items-center gap-4 text-[0.8rem] text-foreground">
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-[2px] bg-chart-1" aria-hidden />
+        <div className="legenda-grafico text-foreground">
+          <span className="chip-legenda serie-aplicado">
+            <span className="ponto-legenda" aria-hidden />
             Aporte do mês
           </span>
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-0.5 w-4 rounded bg-chart-3" aria-hidden />
+          <span className="chip-legenda serie-ganho">
+            <span className="traco-legenda" aria-hidden />
             Total acumulado
           </span>
         </div>
+
 
       </div>
 
@@ -105,7 +106,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               yAxisId="esq"
               dataKey="aporte"
               name="aporte"
-              fill="var(--chart-1)"
+              fill="var(--color-evolucao-aplicado)"
               radius={[3, 3, 0, 0]}
               maxBarSize={28}
             />
@@ -114,9 +115,9 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               type="monotone"
               dataKey="acumulado"
               name="acumulado"
-              stroke="var(--chart-3)"
+              stroke="var(--color-evolucao-ganho)"
               strokeWidth={2.5}
-              dot={{ r: 2.5, fill: "var(--chart-3)", strokeWidth: 0 }}
+              dot={{ r: 2.5, fill: "var(--color-evolucao-ganho)", strokeWidth: 0 }}
               activeDot={{ r: 4.5 }}
             />
           </ComposedChart>

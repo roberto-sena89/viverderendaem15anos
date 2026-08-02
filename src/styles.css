@@ -793,3 +793,51 @@ canvas {
     animation: none;
   }
 }
+
+/* ---------------------------------------------------------------
+   Paleta verde padrão dos gráficos e legendas do dashboard
+   --------------------------------------------------------------- */
+@utility legenda-grafico {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+@utility chip-legenda {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, currentColor 30%, transparent);
+  background: color-mix(in oklab, currentColor 10%, transparent);
+  padding: 0.25rem 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@utility ponto-legenda {
+  width: 0.625rem;
+  height: 0.625rem;
+  flex: none;
+  border-radius: 3px;
+  background: currentColor;
+}
+
+@utility traco-legenda {
+  width: 1rem;
+  height: 0.15rem;
+  flex: none;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+@utility serie-aplicado {
+  color: var(--color-evolucao-aplicado);
+}
+
+@utility serie-ganho {
+  color: var(--color-evolucao-ganho);
+}

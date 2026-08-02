@@ -150,19 +150,20 @@ export function GraficoEvolucaoPatrimonio() {
 
 
 
-      <div className="mb-3 flex flex-wrap items-center gap-4 text-xs text-foreground">
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: "var(--color-chart-1)" }} />
+      <div className="legenda-grafico mb-3 text-foreground">
+        <span className="chip-legenda serie-aplicado">
+          <span className="ponto-legenda" aria-hidden />
           Valor aplicado
         </span>
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: "var(--color-chart-2)" }} />
+        <span className="chip-legenda serie-ganho">
+          <span className="ponto-legenda" aria-hidden />
           Ganho de capital
         </span>
         <span className="ml-auto text-muted-foreground">
           Cada barra mostra quanto do patrimônio veio de aportes e quanto veio de valorização.
         </span>
       </div>
+
       {dados.length === 0 ? (
         <p className="py-14 text-center text-sm text-muted-foreground">
           Nenhum dado no período selecionado. Ajuste o filtro de período ou registre um aporte.
@@ -187,8 +188,9 @@ export function GraficoEvolucaoPatrimonio() {
               formatter={(v: number, n: string) => [brl(v, 2), n]}
               cursor={{ fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" }}
             />
-            <Bar dataKey="aplicado" stackId="p" fill="var(--color-chart-1)" name="Valor aplicado" />
-            <Bar dataKey="ganho" stackId="p" fill="var(--color-chart-2)" name="Ganho de capital" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="aplicado" stackId="p" fill="var(--color-evolucao-aplicado)" name="Valor aplicado" />
+            <Bar dataKey="ganho" stackId="p" fill="var(--color-evolucao-ganho)" name="Ganho de capital" radius={[6, 6, 0, 0]} />
+
           </BarChart>
         </ResponsiveContainer>
       </div>

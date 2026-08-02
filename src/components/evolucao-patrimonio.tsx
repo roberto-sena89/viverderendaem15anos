@@ -119,7 +119,7 @@ type SerieChave = "patrimonio" | "aportadoAcum" | "anterior";
 
 const CORES_SERIE: Record<SerieChave, string> = {
   patrimonio: "var(--color-primary)",
-  aportadoAcum: "var(--color-chart-12)",
+  aportadoAcum: "var(--color-evolucao-aplicado)",
   anterior: "var(--color-muted-foreground)",
 };
 
@@ -596,8 +596,8 @@ export function EvolucaoPatrimonio() {
                 chave: "aportadoAcum" as const,
                 rotulo: "Total investido",
                 Icone: Landmark,
-                cor: "text-chart-12",
-                fundo: "bg-chart-12/10",
+                cor: "text-evolucao-aplicado",
+                fundo: "bg-evolucao-aplicado/10",
                 valor: ultimoPonto?.aportadoAcum,
               },
             ]).map((s) => (
@@ -719,7 +719,7 @@ export function EvolucaoPatrimonio() {
               <Bar
                 dataKey="aportadoAcum"
                 name="Total investido"
-                fill="var(--color-chart-12)"
+                fill="var(--color-evolucao-aplicado)"
                 fillOpacity={destaque && destaque !== "aportadoAcum" ? 0.28 : 1}
                 radius={[3, 3, 0, 0]}
                 isAnimationActive={false}
@@ -735,7 +735,7 @@ export function EvolucaoPatrimonio() {
                   style={{
                     fontSize: 10,
                     fontWeight: destaque === "aportadoAcum" ? 700 : 500,
-                    fill: destaque === "aportadoAcum" ? "var(--color-chart-12)" : "var(--color-muted-foreground)",
+                    fill: destaque === "aportadoAcum" ? "var(--color-evolucao-aplicado)" : "var(--color-muted-foreground)",
                   }}
                 />
                 ) : null}
