@@ -867,21 +867,23 @@ export function HistoricoMensalAportes() {
           </p>
           <dl className="mt-3 space-y-3">
             {[
-              { r: "Total aplicado", v: brl(resumo.totalInvestido, 2), c: "text-foreground" },
-              { r: "Patrimônio atual", v: brl(resumo.totalAtual, 2), c: "text-foreground" },
+              { r: "Total investido", v: brl(resumo.totalInvestido, 2), c: "serie-investido", cr: "serie-investido" },
+              { r: "Patrimônio", v: brl(resumo.totalAtual, 2), c: "serie-patrimonio", cr: "serie-patrimonio" },
               {
                 r: "Ganho de capital",
                 v: `${resumo.lucroTotal >= 0 ? "+" : "-"}${brl(Math.abs(resumo.lucroTotal), 2)}`,
                 c: resumo.lucroTotal >= 0 ? "text-primary" : "text-destructive",
+                cr: "text-muted-foreground",
               },
               {
                 r: "Rentabilidade",
                 v: `${rentabilidade >= 0 ? "+" : ""}${rentabilidade.toFixed(2)}%`,
                 c: rentabilidade >= 0 ? "text-primary" : "text-destructive",
+                cr: "text-muted-foreground",
               },
             ].map((k) => (
               <div key={k.r} className="border-b border-border/60 pb-2 last:border-0 last:pb-0">
-                <dt className="text-[0.78rem] font-semibold tracking-[0.05em] text-muted-foreground uppercase">
+                <dt className={`text-[0.78rem] font-bold tracking-[0.05em] uppercase ${k.cr}`}>
                   {k.r}
                 </dt>
                 <dd className={`num mt-0.5 text-base font-bold ${k.c}`}>{k.v}</dd>
