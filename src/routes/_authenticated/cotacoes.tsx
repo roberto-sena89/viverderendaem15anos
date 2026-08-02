@@ -14,7 +14,6 @@ import { PainelCommodities } from "@/components/commodities/painel-commodities";
 import { PainelIndices } from "@/components/indices/painel-indices";
 import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
-import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
 import {
   ABAS_COTACOES,
   ABAS_CATEGORIA_GENERICA,
@@ -53,7 +52,6 @@ function Cotacoes() {
   const [aba, setAba] = useState("geral");
   const [busca, setBusca] = useState("");
   // Preferência do perfil: acompanha o usuário entre sessões e dispositivos.
-  const [favoritos] = useFiltroFavoritos();
   const intervalo = 30_000;
   const [pregao, setPregao] = useState(() => estadoPregao());
   const [ultima, setUltima] = useState<number | null>(null);
