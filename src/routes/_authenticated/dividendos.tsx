@@ -815,9 +815,9 @@ function PainelProventos({
             {brl(totalCarteira + totalProventos, 2)}
           </p>
           <dl className="mt-2 space-y-1 text-xs text-muted-foreground">
-            <div className="flex items-center justify-between gap-2">
-              <dt>Patrimônio (Carteira)</dt>
-              <dd className="tabular-nums">{brl(totalCarteira, 2)}</dd>
+            <div className="serie-patrimonio flex items-center justify-between gap-2">
+              <dt className="rotulo-serie">Patrimônio</dt>
+              <dd className="font-semibold tabular-nums">{brl(totalCarteira, 2)}</dd>
             </div>
             <div className="flex items-center justify-between gap-2">
               <dt>Proventos recebidos</dt>
