@@ -217,7 +217,7 @@ function Cotacoes() {
             />
           </TabsContent>
 
-          {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes" && a.id !== "etfs" && a.id !== "cripto").map((a) => (
+          {ABAS_CATEGORIA_GENERICA.map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
               <PainelCategoria
                 categoria={a.categoria as CategoriaMercado}
