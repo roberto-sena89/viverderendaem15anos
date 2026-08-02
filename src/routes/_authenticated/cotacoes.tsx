@@ -16,6 +16,7 @@ import { PainelIndices } from "@/components/indices/painel-indices";
 import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
+import { ABAS_COTACOES, ABAS_CATEGORIA_GENERICA } from "@/lib/cotacoes-abas";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
 
 export const Route = createFileRoute("/_authenticated/cotacoes")({
