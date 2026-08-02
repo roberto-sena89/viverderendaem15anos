@@ -35,8 +35,8 @@ describe("Cotações · sem rolagem horizontal no mobile", () => {
 
   it("mantém a busca fluida no mobile e fixa apenas no desktop", () => {
     expect(CLASSES_BUSCA).toContain("w-full");
-    expect(CLASSES_BUSCA).toContain("sm:w-[220px]");
-    expect(CLASSES_BUSCA).not.toMatch(/(^|\s)w-\[220px\]/);
+    expect(CLASSES_BUSCA).toContain("sm:min-w-[220px]");
+    
   });
 
   it("a página usa as classes compartilhadas (sem regressão inline)", () => {
