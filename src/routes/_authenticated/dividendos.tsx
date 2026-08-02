@@ -22,7 +22,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useAtivos, useCriarDividendo, useDividendos, useExcluir } from "@/lib/data";
+import { useCriarDividendo, useDividendos, useExcluir } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import type { Ativo, Dividendo } from "@/lib/portfolio";
 import { brl, dividendos12m, dividendosMensais, pct, resumoCarteira, valorInvestido } from "@/lib/portfolio";
 
@@ -45,7 +46,8 @@ const tipos = ["Dividendo", "JCP", "Rendimento"];
 function DividendosPage() {
   const [open, setOpen] = useState(false);
   const { data: proventos = [], isLoading } = useDividendos();
-  const { data: carteira = [] } = useAtivos();
+  // usa as cotações ao vivo (mesma fonte da aba "Carteira") para o saldo ficar sincronizado
+  const { data: carteira = [] } = useAtivosAoVivo();
   const criar = useCriarDividendo();
   const excluir = useExcluir("dividendos");
 
@@ -136,8 +138,10 @@ function DividendosPage() {
         proventos={proventos}
         carteira={carteira}
         totalCarteira={resumo.totalAtual}
+        totalProventos={proventos.reduce((s, d) => s + d.valor, 0)}
         onRegistrar={() => setOpen(true)}
       />
+
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
@@ -715,11 +719,13 @@ function PainelProventos({
   proventos,
   carteira,
   totalCarteira,
+  totalProventos,
   onRegistrar,
 }: {
   proventos: Dividendo[];
   carteira: Ativo[];
   totalCarteira: number;
+  totalProventos: number;
   onRegistrar?: () => void;
 }) {
   const [modo, setModo] = useState<"mensal" | "anual">("mensal");
@@ -804,9 +810,22 @@ function PainelProventos({
           <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(totalEscopo, 2)}</p>
         </div>
         <div className="p-5">
-          <p className="text-xs text-muted-foreground">Total da carteira</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(totalCarteira, 2)}</p>
+          <p className="text-xs text-muted-foreground">Saldo total da carteira</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">
+            {brl(totalCarteira + totalProventos, 2)}
+          </p>
+          <dl className="mt-2 space-y-1 text-xs text-muted-foreground">
+            <div className="flex items-center justify-between gap-2">
+              <dt>Patrimônio (Carteira)</dt>
+              <dd className="tabular-nums">{brl(totalCarteira, 2)}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <dt>Proventos recebidos</dt>
+              <dd className="tabular-nums">{brl(totalProventos, 2)}</dd>
+            </div>
+          </dl>
         </div>
+
         <div className="flex min-h-40 items-center justify-center p-5 text-sm text-muted-foreground">
           {temDados ? `${serie.filter((s) => s.valor > 0).length} períodos com proventos` : "Sem dados para exibir"}
         </div>
