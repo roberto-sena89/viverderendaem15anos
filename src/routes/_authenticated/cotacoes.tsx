@@ -120,7 +120,7 @@ function Cotacoes() {
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Buscar ticker ou nome"
                 aria-label="Buscar ativo na grade de cotações"
-                className="h-9 w-full pl-8 text-sm sm:w-[220px]"
+                className={CLASSES_BUSCA}
               />
             </div>
 
