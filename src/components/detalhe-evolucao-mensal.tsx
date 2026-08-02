@@ -73,12 +73,12 @@ export function DetalheEvolucaoMensal({
               <tfoot className="sticky bottom-0 bg-muted/80 backdrop-blur">
                 <tr className="border-t border-border font-medium">
                   <td className="px-3 py-2">Total atual</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{brl(ultimo.aplicado, 2)}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{brl(ultimo.ganho, 2)}</td>
+                  <td className="serie-investido px-3 py-2 text-right font-bold tabular-nums">{brl(ultimo.aplicado, 2)}</td>
+                  <td className="serie-ganho px-3 py-2 text-right font-bold tabular-nums">{brl(ultimo.ganho, 2)}</td>
                   <td className="px-3 py-2 text-right tabular-nums">
                     {percentual(ultimo.ganho, ultimo.aplicado)}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums">
+                  <td className="serie-patrimonio px-3 py-2 text-right font-bold tabular-nums">
                     {brl(ultimo.aplicado + ultimo.ganho, 2)}
                   </td>
                 </tr>
