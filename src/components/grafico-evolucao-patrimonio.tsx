@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { Panel } from "@/components/panel";
+import { TooltipEvolucao } from "@/components/tooltip-evolucao";
 import {
   Select,
   SelectContent,
