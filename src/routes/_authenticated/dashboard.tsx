@@ -21,6 +21,7 @@ import { CarteiraGrupos } from "@/components/carteira-grupos";
 
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
+import { TooltipEvolucao } from "@/components/tooltip-evolucao";
 import {
   Select,
   SelectContent,
