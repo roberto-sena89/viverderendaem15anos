@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, RefreshCw, Search, X } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
+import { BuscaCripto } from "@/components/cripto/busca-cripto";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -220,30 +222,16 @@ export function PainelCripto({
             </div>
 
             <div className="order-last flex w-full items-center gap-1.5 sm:order-none sm:w-auto">
-              <div className="relative flex-1 sm:w-56 sm:flex-none lg:w-64">
-                <Search
-                  aria-hidden
-                  className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-                />
-                <input
-                  type="search"
-                  value={buscaLocal}
-                  onChange={(e) => setBuscaLocal(e.target.value)}
-                  placeholder="Pesquisar ativo (nome ou ticker)"
-                  aria-label="Pesquisar criptomoeda"
-                  className="h-8 w-full rounded-lg border border-border bg-background pr-7 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none [&::-webkit-search-cancel-button]:hidden"
-                />
-                {buscaLocal ? (
-                  <button
-                    type="button"
-                    aria-label="Limpar busca"
-                    onClick={() => setBuscaLocal("")}
-                    className="absolute top-1/2 right-1.5 grid size-5 -translate-y-1/2 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                  >
-                    <X className="size-3" />
-                  </button>
-                ) : null}
-              </div>
+              <BuscaCripto
+                valor={buscaLocal}
+                linhas={data?.linhas ?? []}
+                onChange={setBuscaLocal}
+                onEscolher={(l) => {
+                  setBuscaLocal(l.ticker);
+                  setDetalhe(l);
+                }}
+              />
+
               <Button
                 variant="outline"
                 size="sm"
