@@ -112,17 +112,18 @@ function Cotacoes() {
             </span>
           ) : null}
 
-          <div className="ml-auto flex flex-wrap items-center gap-2">
-            <div className="relative">
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:ml-auto sm:w-auto">
+            <div className="relative min-w-0 flex-1 sm:flex-none">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Buscar ticker ou nome"
                 aria-label="Buscar ativo na grade de cotações"
-                className="h-9 w-[220px] pl-8 text-sm"
+                className="h-9 w-full pl-8 text-sm sm:w-[220px]"
               />
             </div>
+
             <Button
               variant={favoritos ? "default" : "outline"}
               size="sm"
