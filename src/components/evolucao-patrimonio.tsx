@@ -118,7 +118,7 @@ const tooltipStyle = {
 type SerieChave = "patrimonio" | "aportadoAcum" | "anterior";
 
 const CORES_SERIE: Record<SerieChave, string> = {
-  patrimonio: "var(--color-primary)",
+  patrimonio: "var(--color-evolucao-ganho)",
   aportadoAcum: "var(--color-evolucao-aplicado)",
   anterior: "var(--color-muted-foreground)",
 };
@@ -588,8 +588,8 @@ export function EvolucaoPatrimonio() {
                 chave: "patrimonio" as const,
                 rotulo: "Patrimônio",
                 Icone: Wallet,
-                cor: "text-primary",
-                fundo: "bg-primary/10",
+                cor: "text-evolucao-ganho",
+                fundo: "bg-evolucao-ganho/15",
                 valor: ultimoPonto?.patrimonio,
               },
               {
@@ -597,7 +597,7 @@ export function EvolucaoPatrimonio() {
                 rotulo: "Total investido",
                 Icone: Landmark,
                 cor: "text-evolucao-aplicado",
-                fundo: "bg-evolucao-aplicado/10",
+                fundo: "bg-evolucao-aplicado/15",
                 valor: ultimoPonto?.aportadoAcum,
               },
             ]).map((s) => (
@@ -623,7 +623,7 @@ export function EvolucaoPatrimonio() {
                   <s.Icone className={cn("size-4", s.cor)} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span className={cn("block truncate text-[0.65rem] font-bold uppercase tracking-wide", s.cor)}>
                     {s.rotulo}
                   </span>
                   <span className="block truncate font-display text-[0.8rem] font-bold tabular-nums text-foreground">
@@ -695,7 +695,7 @@ export function EvolucaoPatrimonio() {
               <Bar
                 dataKey="patrimonio"
                 name="Patrimônio"
-                fill="var(--color-primary)"
+                fill="var(--color-evolucao-ganho)"
                 fillOpacity={destaque && destaque !== "patrimonio" ? 0.28 : 1}
                 radius={[3, 3, 0, 0]}
                 isAnimationActive={false}
@@ -710,8 +710,8 @@ export function EvolucaoPatrimonio() {
                   formatter={(v: number) => compacto(Number(v))}
                   style={{
                     fontSize: 10,
-                    fontWeight: destaque === "patrimonio" ? 700 : 500,
-                    fill: destaque === "patrimonio" ? "var(--color-primary)" : "var(--color-muted-foreground)",
+                    fontWeight: destaque === "patrimonio" ? 700 : 600,
+                    fill: "var(--color-evolucao-ganho)",
                   }}
                 />
                 ) : null}
@@ -734,8 +734,8 @@ export function EvolucaoPatrimonio() {
                   formatter={(v: number) => compacto(Number(v))}
                   style={{
                     fontSize: 10,
-                    fontWeight: destaque === "aportadoAcum" ? 700 : 500,
-                    fill: destaque === "aportadoAcum" ? "var(--color-evolucao-aplicado)" : "var(--color-muted-foreground)",
+                    fontWeight: destaque === "aportadoAcum" ? 700 : 600,
+                    fill: "var(--color-evolucao-aplicado)",
                   }}
                 />
                 ) : null}
