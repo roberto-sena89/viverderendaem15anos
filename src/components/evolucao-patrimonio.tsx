@@ -758,6 +758,38 @@ export function EvolucaoPatrimonio() {
           </div>
         </div>
 
+        {/* Escala horizontal de evolução mês a mês */}
+        <div className="mt-2 w-full overflow-x-auto pb-1 [scrollbar-width:thin]">
+          <ol className="flex min-w-full items-stretch gap-1">
+            {dadosGrafico.map((p, i) => {
+              const prev = i > 0 ? dadosGrafico[i - 1]?.patrimonio ?? 0 : 0;
+              const delta = i > 0 && prev > 0 ? ((p.patrimonio - prev) / prev) * 100 : null;
+              const up = (delta ?? 0) >= 0;
+              return (
+                <li
+                  key={p.id}
+                  className="flex min-w-[62px] flex-1 flex-col items-center gap-1 rounded-lg border border-border/60 bg-muted/20 px-1.5 py-1.5 text-center"
+                  title={p.titulo}
+                >
+                  <span className="text-[0.6rem] font-semibold uppercase tracking-wide text-muted-foreground">
+                    {p.rotulo}
+                  </span>
+                  <span className="text-[0.68rem] font-bold serie-patrimonio">{compacto(p.patrimonio)}</span>
+                  <span
+                    className={cn(
+                      "text-[0.6rem] font-semibold tabular-nums",
+                      delta === null ? "text-muted-foreground" : up ? "text-emerald-500" : "text-destructive",
+                    )}
+                  >
+                    {delta === null ? "—" : `${up ? "+" : ""}${delta.toFixed(1)}%`}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+
+
       </Panel>
 
 
