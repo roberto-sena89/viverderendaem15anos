@@ -46,7 +46,8 @@ const tipos = ["Dividendo", "JCP", "Rendimento"];
 function DividendosPage() {
   const [open, setOpen] = useState(false);
   const { data: proventos = [], isLoading } = useDividendos();
-  const { data: carteira = [] } = useAtivos();
+  // usa as cotações ao vivo (mesma fonte da aba "Carteira") para o saldo ficar sincronizado
+  const { data: carteira = [] } = useAtivosAoVivo();
   const criar = useCriarDividendo();
   const excluir = useExcluir("dividendos");
 
