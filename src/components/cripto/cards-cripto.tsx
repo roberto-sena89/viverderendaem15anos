@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { RealceTermo } from "@/components/cripto/realce-termo";
 import { BadgeCategoria } from "@/components/cripto/badge-categoria";
 import { useFlashPrecos, type PosicaoCarteira } from "@/components/cripto/tabela-cripto";
 import { corVar, fmtCompacto, fmtPct, fmtPreco } from "@/components/cripto/formatos-cripto";
@@ -15,6 +16,7 @@ export function CardsCripto({
   aoFavoritar,
   posicoes,
   aoAbrir,
+  termoBusca,
 }: {
   linhas: LinhaCripto[];
   usdBrl: number;
@@ -22,6 +24,7 @@ export function CardsCripto({
   aoFavoritar: (ticker: string) => void;
   posicoes: Map<string, PosicaoCarteira>;
   aoAbrir: (l: LinhaCripto) => void;
+  termoBusca?: string;
 }) {
   const flash = useFlashPrecos(linhas);
   const direcao = useDirecaoVariacoes(linhas, CAMPOS_AO_VIVO);
@@ -69,9 +72,9 @@ export function CardsCripto({
                     <img src={l.imagem} alt="" className="size-7 shrink-0 rounded-full" loading="lazy" />
                   ) : null}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{l.nome}</p>
+                    <p className="truncate text-sm font-medium"><RealceTermo texto={l.nome} termo={termoBusca} /></p>
                     <p className="text-xs text-muted-foreground">
-                      #{l.rank ?? "—"} · {l.ticker}
+                      #{l.rank ?? "—"} · <RealceTermo texto={l.ticker} termo={termoBusca} />
                     </p>
                   </div>
                 </div>
