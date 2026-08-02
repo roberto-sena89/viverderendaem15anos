@@ -4,7 +4,17 @@ type Item = { dataKey?: string | number; name?: string; value?: number };
 
 const EXPLICACOES: Record<string, string> = {
   aplicado: "Soma dos aportes: o dinheiro que você efetivamente colocou.",
+  aportadoAcum: "Soma dos aportes: o dinheiro que você efetivamente colocou.",
   ganho: "Valorização dos ativos acima do valor aplicado no período.",
+  patrimonio: "Valor de mercado da carteira no período.",
+};
+
+/** Classe de cor padrão de cada série, usada em cards, tabelas e gráficos. */
+const CLASSES_SERIE: Record<string, string> = {
+  aplicado: "serie-investido",
+  aportadoAcum: "serie-investido",
+  ganho: "serie-ganho",
+  patrimonio: "serie-patrimonio",
 };
 
 /**
