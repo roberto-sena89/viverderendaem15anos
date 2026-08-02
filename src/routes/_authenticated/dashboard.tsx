@@ -242,14 +242,24 @@ function Dashboard() {
             const variacao = totalAplicado > 0 ? (totalGanho / totalAplicado) * 100 : 0;
             return (
               <div className="mb-4 grid grid-cols-2 gap-3">
-                <div className="chip-legenda serie-aplicado flex-col items-start gap-0.5 rounded-lg px-3 py-2">
+                <button
+                  type="button"
+                  onClick={() => setDetalheAberto(true)}
+                  title="Ver detalhamento mês a mês"
+                  className="chip-legenda serie-aplicado flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
                   <span className="flex items-center gap-2 text-xs font-medium">
                     <span className="ponto-legenda" aria-hidden />
                     Valor aplicado
                   </span>
                   <strong className="text-lg font-semibold tabular-nums">{brl(totalAplicado, 2)}</strong>
-                </div>
-                <div className="chip-legenda serie-ganho flex-col items-start gap-0.5 rounded-lg px-3 py-2">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDetalheAberto(true)}
+                  title="Ver detalhamento mês a mês"
+                  className="chip-legenda serie-ganho flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
                   <span className="flex items-center gap-2 text-xs font-medium">
                     <span className="ponto-legenda" aria-hidden />
                     Ganho de Capital
@@ -261,10 +271,17 @@ function Dashboard() {
                       {variacao.toFixed(2).replace(".", ",")}%
                     </span>
                   </span>
-                </div>
+                </button>
               </div>
             );
           })()}
+
+          <DetalheEvolucaoMensal
+            aberto={detalheAberto}
+            onOpenChange={setDetalheAberto}
+            dados={dadosEvolucao}
+          />
+
 
 
           <div className="h-72">
