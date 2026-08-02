@@ -65,6 +65,7 @@ export function PainelCripto({
   const [detalhe, setDetalhe] = useState<LinhaCripto | null>(null);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [buscaLocal, setBuscaLocal] = useState("");
+  const termoRealce = `${buscaLocal || busca || ""}`.trim();
 
   const intervalo = intervaloMs > 0 ? Math.max(intervaloMs, 15_000) : INTERVALO_MINIMO;
 
@@ -295,6 +296,7 @@ export function PainelCripto({
                     aoFavoritar={alternar}
                     posicoes={posicoes}
                     aoAbrir={setDetalhe}
+                    termoBusca={termoRealce}
                   />
                 </div>
                 <div className="md:hidden">
@@ -305,6 +307,7 @@ export function PainelCripto({
                     aoFavoritar={alternar}
                     posicoes={posicoes}
                     aoAbrir={setDetalhe}
+                    termoBusca={termoRealce}
                   />
                 </div>
 

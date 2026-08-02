@@ -82,6 +82,7 @@ export function TabelaCripto({
   aoFavoritar,
   posicoes,
   aoAbrir,
+  termoBusca,
 }: {
   linhas: LinhaCripto[];
   usdBrl: number;
@@ -92,6 +93,7 @@ export function TabelaCripto({
   posicoes: Map<string, PosicaoCarteira>;
 
   aoAbrir: (l: LinhaCripto) => void;
+  termoBusca?: string;
 }) {
   const flash = useFlashPrecos(linhas);
   const direcao = useDirecaoVariacoes(linhas, CAMPOS_AO_VIVO);
@@ -249,9 +251,9 @@ export function TabelaCripto({
                     ) : null}
                     <div className="min-w-0 flex-1">
                       <p className="flex min-w-0 items-baseline gap-1.5 text-[0.78rem] leading-tight font-semibold sm:text-sm">
-                        <span className="truncate">{l.nome}</span>
+                        <span className="truncate"><RealceTermo texto={l.nome} termo={termoBusca} /></span>
                         <span className="shrink-0 text-[0.62rem] font-medium tracking-wide text-muted-foreground uppercase sm:text-[0.68rem]">
-                          {l.ticker}
+                          <RealceTermo texto={l.ticker} termo={termoBusca} />
                         </span>
                       </p>
                       <div className="mt-0.5 flex items-center gap-1">
