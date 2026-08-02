@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Radio, Search, Star } from "lucide-react";
+import { Search, Star } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,12 +49,6 @@ export const Route = createFileRoute("/_authenticated/cotacoes")({
 
 const ABAS = ABAS_COTACOES;
 
-const INTERVALOS = [
-  { ms: 15_000, rotulo: "15s" },
-  { ms: 30_000, rotulo: "30s" },
-  { ms: 60_000, rotulo: "1min" },
-  { ms: 0, rotulo: "Manual" },
-];
 
 function Cotacoes() {
   const [aba, setAba] = useState("geral");
@@ -140,24 +134,6 @@ function Cotacoes() {
               <Star className={`size-4 ${favoritos ? "fill-current" : ""}`} />
               Favoritos
             </Button>
-            <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
-              <Radio className="mx-1 size-3.5 text-muted-foreground" aria-hidden />
-              {INTERVALOS.map((i) => (
-                <button
-                  key={i.rotulo}
-                  type="button"
-                  onClick={() => setIntervalo(i.ms)}
-                  aria-pressed={intervalo === i.ms}
-                  className={`rounded-md px-2 py-1 text-xs transition-colors ${
-                    intervalo === i.ms
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  {i.rotulo}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
