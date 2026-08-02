@@ -349,11 +349,9 @@ export function PainelCommodities({
             </div>
           ) : secoes.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              {apenasFavoritos
-                ? "Nenhuma commodity favoritada ainda — toque na estrela de um card para acompanhá-la aqui."
-                : filtrosAtivos > 0
-                  ? "Nenhuma commodity corresponde aos filtros de categoria, bolsa ou pregão selecionados."
-                  : "Nenhuma commodity encontrada para a busca."}
+              {filtrosAtivos > 0
+                ? "Nenhuma commodity corresponde aos filtros de categoria, bolsa ou pregão selecionados."
+                : "Nenhuma commodity encontrada para a busca."}
             </p>
           ) : (
             secoes.map((s) => {
