@@ -258,7 +258,7 @@ function Dashboard() {
                   fontSize={13}
                   stroke="var(--color-muted-foreground)"
                 />
-                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} cursor={{ fill: "var(--color-muted)" }} />
+                <Tooltip content={<TooltipEvolucao rotuloPeriodo="Mês" />} cursor={{ fill: "var(--color-muted)" }} />
                 <Bar dataKey="aplicado" stackId="p" fill="var(--color-evolucao-aplicado)" name="Valor aplicado" />
                 <Bar dataKey="ganho" stackId="p" fill="var(--color-evolucao-ganho)" name="Ganho de Capital" radius={[6, 6, 0, 0]} />
               </BarChart>
