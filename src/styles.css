@@ -841,3 +841,18 @@ canvas {
 @utility serie-ganho {
   color: var(--color-evolucao-ganho);
 }
+
+/* Séries padrão de patrimônio: mesma cor em cards, tabelas e gráficos. */
+@utility serie-patrimonio {
+  color: var(--color-evolucao-ganho);
+}
+
+@utility serie-investido {
+  color: var(--color-evolucao-aplicado);
+}
+
+@utility rotulo-serie {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: currentColor;
+}
