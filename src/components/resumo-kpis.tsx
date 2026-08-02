@@ -19,16 +19,26 @@ function Indicador({
   rotulo,
   valor,
   tom = "default",
+  serie,
 }: {
   rotulo: string;
   valor: string;
   tom?: "default" | "positive" | "negative";
+  serie?: "patrimonio" | "investido";
 }) {
-  const cor =
-    tom === "positive" ? "text-success" : tom === "negative" ? "text-destructive" : "text-foreground";
+  const classeSerie = serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
+  const cor = serie
+    ? classeSerie
+    : tom === "positive"
+      ? "text-success"
+      : tom === "negative"
+        ? "text-destructive"
+        : "text-foreground";
   return (
     <div className="min-w-0">
-      <p className="truncate text-[0.875rem] text-muted-foreground">{rotulo}</p>
+      <p className={`truncate text-[0.875rem] ${serie ? `rotulo-serie ${classeSerie}` : "text-muted-foreground"}`}>
+        {rotulo}
+      </p>
       <p className={`num truncate text-sm font-semibold ${cor}`}>{valor}</p>
     </div>
   );
