@@ -226,7 +226,10 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
 
 
-        <header className="sticky top-0 z-20 border-b border-border bg-background/70 backdrop-blur-xl">
+        <header
+          ref={cabecalhoRef}
+          className="sticky top-0 z-30 border-b border-border bg-background/70 backdrop-blur-xl"
+        >
 
           <div className="container-app grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-3 sm:gap-4 sm:py-5 lg:grid-cols-[minmax(0,1fr)_auto]">
 
