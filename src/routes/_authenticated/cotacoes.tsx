@@ -55,7 +55,7 @@ function Cotacoes() {
   const [busca, setBusca] = useState("");
   // Preferência do perfil: acompanha o usuário entre sessões e dispositivos.
   const [favoritos, definirFavoritos] = useFiltroFavoritos();
-  const [intervalo, setIntervalo] = useState(30_000);
+  const intervalo = 30_000;
   const [pregao, setPregao] = useState(() => estadoPregao());
   const [ultima, setUltima] = useState<number | null>(null);
   const [parcial, setParcial] = useState(false);
