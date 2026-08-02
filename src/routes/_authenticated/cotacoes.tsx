@@ -16,6 +16,7 @@ import { PainelIndices } from "@/components/indices/painel-indices";
 import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
+import { ABAS_COTACOES, ABAS_CATEGORIA_GENERICA } from "@/lib/cotacoes-abas";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
 
 export const Route = createFileRoute("/_authenticated/cotacoes")({
@@ -39,17 +40,7 @@ export const Route = createFileRoute("/_authenticated/cotacoes")({
   component: Cotacoes,
 });
 
-const ABAS: { id: string; rotulo: string; categoria?: CategoriaMercado }[] = [
-  { id: "geral", rotulo: "Visão geral" },
-  { id: "acoes", rotulo: "Ações", categoria: "acoes" },
-  { id: "fiis", rotulo: "FIIs", categoria: "fiis" },
-  { id: "indices", rotulo: "Índices" },
-  { id: "tesouro", rotulo: "Tesouro Direto" },
-  { id: "etfs", rotulo: "ETFs", categoria: "etfs" },
-  { id: "cripto", rotulo: "Criptomoedas", categoria: "cripto" },
-  { id: "commodities", rotulo: "Commodities" },
-  
-];
+const ABAS = ABAS_COTACOES;
 
 const INTERVALOS = [
   { ms: 15_000, rotulo: "15s" },
@@ -217,7 +208,7 @@ function Cotacoes() {
             />
           </TabsContent>
 
-          {ABAS.filter((a) => a.categoria && a.id !== "fiis" && a.id !== "acoes" && a.id !== "etfs" && a.id !== "cripto").map((a) => (
+          {ABAS_CATEGORIA_GENERICA.map((a) => (
             <TabsContent key={a.id} value={a.id} className="mt-4">
               <PainelCategoria
                 categoria={a.categoria as CategoriaMercado}
