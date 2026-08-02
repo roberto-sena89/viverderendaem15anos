@@ -162,10 +162,10 @@ function Cotacoes() {
         </div>
 
         <Tabs value={aba} onValueChange={setAba}>
-          <div className="sticky top-0 z-20 -mx-1 bg-background/95 px-1 py-1 backdrop-blur sm:overflow-x-auto">
-            <TabsList className="grid h-auto w-full grid-cols-2 gap-1 sm:flex sm:w-max">
+          <div className={CLASSES_BARRA_ABAS}>
+            <TabsList className={CLASSES_LISTA_ABAS}>
               {ABAS.map((a) => (
-                <TabsTrigger key={a.id} value={a.id} className="w-full min-w-0 truncate text-xs sm:w-auto sm:text-sm">
+                <TabsTrigger key={a.id} value={a.id} className={CLASSES_GATILHO_ABA}>
                   {a.rotulo}
                 </TabsTrigger>
               ))}
