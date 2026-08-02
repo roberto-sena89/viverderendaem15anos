@@ -8,6 +8,7 @@ import {
   CLASSES_BARRA_ABAS,
   CLASSES_LISTA_ABAS,
   CLASSES_GATILHO_ABA,
+  CLASSES_ROTULO_ABA,
   CLASSES_BUSCA,
 } from "@/lib/cotacoes-abas";
 
