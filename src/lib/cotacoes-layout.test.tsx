@@ -29,7 +29,7 @@ describe("Cotações · sem rolagem horizontal no mobile", () => {
 
   it("permite que os rótulos encolham em vez de empurrar a largura", () => {
     expect(CLASSES_GATILHO_ABA).toContain("min-w-0");
-    expect(CLASSES_GATILHO_ABA).toContain("truncate");
+    expect(CLASSES_ROTULO_ABA).toContain("truncate");
     expect(CLASSES_GATILHO_ABA).toContain("w-full");
   });
 
