@@ -48,13 +48,16 @@ function CartaoResumo({
   titulo,
   icone: Icone,
   onClick,
+  serie,
   children,
 }: {
   titulo: string;
   icone: typeof Wallet;
   onClick: () => void;
+  serie?: "patrimonio" | "investido";
   children: React.ReactNode;
 }) {
+  const classeSerie = serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
   return (
     <button
       type="button"
@@ -63,14 +66,19 @@ function CartaoResumo({
       className="panel cursor-pointer p-4 text-left transition-colors hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       <div className="flex items-start gap-2">
-        <Icone className="size-8! shrink-0 text-muted-foreground/70" />
-        <p className="min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] break-words text-balance text-muted-foreground uppercase">
+        <Icone className={`size-8! shrink-0 ${serie ? classeSerie : "text-muted-foreground/70"}`} />
+        <p
+          className={`min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] break-words text-balance uppercase ${
+            serie ? classeSerie : "text-muted-foreground"
+          }`}
+        >
           {titulo}
         </p>
         <span className="hidden shrink-0 text-[0.8rem] text-muted-foreground sm:inline">
           detalhes
         </span>
       </div>
+
 
 
       <div className="mt-3">{children}</div>
