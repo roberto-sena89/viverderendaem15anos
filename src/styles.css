@@ -848,7 +848,7 @@ canvas {
 
 /* Séries padrão de patrimônio: mesma cor em cards, tabelas e gráficos. */
 @utility serie-patrimonio {
-  color: var(--color-evolucao-ganho);
+  color: var(--color-serie-patrimonio);
 }
 
 @utility serie-investido {
