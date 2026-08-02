@@ -114,17 +114,6 @@ function Cotacoes() {
         <Tabs value={aba} onValueChange={setAba}>
           {/* Cabeçalho fixo no mobile: busca + abas acompanham a rolagem */}
           <div className={CLASSES_CABECALHO_FIXO}>
-            <div className="relative w-full min-w-0 sm:ml-auto sm:w-auto">
-              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar ticker ou nome"
-                aria-label="Buscar ativo na grade de cotações"
-                className={CLASSES_BUSCA}
-              />
-            </div>
-
             <div className={CLASSES_BARRA_ABAS}>
               <TabsList className={CLASSES_LISTA_ABAS}>
                 {ABAS.map((a) => (
@@ -133,6 +122,17 @@ function Cotacoes() {
                   </TabsTrigger>
                 ))}
               </TabsList>
+            </div>
+
+            <div className="relative w-full min-w-0 px-1">
+              <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar ticker ou nome"
+                aria-label="Buscar ativo na grade de cotações"
+                className={CLASSES_BUSCA}
+              />
             </div>
           </div>
 
