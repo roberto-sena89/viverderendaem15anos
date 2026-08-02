@@ -126,10 +126,14 @@
   --color-chart-15: var(--chart-15);
   --color-chart-16: var(--chart-16);
   --color-chart-17: var(--chart-17);
-  --color-evolucao-aplicado: var(--evolucao-aplicado);
-  --color-evolucao-ganho: var(--evolucao-ganho);
+  /* Séries semânticas dos gráficos/KPIs (usar sempre estes tokens) */
+  --color-serie-investido: var(--serie-investido);
   --color-serie-patrimonio: var(--serie-patrimonio);
-  --color-serie-investido: var(--evolucao-aplicado);
+  --color-serie-aplicado: var(--serie-investido);
+  --color-serie-ganho: var(--serie-ganho);
+  /* Aliases legados */
+  --color-evolucao-aplicado: var(--serie-investido);
+  --color-evolucao-ganho: var(--serie-ganho);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
