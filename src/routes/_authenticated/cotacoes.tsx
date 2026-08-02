@@ -16,7 +16,14 @@ import { PainelIndices } from "@/components/indices/painel-indices";
 import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { useFiltroFavoritos } from "@/lib/favoritos-mercado";
-import { ABAS_COTACOES, ABAS_CATEGORIA_GENERICA } from "@/lib/cotacoes-abas";
+import {
+  ABAS_COTACOES,
+  ABAS_CATEGORIA_GENERICA,
+  CLASSES_BARRA_ABAS,
+  CLASSES_LISTA_ABAS,
+  CLASSES_GATILHO_ABA,
+  CLASSES_BUSCA,
+} from "@/lib/cotacoes-abas";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
 
 export const Route = createFileRoute("/_authenticated/cotacoes")({
@@ -120,7 +127,7 @@ function Cotacoes() {
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Buscar ticker ou nome"
                 aria-label="Buscar ativo na grade de cotações"
-                className="h-9 w-full pl-8 text-sm sm:w-[220px]"
+                className={CLASSES_BUSCA}
               />
             </div>
 
@@ -155,10 +162,10 @@ function Cotacoes() {
         </div>
 
         <Tabs value={aba} onValueChange={setAba}>
-          <div className="sticky top-0 z-20 -mx-1 bg-background/95 px-1 py-1 backdrop-blur sm:overflow-x-auto">
-            <TabsList className="grid h-auto w-full grid-cols-2 gap-1 sm:flex sm:w-max">
+          <div className={CLASSES_BARRA_ABAS}>
+            <TabsList className={CLASSES_LISTA_ABAS}>
               {ABAS.map((a) => (
-                <TabsTrigger key={a.id} value={a.id} className="w-full min-w-0 truncate text-xs sm:w-auto sm:text-sm">
+                <TabsTrigger key={a.id} value={a.id} className={CLASSES_GATILHO_ABA}>
                   {a.rotulo}
                 </TabsTrigger>
               ))}
