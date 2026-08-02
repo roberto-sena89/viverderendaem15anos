@@ -33,10 +33,9 @@ describe("Cotações · sem rolagem horizontal no mobile", () => {
     expect(CLASSES_GATILHO_ABA).toContain("w-full");
   });
 
-  it("mantém a busca fluida no mobile e fixa apenas no desktop", () => {
+  it("mantém a busca fluida, alinhada à grade das abas", () => {
     expect(CLASSES_BUSCA).toContain("w-full");
-    expect(CLASSES_BUSCA).toContain("sm:w-[220px]");
-    expect(CLASSES_BUSCA).not.toMatch(/(^|\s)w-\[220px\]/);
+    expect(CLASSES_BUSCA).toContain("sm:min-w-[220px]");
   });
 
   it("a página usa as classes compartilhadas (sem regressão inline)", () => {
