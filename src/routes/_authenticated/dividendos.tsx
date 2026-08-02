@@ -174,7 +174,7 @@ function DividendosPage() {
                 }}
                 formatter={(v: number) => brl(v)}
               />
-              <Bar dataKey="valor" fill="var(--color-evolucao-ganho)" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="valor" fill="var(--color-serie-ganho)" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -886,7 +886,7 @@ function PainelProventos({
                   }}
                   formatter={(v: number) => brl(v, 2)}
                 />
-                <Bar dataKey="valor" fill="var(--color-evolucao-ganho)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="valor" fill="var(--color-serie-ganho)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : proventos.length === 0 ? (
