@@ -39,17 +39,7 @@ export const Route = createFileRoute("/_authenticated/cotacoes")({
   component: Cotacoes,
 });
 
-const ABAS: { id: string; rotulo: string; categoria?: CategoriaMercado }[] = [
-  { id: "geral", rotulo: "Visão geral" },
-  { id: "acoes", rotulo: "Ações", categoria: "acoes" },
-  { id: "fiis", rotulo: "FIIs", categoria: "fiis" },
-  { id: "indices", rotulo: "Índices" },
-  { id: "tesouro", rotulo: "Tesouro Direto" },
-  { id: "etfs", rotulo: "ETFs", categoria: "etfs" },
-  { id: "cripto", rotulo: "Criptomoedas", categoria: "cripto" },
-  { id: "commodities", rotulo: "Commodities" },
-  
-];
+const ABAS = ABAS_COTACOES;
 
 const INTERVALOS = [
   { ms: 15_000, rotulo: "15s" },
