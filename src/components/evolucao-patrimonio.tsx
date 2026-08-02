@@ -709,7 +709,7 @@ export function EvolucaoPatrimonio() {
             style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * 44)}px` } as Record<string, string>}
           >
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={1} barCategoryGap="14%" maxBarSize={14}>
+            <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={0} barCategoryGap="35%" maxBarSize={14}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
