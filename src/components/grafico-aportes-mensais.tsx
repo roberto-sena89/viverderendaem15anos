@@ -106,7 +106,7 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               yAxisId="esq"
               dataKey="aporte"
               name="aporte"
-              fill="var(--chart-1)"
+              fill="var(--color-evolucao-aplicado)"
               radius={[3, 3, 0, 0]}
               maxBarSize={28}
             />
@@ -115,9 +115,9 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
               type="monotone"
               dataKey="acumulado"
               name="acumulado"
-              stroke="var(--chart-3)"
+              stroke="var(--color-evolucao-ganho)"
               strokeWidth={2.5}
-              dot={{ r: 2.5, fill: "var(--chart-3)", strokeWidth: 0 }}
+              dot={{ r: 2.5, fill: "var(--color-evolucao-ganho)", strokeWidth: 0 }}
               activeDot={{ r: 4.5 }}
             />
           </ComposedChart>

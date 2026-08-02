@@ -565,7 +565,7 @@ function HistoricoAportesPage() {
                     borderRadius: 8,
                   }}
                 />
-                <Bar dataKey="valor" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="valor" fill="var(--color-evolucao-aplicado)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
