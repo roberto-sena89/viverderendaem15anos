@@ -588,7 +588,7 @@ export function EvolucaoPatrimonio() {
                 chave: "patrimonio" as const,
                 rotulo: "Patrimônio",
                 Icone: Wallet,
-                cor: "text-evolucao-ganho",
+                cor: "serie-patrimonio",
                 fundo: "bg-evolucao-ganho/15",
                 valor: ultimoPonto?.patrimonio,
               },
@@ -596,7 +596,7 @@ export function EvolucaoPatrimonio() {
                 chave: "aportadoAcum" as const,
                 rotulo: "Total investido",
                 Icone: Landmark,
-                cor: "text-evolucao-aplicado",
+                cor: "serie-investido",
                 fundo: "bg-evolucao-aplicado/15",
                 valor: ultimoPonto?.aportadoAcum,
               },
@@ -623,7 +623,7 @@ export function EvolucaoPatrimonio() {
                   <s.Icone className={cn("size-4", s.cor)} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className={cn("block truncate text-[0.65rem] font-bold uppercase tracking-wide", s.cor)}>
+                  <span className={cn("rotulo-serie block truncate text-[0.65rem] uppercase", s.cor)}>
                     {s.rotulo}
                   </span>
                   <span className="block truncate font-display text-[0.8rem] font-bold tabular-nums text-foreground">

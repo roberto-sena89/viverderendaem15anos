@@ -288,13 +288,20 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
 
-        <CartaoResumo titulo="Patrimônio total" icone={Wallet} onClick={() => setAberto(detalhePatrimonio)}>
+        <CartaoResumo
+          titulo="Patrimônio total"
+          icone={Wallet}
+          serie="patrimonio"
+          onClick={() => setAberto(detalhePatrimonio)}
+        >
           <div className="flex flex-wrap items-center gap-2">
-            <p className="num font-display text-[1.6rem] leading-none font-bold">{brl(resumo.totalAtual, 2)}</p>
+            <p className="num font-display serie-patrimonio text-[1.6rem] leading-none font-bold">
+              {brl(resumo.totalAtual, 2)}
+            </p>
             <DeltaChip value={resumo.rentabilidade} />
           </div>
           <div className="mt-3">
-            <Indicador rotulo="Valor investido" valor={brl(resumo.totalInvestido, 2)} />
+            <Indicador rotulo="Valor investido" valor={brl(resumo.totalInvestido, 2)} serie="investido" />
           </div>
         </CartaoResumo>
 
