@@ -3,7 +3,25 @@ import { cn } from "@/lib/utils";
 
 type Item = { dataKey?: string | number; name?: string; value?: number; payload?: Record<string, unknown> };
 
-type PontoSerie = { id?: string; rotulo?: string; patrimonio?: number; aportadoAcum?: number };
+type PontoSerie = {
+  id?: string;
+  rotulo?: string;
+  mes?: string;
+  patrimonio?: number;
+  aportadoAcum?: number;
+  aplicado?: number;
+  ganho?: number;
+};
+
+/** Patrimônio do ponto: campo direto ou soma das séries empilhadas. */
+function patrimonioDe(p: PontoSerie) {
+  if (typeof p.patrimonio === "number") return p.patrimonio;
+  return Number(p.aplicado ?? 0) + Number(p.ganho ?? 0);
+}
+
+function chaveDe(p: PontoSerie) {
+  return p.id ?? p.rotulo ?? p.mes ?? "";
+}
 
 const EXPLICACOES: Record<string, string> = {
   aplicado: "Soma dos aportes: o dinheiro que você efetivamente colocou.",
@@ -47,18 +65,16 @@ export function TooltipEvolucao({
   if (!active || !payload?.length) return null;
 
   const linha = (payload[0]?.payload ?? {}) as PontoSerie;
-  const patrimonio = Number(linha.patrimonio ?? 0);
-  const investido = Number(linha.aportadoAcum ?? 0);
+  const patrimonio = patrimonioDe(linha);
+  const investido = Number(linha.aportadoAcum ?? linha.aplicado ?? 0);
   const ganho = patrimonio - investido;
   const ganhoPct = investido > 0 ? (ganho / investido) * 100 : null;
 
-  const idx = serie?.findIndex((p) => (linha.id ? p.id === linha.id : p.rotulo === linha.rotulo)) ?? -1;
+  const idx = serie?.findIndex((p) => chaveDe(p) === chaveDe(linha)) ?? -1;
   const anteriorMes = idx > 0 ? serie?.[idx - 1] : undefined;
-  const deltaAbs = anteriorMes ? patrimonio - Number(anteriorMes.patrimonio ?? 0) : null;
-  const deltaPct =
-    anteriorMes && Number(anteriorMes.patrimonio ?? 0) > 0
-      ? (Number(deltaAbs) / Number(anteriorMes.patrimonio)) * 100
-      : null;
+  const baseAntes = anteriorMes ? patrimonioDe(anteriorMes) : 0;
+  const deltaAbs = anteriorMes ? patrimonio - baseAntes : null;
+  const deltaPct = anteriorMes && baseAntes > 0 ? ((deltaAbs as number) / baseAntes) * 100 : null;
 
   return (
     <div className="min-w-[16.5rem] rounded-xl border border-border bg-popover/95 p-3 text-[12px] text-popover-foreground shadow-lg backdrop-blur">

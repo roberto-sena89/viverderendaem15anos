@@ -184,7 +184,7 @@ export function GraficoEvolucaoPatrimonio() {
               stroke="var(--color-foreground)"
             />
             <Tooltip
-              content={<TooltipEvolucao rotuloPeriodo="Mês" />}
+              content={<TooltipEvolucao rotuloPeriodo="Mês" serie={dados} />}
               cursor={{ fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" }}
             />
             <Bar dataKey="aplicado" stackId="p" fill="var(--color-serie-investido)" name="Valor aplicado" />
