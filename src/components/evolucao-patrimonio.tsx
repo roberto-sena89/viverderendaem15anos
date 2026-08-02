@@ -736,7 +736,7 @@ export function EvolucaoPatrimonio() {
                 wrapperStyle={{ outline: "none", zIndex: 30 }}
                 allowEscapeViewBox={{ x: false, y: true }}
                 offset={16}
-                content={<TooltipEvolucao destaque={destaque} />}
+                content={<TooltipEvolucao destaque={destaque} serie={dadosGrafico} />}
               />
               <Bar
                 dataKey="patrimonio"
