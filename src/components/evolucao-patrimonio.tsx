@@ -118,7 +118,7 @@ const tooltipStyle = {
 type SerieChave = "patrimonio" | "aportadoAcum" | "anterior";
 
 const CORES_SERIE: Record<SerieChave, string> = {
-  patrimonio: "var(--color-evolucao-ganho)",
+  patrimonio: "var(--color-serie-patrimonio)",
   aportadoAcum: "var(--color-evolucao-aplicado)",
   anterior: "var(--color-muted-foreground)",
 };
@@ -695,7 +695,7 @@ export function EvolucaoPatrimonio() {
               <Bar
                 dataKey="patrimonio"
                 name="Patrimônio"
-                fill="var(--color-evolucao-ganho)"
+                fill="var(--color-serie-patrimonio)"
                 fillOpacity={destaque && destaque !== "patrimonio" ? 0.28 : 1}
                 radius={[3, 3, 0, 0]}
                 isAnimationActive={false}
@@ -711,7 +711,7 @@ export function EvolucaoPatrimonio() {
                   style={{
                     fontSize: 10,
                     fontWeight: destaque === "patrimonio" ? 700 : 600,
-                    fill: "var(--color-evolucao-ganho)",
+                    fill: "var(--color-serie-patrimonio)",
                   }}
                 />
                 ) : null}
