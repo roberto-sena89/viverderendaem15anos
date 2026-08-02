@@ -686,7 +686,7 @@ export function EvolucaoPatrimonio() {
                 tickFormatter={compacto}
               />
               <Tooltip
-                cursor={{ fill: "var(--color-muted)", opacity: 0.35 }}
+                cursor={{ fill: "var(--color-muted)", opacity: 0.22 }}
                 wrapperStyle={{ outline: "none", zIndex: 30 }}
                 allowEscapeViewBox={{ x: false, y: true }}
                 offset={16}
