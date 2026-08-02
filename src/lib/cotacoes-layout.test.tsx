@@ -8,6 +8,7 @@ import {
   CLASSES_BARRA_ABAS,
   CLASSES_LISTA_ABAS,
   CLASSES_GATILHO_ABA,
+  CLASSES_ROTULO_ABA,
   CLASSES_BUSCA,
 } from "@/lib/cotacoes-abas";
 
@@ -29,7 +30,7 @@ describe("Cotações · sem rolagem horizontal no mobile", () => {
 
   it("permite que os rótulos encolham em vez de empurrar a largura", () => {
     expect(CLASSES_GATILHO_ABA).toContain("min-w-0");
-    expect(CLASSES_GATILHO_ABA).toContain("truncate");
+    expect(CLASSES_ROTULO_ABA).toContain("truncate");
     expect(CLASSES_GATILHO_ABA).toContain("w-full");
   });
 
@@ -67,24 +68,24 @@ function BarraAbas() {
   );
 }
 
-describe("Cotações · abas em 2 colunas no mobile", () => {
-  it("renderiza a lista como grade de 2 colunas no mobile e flex no desktop", () => {
+describe("Cotações · abas em grade no mobile", () => {
+  it("renderiza a lista como grade de 4 colunas no mobile e flex no desktop", () => {
     render(<BarraAbas />);
     const lista = screen.getByTestId("lista");
     expect(lista.className).toContain("grid");
-    expect(lista.className).toContain("grid-cols-2");
+    expect(lista.className).toContain("grid-cols-4");
     expect(lista.className).toContain("sm:flex");
     expect(lista.className).not.toMatch(/(^|\s)flex(\s|$)/);
   });
 
-  it("distribui todas as abas em linhas de 2 colunas", () => {
+  it("distribui todas as abas em linhas de 4 colunas", () => {
     render(<BarraAbas />);
     const gatilhos = screen.getAllByRole("tab");
     expect(gatilhos).toHaveLength(ABAS_COTACOES.length);
-    expect(Math.ceil(gatilhos.length / 2)).toBe(4);
+    expect(Math.ceil(gatilhos.length / 4)).toBe(2);
     for (const g of gatilhos) {
       expect(g.className).toContain("w-full");
-      expect(g.className).toContain("truncate");
+      expect(g.className).toContain("min-w-0");
     }
   });
 
