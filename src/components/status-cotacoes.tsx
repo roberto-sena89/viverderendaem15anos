@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { pedirPermissaoPush, permissaoPush } from "@/lib/alertas-historico";
-import { INTERVALOS, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+import { useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 
 
 /** Tempo relativo curto ("há 12s", "às 14:32"). */
@@ -142,27 +142,6 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
               />
             </div>
 
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase">Intervalo</p>
-              <div className="flex flex-wrap gap-1.5">
-                {INTERVALOS.map((i) => (
-                  <button
-                    key={i.ms}
-                    type="button"
-                    disabled={!config.automatico}
-                    onClick={() => salvarConfig({ intervaloMs: i.ms })}
-                    aria-pressed={config.intervaloMs === i.ms}
-                    className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-50 ${
-                      config.intervaloMs === i.ms
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border text-muted-foreground hover:bg-muted"
-                    }`}
-                  >
-                    {i.rotulo}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             <div className="space-y-2 border-t border-border pt-3">
               <div className="flex items-center justify-between gap-3">
