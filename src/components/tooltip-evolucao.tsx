@@ -4,7 +4,17 @@ type Item = { dataKey?: string | number; name?: string; value?: number };
 
 const EXPLICACOES: Record<string, string> = {
   aplicado: "Soma dos aportes: o dinheiro que você efetivamente colocou.",
+  aportadoAcum: "Soma dos aportes: o dinheiro que você efetivamente colocou.",
   ganho: "Valorização dos ativos acima do valor aplicado no período.",
+  patrimonio: "Valor de mercado da carteira no período.",
+};
+
+/** Classe de cor padrão de cada série, usada em cards, tabelas e gráficos. */
+const CLASSES_SERIE: Record<string, string> = {
+  aplicado: "serie-investido",
+  aportadoAcum: "serie-investido",
+  ganho: "serie-ganho",
+  patrimonio: "serie-patrimonio",
 };
 
 /**
@@ -36,7 +46,7 @@ export function TooltipEvolucao({
         {payload.map((p) => {
           const chave = String(p.dataKey ?? "");
           return (
-            <li key={chave} className={chave === "ganho" ? "serie-ganho" : "serie-aplicado"}>
+            <li key={chave} className={CLASSES_SERIE[chave] ?? "serie-investido"}>
               <div className="flex items-center justify-between gap-3">
                 <span className="flex items-center gap-1.5 font-medium">
                   <span className="ponto-legenda" aria-hidden />

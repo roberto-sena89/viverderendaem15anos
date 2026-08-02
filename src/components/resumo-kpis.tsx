@@ -19,16 +19,26 @@ function Indicador({
   rotulo,
   valor,
   tom = "default",
+  serie,
 }: {
   rotulo: string;
   valor: string;
   tom?: "default" | "positive" | "negative";
+  serie?: "patrimonio" | "investido";
 }) {
-  const cor =
-    tom === "positive" ? "text-success" : tom === "negative" ? "text-destructive" : "text-foreground";
+  const classeSerie = serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
+  const cor = serie
+    ? classeSerie
+    : tom === "positive"
+      ? "text-success"
+      : tom === "negative"
+        ? "text-destructive"
+        : "text-foreground";
   return (
     <div className="min-w-0">
-      <p className="truncate text-[0.875rem] text-muted-foreground">{rotulo}</p>
+      <p className={`truncate text-[0.875rem] ${serie ? `rotulo-serie ${classeSerie}` : "text-muted-foreground"}`}>
+        {rotulo}
+      </p>
       <p className={`num truncate text-sm font-semibold ${cor}`}>{valor}</p>
     </div>
   );
@@ -38,13 +48,16 @@ function CartaoResumo({
   titulo,
   icone: Icone,
   onClick,
+  serie,
   children,
 }: {
   titulo: string;
   icone: typeof Wallet;
   onClick: () => void;
+  serie?: "patrimonio" | "investido";
   children: React.ReactNode;
 }) {
+  const classeSerie = serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
   return (
     <button
       type="button"
@@ -53,14 +66,19 @@ function CartaoResumo({
       className="panel cursor-pointer p-4 text-left transition-colors hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       <div className="flex items-start gap-2">
-        <Icone className="size-8! shrink-0 text-muted-foreground/70" />
-        <p className="min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] break-words text-balance text-muted-foreground uppercase">
+        <Icone className={`size-8! shrink-0 ${serie ? classeSerie : "text-muted-foreground/70"}`} />
+        <p
+          className={`min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] break-words text-balance uppercase ${
+            serie ? classeSerie : "text-muted-foreground"
+          }`}
+        >
           {titulo}
         </p>
         <span className="hidden shrink-0 text-[0.8rem] text-muted-foreground sm:inline">
           detalhes
         </span>
       </div>
+
 
 
       <div className="mt-3">{children}</div>
@@ -270,13 +288,20 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
 
-        <CartaoResumo titulo="Patrimônio total" icone={Wallet} onClick={() => setAberto(detalhePatrimonio)}>
+        <CartaoResumo
+          titulo="Patrimônio total"
+          icone={Wallet}
+          serie="patrimonio"
+          onClick={() => setAberto(detalhePatrimonio)}
+        >
           <div className="flex flex-wrap items-center gap-2">
-            <p className="num font-display text-[1.6rem] leading-none font-bold">{brl(resumo.totalAtual, 2)}</p>
+            <p className="num font-display serie-patrimonio text-[1.6rem] leading-none font-bold">
+              {brl(resumo.totalAtual, 2)}
+            </p>
             <DeltaChip value={resumo.rentabilidade} />
           </div>
           <div className="mt-3">
-            <Indicador rotulo="Valor investido" valor={brl(resumo.totalInvestido, 2)} />
+            <Indicador rotulo="Valor investido" valor={brl(resumo.totalInvestido, 2)} serie="investido" />
           </div>
         </CartaoResumo>
 
