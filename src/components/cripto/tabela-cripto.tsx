@@ -4,6 +4,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { BadgeCategoria } from "@/components/cripto/badge-categoria";
+import { RealceTermo } from "@/components/cripto/realce-termo";
 import { corVar, fmtCompacto, fmtPct, fmtPreco } from "@/components/cripto/formatos-cripto";
 import { CelulaVariacao, useDirecaoVariacoes } from "@/components/cripto/variacao-cripto";
 import { ehStablecoin, type LinhaCripto } from "@/lib/cripto-base";
