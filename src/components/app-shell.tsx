@@ -17,7 +17,7 @@ import {
   Bot,
   LogOut,
 } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
 import { NavMobile } from "@/components/nav-mobile";
 
