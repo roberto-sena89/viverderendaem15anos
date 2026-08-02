@@ -728,7 +728,9 @@ table tfoot tr {
 
 html,
 body {
-  overflow-x: hidden;
+  /* `clip` em vez de `hidden`: evita transformar o body em contêiner de rolagem,
+     o que quebraria elementos `position: sticky` (cabeçalhos fixos). */
+  overflow-x: clip;
   overscroll-behavior-y: none;
 }
 
