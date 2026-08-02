@@ -810,9 +810,22 @@ function PainelProventos({
           <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(totalEscopo, 2)}</p>
         </div>
         <div className="p-5">
-          <p className="text-xs text-muted-foreground">Total da carteira</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(totalCarteira, 2)}</p>
+          <p className="text-xs text-muted-foreground">Saldo total da carteira</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">
+            {brl(totalCarteira + totalProventos, 2)}
+          </p>
+          <dl className="mt-2 space-y-1 text-xs text-muted-foreground">
+            <div className="flex items-center justify-between gap-2">
+              <dt>Patrimônio (Carteira)</dt>
+              <dd className="tabular-nums">{brl(totalCarteira, 2)}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <dt>Proventos recebidos</dt>
+              <dd className="tabular-nums">{brl(totalProventos, 2)}</dd>
+            </div>
+          </dl>
         </div>
+
         <div className="flex min-h-40 items-center justify-center p-5 text-sm text-muted-foreground">
           {temDados ? `${serie.filter((s) => s.valor > 0).length} períodos com proventos` : "Sem dados para exibir"}
         </div>
