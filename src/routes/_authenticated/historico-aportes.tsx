@@ -665,9 +665,10 @@ function HistoricoAportesPage() {
                       <TableCell colSpan={4} className="text-xs uppercase tracking-wide">
                         Total do período
                       </TableCell>
-                      <TableCell className="text-right text-sm tabular-nums">{num(somaQtd, 8)}</TableCell>
-                      <TableCell className="text-right text-sm tabular-nums">{brl(pmPonderado, 2)}</TableCell>
-                      <TableCell className="text-right text-sm tabular-nums">{brl(somaTaxas, 2)}</TableCell>
+                      <TableCell />
+                      <TableCell />
+                      <TableCell />
+
                       <TableCell className="text-right text-sm tabular-nums text-primary">{brl(somaFiltrada)}</TableCell>
                       <TableCell />
                     </TableRow>
