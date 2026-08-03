@@ -661,17 +661,20 @@ function HistoricoAportesPage() {
                         </TableCell>
                       </TableRow>
                     ))}
-                    <TableRow className="border-t-2 border-border bg-muted/40 font-semibold">
-                      <TableCell colSpan={4} className="text-xs uppercase tracking-wide">
-                        Total do período
+                    <TableRow className="border-t-2 border-primary/40 bg-primary/5 hover:bg-primary/5">
+                      <TableCell colSpan={7} className="py-3">
+                        <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          <span className="ponto-legenda serie-investido" aria-hidden />
+                          Total do período
+                        </span>
                       </TableCell>
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
-
-                      <TableCell className="text-right text-sm tabular-nums text-primary">{brl(somaFiltrada)}</TableCell>
-                      <TableCell />
+                      <TableCell colSpan={2} className="py-3 text-right">
+                        <span className="font-display text-base font-bold tabular-nums text-serie-ganho">
+                          {brl(somaFiltrada)}
+                        </span>
+                      </TableCell>
                     </TableRow>
+
                   </TableBody>
                 </Table>
               </div>
