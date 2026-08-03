@@ -572,6 +572,152 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   font-feature-settings: "tnum";
 }
 
+/* ---------------------------------------------------------------
+ * Sistema tipográfico premium — utilidades semânticas
+ * Use estas classes em vez de tamanhos/pesos avulsos.
+ * --------------------------------------------------------------- */
+
+@utility t-display {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--fw-bold);
+  text-wrap: balance;
+}
+
+@utility t-h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+  text-wrap: balance;
+}
+
+@utility t-h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+}
+
+@utility t-h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+}
+
+/* Título de card/painel: discreto, alinhado ao panel-title. */
+@utility t-card-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+}
+
+/* Rótulo em caixa alta (KPIs, cabeçalhos de bloco, legendas). */
+@utility t-label {
+  font-size: var(--fs-label);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: var(--fw-semibold);
+  color: var(--color-muted-foreground);
+}
+
+@utility t-body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-relaxed);
+  letter-spacing: var(--tracking-body);
+  font-weight: var(--fw-regular);
+}
+
+@utility t-body-sm {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--tracking-body);
+  font-weight: var(--fw-regular);
+}
+
+@utility t-caption {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-normal);
+  letter-spacing: 0.01em;
+  font-weight: var(--fw-medium);
+  color: var(--color-muted-foreground);
+}
+
+/* Números de destaque (KPIs e saldos). */
+@utility t-metric {
+  font-family: var(--font-display);
+  font-size: var(--fs-metric);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+@utility t-metric-sm {
+  font-family: var(--font-display);
+  font-size: var(--fs-metric-sm);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Padrões globais coerentes com a escala */
+h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-tight);
+  font-weight: var(--fw-semibold);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  font-weight: var(--fw-semibold);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  font-weight: var(--fw-semibold);
+}
+
+/* Tooltips e popovers: corpo compacto e números tabulares. */
+[data-slot="tooltip-content"],
+[data-slot="popover-content"],
+.recharts-tooltip-wrapper {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--tracking-body);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="card-title"],
+[data-slot="dialog-title"],
+[data-slot="alert-dialog-title"],
+[data-slot="sheet-title"] {
+  font-family: var(--font-display);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+}
+
+[data-slot="card-description"],
+[data-slot="dialog-description"],
+[data-slot="sheet-description"] {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-normal);
+}
+
 
 @utility chip-pos {
   display: inline-flex;
