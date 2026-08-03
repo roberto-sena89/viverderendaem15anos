@@ -242,7 +242,7 @@ function TooltipEvolucao({
         <div className="flex items-center justify-between gap-4">
           <span className="text-muted-foreground">Ganho de capital</span>
           <span
-            className={cn("font-semibold tabular-nums", ganho >= 0 ? "text-emerald-500" : "text-destructive")}
+            className={cn("font-semibold tabular-nums", ganho >= 0 ? "text-serie-ganho" : "text-destructive")}
           >
             {brl(ganho, 2)}
             {ganhoPct !== null ? <span className="ml-1 text-[0.68rem]">({fmtPct(ganhoPct)})</span> : null}
@@ -254,7 +254,7 @@ function TooltipEvolucao({
             <span className="text-muted-foreground">—</span>
           ) : (
             <span
-              className={cn("font-semibold tabular-nums", deltaAbs >= 0 ? "text-emerald-500" : "text-destructive")}
+              className={cn("font-semibold tabular-nums", deltaAbs >= 0 ? "text-serie-ganho" : "text-destructive")}
             >
               {deltaAbs >= 0 ? "+" : ""}
               {brl(deltaAbs, 2)}
@@ -824,7 +824,7 @@ export function EvolucaoPatrimonio() {
                   <span
                     className={cn(
                       "text-[0.6rem] font-semibold tabular-nums",
-                      delta === null ? "text-muted-foreground" : up ? "text-emerald-500" : "text-destructive",
+                      delta === null ? "text-muted-foreground" : up ? "text-serie-ganho" : "text-destructive",
                     )}
                   >
                     {delta === null ? "—" : `${up ? "+" : ""}${delta.toFixed(1)}%`}
