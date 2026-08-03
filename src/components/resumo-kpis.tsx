@@ -36,7 +36,7 @@ function Indicador({
         : "text-foreground";
   return (
     <div className="min-w-0">
-      <p className={`truncate text-[0.875rem] ${serie ? "rotulo-serie text-foreground" : "text-muted-foreground"}`}>
+      <p className={`truncate text-[0.875rem] text-foreground ${serie ? "rotulo-serie" : ""}`}>
         {rotulo}
       </p>
       <p className={`num truncate text-sm font-semibold ${cor}`}>{valor}</p>
