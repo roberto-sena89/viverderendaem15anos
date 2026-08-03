@@ -875,11 +875,8 @@ export function EvolucaoPatrimonio() {
                             to="/historico-aportes"
                             className="flex min-w-0 items-center gap-2 font-medium text-foreground hover:text-primary"
                           >
-                            <span
-                              className={cn("h-6 w-1 shrink-0 rounded-full", pos ? "bg-success" : "bg-destructive")}
-                              aria-hidden
-                            />
                             <span className="truncate">{l.titulo}</span>
+
                             <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
                           </Link>
                         </td>
