@@ -7,9 +7,10 @@
  * para o preço médio.
  */
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
 import { lerUltimosPrecos, sincronizarUltimosPrecos } from "@/lib/precos-ultimos.functions";
 import type { PrecoPersistido } from "@/lib/precos-ultimos.server";
 
@@ -19,6 +20,31 @@ export type { PrecoPersistido };
 const INTERVALO_GRAVACAO_MS = 60_000;
 
 export const chavePreco = (t: string) => t.trim().toUpperCase().replace(/\.SA$/i, "");
+
+/**
+ * As funções de servidor abaixo exigem sessão. Sem este gate, páginas públicas
+ * (ex.: /auth) disparariam a chamada e o servidor responderia "Unauthorized".
+ */
+function useSessaoAtiva(): boolean {
+  const [ativa, setAtiva] = useState(false);
+
+  useEffect(() => {
+    let vivo = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (vivo) setAtiva(Boolean(data.session));
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, sessao) => {
+      setAtiva(Boolean(sessao));
+    });
+    return () => {
+      vivo = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  return ativa;
+}
+
 
 /** Mapa ticker -> último preço salvo no banco. */
 export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPersistido> {
