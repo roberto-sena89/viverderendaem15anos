@@ -339,7 +339,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         >
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-[0.875rem] text-muted-foreground">12 meses</p>
+              <p className="text-[0.875rem] text-foreground">12 meses</p>
               <p
                 className={`num font-display text-xl font-bold ${
                   resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
@@ -349,7 +349,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
               </p>
             </div>
             <div className="border-l border-border pl-3">
-              <p className="text-[0.875rem] text-muted-foreground">Total</p>
+              <p className="text-[0.875rem] text-foreground">Total</p>
               <p
                 className={`num font-display text-xl font-bold ${
                   resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
@@ -359,7 +359,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
               </p>
             </div>
           </div>
-          <p className="mt-3 text-[0.875rem] text-muted-foreground">
+          <p className="mt-3 text-[0.875rem] text-foreground">
             DY da carteira: {pct(resumo.dyCarteira, 2)}
           </p>
         </CartaoResumo>
