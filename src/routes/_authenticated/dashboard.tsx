@@ -250,7 +250,7 @@ function Dashboard() {
                   title="Ver detalhamento mês a mês"
                   className="chip-legenda serie-aplicado flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <span className="flex items-center gap-2 text-xs font-medium">
+                  <span className="flex items-center gap-2 text-xs font-medium text-foreground">
                     <span className="ponto-legenda" aria-hidden />
                     Valor aplicado
                   </span>
@@ -262,7 +262,7 @@ function Dashboard() {
                   title="Ver detalhamento mês a mês"
                   className="chip-legenda serie-ganho flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <span className="flex items-center gap-2 text-xs font-medium">
+                  <span className="flex items-center gap-2 text-xs font-medium text-foreground">
                     <span className="ponto-legenda" aria-hidden />
                     Ganho de Capital
                   </span>
