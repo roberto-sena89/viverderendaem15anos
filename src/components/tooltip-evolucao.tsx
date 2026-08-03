@@ -106,7 +106,7 @@ export function TooltipEvolucao({
       <div className="mt-2 space-y-1 border-t border-border pt-2">
         <div className="flex items-center justify-between gap-3">
           <span className="text-muted-foreground">Ganho de capital</span>
-          <span className={cn("font-semibold tabular-nums", ganho >= 0 ? "text-emerald-500" : "text-destructive")}>
+          <span className={cn("font-semibold tabular-nums", ganho >= 0 ? "text-serie-ganho" : "text-destructive")}>
             {brl(ganho, 2)}
             {ganhoPct !== null ? <span className="ml-1 text-[11px]">({pct(ganhoPct)})</span> : null}
           </span>
@@ -117,7 +117,7 @@ export function TooltipEvolucao({
             <span className="text-muted-foreground">—</span>
           ) : (
             <span
-              className={cn("font-semibold tabular-nums", deltaAbs >= 0 ? "text-emerald-500" : "text-destructive")}
+              className={cn("font-semibold tabular-nums", deltaAbs >= 0 ? "text-serie-ganho" : "text-destructive")}
             >
               {deltaAbs >= 0 ? "+" : ""}
               {brl(deltaAbs, 2)}
