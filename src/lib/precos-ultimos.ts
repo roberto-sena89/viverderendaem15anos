@@ -7,9 +7,10 @@
  * para o preço médio.
  */
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
 import { lerUltimosPrecos, sincronizarUltimosPrecos } from "@/lib/precos-ultimos.functions";
 import type { PrecoPersistido } from "@/lib/precos-ultimos.server";
 
@@ -20,9 +21,35 @@ const INTERVALO_GRAVACAO_MS = 60_000;
 
 export const chavePreco = (t: string) => t.trim().toUpperCase().replace(/\.SA$/i, "");
 
+/**
+ * As funções de servidor abaixo exigem sessão. Sem este gate, páginas públicas
+ * (ex.: /auth) disparariam a chamada e o servidor responderia "Unauthorized".
+ */
+function useSessaoAtiva(): boolean {
+  const [ativa, setAtiva] = useState(false);
+
+  useEffect(() => {
+    let vivo = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (vivo) setAtiva(Boolean(data.session));
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, sessao) => {
+      setAtiva(Boolean(sessao));
+    });
+    return () => {
+      vivo = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  return ativa;
+}
+
+
 /** Mapa ticker -> último preço salvo no banco. */
 export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPersistido> {
   const buscar = useServerFn(lerUltimosPrecos);
+  const autenticado = useSessaoAtiva();
   const lista = useMemo(
     () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t)))].sort(),
     [tickers],
@@ -31,7 +58,7 @@ export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPers
   const q = useQuery({
     queryKey: ["precos-ultimos", lista.join(",")],
     queryFn: () => buscar({ data: { tickers: lista } }),
-    enabled: lista.length > 0,
+    enabled: autenticado && lista.length > 0,
     staleTime: 5 * 60_000,
     retry: 1,
   });
@@ -52,6 +79,7 @@ export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPers
  */
 export function usePersistirPrecos(tickers: string[]) {
   const sincronizar = useServerFn(sincronizarUltimosPrecos);
+  const autenticado = useSessaoAtiva();
   const ultimoEnvio = useRef(0);
   const lista = useMemo(
     () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t)))].sort(),
@@ -59,7 +87,7 @@ export function usePersistirPrecos(tickers: string[]) {
   );
 
   useEffect(() => {
-    if (!lista.length) return;
+    if (!autenticado || !lista.length) return;
     const enviar = () => {
       const agora = Date.now();
       if (agora - ultimoEnvio.current < INTERVALO_GRAVACAO_MS) return;
@@ -69,6 +97,6 @@ export function usePersistirPrecos(tickers: string[]) {
     enviar();
     const id = setInterval(enviar, INTERVALO_GRAVACAO_MS);
     return () => clearInterval(id);
-  }, [lista, sincronizar]);
+  }, [autenticado, lista, sincronizar]);
 }
 
