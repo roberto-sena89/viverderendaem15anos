@@ -272,15 +272,30 @@ function TooltipEvolucao({
 }
 
 
-function Kpi({ rotulo, valor, sub }: { rotulo: string; valor: string; sub?: string }) {
+function Kpi({
+  rotulo,
+  valor,
+  sub,
+  serie,
+}: {
+  rotulo: string;
+  valor: string;
+  sub?: string;
+  serie?: "investido" | "ganho" | "patrimonio";
+}) {
+  const classeSerie = serie ? `serie-${serie}` : undefined;
   return (
-    <div className="rounded-xl border border-border bg-card/60 p-3 transition-colors hover:bg-muted/40">
-      <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">{rotulo}</p>
-      <p className="mt-1 truncate font-display text-base font-bold text-foreground">{valor}</p>
-      {sub ? <p className="truncate text-xs text-muted-foreground">{sub}</p> : null}
+    <div className={cn("panel p-3 transition-colors hover:border-primary/40", classeSerie)}>
+      <p className="t-label flex items-center gap-1.5 truncate">
+        {serie ? <span className="ponto-legenda" aria-hidden /> : null}
+        {rotulo}
+      </p>
+      <p className={cn("mt-1 truncate font-display text-base font-bold", serie ? "" : "text-foreground")}>{valor}</p>
+      {sub ? <p className="t-caption truncate">{sub}</p> : null}
     </div>
   );
 }
+
 
 function Skeleton() {
   return (
