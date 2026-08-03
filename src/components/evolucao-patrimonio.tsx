@@ -500,7 +500,7 @@ export function EvolucaoPatrimonio() {
             <p className="t-label text-foreground">
               Patrimônio total atual
             </p>
-            <p className="font-display text-3xl font-black tracking-tight sm:text-4xl">{brl(resumo.totalAtual, 2)}</p>
+            <p className="font-display text-3xl font-black tracking-tight text-serie-patrimonio sm:text-4xl">{brl(resumo.totalAtual, 2)}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Investido: {brl(resumo.totalInvestido, 2)} · Rendimento: {brl(resumo.lucroTotal, 2)} (
               {pct(resumo.rentabilidade)})
@@ -675,7 +675,7 @@ export function EvolucaoPatrimonio() {
                     <span className={cn("ponto-legenda", s.cor)} aria-hidden />
                     {s.rotulo}
                   </span>
-                  <span className="block truncate font-display text-[0.8rem] font-bold tabular-nums text-foreground">
+                  <span className={cn("block truncate font-display text-[0.8rem] font-bold tabular-nums", s.cor)}>
                     {typeof s.valor === "number" ? brl(s.valor, 2) : "—"}
                   </span>
                 </span>
