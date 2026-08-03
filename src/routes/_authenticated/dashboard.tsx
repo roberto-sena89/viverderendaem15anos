@@ -251,7 +251,7 @@ function Dashboard() {
                   className="chip-legenda serie-aplicado flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <span className="flex items-center gap-2 text-xs font-medium text-foreground">
-                    <span className="ponto-legenda" aria-hidden />
+                    <span className="ponto-legenda serie-aplicado" aria-hidden />
                     Valor aplicado
                   </span>
                   <strong className="text-lg font-semibold tabular-nums">{brl(totalAplicado, 2)}</strong>
@@ -263,7 +263,7 @@ function Dashboard() {
                   className="chip-legenda serie-ganho flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <span className="flex items-center gap-2 text-xs font-medium text-foreground">
-                    <span className="ponto-legenda" aria-hidden />
+                    <span className="ponto-legenda serie-ganho" aria-hidden />
                     Ganho de Capital
                   </span>
                   <span className="flex flex-wrap items-baseline gap-2">
