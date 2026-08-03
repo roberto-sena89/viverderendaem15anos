@@ -659,7 +659,8 @@ export function EvolucaoPatrimonio() {
                 aria-pressed={destaque === s.chave}
                 title={`Destacar ${s.rotulo}`}
                 className={cn(
-                  "flex min-w-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all sm:shrink-0",
+                  "chip-legenda flex min-w-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all sm:shrink-0",
+                  s.cor,
                   destaque === s.chave
                     ? "border-primary/50 bg-card shadow-sm"
                     : "border-border bg-muted/30 hover:bg-muted/60",
@@ -670,13 +671,15 @@ export function EvolucaoPatrimonio() {
                   <s.Icone className={cn("size-4", s.cor)} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className={cn("rotulo-serie block truncate text-[0.65rem] uppercase", s.cor)}>
+                  <span className="flex items-center gap-1.5 truncate text-[0.65rem] font-semibold uppercase tracking-wide text-foreground">
+                    <span className={cn("ponto-legenda", s.cor)} aria-hidden />
                     {s.rotulo}
                   </span>
                   <span className="block truncate font-display text-[0.8rem] font-bold tabular-nums text-foreground">
                     {typeof s.valor === "number" ? brl(s.valor, 2) : "—"}
                   </span>
                 </span>
+
 
               </button>
             ))}
