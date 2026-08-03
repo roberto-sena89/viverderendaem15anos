@@ -497,7 +497,7 @@ export function EvolucaoPatrimonio() {
       >
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-center">
           <div className="min-w-0">
-            <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="t-label text-foreground">
               Patrimônio total atual
             </p>
             <p className="font-display text-3xl font-black tracking-tight sm:text-4xl">{brl(resumo.totalAtual, 2)}</p>
@@ -508,31 +508,31 @@ export function EvolucaoPatrimonio() {
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-card/60 p-3">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="t-label text-foreground">
                 Variação no período
               </p>
               <p
                 className={cn(
-                  "mt-1 flex items-center gap-1 font-display text-lg font-bold",
-                  positivo ? "text-success" : "text-destructive",
+                  "mt-1 flex items-center gap-1 font-display text-lg font-bold tabular-nums",
+                  positivo ? "text-serie-ganho" : "text-destructive",
                 )}
               >
                 {positivo ? <ArrowUpRight className="size-4" /> : <ArrowDownRight className="size-4" />}
                 {brl(Math.abs(variacao), 2)}
               </p>
-              <p className={cn("text-xs font-semibold", positivo ? "text-success" : "text-destructive")}>
+              <p className={cn("text-xs font-semibold tabular-nums", positivo ? "text-serie-ganho" : "text-destructive")}>
                 {positivo ? "+" : "−"}
                 {pct(Math.abs(variacaoPct))}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-card/60 p-3">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="t-label text-foreground">
                 Rentabilidade acumulada
               </p>
               <p
                 className={cn(
-                  "mt-1 font-display text-lg font-bold",
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive",
+                  "mt-1 font-display text-lg font-bold tabular-nums",
+                  resumo.rentabilidade >= 0 ? "text-serie-ganho" : "text-destructive",
                 )}
               >
                 {resumo.rentabilidade >= 0 ? "+" : ""}
@@ -540,6 +540,7 @@ export function EvolucaoPatrimonio() {
               </p>
               <p className="text-xs text-muted-foreground">desde o início</p>
             </div>
+
           </div>
         </div>
       </Panel>
@@ -660,6 +661,7 @@ export function EvolucaoPatrimonio() {
                 className={cn(
                   "flex min-w-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all sm:shrink-0",
                   destaque === s.chave
+
                     ? "border-primary/50 bg-card shadow-sm"
                     : "border-border bg-muted/30 hover:bg-muted/60",
                   destaque && destaque !== s.chave && "opacity-50",
@@ -669,13 +671,15 @@ export function EvolucaoPatrimonio() {
                   <s.Icone className={cn("size-4", s.cor)} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className={cn("rotulo-serie block truncate text-[0.65rem] uppercase", s.cor)}>
+                  <span className="flex items-center gap-1.5 truncate text-[0.65rem] font-semibold uppercase tracking-wide text-foreground">
+                    <span className={cn("ponto-legenda", s.cor)} aria-hidden />
                     {s.rotulo}
                   </span>
                   <span className="block truncate font-display text-[0.8rem] font-bold tabular-nums text-foreground">
                     {typeof s.valor === "number" ? brl(s.valor, 2) : "—"}
                   </span>
                 </span>
+
 
               </button>
             ))}
