@@ -201,6 +201,10 @@ export function PainelEtfs({ intervaloMs, busca }: Props) {
   const ordenadas = useMemo(() => {
     const copia = [...filtradas];
     copia.sort((a, b) => {
+      // ETFs da B3 aparecem sempre antes dos internacionais
+      const pa = a.mercado === "nacional" ? 0 : 1;
+      const pb = b.mercado === "nacional" ? 0 : 1;
+      if (pa !== pb) return pa - pb;
       const va = valorOrdem(a, ordem.coluna);
       const vb = valorOrdem(b, ordem.coluna);
       if (va === null && vb === null) return 0;
