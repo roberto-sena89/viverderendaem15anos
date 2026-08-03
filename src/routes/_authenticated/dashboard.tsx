@@ -288,20 +288,37 @@ function Dashboard() {
 
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dadosEvolucao} margin={{ left: 12, right: 8, top: 4 }}>
+              <BarChart
+                data={dadosEvolucao}
+                margin={{ top: 12, right: 12, left: 4, bottom: 8 }}
+                barGap={0}
+                barCategoryGap="35%"
+                maxBarSize={14}
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
+                <XAxis
+                  dataKey="mes"
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                  tickLine={false}
+                  axisLine={{ stroke: "var(--color-border)" }}
+                  tickMargin={8}
+                />
                 <YAxis
-                  tickFormatter={(v: number) => brl(v, 2)}
+                  tickFormatter={(v: number) => brl(v, 0)}
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                   tickLine={false}
                   axisLine={false}
-                  width={92}
-                  fontSize={13}
-                  stroke="var(--color-muted-foreground)"
+                  width={78}
+                  tickMargin={4}
                 />
-                <Tooltip content={<TooltipEvolucao rotuloPeriodo="Mês" serie={dadosEvolucao} />} cursor={{ fill: "var(--color-muted)" }} />
-                <Bar dataKey="aplicado" stackId="p" fill="var(--color-serie-investido)" name="Valor aplicado" />
-                <Bar dataKey="ganho" stackId="p" fill="var(--color-serie-ganho)" name="Ganho de Capital" radius={[6, 6, 0, 0]} />
+                <Tooltip
+                  cursor={{ fill: "var(--color-muted)", opacity: 0.22 }}
+                  wrapperStyle={{ outline: "none", zIndex: 30 }}
+                  offset={16}
+                  content={<TooltipEvolucao rotuloPeriodo="Mês" serie={dadosEvolucao} />}
+                />
+                <Bar dataKey="aplicado" stackId="p" fill="var(--color-serie-investido)" name="Valor aplicado" isAnimationActive={false} />
+                <Bar dataKey="ganho" stackId="p" fill="var(--color-serie-ganho)" name="Ganho de Capital" radius={[3, 3, 0, 0]} isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>
