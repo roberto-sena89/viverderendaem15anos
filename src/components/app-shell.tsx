@@ -259,15 +259,14 @@ export function AppShell({
                   ) : null}
                 </ol>
               </nav>
-              <h1 className="truncate font-display text-[1.375rem] leading-tight font-bold tracking-[-0.02em] sm:text-[1.75rem] xl:text-[2rem]">
-                {tituloPagina}
-              </h1>
+              <h1 className="t-h1 truncate">{tituloPagina}</h1>
 
               {description ? (
-                <p className="line-clamp-2 hidden max-w-2xl text-xs leading-snug text-muted-foreground sm:block sm:text-sm">
+                <p className="t-body-sm line-clamp-2 hidden max-w-2xl text-muted-foreground sm:block">
                   {description}
                 </p>
               ) : null}
+
             </div>
 
             <div className="flex shrink-0 items-center gap-1 self-center">
