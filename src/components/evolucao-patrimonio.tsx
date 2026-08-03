@@ -497,7 +497,7 @@ export function EvolucaoPatrimonio() {
       >
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-center">
           <div className="min-w-0">
-            <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="t-label text-foreground">
               Patrimônio total atual
             </p>
             <p className="font-display text-3xl font-black tracking-tight sm:text-4xl">{brl(resumo.totalAtual, 2)}</p>
@@ -508,31 +508,31 @@ export function EvolucaoPatrimonio() {
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-card/60 p-3">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="t-label text-foreground">
                 Variação no período
               </p>
               <p
                 className={cn(
-                  "mt-1 flex items-center gap-1 font-display text-lg font-bold",
-                  positivo ? "text-success" : "text-destructive",
+                  "mt-1 flex items-center gap-1 font-display text-lg font-bold tabular-nums",
+                  positivo ? "text-serie-ganho" : "text-destructive",
                 )}
               >
                 {positivo ? <ArrowUpRight className="size-4" /> : <ArrowDownRight className="size-4" />}
                 {brl(Math.abs(variacao), 2)}
               </p>
-              <p className={cn("text-xs font-semibold", positivo ? "text-success" : "text-destructive")}>
+              <p className={cn("text-xs font-semibold tabular-nums", positivo ? "text-serie-ganho" : "text-destructive")}>
                 {positivo ? "+" : "−"}
                 {pct(Math.abs(variacaoPct))}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-card/60 p-3">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="t-label text-foreground">
                 Rentabilidade acumulada
               </p>
               <p
                 className={cn(
-                  "mt-1 font-display text-lg font-bold",
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive",
+                  "mt-1 font-display text-lg font-bold tabular-nums",
+                  resumo.rentabilidade >= 0 ? "text-serie-ganho" : "text-destructive",
                 )}
               >
                 {resumo.rentabilidade >= 0 ? "+" : ""}
@@ -540,6 +540,7 @@ export function EvolucaoPatrimonio() {
               </p>
               <p className="text-xs text-muted-foreground">desde o início</p>
             </div>
+
           </div>
         </div>
       </Panel>
