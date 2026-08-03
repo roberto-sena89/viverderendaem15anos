@@ -1017,32 +1017,42 @@ export function EvolucaoPatrimonio() {
             rotulo="Maior aporte"
             valor={indicadores.maior ? brl(indicadores.maior.aportado, 2) : "—"}
             sub={indicadores.maior ? rotuloMesLongo(indicadores.maior.chave) : undefined}
+            serie="investido"
           />
           <Kpi
             rotulo="Menor aporte"
             valor={indicadores.menor ? brl(indicadores.menor.aportado, 2) : "—"}
             sub={indicadores.menor ? rotuloMesLongo(indicadores.menor.chave) : undefined}
+            serie="investido"
           />
-          <Kpi rotulo="Média mensal" valor={brl(indicadores.media, 2)} sub="meses com aporte" />
+          <Kpi rotulo="Média mensal" valor={brl(indicadores.media, 2)} sub="meses com aporte" serie="investido" />
           <Kpi
             rotulo="Melhor mês"
             valor={`+${pct(Math.abs(indicadores.melhorPct))}`}
             sub={indicadores.melhor ? rotuloMesLongo(indicadores.melhor.chave) : undefined}
+            serie="ganho"
           />
           <Kpi
             rotulo="Pior mês"
             valor={pct(indicadores.piorPct)}
             sub={indicadores.pior ? rotuloMesLongo(indicadores.pior.chave) : undefined}
+            serie="ganho"
           />
           <Kpi rotulo="Tempo investindo" valor={indicadores.tempo} sub="desde o primeiro aporte" />
-          <Kpi rotulo="Total aportado" valor={brl(resumo.totalInvestido, 2)} sub="soma dos aportes" />
+          <Kpi
+            rotulo="Total aportado"
+            valor={brl(resumo.totalInvestido, 2)}
+            sub="soma dos aportes"
+            serie="investido"
+          />
           <Kpi
             rotulo="Períodos exibidos"
             valor={String(linhasFiltradas.length)}
             sub={granularidade === "mensal" ? "meses" : "anos"}
           />
         </div>
-        <p className="mt-3 flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
+        <p className="t-caption mt-3 flex items-center gap-1.5">
+
           <CalendarDays className="size-3.5" aria-hidden />
           Valores históricos estimados a partir dos aportes registrados e da valorização atual da carteira.
         </p>
