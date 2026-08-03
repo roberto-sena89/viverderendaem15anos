@@ -272,15 +272,31 @@ function TooltipEvolucao({
 }
 
 
-function Kpi({ rotulo, valor, sub }: { rotulo: string; valor: string; sub?: string }) {
+function Kpi({
+  rotulo,
+  valor,
+  sub,
+  serie,
+}: {
+  rotulo: string;
+  valor: string;
+  sub?: string;
+  serie?: "investido" | "ganho" | "patrimonio";
+}) {
+  const classeSerie = serie ? `serie-${serie}` : undefined;
   return (
-    <div className="rounded-xl border border-border bg-card/60 p-3 transition-colors hover:bg-muted/40">
-      <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">{rotulo}</p>
-      <p className="mt-1 truncate font-display text-base font-bold text-foreground">{valor}</p>
-      {sub ? <p className="truncate text-xs text-muted-foreground">{sub}</p> : null}
+    <div className="panel p-3 transition-colors hover:border-primary/40">
+      <p className="t-label flex items-center gap-1.5 truncate">
+        {serie ? <span className={cn("ponto-legenda", classeSerie)} aria-hidden /> : null}
+        {rotulo}
+      </p>
+      <p className={cn("mt-1 truncate font-display text-base font-bold", classeSerie ?? "text-foreground")}>{valor}</p>
+      {sub ? <p className="t-caption truncate">{sub}</p> : null}
     </div>
   );
+
 }
+
 
 function Skeleton() {
   return (
@@ -1001,32 +1017,42 @@ export function EvolucaoPatrimonio() {
             rotulo="Maior aporte"
             valor={indicadores.maior ? brl(indicadores.maior.aportado, 2) : "—"}
             sub={indicadores.maior ? rotuloMesLongo(indicadores.maior.chave) : undefined}
+            serie="investido"
           />
           <Kpi
             rotulo="Menor aporte"
             valor={indicadores.menor ? brl(indicadores.menor.aportado, 2) : "—"}
             sub={indicadores.menor ? rotuloMesLongo(indicadores.menor.chave) : undefined}
+            serie="investido"
           />
-          <Kpi rotulo="Média mensal" valor={brl(indicadores.media, 2)} sub="meses com aporte" />
+          <Kpi rotulo="Média mensal" valor={brl(indicadores.media, 2)} sub="meses com aporte" serie="investido" />
           <Kpi
             rotulo="Melhor mês"
             valor={`+${pct(Math.abs(indicadores.melhorPct))}`}
             sub={indicadores.melhor ? rotuloMesLongo(indicadores.melhor.chave) : undefined}
+            serie="ganho"
           />
           <Kpi
             rotulo="Pior mês"
             valor={pct(indicadores.piorPct)}
             sub={indicadores.pior ? rotuloMesLongo(indicadores.pior.chave) : undefined}
+            serie="ganho"
           />
           <Kpi rotulo="Tempo investindo" valor={indicadores.tempo} sub="desde o primeiro aporte" />
-          <Kpi rotulo="Total aportado" valor={brl(resumo.totalInvestido, 2)} sub="soma dos aportes" />
+          <Kpi
+            rotulo="Total aportado"
+            valor={brl(resumo.totalInvestido, 2)}
+            sub="soma dos aportes"
+            serie="investido"
+          />
           <Kpi
             rotulo="Períodos exibidos"
             valor={String(linhasFiltradas.length)}
             sub={granularidade === "mensal" ? "meses" : "anos"}
           />
         </div>
-        <p className="mt-3 flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
+        <p className="t-caption mt-3 flex items-center gap-1.5">
+
           <CalendarDays className="size-3.5" aria-hidden />
           Valores históricos estimados a partir dos aportes registrados e da valorização atual da carteira.
         </p>
