@@ -57,7 +57,7 @@ function CartaoResumo({
   serie?: "patrimonio" | "investido";
   children: React.ReactNode;
 }) {
-  const classeSerie = serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
+  void serie;
   return (
     <button
       type="button"
