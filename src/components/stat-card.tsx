@@ -31,15 +31,14 @@ export function StatCard({
         className="absolute inset-x-0 top-0 h-px bg-gradient-brand opacity-0 transition-opacity group-hover:opacity-100"
       />
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-        <p className="truncate text-[0.875rem] font-bold tracking-[0.08em] text-muted-foreground uppercase">
-          {label}
-        </p>
+        <p className="t-label truncate">{label}</p>
         {Icon ? <Icon className="size-4 shrink-0 text-muted-foreground/70" /> : null}
       </div>
-      <p className={`num mt-2 font-display text-[1.6rem] leading-none font-bold ${toneClass}`}>{value}</p>
+      <p className={`t-metric mt-2 ${toneClass}`}>{value}</p>
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {typeof delta === "number" ? <DeltaChip value={delta} /> : null}
-        {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+        {hint ? <p className="t-caption">{hint}</p> : null}
+
       </div>
     </div>
   );

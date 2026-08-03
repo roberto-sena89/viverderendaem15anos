@@ -161,7 +161,38 @@
   /* Escala tipográfica de tabela */
   --fs-table: 0.8125rem; /* 13px em mobile */
   --fs-table-head: 0.6875rem;
+
+  /* -------------------------------------------------------------
+   * Escala tipográfica premium (fluida, base 16px, razão ~1.2)
+   * Usada por cards, tabelas, tooltips, dashboards e páginas.
+   * ------------------------------------------------------------- */
+  --fs-display: clamp(2.125rem, 1.55rem + 2.4vw, 3.25rem);
+  --fs-h1: clamp(1.625rem, 1.28rem + 1.4vw, 2.25rem);
+  --fs-h2: clamp(1.3125rem, 1.14rem + 0.7vw, 1.625rem);
+  --fs-h3: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  --fs-metric: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem);
+  --fs-metric-sm: clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+  --fs-body: 1rem;
+  --fs-body-sm: 0.875rem;
+  --fs-label: 0.75rem;
+  --fs-caption: 0.6875rem;
+
+  --lh-tight: 1.12;
+  --lh-snug: 1.28;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.65;
+
+  --tracking-display: -0.03em;
+  --tracking-heading: -0.02em;
+  --tracking-body: -0.005em;
+  --tracking-label: 0.07em;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
 }
+
 
 /* Escala de gutter/tipografia por breakpoint: 320 → 1920 */
 @media (min-width: 641px) {
@@ -540,6 +571,153 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
+/* ---------------------------------------------------------------
+ * Sistema tipográfico premium — utilidades semânticas
+ * Use estas classes em vez de tamanhos/pesos avulsos.
+ * --------------------------------------------------------------- */
+
+@utility t-display {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--fw-bold);
+  text-wrap: balance;
+}
+
+@utility t-h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+  text-wrap: balance;
+}
+
+@utility t-h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+}
+
+@utility t-h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+}
+
+/* Título de card/painel: discreto, alinhado ao panel-title. */
+@utility t-card-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+}
+
+/* Rótulo em caixa alta (KPIs, cabeçalhos de bloco, legendas). */
+@utility t-label {
+  font-size: var(--fs-label);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: var(--fw-semibold);
+  color: var(--color-muted-foreground);
+}
+
+@utility t-body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-relaxed);
+  letter-spacing: var(--tracking-body);
+  font-weight: var(--fw-regular);
+}
+
+@utility t-body-sm {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--tracking-body);
+  font-weight: var(--fw-regular);
+}
+
+@utility t-caption {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-normal);
+  letter-spacing: 0.01em;
+  font-weight: var(--fw-medium);
+  color: var(--color-muted-foreground);
+}
+
+/* Números de destaque (KPIs e saldos). */
+@utility t-metric {
+  font-family: var(--font-display);
+  font-size: var(--fs-metric);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+@utility t-metric-sm {
+  font-family: var(--font-display);
+  font-size: var(--fs-metric-sm);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Padrões globais coerentes com a escala */
+h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-tight);
+  font-weight: var(--fw-semibold);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  font-weight: var(--fw-semibold);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  font-weight: var(--fw-semibold);
+}
+
+/* Tooltips e popovers: corpo compacto e números tabulares. */
+[data-slot="tooltip-content"],
+[data-slot="popover-content"],
+.recharts-tooltip-wrapper {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--tracking-body);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="card-title"],
+[data-slot="dialog-title"],
+[data-slot="alert-dialog-title"],
+[data-slot="sheet-title"] {
+  font-family: var(--font-display);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--fw-semibold);
+}
+
+[data-slot="card-description"],
+[data-slot="dialog-description"],
+[data-slot="sheet-description"] {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-normal);
+}
+
 
 @utility chip-pos {
   display: inline-flex;
