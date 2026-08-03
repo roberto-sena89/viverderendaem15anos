@@ -285,15 +285,16 @@ function Kpi({
 }) {
   const classeSerie = serie ? `serie-${serie}` : undefined;
   return (
-    <div className={cn("panel p-3 transition-colors hover:border-primary/40", classeSerie)}>
+    <div className="panel p-3 transition-colors hover:border-primary/40">
       <p className="t-label flex items-center gap-1.5 truncate">
-        {serie ? <span className="ponto-legenda" aria-hidden /> : null}
+        {serie ? <span className={cn("ponto-legenda", classeSerie)} aria-hidden /> : null}
         {rotulo}
       </p>
-      <p className={cn("mt-1 truncate font-display text-base font-bold", serie ? "" : "text-foreground")}>{valor}</p>
+      <p className={cn("mt-1 truncate font-display text-base font-bold", classeSerie ?? "text-foreground")}>{valor}</p>
       {sub ? <p className="t-caption truncate">{sub}</p> : null}
     </div>
   );
+
 }
 
 
