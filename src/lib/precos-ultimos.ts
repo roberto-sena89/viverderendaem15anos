@@ -49,6 +49,7 @@ function useSessaoAtiva(): boolean {
 /** Mapa ticker -> último preço salvo no banco. */
 export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPersistido> {
   const buscar = useServerFn(lerUltimosPrecos);
+  const autenticado = useSessaoAtiva();
   const lista = useMemo(
     () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t)))].sort(),
     [tickers],
@@ -57,7 +58,7 @@ export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPers
   const q = useQuery({
     queryKey: ["precos-ultimos", lista.join(",")],
     queryFn: () => buscar({ data: { tickers: lista } }),
-    enabled: lista.length > 0,
+    enabled: autenticado && lista.length > 0,
     staleTime: 5 * 60_000,
     retry: 1,
   });
@@ -78,6 +79,7 @@ export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPers
  */
 export function usePersistirPrecos(tickers: string[]) {
   const sincronizar = useServerFn(sincronizarUltimosPrecos);
+  const autenticado = useSessaoAtiva();
   const ultimoEnvio = useRef(0);
   const lista = useMemo(
     () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t)))].sort(),
@@ -85,7 +87,7 @@ export function usePersistirPrecos(tickers: string[]) {
   );
 
   useEffect(() => {
-    if (!lista.length) return;
+    if (!autenticado || !lista.length) return;
     const enviar = () => {
       const agora = Date.now();
       if (agora - ultimoEnvio.current < INTERVALO_GRAVACAO_MS) return;
@@ -95,6 +97,6 @@ export function usePersistirPrecos(tickers: string[]) {
     enviar();
     const id = setInterval(enviar, INTERVALO_GRAVACAO_MS);
     return () => clearInterval(id);
-  }, [lista, sincronizar]);
+  }, [autenticado, lista, sincronizar]);
 }
 
