@@ -252,9 +252,9 @@ function AuthPage() {
         </div>
 
         <div className="relative max-w-md">
-          <h2 className="font-display text-4xl leading-[1.1] font-semibold tracking-tight text-balance [text-shadow:0_2px_16px_rgb(0_0_0/0.6)]">
+          <p className="font-display text-4xl leading-[1.1] font-semibold tracking-tight text-balance [text-shadow:0_2px_16px_rgb(0_0_0/0.6)]">
             Sua independência financeira em um só painel.
-          </h2>
+          </p>
           <p className="mt-5 text-base leading-relaxed text-[oklch(0.98_0_0)]/85">
             Carteira, aportes, dividendos, rebalanceamento e metas — com projeções de longo prazo.
           </p>
@@ -312,7 +312,7 @@ function AuthPage() {
           </span>
 
           <h1 className="font-display mt-4 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-            Acesse sua conta
+            Acesse sua conta no Viver de Renda em 15 Anos
           </h1>
           <p className="mt-1.5 text-sm text-pretty text-muted-foreground">
             Entre com Google ou crie sua conta com e-mail e senha.
