@@ -31,9 +31,16 @@ export const Route = createFileRoute("/")({
         property: "og:image:alt",
         content: "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
       },
+      { property: "og:locale", content: "pt_BR" },
+      { property: "og:site_name", content: "Viver de Renda em 15 Anos" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: OG_TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
       { name: "twitter:image", content: OG_IMAGE },
-    ],
+      {
+        name: "twitter:image:alt",
+        content: "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
+      },
     links: [
       { rel: "canonical", href: URL },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
