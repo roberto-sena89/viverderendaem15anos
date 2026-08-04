@@ -128,7 +128,7 @@ export function ModalDetalhePanorama({
                   type="button"
                   aria-selected={periodo === p.id}
                   onClick={() => setPeriodo(p.id)}
-                  className={`t-caption min-w-12 flex-1 rounded-lg px-2 py-1.5 font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
+                  className={`foco-visivel alvo-toque-linha t-caption min-w-12 flex-1 rounded-lg px-3 py-1.5 font-semibold transition-colors ${
                     periodo === p.id
                       ? "bg-background text-primary shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
