@@ -1,6 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+  User,
+  CreditCard,
+  Gift,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -8,9 +20,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThemeToggle } from "@/components/theme";
 import investidorImg from "@/assets/investidor-computador.jpg";
 import logoIcone from "@/assets/logo-icone.webp";
-
 
 const REDIRECT_KEY = "auth:redirect";
 
@@ -46,6 +58,41 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="size-4" aria-hidden="true">
+      <path
+        fill="#EA4335"
+        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+      />
+      <path
+        fill="#4285F4"
+        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 3-2.26 5.54-4.78 7.25l7.73 6c4.51-4.18 7.09-10.36 7.09-17.72z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M10.53 28.59A14.5 14.5 0 0 1 9.77 24c0-1.6.29-3.14.76-4.59l-7.98-6.19A23.94 23.94 0 0 0 0 24c0 3.88.93 7.54 2.56 10.78l7.97-6.19z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+      />
+    </svg>
+  );
+}
+
+const destaques = [
+  { titulo: "12+", texto: "classes de ativos" },
+  { titulo: "10 anos", texto: "de histórico" },
+  { titulo: "R$ 0", texto: "para começar" },
+];
+
+const selos = [
+  { icone: Gift, texto: "Gratuito para sempre" },
+  { icone: ShieldCheck, texto: "Dados protegidos" },
+  { icone: CreditCard, texto: "Sem cartão de crédito" },
+];
+
 function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
@@ -55,8 +102,9 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const [showPassUp, setShowPassUp] = useState(false);
 
-  // `destination` pode conter query string (ex.: consentimento OAuth), então navegamos por href.
   function goTo(dest: string) {
     navigate({ href: dest, replace: true });
   }
@@ -116,7 +164,6 @@ function AuthPage() {
     }
   }
 
-
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -165,9 +212,20 @@ function AuthPage() {
     navigate({ to: "/verificar-email", search: { email }, replace: true });
   }
 
+  const inputCls =
+    "h-11 bg-muted/40 pl-10 transition-colors focus-visible:bg-background";
+
   return (
     <div className="grid min-h-dvh bg-background lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden p-12 text-[oklch(0.98_0_0)] lg:flex">
+      <a
+        href="#conteudo-auth"
+        className="sr-only rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50"
+      >
+        Pular para o conteúdo
+      </a>
+
+      {/* Painel de marca */}
+      <aside className="relative hidden flex-col justify-between overflow-hidden p-12 text-[oklch(0.98_0_0)] lg:flex">
         <img
           src={investidorImg}
           alt="Investidor acompanhando gráficos de ações no computador"
@@ -175,12 +233,13 @@ function AuthPage() {
           height={1440}
           className="absolute inset-0 size-full object-cover"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/55 to-black/30" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/60 to-black/30" />
+        <div className="absolute -top-24 -left-24 size-96 rounded-full bg-linear-to-br from-primary/25 to-transparent blur-3xl" />
 
         <div className="relative flex max-w-md items-center gap-3">
           <img
             src={logoIcone}
-            alt="Viver de Renda em 15 Anos"
+            alt=""
             width={44}
             height={44}
             className="size-11 shrink-0 rounded-xl object-contain"
@@ -199,27 +258,74 @@ function AuthPage() {
           <p className="mt-5 text-base leading-relaxed text-[oklch(0.98_0_0)]/85">
             Carteira, aportes, dividendos, rebalanceamento e metas — com projeções de longo prazo.
           </p>
+
+          <dl className="mt-8 grid grid-cols-3 gap-3">
+            {destaques.map((d) => (
+              <div
+                key={d.titulo}
+                className="rounded-xl border border-white/15 bg-white/10 p-3 backdrop-blur-md"
+              >
+                <dt className="font-display text-lg font-semibold">{d.titulo}</dt>
+                <dd className="mt-0.5 text-xs leading-snug text-[oklch(0.98_0_0)]/75">
+                  {d.texto}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
-      </div>
 
+        <ul className="relative flex flex-wrap gap-x-5 gap-y-2 text-xs text-[oklch(0.98_0_0)]/80">
+          {selos.map(({ icone: Icone, texto }) => (
+            <li key={texto} className="flex items-center gap-1.5">
+              <Icone className="size-3.5 text-primary" aria-hidden="true" />
+              {texto}
+            </li>
+          ))}
+        </ul>
+      </aside>
 
+      {/* Painel do formulário */}
+      <main id="conteudo-auth" className="relative flex items-center justify-center px-5 py-12">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
 
-
-
-      <main className="flex items-center justify-center px-5 py-12">
         <div className="w-full max-w-sm">
-          <h1 className="font-display text-2xl font-semibold">Acesse sua conta</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Entre com Google ou com e-mail e senha.
+          <div className="mb-6 flex items-center gap-3 lg:hidden">
+            <img
+              src={logoIcone}
+              alt=""
+              width={40}
+              height={40}
+              className="size-10 shrink-0 rounded-xl object-contain"
+            />
+            <span className="font-display text-[0.8rem] leading-tight font-semibold tracking-[0.16em] uppercase">
+              Viver de renda
+              <br />
+              <span className="text-primary">em 15 anos</span>
+            </span>
+          </div>
+
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[0.7rem] font-medium tracking-wide text-primary">
+            <Sparkles className="size-3.5" aria-hidden="true" />
+            Plataforma premium de investimentos
+          </span>
+
+          <h1 className="font-display mt-4 text-3xl font-semibold tracking-tight">
+            Acesse sua conta
+          </h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Entre com Google ou crie sua conta com e-mail e senha.
           </p>
 
           <Button
             type="button"
             variant="outline"
-            className="mt-6 w-full"
+            className="mt-6 h-11 w-full gap-2"
             disabled={loading}
             onClick={signInWithGoogle}
           >
+            <GoogleIcon />
             Continuar com Google
           </Button>
 
@@ -227,90 +333,170 @@ function AuthPage() {
             <span className="h-px flex-1 bg-border" />ou<span className="h-px flex-1 bg-border" />
           </div>
 
-          <Tabs defaultValue="signin">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Criar conta</TabsTrigger>
-            </TabsList>
+          <div className="rounded-2xl border border-border bg-card/50 p-4 backdrop-blur-sm sm:p-5">
+            <Tabs defaultValue="signin">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="signin">Entrar</TabsTrigger>
+                <TabsTrigger value="signup">Criar conta</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="voce@email.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Senha</Label>
-                    <Link
-                      to="/recuperar-senha"
-                      className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                    >
-                      Esqueci minha senha
-                    </Link>
+              <TabsContent value="signin">
+                <form onSubmit={handleSignIn} className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-mail</Label>
+                    <div className="relative">
+                      <Mail
+                        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <Input
+                        id="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="voce@email.com"
+                        className={inputCls}
+                      />
+                    </div>
                   </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? <Loader2 className="size-4 animate-spin" /> : "Entrar"}
-                </Button>
-              </form>
-            </TabsContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Senha</Label>
+                      <Link
+                        to="/recuperar-senha"
+                        className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                      >
+                        Esqueci minha senha
+                      </Link>
+                    </div>
+                    <div className="relative">
+                      <Lock
+                        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <Input
+                        id="password"
+                        type={showPass ? "text" : "password"}
+                        autoComplete="current-password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className={`${inputCls} pr-10`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPass((v) => !v)}
+                        aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {showPass ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                  </div>
 
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nome</Label>
-                  <Input
-                    id="name"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Seu nome"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email-up">E-mail</Label>
-                  <Input
-                    id="email-up"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="voce@email.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password-up">Senha</Label>
-                  <Input
-                    id="password-up"
-                    type="password"
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? <Loader2 className="size-4 animate-spin" /> : "Criar conta"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+                  <Button type="submit" className="h-11 w-full gap-2" disabled={loading}>
+                    {loading ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <>
+                        Entrar
+                        <ArrowRight className="size-4" aria-hidden="true" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="signup">
+                <form onSubmit={handleSignUp} className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome</Label>
+                    <div className="relative">
+                      <User
+                        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <Input
+                        id="name"
+                        required
+                        autoComplete="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Seu nome"
+                        className={inputCls}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email-up">E-mail</Label>
+                    <div className="relative">
+                      <Mail
+                        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <Input
+                        id="email-up"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="voce@email.com"
+                        className={inputCls}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password-up">Senha</Label>
+                    <div className="relative">
+                      <Lock
+                        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <Input
+                        id="password-up"
+                        type={showPassUp ? "text" : "password"}
+                        autoComplete="new-password"
+                        required
+                        minLength={6}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        aria-describedby="dica-senha"
+                        className={`${inputCls} pr-10`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassUp((v) => !v)}
+                        aria-label={showPassUp ? "Ocultar senha" : "Mostrar senha"}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {showPassUp ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    <p id="dica-senha" className="text-xs text-muted-foreground">
+                      Mínimo 6 caracteres.
+                    </p>
+                  </div>
+
+                  <Button type="submit" className="h-11 w-full gap-2" disabled={loading}>
+                    {loading ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <>
+                        Criar conta
+                        <ArrowRight className="size-4" aria-hidden="true" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </main>
     </div>
