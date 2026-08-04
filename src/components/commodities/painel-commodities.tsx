@@ -16,6 +16,7 @@ import {
 import { ModalCommodity } from "@/components/commodities/modal-commodity";
 import { ComparadorCommodities } from "@/components/commodities/comparador-commodities";
 import { RodapeEducativoCommodities } from "@/components/commodities/rodape-educativo-commodities";
+import { TextoTruncado } from "@/components/texto-truncado";
 import { gradeCommodities } from "@/lib/commodities.functions";
 import {
   CATEGORIAS_COMMODITY,
@@ -177,9 +178,9 @@ export function PainelCommodities({
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="space-y-4 pb-16">
+      <div className="pilha-secao pb-16">
         {/* Faixa de destaque: as commodities que mais movem a bolsa brasileira */}
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-secao sm:grid-cols-2 xl:grid-cols-3">
           {isLoading && !destaques.length
             ? Array.from({ length: 3 }).map((_, i) => <CardCommoditySkeleton key={i} />)
             : destaques.map((l) => {
@@ -190,13 +191,13 @@ export function PainelCommodities({
                     key={l.codigo}
                     type="button"
                     onClick={() => setDetalhe(l)}
-                    className="panel bg-muted/20 p-4 text-left transition-colors hover:border-primary/40"
+                    className="panel bg-muted/20 p-cartao text-left transition-colors hover:border-primary/40"
                   >
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
-                      <p className="truncate text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                      <TextoTruncado as="p" className="t-label" texto={`${l.nome} · ${l.bolsa}`}>
                         {l.nome} · {l.bolsa}
-                      </p>
-                      <span className="shrink-0 text-[0.65rem] text-muted-foreground">
+                      </TextoTruncado>
+                      <span className="t-caption shrink-0">
                         {mercado.aberto ? "● ao vivo" : "○ fechado"}
                       </span>
                     </div>
@@ -204,14 +205,16 @@ export function PainelCommodities({
                       {moeda === "brl"
                         ? fmtDinheiro(l.precoUsd === null ? null : l.precoUsd * usdBrl, "R$")
                         : fmtDinheiro(l.precoUsd, "US$")}
-                      <span className="ml-1 text-xs font-normal text-muted-foreground">/ {l.unidade}</span>
+                      <span className="t-caption ml-1 font-normal">/ {l.unidade}</span>
                     </p>
-                    <p className={cn("mt-1 text-xs font-semibold tabular-nums", corVar(l.variacao12m))}>
+                    <p className={cn("t-num-sm mt-1 font-semibold", corVar(l.variacao12m))}>
                       {fmtVar(l.variacao12m)}{" "}
                       <span className="font-normal text-muted-foreground">em 12m</span>
                     </p>
                     {correlacao ? (
-                      <p className="mt-2 truncate text-[0.68rem] text-muted-foreground">{correlacao.frase}</p>
+                      <TextoTruncado as="p" className="t-caption mt-bloco" texto={correlacao.frase}>
+                        {correlacao.frase}
+                      </TextoTruncado>
                     ) : null}
                   </button>
                 );
@@ -250,7 +253,7 @@ export function PainelCommodities({
               </Button>
             </div>
           }
-          bodyClassName="p-4 sm:p-5 space-y-4"
+          bodyClassName="p-cartao pilha-secao"
         >
           {/* Ordenação e categorias */}
           <div className="flex flex-wrap items-center gap-1.5">
@@ -342,13 +345,13 @@ export function PainelCommodities({
           </div>
 
           {isLoading ? (
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className="grid gap-secao sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
                 <CardCommoditySkeleton key={i} />
               ))}
             </div>
           ) : secoes.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
+            <p className="t-body-sm py-8 text-center text-muted-foreground">
               {filtrosAtivos > 0
                 ? "Nenhuma commodity corresponde aos filtros de categoria, bolsa ou pregão selecionados."
                 : "Nenhuma commodity encontrada para a busca."}
@@ -358,7 +361,7 @@ export function PainelCommodities({
               const aberta = !recolhidas[s.id];
               const mercado = mercadoCategoria(s.id);
               return (
-                <section key={s.id} className="space-y-2.5">
+                <section key={s.id} className="pilha-bloco">
                   <button
                     type="button"
                     onClick={() => setRecolhidas((r) => ({ ...r, [s.id]: aberta }))}
@@ -366,7 +369,7 @@ export function PainelCommodities({
                     className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border pb-1.5 text-left"
                   >
                     <span className="flex min-w-0 items-center gap-2">
-                      <span className="panel-title truncate">{s.rotulo}</span>
+                      <TextoTruncado as="span" className="panel-title truncate">{s.rotulo}</TextoTruncado>
                       <span
                         className={cn(
                           "hidden shrink-0 rounded-full px-2 py-0.5 text-[0.62rem] font-medium sm:inline",
@@ -378,13 +381,13 @@ export function PainelCommodities({
                         {mercado.aberto ? "Pregão aberto" : "Fechado"}
                       </span>
                     </span>
-                    <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+                    <span className="t-num-sm flex shrink-0 items-center gap-2 text-muted-foreground">
                       {s.itens.length}
                       <ChevronDown className={cn("size-4 transition-transform", !aberta && "-rotate-90")} />
                     </span>
                   </button>
                   {aberta ? (
-                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                    <div className="grid gap-secao sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                       {s.itens.map((l) => (
                         <CardCommodity
                           key={l.codigo}
