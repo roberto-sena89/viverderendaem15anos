@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { ModalDetalhePanorama } from "@/components/cotacoes/modal-detalhe-panorama";
 import { corVar, fmtPercent } from "@/components/cotacoes/formatos";
+import { TextoTruncado } from "@/components/texto-truncado";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ABAS_COTACOES } from "@/lib/cotacoes-abas";
 import {
   panoramaMercado,
