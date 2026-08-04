@@ -329,6 +329,15 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
     variacao: l.variacaoPercent,
     spark: [],
     destino: "etfs",
+    simbolo: l.mercado === "internacional" ? l.ticker : `${l.ticker}.SA`,
+    detalhes: [
+      { rotulo: "Variação 30d", valor: pct(l.var30d), variacao: l.var30d },
+      { rotulo: "Variação 12m", valor: pct(l.var12m), variacao: l.var12m },
+      { rotulo: "DY 12m", valor: pct(l.dy12) },
+      { rotulo: "Patrimônio", valor: compacto(l.capitalizacao) },
+      { rotulo: "Gestora", valor: l.gestora ?? "—" },
+      { rotulo: "Mercado", valor: l.mercado === "internacional" ? "Exterior" : "B3" },
+    ],
   });
   const resumoEtfs: ResumoCategoria = linhasEtfs.length
     ? {
