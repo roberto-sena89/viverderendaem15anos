@@ -219,6 +219,7 @@ function Cotacoes() {
             </TabsContent>
           ))}
         </Tabs>
+        </TooltipProvider>
       </div>
     </AppShell>
   );
