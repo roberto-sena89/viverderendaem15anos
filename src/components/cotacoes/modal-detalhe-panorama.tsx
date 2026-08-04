@@ -128,7 +128,7 @@ export function ModalDetalhePanorama({
                   type="button"
                   aria-selected={periodo === p.id}
                   onClick={() => setPeriodo(p.id)}
-                  className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
+                  className={`t-caption min-w-12 flex-1 rounded-lg px-2 py-1.5 font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
                     periodo === p.id
                       ? "bg-background text-primary shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
@@ -153,7 +153,7 @@ export function ModalDetalhePanorama({
                 className="h-40 w-full"
               />
             ) : (
-              <p className="py-12 text-center text-sm text-muted-foreground">
+              <p className="t-body-sm py-12 text-center text-muted-foreground">
                 {isError
                   ? "Não foi possível carregar o histórico agora."
                   : "Histórico indisponível para este ativo."}
@@ -170,14 +170,14 @@ export function ModalDetalhePanorama({
           {/* performance por janela */}
           {data?.janelas?.length ? (
             <div>
-              <p className="panel-title mb-2">Performance histórica</p>
+              <p className="t-card-title mb-2 text-muted-foreground">Performance histórica</p>
               <dl className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                 {data.janelas.map((j) => (
                   <div key={j.rotulo} className="rounded-lg bg-muted/40 px-2 py-1.5 text-center">
-                    <dt className="text-[0.65rem] tracking-[0.08em] text-muted-foreground uppercase">
+                    <dt className="t-label truncate">
                       {j.rotulo}
                     </dt>
-                    <dd className={`text-xs font-semibold tabular-nums ${corVar(j.variacaoPercent)}`}>
+                    <dd className={`t-num-sm font-semibold ${corVar(j.variacaoPercent)}`}>
                       {fmtPercent(j.variacaoPercent)}
                     </dd>
                   </div>
@@ -188,7 +188,7 @@ export function ModalDetalhePanorama({
 
           {/* estatísticas de risco/retorno */}
           {data ? (
-            <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-bloco sm:grid-cols-4">
               <Info rotulo="Retorno a.a. (5 anos)" valor={fmtPercent(data.estatisticas.retornoAnualizadoPercent)} />
               <Info rotulo="Volatilidade anual" valor={fmtPercent(data.estatisticas.volatilidadeAnualPercent)} />
               <Info rotulo="Maior queda" valor={fmtPercent(data.estatisticas.drawdownMaximoPercent)} />
@@ -206,8 +206,8 @@ export function ModalDetalhePanorama({
           {/* métricas próprias da categoria */}
           {linha.detalhes.length ? (
             <div>
-              <p className="panel-title mb-2">Indicadores</p>
-              <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <p className="t-card-title mb-2 text-muted-foreground">Indicadores</p>
+              <dl className="grid grid-cols-2 gap-bloco sm:grid-cols-3">
                 {linha.detalhes.slice(0, 6).map((m) => (
                   <Info key={m.rotulo} rotulo={m.rotulo} valor={m.valor} />
                 ))}
@@ -239,8 +239,8 @@ const num = (v: number) =>
 function Info({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
     <div className="min-w-0">
-      <dt className="text-xs text-muted-foreground">{rotulo}</dt>
-      <dd className="truncate text-sm font-medium tabular-nums">{valor}</dd>
+      <dt className="t-label truncate">{rotulo}</dt>
+      <dd className="t-num truncate font-medium">{valor}</dd>
     </div>
   );
 }
