@@ -312,7 +312,7 @@ function AuthPage() {
           </span>
 
           <h1 className="font-display mt-4 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-            Acesse sua conta
+            Acesse sua conta no Viver de Renda em 15 Anos
           </h1>
           <p className="mt-1.5 text-sm text-pretty text-muted-foreground">
             Entre com Google ou crie sua conta com e-mail e senha.
