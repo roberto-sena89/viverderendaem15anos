@@ -191,7 +191,7 @@ function CartaoCategoria({
         disabled={!clicavel}
         onClick={() => aoAbrirAba?.(resumo.id)}
         aria-label={`Abrir aba ${resumo.rotulo}`}
-        className="flex items-start gap-3 rounded-lg text-left focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none disabled:cursor-default"
+        className="foco-visivel alvo-toque-linha flex items-start gap-3 rounded-lg text-left disabled:cursor-default"
       >
         <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-primary/25 bg-primary/10 text-primary">
           {Icone ? <Icone className="size-4" aria-hidden /> : null}
@@ -248,7 +248,11 @@ function CartaoCategoria({
           ) : null}
 
           {resumo.amplitude && resumo.amplitude.total > 0 ? (
-            <div className="mt-bloco flex h-1.5 overflow-hidden rounded-full bg-muted">
+            <div
+              role="img"
+              aria-label={`${resumo.amplitude.emAlta} de ${resumo.amplitude.total} ativos em alta`}
+              className="mt-bloco flex h-1.5 overflow-hidden rounded-full bg-muted"
+            >
               <span
                 className="h-full bg-positive"
                 style={{
@@ -273,7 +277,7 @@ function CartaoCategoria({
             <button
               type="button"
               onClick={() => aoAbrirAba?.(resumo.id)}
-              className="t-caption mt-bloco self-start font-medium text-primary hover:underline focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              className="foco-visivel alvo-toque-linha t-caption mt-bloco inline-flex items-center self-start rounded-md font-medium text-primary underline-offset-4 hover:underline"
             >
               Ver grade completa de {resumo.rotulo} →
             </button>
@@ -325,8 +329,8 @@ function LinhaClicavel({
 
 
   const base = compacta
-    ? "flex w-full items-center gap-2 rounded-md px-1 py-1 text-left"
-    : "flex w-full items-center gap-3 px-4 py-2 text-left";
+    ? "alvo-toque-linha flex w-full items-center gap-2 rounded-md px-1 py-1 text-left"
+    : "alvo-toque-linha flex w-full items-center gap-3 px-4 py-2 text-left";
 
   if (!aoDetalhar) return <div className={base}>{conteudo}</div>;
 
@@ -335,7 +339,7 @@ function LinhaClicavel({
       type="button"
       onClick={() => aoDetalhar(linha)}
       aria-label={`Ver detalhes de ${linha.ticker}`}
-      className={`${base} transition-colors hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`}
+      className={`${base} foco-visivel transition-colors hover:bg-primary/10`}
     >
       {conteudo}
     </button>
