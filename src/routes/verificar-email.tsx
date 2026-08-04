@@ -28,8 +28,8 @@ export const Route = createFileRoute("/verificar-email")({
     ],
     links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/verificar-email" }],
   }),
-  component: VerifyEmailPage,
-});
+const COOLDOWN_SEGUNDOS = 60;
+const MAX_REENVIOS = 5;
 
 function VerifyEmailPage() {
   const search = Route.useSearch();
@@ -37,6 +37,8 @@ function VerifyEmailPage() {
   const [email, setEmail] = useState(search.email ?? "");
   const [checking, setChecking] = useState(false);
   const [sending, setSending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [reenvios, setReenvios] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -54,29 +56,40 @@ function VerifyEmailPage() {
     };
   }, [navigate, search.email]);
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setTimeout(() => setCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [cooldown]);
+
   async function checkNow() {
     setChecking(true);
     const { data } = await supabase.auth.refreshSession();
-    if (!data.user) {
+    let confirmado = Boolean(data.user?.email_confirmed_at);
+    if (!confirmado) {
       const { data: userData } = await supabase.auth.getUser();
-      if (userData.user?.email_confirmed_at) {
-        navigate({ to: "/dashboard", replace: true });
-        setChecking(false);
-        return;
-      }
+      confirmado = Boolean(userData.user?.email_confirmed_at);
     }
     setChecking(false);
-    if (data.user?.email_confirmed_at) {
-      toast.success("E-mail confirmado!");
+    if (confirmado) {
+      toast.success("E-mail confirmado! Redirecionando para o painel.");
       navigate({ to: "/dashboard", replace: true });
       return;
     }
-    toast.info("Ainda não identificamos a confirmação. Verifique sua caixa de entrada.");
+    toast.info("Ainda não identificamos a confirmação. Verifique sua caixa de entrada e o spam.");
   }
 
   async function resend() {
     if (!email) {
       toast.error("Informe o e-mail usado no cadastro.");
+      return;
+    }
+    if (cooldown > 0) {
+      toast.info(`Aguarde ${cooldown}s para reenviar novamente.`);
+      return;
+    }
+    if (reenvios >= MAX_REENVIOS) {
+      toast.error("Limite de reenvios atingido. Tente novamente mais tarde ou fale com o suporte.");
       return;
     }
     setSending(true);
@@ -87,16 +100,26 @@ function VerifyEmailPage() {
     });
     setSending(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(
+        error.message.includes("rate")
+          ? "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente de novo."
+          : error.message,
+      );
+      setCooldown(COOLDOWN_SEGUNDOS);
       return;
     }
-    toast.success("Novo e-mail de confirmação enviado.");
+    setReenvios((n) => n + 1);
+    setCooldown(COOLDOWN_SEGUNDOS);
+    toast.success("Novo e-mail de confirmação enviado. Pode levar até 2 minutos para chegar.");
   }
 
   async function signOut() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", search: {}, replace: true });
   }
+
+  const restantes = MAX_REENVIOS - reenvios;
+  const bloqueado = sending || cooldown > 0 || restantes <= 0;
 
   return (
     <main className="grid min-h-dvh place-items-center bg-background px-5 py-12">
@@ -115,20 +138,38 @@ function VerifyEmailPage() {
           ) : null}
           . O acesso ao painel é liberado assim que você confirmar.
         </p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Não encontrou? Verifique a caixa de spam ou promoções antes de reenviar.
+        </p>
 
         <div className="mt-8 space-y-3">
           <Button className="w-full" onClick={checkNow} disabled={checking}>
-            {checking ? <Loader2 className="size-4 animate-spin" /> : "Já confirmei, continuar"}
+            {checking ? (
+              <>
+                <Loader2 className="size-4 animate-spin" /> Verificando…
+              </>
+            ) : (
+              "Já confirmei, continuar"
+            )}
           </Button>
-          <Button variant="outline" className="w-full" onClick={resend} disabled={sending}>
+          <Button variant="outline" className="w-full" onClick={resend} disabled={bloqueado}>
             {sending ? (
-              <Loader2 className="size-4 animate-spin" />
+              <>
+                <Loader2 className="size-4 animate-spin" /> Enviando…
+              </>
+            ) : cooldown > 0 ? (
+              `Reenviar em ${cooldown}s`
             ) : (
               <>
                 <RefreshCw className="size-4" /> Reenviar e-mail
               </>
             )}
           </Button>
+          <p className="text-xs text-muted-foreground" aria-live="polite">
+            {restantes > 0
+              ? `Você ainda pode reenviar ${restantes} ${restantes === 1 ? "vez" : "vezes"}.`
+              : "Limite de reenvios atingido nesta sessão."}
+          </p>
           <Button variant="ghost" className="w-full" onClick={signOut}>
             <LogOut className="size-4" /> Usar outra conta
           </Button>
@@ -137,3 +178,4 @@ function VerifyEmailPage() {
     </main>
   );
 }
+
