@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowUpRight, TrendingDown, TrendingUp } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
+import { ModalDetalhePanorama } from "@/components/cotacoes/modal-detalhe-panorama";
 import { corVar, fmtPercent } from "@/components/cotacoes/formatos";
 import { ABAS_COTACOES } from "@/lib/cotacoes-abas";
 import {
@@ -26,6 +28,7 @@ export function VisaoGeralMercado({
   aoAbrirAba?: AbrirAba;
 }) {
   const buscar = useServerFn(panoramaMercado);
+  const [detalhe, setDetalhe] = useState<{ linha: LinhaResumo; categoria?: string } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["panorama-mercado"],
@@ -51,11 +54,24 @@ export function VisaoGeralMercado({
 
   return (
     <div className="space-y-5">
+      <ModalDetalhePanorama
+        linha={detalhe?.linha ?? null}
+        rotuloCategoria={detalhe?.categoria}
+        aberto={detalhe !== null}
+        aoFechar={() => setDetalhe(null)}
+        aoAbrirAba={aoAbrirAba}
+      />
+
       <Termometro data={data} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {data.categorias.map((c) => (
-          <CartaoCategoria key={c.id} resumo={c} aoAbrirAba={aoAbrirAba} />
+          <CartaoCategoria
+            key={c.id}
+            resumo={c}
+            aoAbrirAba={aoAbrirAba}
+            aoDetalhar={(linha) => setDetalhe({ linha, categoria: c.rotulo })}
+          />
         ))}
       </div>
 
@@ -66,7 +82,7 @@ export function VisaoGeralMercado({
           bodyClassName="p-0"
           action={<TrendingUp className="size-4 text-positive" aria-hidden />}
         >
-          <ListaCompacta linhas={data.altas} aoAbrirAba={aoAbrirAba} />
+          <ListaCompacta linhas={data.altas} aoDetalhar={(l) => setDetalhe({ linha: l })} />
         </Panel>
         <Panel
           title="Maiores baixas do dia"
@@ -74,7 +90,7 @@ export function VisaoGeralMercado({
           bodyClassName="p-0"
           action={<TrendingDown className="size-4 text-negative" aria-hidden />}
         >
-          <ListaCompacta linhas={data.baixas} aoAbrirAba={aoAbrirAba} />
+          <ListaCompacta linhas={data.baixas} aoDetalhar={(l) => setDetalhe({ linha: l })} />
         </Panel>
       </div>
     </div>
@@ -152,9 +168,11 @@ function Termometro({ data }: { data: PanoramaMercado }) {
 function CartaoCategoria({
   resumo,
   aoAbrirAba,
+  aoDetalhar,
 }: {
   resumo: ResumoCategoria;
   aoAbrirAba?: AbrirAba;
+  aoDetalhar: (linha: LinhaResumo) => void;
 }) {
   const Icone = ICONE_ABA[resumo.id];
   const clicavel = Boolean(aoAbrirAba);
@@ -234,7 +252,7 @@ function CartaoCategoria({
             <ul className="mt-3 space-y-1 border-t border-border/60 pt-3">
               {resumo.altas.map((l) => (
                 <li key={`${resumo.id}-${l.ticker}`}>
-                  <LinhaClicavel linha={l} aoAbrirAba={aoAbrirAba} compacta />
+                  <LinhaClicavel linha={l} aoDetalhar={aoDetalhar} compacta />
                 </li>
               ))}
             </ul>
@@ -259,11 +277,11 @@ function CartaoCategoria({
 
 function LinhaClicavel({
   linha,
-  aoAbrirAba,
+  aoDetalhar,
   compacta = false,
 }: {
   linha: LinhaResumo;
-  aoAbrirAba?: AbrirAba;
+  aoDetalhar?: (linha: LinhaResumo) => void;
   compacta?: boolean;
 }) {
   const conteudo = (
@@ -305,13 +323,13 @@ function LinhaClicavel({
     ? "flex w-full items-center gap-2 rounded-md px-1 py-1 text-left"
     : "flex w-full items-center gap-3 px-4 py-2 text-left";
 
-  if (!aoAbrirAba) return <div className={base}>{conteudo}</div>;
+  if (!aoDetalhar) return <div className={base}>{conteudo}</div>;
 
   return (
     <button
       type="button"
-      onClick={() => aoAbrirAba(linha.destino, linha.ticker)}
-      aria-label={`Abrir ${linha.ticker} na aba correspondente`}
+      onClick={() => aoDetalhar(linha)}
+      aria-label={`Ver detalhes de ${linha.ticker}`}
       className={`${base} transition-colors hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`}
     >
       {conteudo}
@@ -319,7 +337,13 @@ function LinhaClicavel({
   );
 }
 
-function ListaCompacta({ linhas, aoAbrirAba }: { linhas: LinhaResumo[]; aoAbrirAba?: AbrirAba }) {
+function ListaCompacta({
+  linhas,
+  aoDetalhar,
+}: {
+  linhas: LinhaResumo[];
+  aoDetalhar?: (linha: LinhaResumo) => void;
+}) {
   if (linhas.length === 0) {
     return <p className="p-4 text-sm text-muted-foreground">Sem dados disponíveis no momento.</p>;
   }
@@ -327,7 +351,7 @@ function ListaCompacta({ linhas, aoAbrirAba }: { linhas: LinhaResumo[]; aoAbrirA
     <ul className="divide-y divide-border/60">
       {linhas.map((l) => (
         <li key={`${l.destino}-${l.ticker}`}>
-          <LinhaClicavel linha={l} aoAbrirAba={aoAbrirAba} />
+          <LinhaClicavel linha={l} aoDetalhar={aoDetalhar} />
         </li>
       ))}
     </ul>
