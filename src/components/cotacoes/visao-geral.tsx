@@ -209,9 +209,13 @@ function CartaoCategoria({
         <>
           {resumo.destaque ? (
             <div className="mt-bloco min-w-0">
-              <p className="t-label truncate">{resumo.destaque.rotulo}</p>
+              <TextoTruncado as="p" className="t-label truncate">
+                {resumo.destaque.rotulo}
+              </TextoTruncado>
               <div className="mt-0.5 flex min-w-0 items-baseline gap-2">
-                <span className="t-metric-sm min-w-0 truncate">{resumo.destaque.valor}</span>
+                <TextoTruncado className="t-metric-sm min-w-0 truncate">
+                  {resumo.destaque.valor}
+                </TextoTruncado>
                 {resumo.destaque.variacao !== null ? (
                   <span
                     className={`t-num-sm shrink-0 ${corVar(resumo.destaque.variacao)}`}
