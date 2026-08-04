@@ -4,6 +4,8 @@ import { Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { TextoTruncado } from "@/components/texto-truncado";
 import { PainelCategoria } from "@/components/cotacoes/painel-categoria";
 import { VisaoGeralMercado } from "@/components/cotacoes/visao-geral";
 import { PainelFiis } from "@/components/fiis/painel-fiis";
@@ -119,6 +121,7 @@ function Cotacoes() {
           ) : null}
         </div>
 
+        <TooltipProvider delayDuration={150}>
         <Tabs value={aba} onValueChange={setAba}>
           {/* Cabeçalho fixo no mobile: busca + abas acompanham a rolagem */}
           <div className={CLASSES_CABECALHO_FIXO}>
@@ -134,10 +137,15 @@ function Cotacoes() {
                       title={a.rotulo}
                     >
                       <Icone className={CLASSES_ICONE_ABA} aria-hidden />
-                      <span className={CLASSES_ROTULO_ABA}>
+                      <TextoTruncado
+                        className={CLASSES_ROTULO_ABA}
+                        texto={a.rotulo}
+                        lado="bottom"
+                        passivo
+                      >
                         <span className="sm:hidden">{a.rotuloCurto ?? a.rotulo}</span>
                         <span className="hidden sm:inline">{a.rotulo}</span>
-                      </span>
+                      </TextoTruncado>
                     </TabsTrigger>
                   );
                 })}
@@ -211,6 +219,7 @@ function Cotacoes() {
             </TabsContent>
           ))}
         </Tabs>
+        </TooltipProvider>
       </div>
     </AppShell>
   );

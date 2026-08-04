@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { ModalDetalhePanorama } from "@/components/cotacoes/modal-detalhe-panorama";
 import { corVar, fmtPercent } from "@/components/cotacoes/formatos";
+import { TextoTruncado } from "@/components/texto-truncado";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ABAS_COTACOES } from "@/lib/cotacoes-abas";
 import {
   panoramaMercado,
@@ -53,6 +55,7 @@ export function VisaoGeralMercado({
   }
 
   return (
+    <TooltipProvider delayDuration={150}>
     <div className="pilha-secao">
       <ModalDetalhePanorama
         linha={detalhe?.linha ?? null}
@@ -94,6 +97,7 @@ export function VisaoGeralMercado({
         </Panel>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
 
@@ -139,8 +143,12 @@ function Termometro({ data }: { data: PanoramaMercado }) {
               key={l.ticker}
               className="min-w-0 rounded-xl border border-border/60 bg-background/40 p-bloco"
             >
-              <p className="t-label truncate">{l.ticker}</p>
-              <p className="t-num mt-0.5 truncate font-display">{l.valor}</p>
+              <TextoTruncado as="p" className="t-label truncate">
+                {l.ticker}
+              </TextoTruncado>
+              <TextoTruncado as="p" className="t-num mt-0.5 truncate font-display">
+                {l.valor}
+              </TextoTruncado>
               <div className="mt-1 flex items-end justify-between gap-2">
                 <span className={`t-num-sm truncate ${corVar(l.variacao)}`}>
                   {fmtPercent(l.variacao)}
@@ -188,8 +196,8 @@ function CartaoCategoria({
           {Icone ? <Icone className="size-4" aria-hidden /> : null}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="t-card-title block truncate">{resumo.rotulo}</span>
-          <span className="t-subtexto block">{resumo.legenda}</span>
+          <TextoTruncado className="t-card-title block truncate">{resumo.rotulo}</TextoTruncado>
+          <TextoTruncado className="t-subtexto block">{resumo.legenda}</TextoTruncado>
         </span>
         {clicavel ? (
           <ArrowUpRight
@@ -205,9 +213,13 @@ function CartaoCategoria({
         <>
           {resumo.destaque ? (
             <div className="mt-bloco min-w-0">
-              <p className="t-label truncate">{resumo.destaque.rotulo}</p>
+              <TextoTruncado as="p" className="t-label truncate">
+                {resumo.destaque.rotulo}
+              </TextoTruncado>
               <div className="mt-0.5 flex min-w-0 items-baseline gap-2">
-                <span className="t-metric-sm min-w-0 truncate">{resumo.destaque.valor}</span>
+                <TextoTruncado className="t-metric-sm min-w-0 truncate">
+                  {resumo.destaque.valor}
+                </TextoTruncado>
                 {resumo.destaque.variacao !== null ? (
                   <span
                     className={`t-num-sm shrink-0 ${corVar(resumo.destaque.variacao)}`}
@@ -223,8 +235,12 @@ function CartaoCategoria({
             <dl className="mt-bloco grid grid-cols-3 gap-2">
               {resumo.metricas.slice(0, 3).map((m) => (
                 <div key={m.rotulo} className="min-w-0 rounded-lg bg-muted/40 px-2 py-1.5">
-                  <dt className="t-label truncate">{m.rotulo}</dt>
-                  <dd className="t-num-sm truncate font-medium">{m.valor}</dd>
+                  <TextoTruncado as="dt" className="t-label truncate">
+                    {m.rotulo}
+                  </TextoTruncado>
+                  <TextoTruncado as="dd" className="t-num-sm truncate font-medium">
+                    {m.valor}
+                  </TextoTruncado>
                 </div>
               ))}
             </dl>
@@ -282,10 +298,10 @@ function LinhaClicavel({
   const conteudo = (
     <>
       <span className="min-w-0 flex-1">
-        <span className={`t-ticker block ${compacta ? "text-[0.8125rem]" : ""}`}>
+        <TextoTruncado className={`t-ticker block ${compacta ? "text-[0.8125rem]" : ""}`}>
           {linha.ticker}
-        </span>
-        <span className="t-subtexto block">{linha.nome}</span>
+        </TextoTruncado>
+        <TextoTruncado className="t-subtexto block">{linha.nome}</TextoTruncado>
       </span>
       {compacta ? null : (
         <Sparkline
