@@ -227,8 +227,12 @@ function CartaoCategoria({
             <dl className="mt-bloco grid grid-cols-3 gap-2">
               {resumo.metricas.slice(0, 3).map((m) => (
                 <div key={m.rotulo} className="min-w-0 rounded-lg bg-muted/40 px-2 py-1.5">
-                  <dt className="t-label truncate">{m.rotulo}</dt>
-                  <dd className="t-num-sm truncate font-medium">{m.valor}</dd>
+                  <TextoTruncado as="dt" className="t-label truncate">
+                    {m.rotulo}
+                  </TextoTruncado>
+                  <TextoTruncado as="dd" className="t-num-sm truncate font-medium">
+                    {m.valor}
+                  </TextoTruncado>
                 </div>
               ))}
             </dl>
