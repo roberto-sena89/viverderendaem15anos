@@ -134,10 +134,15 @@ function Cotacoes() {
                       title={a.rotulo}
                     >
                       <Icone className={CLASSES_ICONE_ABA} aria-hidden />
-                      <span className={CLASSES_ROTULO_ABA}>
+                      <TextoTruncado
+                        className={CLASSES_ROTULO_ABA}
+                        texto={a.rotulo}
+                        lado="bottom"
+                        passivo
+                      >
                         <span className="sm:hidden">{a.rotuloCurto ?? a.rotulo}</span>
                         <span className="hidden sm:inline">{a.rotulo}</span>
-                      </span>
+                      </TextoTruncado>
                     </TabsTrigger>
                   );
                 })}
