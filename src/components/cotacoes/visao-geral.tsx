@@ -107,18 +107,16 @@ function Termometro({ data }: { data: PanoramaMercado }) {
     emAlta >= 60 ? "Predomínio comprador" : emAlta <= 40 ? "Predomínio vendedor" : "Mercado equilibrado";
 
   return (
-    <section className="panel relative overflow-hidden p-4 sm:p-5">
+    <section className="panel relative overflow-hidden p-cartao">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full bg-primary/10 blur-3xl"
       />
-      <div className="relative grid gap-5 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-center">
+      <div className="relative grid gap-secao lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-center">
         <div className="min-w-0">
-          <p className="text-[0.7rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-            Panorama do mercado
-          </p>
-          <p className="mt-1 font-display text-2xl leading-tight sm:text-3xl">{clima}</p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="t-label">Panorama do mercado</p>
+          <p className="t-h2 mt-1 texto-seguro">{clima}</p>
+          <p className="t-caption mt-1 texto-seguro">
             {t.emAlta} em alta · {t.emBaixa} em baixa · {t.total} ativos monitorados
           </p>
 
@@ -129,24 +127,22 @@ function Termometro({ data }: { data: PanoramaMercado }) {
             />
             <span className="h-full flex-1 bg-negative/70" />
           </div>
-          <div className="mt-1.5 flex justify-between text-[0.7rem] tabular-nums text-muted-foreground">
-            <span className="text-positive">{emAlta}% em alta</span>
-            <span className="text-negative">{100 - emAlta}% em baixa</span>
+          <div className="t-num-sm mt-1.5 flex justify-between gap-2 text-muted-foreground">
+            <span className="truncate text-positive">{emAlta}% em alta</span>
+            <span className="truncate text-negative">{100 - emAlta}% em baixa</span>
           </div>
         </div>
 
-        <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+        <div className="grid min-w-0 grid-cols-2 gap-bloco sm:grid-cols-3 xl:grid-cols-6">
           {data.indices.map((l) => (
             <div
               key={l.ticker}
-              className="min-w-0 rounded-xl border border-border/60 bg-background/40 p-2.5"
+              className="min-w-0 rounded-xl border border-border/60 bg-background/40 p-bloco"
             >
-              <p className="truncate text-[0.68rem] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
-                {l.ticker}
-              </p>
-              <p className="mt-0.5 truncate font-display text-[0.95rem] tabular-nums">{l.valor}</p>
+              <p className="t-label truncate">{l.ticker}</p>
+              <p className="t-num mt-0.5 truncate font-display">{l.valor}</p>
               <div className="mt-1 flex items-end justify-between gap-2">
-                <span className={`text-[0.7rem] tabular-nums ${corVar(l.variacao)}`}>
+                <span className={`t-num-sm truncate ${corVar(l.variacao)}`}>
                   {fmtPercent(l.variacao)}
                 </span>
                 <Sparkline
@@ -159,6 +155,9 @@ function Termometro({ data }: { data: PanoramaMercado }) {
             </div>
           ))}
         </div>
+      </div>
+    </section>
+
       </div>
     </section>
   );
