@@ -121,6 +121,7 @@ function Cotacoes() {
           ) : null}
         </div>
 
+        <TooltipProvider delayDuration={150}>
         <Tabs value={aba} onValueChange={setAba}>
           {/* Cabeçalho fixo no mobile: busca + abas acompanham a rolagem */}
           <div className={CLASSES_CABECALHO_FIXO}>
