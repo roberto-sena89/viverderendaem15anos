@@ -97,6 +97,7 @@ export function VisaoGeralMercado({
         </Panel>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
 
