@@ -285,13 +285,16 @@ function AuthPage() {
       </aside>
 
       {/* Painel do formulário */}
-      <main id="conteudo-auth" className="relative flex items-center justify-center px-5 py-12">
-        <div className="absolute top-4 right-4">
+      <main
+        id="conteudo-auth"
+        className="relative flex min-h-dvh items-center justify-center px-4 py-8 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-12 lg:min-h-0"
+      >
+        <div className="absolute top-3 right-3 z-10 sm:top-4 sm:right-4">
           <ThemeToggle />
         </div>
 
         <div className="w-full max-w-sm">
-          <div className="mb-6 flex items-center gap-3 lg:hidden">
+          <div className="mb-5 flex items-center gap-3 pr-12 sm:mb-6 lg:hidden">
             <img
               src={logoIcone}
               alt=""
@@ -299,7 +302,7 @@ function AuthPage() {
               height={40}
               className="size-10 shrink-0 rounded-xl object-contain"
             />
-            <span className="font-display text-[0.8rem] leading-tight font-semibold tracking-[0.16em] uppercase">
+            <span className="font-display min-w-0 text-[0.8rem] leading-tight font-semibold tracking-[0.16em] uppercase">
               Viver de renda
               <br />
               <span className="text-primary">em 15 anos</span>
@@ -310,6 +313,7 @@ function AuthPage() {
             <Sparkles className="size-3.5 shrink-0" aria-hidden="true" />
             <span className="min-w-0 truncate">Plataforma premium de investimentos</span>
           </span>
+
 
           <h1 className="font-display mt-4 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
             Acesse sua conta no Viver de Renda em 15 Anos
