@@ -306,15 +306,15 @@ function AuthPage() {
             </span>
           </div>
 
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[0.7rem] font-medium tracking-wide text-primary">
-            <Sparkles className="size-3.5" aria-hidden="true" />
-            Plataforma premium de investimentos
+          <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[0.68rem] leading-tight font-medium tracking-wide text-primary sm:text-[0.7rem]">
+            <Sparkles className="size-3.5 shrink-0" aria-hidden="true" />
+            <span className="min-w-0 truncate">Plataforma premium de investimentos</span>
           </span>
 
-          <h1 className="font-display mt-4 text-3xl font-semibold tracking-tight">
+          <h1 className="font-display mt-4 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
             Acesse sua conta
           </h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-sm text-pretty text-muted-foreground">
             Entre com Google ou crie sua conta com e-mail e senha.
           </p>
 
@@ -335,9 +335,13 @@ function AuthPage() {
 
           <div className="rounded-2xl border border-border bg-card/50 p-4 backdrop-blur-sm sm:p-5">
             <Tabs defaultValue="signin">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Entrar</TabsTrigger>
-                <TabsTrigger value="signup">Criar conta</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 gap-1">
+                <TabsTrigger value="signin" className="min-w-0 truncate px-2 text-xs sm:text-sm">
+                  Entrar
+                </TabsTrigger>
+                <TabsTrigger value="signup" className="min-w-0 truncate px-2 text-xs sm:text-sm">
+                  Criar conta
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="signin">
