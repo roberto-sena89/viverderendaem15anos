@@ -217,7 +217,7 @@ function HomePage() {
               height={40}
               className="size-9 shrink-0 rounded-full"
             />
-            <span className="font-hero text-[0.68rem] leading-tight font-bold tracking-tight uppercase sm:text-[0.72rem]">
+            <span className="font-hero text-[0.68rem] leading-tight font-bold tracking-wide uppercase sm:text-[0.72rem]">
               Viver de Renda
               <br />
               em 15 Anos
