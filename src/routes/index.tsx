@@ -323,6 +323,15 @@ function HomePage() {
             <li>
               <Link
                 className="border-border/60 bg-card/50 group flex items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-sm transition-colors hover:border-primary/40 hover:bg-card"
+                to="/o-que-e-renda-passiva"
+              >
+                <span className="min-w-0">Renda passiva: o que é e quanto investir para viver de renda</span>
+                <ArrowRight className="text-primary size-4 shrink-0 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="border-border/60 bg-card/50 group flex items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-sm transition-colors hover:border-primary/40 hover:bg-card"
                 to="/calculadora-juros-compostos"
               >
                 <span className="min-w-0">Calculadora de juros compostos com aportes mensais</span>
