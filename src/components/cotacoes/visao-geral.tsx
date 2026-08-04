@@ -10,8 +10,8 @@ import { corVar, fmtPercent } from "@/components/cotacoes/formatos";
 import { TextoTruncado } from "@/components/texto-truncado";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ABAS_COTACOES } from "@/lib/cotacoes-abas";
-import {
 import { EstadoVazio } from "@/components/estado-vazio";
+import {
   panoramaMercado,
   type LinhaResumo,
   type PanoramaMercado,
