@@ -191,7 +191,7 @@ function CartaoCategoria({
         disabled={!clicavel}
         onClick={() => aoAbrirAba?.(resumo.id)}
         aria-label={`Abrir aba ${resumo.rotulo}`}
-        className="flex items-start gap-3 rounded-lg text-left focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none disabled:cursor-default"
+        className="foco-visivel alvo-toque-linha flex items-start gap-3 rounded-lg text-left disabled:cursor-default"
       >
         <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-primary/25 bg-primary/10 text-primary">
           {Icone ? <Icone className="size-4" aria-hidden /> : null}
