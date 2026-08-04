@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sparkline } from "@/components/cotacoes/sparkline";
+import { TextoTruncado } from "@/components/texto-truncado";
 import {
   corVar,
   fmtCompacto,
@@ -70,15 +71,15 @@ export function ComparadorFiis({
           <table className="w-full min-w-[520px] border-collapse text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th scope="col" className="py-2 text-left text-[0.7rem] tracking-wide text-muted-foreground uppercase">
+                <th scope="col" className="t-label py-2 text-left">
                   Indicador
                 </th>
                 {linhas.map((l) => (
-                  <th key={l.ticker} scope="col" className="px-3 py-2 text-right">
-                    <span className="font-display block text-sm">{l.ticker}</span>
-                    <span className="block truncate text-[0.68rem] font-normal text-muted-foreground">
+                  <th key={l.ticker} scope="col" className="min-w-0 px-3 py-2 text-right">
+                    <TextoTruncado as="span" className="t-ticker block font-display">{l.ticker}</TextoTruncado>
+                    <TextoTruncado as="span" className="t-subtexto block font-normal">
                       {nomeCurto(l)}
-                    </span>
+                    </TextoTruncado>
                     <span
                       className={`mt-1 inline-block rounded-full border px-2 py-0.5 text-[0.62rem] font-medium ${COR_TIPO[l.tipo]}`}
                     >

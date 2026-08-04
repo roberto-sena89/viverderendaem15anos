@@ -3,6 +3,7 @@ import { ArrowLeftRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fmtPreco } from "@/components/cripto/formatos-cripto";
+import { TextoTruncado } from "@/components/texto-truncado";
 import type { LinhaCripto } from "@/lib/cripto-base";
 
 /** Conversor rápido entre uma criptomoeda e BRL/USD. */
@@ -24,9 +25,9 @@ export function ConversorCripto({ linhas, usdBrl }: { linhas: LinhaCripto[]; usd
   })();
 
   return (
-    <div className="panel rounded-xl p-3">
-      <p className="text-sm font-medium">Conversor</p>
-      <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:grid-cols-[140px_auto_1fr_auto]">
+    <div className="panel rounded-xl p-cartao">
+      <p className="t-card-title">Conversor</p>
+      <div className="mt-bloco grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:grid-cols-[140px_auto_1fr_auto]">
         <Input
           value={quantidade}
           onChange={(e) => setQuantidade(e.target.value)}
@@ -58,7 +59,7 @@ export function ConversorCripto({ linhas, usdBrl }: { linhas: LinhaCripto[]; usd
         >
           <ArrowLeftRight className="size-4" />
         </button>
-        <p className="col-span-2 text-right text-sm font-semibold tabular-nums sm:col-span-1">
+        <p className="t-num col-span-2 text-right font-semibold sm:col-span-1">
           {resultado === null
             ? "—"
             : invertido
@@ -66,7 +67,7 @@ export function ConversorCripto({ linhas, usdBrl }: { linhas: LinhaCripto[]; usd
               : fmtPreco(resultado.valor, "R$")}
         </p>
       </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">
+      <p className="t-caption mt-1.5">
         {moeda ? `1 ${moeda.ticker} = ${fmtPreco(precoBrl, "R$")} · dólar R$ ${usdBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : ""}
       </p>
     </div>
@@ -93,14 +94,16 @@ export function ComparadorCripto({
   ];
 
   return (
-    <div className="panel rounded-xl p-3">
-      <p className="text-sm font-medium">Comparação ({linhas.length})</p>
-      <div className="mt-2 overflow-x-auto">
-        <div className="flex gap-2">
+    <div className="panel rounded-xl p-cartao">
+      <p className="t-card-title">Comparação ({linhas.length})</p>
+      <div className="mt-bloco overflow-x-auto">
+        <div className="flex gap-bloco">
           {linhas.map((l) => (
-            <div key={l.id} className="min-w-[168px] rounded-lg border border-border bg-muted/30 p-2.5">
-              <div className="flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-medium">{l.ticker}</span>
+            <div key={l.id} className="min-w-[168px] rounded-lg border border-border bg-muted/30 p-bloco">
+              <div className="flex min-w-0 items-center justify-between gap-2">
+                <TextoTruncado as="span" className="t-ticker min-w-0" texto={l.ticker}>
+                  {l.ticker}
+                </TextoTruncado>
                 <button
                   type="button"
                   onClick={() => aoRemover(l.id)}
@@ -112,9 +115,9 @@ export function ComparadorCripto({
               </div>
               <dl className="mt-1.5 space-y-1">
                 {campos.map((c) => (
-                  <div key={c.rotulo} className="flex justify-between gap-2 text-xs">
-                    <dt className="text-muted-foreground">{c.rotulo}</dt>
-                    <dd className="tabular-nums">{c.valor(l)}</dd>
+                  <div key={c.rotulo} className="flex justify-between gap-2">
+                    <dt className="t-caption">{c.rotulo}</dt>
+                    <dd className="t-num-sm">{c.valor(l)}</dd>
                   </div>
                 ))}
               </dl>

@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Panel } from "@/components/panel";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { useMarketQuote } from "@/lib/use-market-quote";
+import { TextoTruncado } from "@/components/texto-truncado";
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import type { CotacaoBrapi } from "@/lib/mercado-brapi.functions";
 
@@ -39,9 +40,9 @@ function useFlash(preco: number | null) {
 
 function Linha({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
-    <div className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
-      <p className="text-[0.65rem] tracking-wide text-muted-foreground uppercase">{rotulo}</p>
-      <p className="mt-0.5 text-sm tabular-nums">{valor}</p>
+    <div className="min-w-0 rounded-lg border border-border/60 bg-muted/30 p-bloco">
+      <TextoTruncado as="p" className="t-label block">{rotulo}</TextoTruncado>
+      <TextoTruncado as="p" className="t-num mt-0.5 block">{valor}</TextoTruncado>
     </div>
   );
 }
@@ -55,7 +56,7 @@ export function MarketCard({ symbol }: { symbol: string }) {
 
   if (loading && !quote) {
     return (
-      <div className="space-y-3">
+      <div className="pilha-bloco">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-12 w-40" />
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -68,7 +69,7 @@ export function MarketCard({ symbol }: { symbol: string }) {
   }
 
   if (error && !quote) {
-    return <p className="text-sm text-negative">{error}</p>;
+    return <p className="t-body-sm text-negative">{error}</p>;
   }
 
   if (!quote) return null;
@@ -78,22 +79,22 @@ export function MarketCard({ symbol }: { symbol: string }) {
   const aberto = (q.marketState ?? "").toUpperCase() === "REGULAR";
 
   return (
-    <div className="space-y-3">
+    <div className="pilha-bloco">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="font-display text-lg leading-none">{q.symbol}</p>
+            <p className="t-ticker font-display shrink-0">{q.symbol}</p>
             <button
               type="button"
               aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
               aria-pressed={favorito}
               onClick={() => alternar(q.symbol)}
-              className="text-muted-foreground transition-colors hover:text-primary"
+              className="shrink-0 text-muted-foreground transition-colors hover:text-primary"
             >
               <Star className={`size-4 ${favorito ? "fill-primary text-primary" : ""}`} />
             </button>
           </div>
-          <p className="truncate text-xs text-muted-foreground">{q.longName ?? q.shortName ?? "—"}</p>
+          <TextoTruncado as="p" className="t-subtexto block">{q.longName ?? q.shortName ?? "—"}</TextoTruncado>
         </div>
         <span
           className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
@@ -115,7 +116,7 @@ export function MarketCard({ symbol }: { symbol: string }) {
         >
           {moeda(q.regularMarketPrice, q.currency)}
         </p>
-        <p className={`text-sm font-semibold tabular-nums ${pos ? "text-positive" : "text-negative"}`}>
+        <p className={`t-num font-semibold ${pos ? "text-positive" : "text-negative"}`}>
           {pos ? "▲" : "▼"}{" "}
           {q.regularMarketChangePercent === null
             ? "—"
@@ -129,7 +130,7 @@ export function MarketCard({ symbol }: { symbol: string }) {
         <Sparkline serie={q.spark} positivo={pos} largura={120} altura={34} className="ml-auto" />
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-bloco sm:grid-cols-3 lg:grid-cols-6">
         <Linha rotulo="Máxima" valor={moeda(q.regularMarketDayHigh, q.currency)} />
         <Linha rotulo="Mínima" valor={moeda(q.regularMarketDayLow, q.currency)} />
         <Linha rotulo="Abertura" valor={moeda(q.regularMarketOpen, q.currency)} />
@@ -138,7 +139,7 @@ export function MarketCard({ symbol }: { symbol: string }) {
         <Linha rotulo="Atualizado" valor={hora(q.regularMarketTime)} />
       </div>
 
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <div className="flex items-center gap-2 t-caption text-muted-foreground">
         <Activity className="size-3.5" aria-hidden />
         Sincronizado a cada 5s pela BRAPI
         <Button variant="ghost" size="sm" className="ml-auto h-7" onClick={refresh}>
@@ -184,7 +185,7 @@ export function CotacaoAoVivoBrapi({ inicial = "IVVB11" }: { inicial?: string })
         </form>
       }
     >
-      <div className="space-y-3">
+      <div className="pilha-bloco">
         <div className="flex flex-wrap gap-1.5">
           {SUGESTOES.map((s) => (
             <button

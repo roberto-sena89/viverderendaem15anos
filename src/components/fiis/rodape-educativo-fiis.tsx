@@ -51,7 +51,7 @@ export function RodapeEducativoFiis() {
           </AccordionItem>
         ))}
       </Accordion>
-      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+      <p className="t-caption mt-secao leading-relaxed">
         Os dados desta página são coletados de fontes públicas de mercado e podem sofrer atraso ou divergência.
         Indicadores fundamentalistas são atualizados diariamente; preços e variações acompanham o pregão da B3.
         Nada aqui constitui recomendação de compra ou venda — avalie os relatórios gerenciais de cada fundo antes de

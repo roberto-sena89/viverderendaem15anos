@@ -66,9 +66,9 @@ function LinhaFaixa({
 }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">{rotulo}</span>
-        <span className="tabular-nums">
+      <div className="flex items-center justify-between">
+        <span className="t-caption">{rotulo}</span>
+        <span className="t-num-sm">
           {valor[0]}% a {valor[1]}%
         </span>
       </div>
@@ -98,9 +98,9 @@ export function FiltrosCripto({
   aoLimpar: () => void;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="pilha-bloco">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <p className="text-xs tracking-[0.08em] text-muted-foreground uppercase">Categoria</p>
+        <p className="t-label">Categoria</p>
         <div className="flex flex-wrap gap-1.5">
           {CATEGORIAS.map((c) => {
             const ativa = categorias.includes(c);
@@ -123,11 +123,11 @@ export function FiltrosCripto({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-bloco sm:grid-cols-2 xl:grid-cols-4">
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Capitalização mínima</span>
-            <span className="tabular-nums">
+          <div className="flex items-center justify-between">
+            <span className="t-caption">Capitalização mínima</span>
+            <span className="t-num-sm">
               {faixas.capMin === 0 ? "sem mínimo" : `US$ ${faixas.capMin} M`}
             </span>
           </div>

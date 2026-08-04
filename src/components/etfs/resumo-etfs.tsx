@@ -1,4 +1,5 @@
 import { ArrowDownRight, ArrowUpRight, Coins, Layers } from "lucide-react";
+import { TextoTruncado } from "@/components/texto-truncado";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { corVar, fmtCompacto, fmtMoeda, fmtPct, fmtPctSimples } from "@/components/etfs/formatos-etf";
 import type { LinhaEtf, ResumoIbovEtf } from "@/lib/etfs-base";
@@ -14,16 +15,16 @@ function Card({
 }) {
   const conteudo = (
     <>
-      <p className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">{titulo}</p>
-      <div className="mt-1.5">{children}</div>
+      <TextoTruncado as="p" className="t-label block" passivo>{titulo}</TextoTruncado>
+      <div className="mt-bloco">{children}</div>
     </>
   );
-  if (!aoClicar) return <div className="panel p-3">{conteudo}</div>;
+  if (!aoClicar) return <div className="panel p-cartao min-w-0">{conteudo}</div>;
   return (
     <button
       type="button"
       onClick={aoClicar}
-      className="panel p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className="panel min-w-0 p-cartao text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       {conteudo}
     </button>
@@ -39,14 +40,14 @@ function Destaque({
   valor: string;
   icone: React.ReactNode;
 }) {
-  if (!linha) return <p className="text-sm text-muted-foreground">—</p>;
+  if (!linha) return <p className="t-body-sm text-muted-foreground">—</p>;
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="min-w-0">
-        <p className="font-display truncate text-base leading-tight">{linha.ticker}</p>
-        <p className="truncate text-xs text-muted-foreground">{fmtMoeda(linha.preco)}</p>
+        <TextoTruncado as="p" className="t-ticker font-display block">{linha.ticker}</TextoTruncado>
+        <TextoTruncado as="p" className="t-subtexto block">{fmtMoeda(linha.preco)}</TextoTruncado>
       </div>
-      <span className="inline-flex items-center gap-1 text-sm font-semibold tabular-nums">
+      <span className="t-num inline-flex shrink-0 items-center gap-1 font-semibold">
         {icone}
         {valor}
       </span>
@@ -72,7 +73,7 @@ export function ResumoEtfs({
 }) {
   const positivo = (ibovespa?.variacaoPercent ?? 0) >= 0;
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+    <div className="grid gap-secao sm:grid-cols-2 xl:grid-cols-5">
       <Card titulo="Índice Ibovespa">
         <div className="flex items-end justify-between gap-3">
           <div>

@@ -1,4 +1,5 @@
 import { CalendarClock, Landmark, LineChart, Percent } from "lucide-react";
+import { TextoTruncado } from "@/components/texto-truncado";
 import type { RespostaTesouro } from "@/lib/tesouro-base";
 
 export const fmtNum = (v: number | null | undefined, casas = 2) =>
@@ -71,15 +72,15 @@ export function ResumoTesouro({ dados }: { dados: RespostaTesouro | undefined })
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-secao lg:grid-cols-4">
       {cards.map((c) => (
-        <div key={c.rotulo} className="rounded-xl border border-border bg-card p-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <c.icone className="size-3.5" aria-hidden />
-            {c.rotulo}
+        <div key={c.rotulo} className="min-w-0 rounded-xl border border-border bg-card p-cartao">
+          <div className="flex items-center gap-2 t-label">
+            <c.icone className="size-3.5 shrink-0" aria-hidden />
+            <TextoTruncado as="span" className="truncate" passivo>{c.rotulo}</TextoTruncado>
           </div>
-          <p className="mt-1.5 truncate text-lg font-semibold tabular-nums">{c.valor}</p>
-          <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{c.detalhe}</p>
+          <TextoTruncado as="p" className="t-num mt-1.5 block font-semibold">{c.valor}</TextoTruncado>
+          <TextoTruncado as="p" className="t-caption mt-0.5 block">{c.detalhe}</TextoTruncado>
         </div>
       ))}
     </div>

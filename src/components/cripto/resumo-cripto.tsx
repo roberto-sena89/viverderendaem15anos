@@ -1,6 +1,7 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, TrendingDown, TrendingUp } from "lucide-react";
 import { fmtCompacto, fmtPct, fmtPreco, corVar } from "@/components/cripto/formatos-cripto";
+import { TextoTruncado } from "@/components/texto-truncado";
 import type { LinhaCripto } from "@/lib/cripto-base";
 
 function Card({
@@ -16,7 +17,7 @@ function Card({
     <button
       type="button"
       onClick={aoClicar}
-      className={`panel min-w-0 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-muted/40 ${
+      className={`panel min-w-0 rounded-xl p-bloco text-left transition-colors hover:bg-muted/40 ${
         destaque ? "border-primary/40" : ""
       }`}
     >
@@ -56,19 +57,21 @@ export function ResumoCripto({
 
   const Destaque = ({ l }: { l: LinhaCripto }) => (
     <Card aoClicar={() => aoAbrir(l)} destaque>
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         {l.imagem ? (
-          <img src={l.imagem} alt="" className="size-6 rounded-full" loading="lazy" />
+          <img src={l.imagem} alt="" className="size-6 shrink-0 rounded-full" loading="lazy" />
         ) : null}
-        <span className="truncate text-sm font-semibold">{l.nome}</span>
-        <span className="text-xs text-muted-foreground">{l.ticker}</span>
+        <TextoTruncado as="span" className="t-ticker min-w-0" texto={l.nome}>
+          {l.nome}
+        </TextoTruncado>
+        <span className="t-caption shrink-0">{l.ticker}</span>
       </div>
-      <p className="mt-1.5 text-lg font-semibold tabular-nums">{fmtPreco(l.precoUsd, "US$")}</p>
+      <p className="t-metric-sm mt-1.5">{fmtPreco(l.precoUsd, "US$")}</p>
       <div className="flex items-baseline gap-2">
-        <span className="text-xs text-muted-foreground tabular-nums">
+        <span className="t-num-sm text-muted-foreground">
           {fmtPreco(l.precoUsd === null ? null : l.precoUsd * usdBrl, "R$")}
         </span>
-        <span className={`text-xs font-medium tabular-nums ${corVar(l.variacao24h)}`}>
+        <span className={`t-num-sm font-medium ${corVar(l.variacao24h)}`}>
           {fmtPct(l.variacao24h)}
         </span>
       </div>
@@ -85,24 +88,26 @@ export function ResumoCripto({
     icone: React.ReactNode;
   }) => (
     <Card aoClicar={l ? () => aoAbrir(l) : undefined}>
-      <p className="flex items-center gap-1 text-[0.68rem] tracking-[0.06em] text-muted-foreground uppercase">
+      <p className="t-label flex items-center gap-1">
         {icone}
         {titulo}
       </p>
-      <p className="mt-1 truncate text-sm font-semibold">{l ? `${l.nome} · ${l.ticker}` : "—"}</p>
-      <p className={`text-sm tabular-nums ${corVar(l?.variacao24h ?? null)}`}>
+      <TextoTruncado as="p" className="t-ticker mt-1" texto={l ? `${l.nome} · ${l.ticker}` : "—"}>
+        {l ? `${l.nome} · ${l.ticker}` : "—"}
+      </TextoTruncado>
+      <p className={`t-num-sm ${corVar(l?.variacao24h ?? null)}`}>
         {fmtPct(l?.variacao24h ?? null)}
       </p>
     </Card>
   );
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-bloco sm:grid-cols-3 xl:grid-cols-6">
       {btc ? <Destaque l={btc} /> : null}
       {eth ? <Destaque l={eth} /> : null}
 
       <Card>
-        <p className="flex items-center gap-1 text-[0.68rem] tracking-[0.06em] text-muted-foreground uppercase">
+        <p className="t-label flex items-center gap-1">
           Dominância BTC
           <Tooltip>
             <TooltipTrigger asChild>
@@ -114,10 +119,10 @@ export function ResumoCripto({
             </TooltipContent>
           </Tooltip>
         </p>
-        <p className="mt-1 text-lg font-semibold tabular-nums">
+        <p className="t-metric-sm mt-1">
           {dominanciaBtc === null ? "—" : `${dominanciaBtc.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
         </p>
-        <p className="text-xs text-muted-foreground tabular-nums">
+        <p className="t-num-sm text-muted-foreground">
           Dólar: R$ {usdBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </p>
       </Card>
@@ -126,11 +131,11 @@ export function ResumoCripto({
       <Mini titulo="Maior baixa 24h" l={maiorBaixa} icone={<TrendingDown className="size-3" />} />
 
       <Card>
-        <p className="text-[0.68rem] tracking-[0.06em] text-muted-foreground uppercase">
+        <p className="t-label">
           Capitalização total
         </p>
-        <p className="mt-1 text-lg font-semibold tabular-nums">{fmtCompacto(capitalizacaoTotal)}</p>
-        <p className="text-xs text-muted-foreground tabular-nums">
+        <p className="t-metric-sm mt-1">{fmtCompacto(capitalizacaoTotal)}</p>
+        <p className="t-num-sm text-muted-foreground">
           {fmtCompacto(capitalizacaoTotal * usdBrl, "R$")}
         </p>
       </Card>

@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { RealceTermo } from "@/components/cripto/realce-termo";
+import { TextoTruncado } from "@/components/texto-truncado";
 import { BadgeCategoria } from "@/components/cripto/badge-categoria";
 import { useFlashPrecos, type PosicaoCarteira } from "@/components/cripto/tabela-cripto";
 import { corVar, fmtCompacto, fmtPct, fmtPreco } from "@/components/cripto/formatos-cripto";
@@ -30,7 +31,7 @@ export function CardsCripto({
   const direcao = useDirecaoVariacoes(linhas, CAMPOS_AO_VIVO);
 
   return (
-    <ul className="space-y-2 p-2">
+    <ul className="pilha-bloco p-bloco">
       {linhas.map((l) => {
         const stable = ehStablecoin(l);
         const brl = l.precoUsd === null ? null : l.precoUsd * usdBrl;
@@ -48,7 +49,7 @@ export function CardsCripto({
               onKeyDown={(e) => {
                 if (e.key === "Enter") aoAbrir(l);
               }}
-              className={`panel rounded-xl p-3 ${posicao ? "border-l-2 border-l-primary" : ""}`}
+              className={`panel rounded-xl p-cartao ${posicao ? "border-l-2 border-l-primary" : ""}`}
             >
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                 <div className="flex min-w-0 items-center gap-2">
@@ -72,21 +73,23 @@ export function CardsCripto({
                     <img src={l.imagem} alt="" className="size-7 shrink-0 rounded-full" loading="lazy" />
                   ) : null}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium"><RealceTermo texto={l.nome} termo={termoBusca} /></p>
-                    <p className="text-xs text-muted-foreground">
+                    <TextoTruncado as="p" className="t-ticker block" texto={l.nome}>
+                      <RealceTermo texto={l.nome} termo={termoBusca} />
+                    </TextoTruncado>
+                    <TextoTruncado as="p" className="t-subtexto block" texto={`#${l.rank ?? "—"} · ${l.ticker}`}>
                       #{l.rank ?? "—"} · <RealceTermo texto={l.ticker} termo={termoBusca} />
-                    </p>
+                    </TextoTruncado>
                   </div>
                 </div>
                 <div className="shrink-0 text-right">
                   <p
-                    className={`text-base font-semibold tabular-nums ${
+                    className={`t-num font-semibold ${
                       flash[l.id] === "alta" ? "flash-alta" : flash[l.id] === "baixa" ? "flash-baixa" : ""
                     }`}
                   >
                     {fmtPreco(brl, "R$")}
                   </p>
-                  <p className="text-sm font-medium">
+                  <p className="t-num-sm font-medium">
                     <CelulaVariacao
                       valor={l.variacao24h}
                       stable={stable}
@@ -96,9 +99,9 @@ export function CardsCripto({
                 </div>
               </div>
 
-              <div className="mt-3 grid grid-cols-3 divide-x divide-border/60 rounded-lg bg-muted/20 py-2 text-center">
+              <div className="mt-bloco grid grid-cols-3 divide-x divide-border/60 rounded-lg bg-muted/20 py-2 text-center">
                 <div className="min-w-0 px-1">
-                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Var. 1h</p>
+                  <p className="t-label">Var. 1h</p>
                   <div className="mt-0.5 flex justify-center text-xs font-medium tabular-nums">
                     <CelulaVariacao
                       valor={l.variacao1h}
@@ -108,7 +111,7 @@ export function CardsCripto({
                   </div>
                 </div>
                 <div className="min-w-0 px-1">
-                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Var. 7D</p>
+                  <p className="t-label">Var. 7D</p>
                   <div className="mt-0.5 flex justify-center text-xs font-medium tabular-nums">
                     <CelulaVariacao
                       valor={l.variacao7d}
@@ -118,33 +121,33 @@ export function CardsCripto({
                   </div>
                 </div>
                 <div className="min-w-0 px-1">
-                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Var. 30D</p>
-                  <p className={`mt-0.5 text-xs font-medium tabular-nums ${corVar(l.variacao30d, stable)}`}>
+                  <p className="t-label">Var. 30D</p>
+                  <p className={`t-num-sm mt-0.5 font-medium ${corVar(l.variacao30d, stable)}`}>
                     {fmtPct(l.variacao30d)}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-2 grid grid-cols-3 gap-1 text-center">
+              <div className="mt-bloco grid grid-cols-3 gap-bloco text-center">
                 <div className="min-w-0">
-                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Cap.</p>
-                  <p className="truncate text-xs tabular-nums">{fmtCompacto(l.capitalizacao)}</p>
+                  <p className="t-label">Cap.</p>
+                  <p className="t-num-sm truncate">{fmtCompacto(l.capitalizacao)}</p>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">Vol. 24h</p>
-                  <p className="truncate text-xs tabular-nums">{fmtCompacto(l.volume24h)}</p>
+                  <p className="t-label">Vol. 24h</p>
+                  <p className="t-num-sm truncate">{fmtCompacto(l.volume24h)}</p>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[0.65rem] uppercase tracking-wide text-muted-foreground">USD</p>
-                  <p className="truncate text-xs tabular-nums">{fmtPreco(l.precoUsd, "US$")}</p>
+                  <p className="t-label">USD</p>
+                  <p className="t-num-sm truncate">{fmtPreco(l.precoUsd, "US$")}</p>
                 </div>
               </div>
 
 
-              <div className="mt-2 flex items-center justify-between gap-2">
+              <div className="mt-bloco flex items-center justify-between gap-2">
                 <BadgeCategoria categoria={l.categoria} rede={l.rede} />
                 {rentabilidade !== null ? (
-                  <span className={`text-[0.7rem] tabular-nums ${corVar(rentabilidade)}`}>
+                  <span className={`t-caption ${corVar(rentabilidade)}`}>
                     sua posição {fmtPct(rentabilidade)}
                   </span>
                 ) : null}

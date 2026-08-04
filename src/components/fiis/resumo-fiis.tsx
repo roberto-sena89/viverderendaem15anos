@@ -1,5 +1,6 @@
 import { ArrowDownRight, ArrowUpRight, Coins, TrendingUp } from "lucide-react";
 import { Sparkline } from "@/components/cotacoes/sparkline";
+import { TextoTruncado } from "@/components/texto-truncado";
 import { corVar, fmtMoeda, fmtPct, fmtPctSimples } from "@/components/fiis/formatos-fii";
 import type { LinhaFii, ResumoIfix } from "@/lib/fiis-base";
 
@@ -14,16 +15,16 @@ function Card({
 }) {
   const conteudo = (
     <>
-      <p className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">{titulo}</p>
-      <div className="mt-1.5">{children}</div>
+      <p className="t-label">{titulo}</p>
+      <div className="mt-bloco">{children}</div>
     </>
   );
-  if (!aoClicar) return <div className="panel p-3">{conteudo}</div>;
+  if (!aoClicar) return <div className="panel p-cartao">{conteudo}</div>;
   return (
     <button
       type="button"
       onClick={aoClicar}
-      className="panel p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className="panel p-cartao text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       {conteudo}
     </button>
@@ -41,14 +42,16 @@ function Destaque({
   aoClicar: () => void;
   icone: React.ReactNode;
 }) {
-  if (!linha) return <p className="text-sm text-muted-foreground">—</p>;
+  if (!linha) return <p className="t-body-sm text-muted-foreground">—</p>;
   return (
     <div className="flex items-center justify-between gap-2" onClick={aoClicar}>
       <div className="min-w-0">
-        <p className="font-display truncate text-base leading-tight">{linha.ticker}</p>
-        <p className="truncate text-xs text-muted-foreground">{fmtMoeda(linha.preco)}</p>
+        <TextoTruncado as="p" className="t-ticker block font-display">
+          {linha.ticker}
+        </TextoTruncado>
+        <p className="t-num-sm truncate text-muted-foreground">{fmtMoeda(linha.preco)}</p>
       </div>
-      <span className="inline-flex items-center gap-1 text-sm font-semibold tabular-nums">
+      <span className="t-num inline-flex shrink-0 items-center gap-1 font-semibold">
         {icone}
         {valor}
       </span>
@@ -72,7 +75,7 @@ export function ResumoFiis({
 }) {
   const positivoIfix = (ifix?.variacaoPercent ?? 0) >= 0;
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-secao sm:grid-cols-2 xl:grid-cols-4">
       <Card titulo="Índice IFIX">
         <div className="flex items-end justify-between gap-3">
           <div>

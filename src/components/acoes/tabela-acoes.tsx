@@ -249,7 +249,7 @@ function Cabecalho({
         <button
           type="button"
           onClick={() => aoOrdenar(coluna)}
-          className={`inline-flex items-center gap-1 rounded text-left text-[0.68rem] leading-tight font-semibold tracking-wide uppercase transition-colors hover:text-foreground ${
+          className={`t-label inline-flex items-center gap-1 rounded text-left transition-colors hover:text-foreground ${
             ativo ? "text-foreground" : "text-muted-foreground"
           }`}
           aria-label={`Ordenar por ${rotulo}`}
@@ -426,7 +426,7 @@ export function TabelaAcoes({
 
   if (carregando) {
     return (
-      <div className="space-y-2 p-4">
+      <div className="pilha-bloco p-cartao">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3">
             <Skeleton className="size-8 rounded-lg" />

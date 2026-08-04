@@ -8,6 +8,7 @@ import {
   nomeFundo,
 } from "@/components/etfs/formatos-etf";
 import { COR_CLASSE_ETF, type LinhaEtf } from "@/lib/etfs-base";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 const INDICADORES: {
   rotulo: string;
@@ -64,11 +65,11 @@ export function ComparadorEtfs({
                     Indicador
                   </th>
                   {linhas.map((l) => (
-                    <th key={l.ticker} scope="col" className="px-2 py-2 text-right">
-                      <span className="font-display block text-sm">{l.ticker}</span>
-                      <span className="block truncate text-xs font-normal text-muted-foreground">
+                    <th key={l.ticker} scope="col" className="min-w-0 px-2 py-2 text-right">
+                      <span className="t-ticker font-display block">{l.ticker}</span>
+                      <TextoTruncado as="span" className="t-subtexto block font-normal">
                         {nomeFundo(l)}
-                      </span>
+                      </TextoTruncado>
                       <span
                         className={`mt-1 inline-block rounded-full border px-2 py-0.5 text-[0.62rem] font-medium ${COR_CLASSE_ETF[l.classe]}`}
                       >

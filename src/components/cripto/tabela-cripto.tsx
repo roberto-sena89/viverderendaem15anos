@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { BadgeCategoria } from "@/components/cripto/badge-categoria";
 import { RealceTermo } from "@/components/cripto/realce-termo";
+import { TextoTruncado } from "@/components/texto-truncado";
 import { corVar, fmtCompacto, fmtPct, fmtPreco } from "@/components/cripto/formatos-cripto";
 import { CelulaVariacao, useDirecaoVariacoes } from "@/components/cripto/variacao-cripto";
 import { ehStablecoin, type LinhaCripto } from "@/lib/cripto-base";
@@ -167,7 +168,7 @@ export function TabelaCripto({
         className="w-full overflow-x-auto overscroll-x-contain scroll-smooth [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] focus:outline-none [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
       >
         <table className="w-full min-w-[880px] table-fixed border-separate border-spacing-0 text-sm">
-        <thead className="sticky top-0 z-30 text-[0.68rem] tracking-[0.08em] text-muted-foreground uppercase">
+        <thead className="t-label sticky top-0 z-30">
           <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted [&>th]:backdrop-blur">
             <Cabecalho
               coluna="rank"
@@ -252,7 +253,9 @@ export function TabelaCripto({
                     ) : null}
                     <div className="min-w-0 flex-1">
                       <p className="flex min-w-0 items-baseline gap-1.5 text-[0.78rem] leading-tight font-semibold sm:text-sm">
-                        <span className="truncate"><RealceTermo texto={l.nome} termo={termoBusca} /></span>
+                        <TextoTruncado as="span" className="truncate" texto={l.nome}>
+                          <RealceTermo texto={l.nome} termo={termoBusca} />
+                        </TextoTruncado>
                         <span className="shrink-0 text-[0.62rem] font-medium tracking-wide text-muted-foreground uppercase sm:text-[0.68rem]">
                           <RealceTermo texto={l.ticker} termo={termoBusca} />
                         </span>

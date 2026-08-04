@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, RefreshCw } from "lucide-react";
 import { BuscaCripto } from "@/components/cripto/busca-cripto";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -157,8 +158,8 @@ export function PainelCripto({
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+      <div className="pilha-secao">
+        <div className="grid grid-cols-2 gap-bloco sm:grid-cols-3 xl:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-[86px] w-full rounded-xl" />
           ))}
@@ -170,7 +171,7 @@ export function PainelCripto({
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="space-y-3">
+      <div className="pilha-secao">
         <ResumoCripto
           linhas={data?.linhas ?? []}
           usdBrl={usdBrl}
@@ -185,7 +186,7 @@ export function PainelCripto({
         </div>
 
 
-        <div className={`panel rounded-xl p-3 ${mostrarFiltros ? "" : "hidden lg:block"}`}>
+        <div className={`panel rounded-xl p-cartao ${mostrarFiltros ? "" : "hidden lg:block"}`}>
           <FiltrosCripto
             categorias={categorias}
             alternarCategoria={(c) =>
@@ -211,10 +212,10 @@ export function PainelCripto({
           {/* Cabeçalho da grade: título + contagem, busca e ações */}
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2.5 sm:px-4">
             <div className="flex min-w-0 flex-1 items-center gap-2">
-              <h2 className="truncate text-sm font-semibold tracking-tight sm:text-base">
+              <TextoTruncado as="p" className="t-card-title truncate">
                 Ranking de criptomoedas
-              </h2>
-              <span className="shrink-0 rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[0.68rem] font-semibold tabular-nums text-muted-foreground">
+              </TextoTruncado>
+              <span className="t-num-sm shrink-0 rounded-full border border-border bg-muted/50 px-2 py-0.5 font-semibold text-muted-foreground">
                 {linhas.length} moeda{linhas.length === 1 ? "" : "s"}
               </span>
             </div>
@@ -377,7 +378,7 @@ export function PainelCripto({
 
         </div>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="t-caption">
           Fonte: {data?.fonte ?? "CoinGecko"} · mercado cripto aberto 24 horas por dia, 7 dias por
           semana. Valores em reais convertidos pelo dólar comercial.
         </p>
