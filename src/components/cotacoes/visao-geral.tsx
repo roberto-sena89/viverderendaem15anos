@@ -158,8 +158,6 @@ function Termometro({ data }: { data: PanoramaMercado }) {
       </div>
     </section>
 
-      </div>
-    </section>
   );
 }
 
