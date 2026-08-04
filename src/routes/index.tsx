@@ -359,18 +359,21 @@ function HomePage() {
             </ul>
           </section>
 
-          <aside className="border-primary/30 from-primary/20 to-card relative overflow-hidden rounded-3xl border bg-gradient-to-b p-8">
-            <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">Comece hoje</p>
-            <p className="font-hero mt-4 text-3xl font-extrabold tracking-tight">R$ 0</p>
-            <p className="text-muted-foreground mt-3 text-sm leading-relaxed text-pretty">
-              Crie sua conta e controle carteira, aportes e dividendos sem custo.
-            </p>
-            <Button asChild className="mt-6 w-full rounded-xl font-bold">
+          <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 md:col-span-3 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">Comece hoje</p>
+              <p className="font-hero mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">R$ 0</p>
+              <p className="text-muted-foreground mt-3 max-w-md text-sm leading-relaxed text-pretty">
+                Crie sua conta e controle carteira, aportes e dividendos sem custo.
+              </p>
+            </div>
+            <Button asChild size="lg" className="w-full rounded-xl px-8 font-bold md:w-auto">
               <Link to="/auth">
                 Criar conta <ArrowRight className="size-4" />
               </Link>
             </Button>
           </aside>
+
         </section>
 
         <section id="faq" className="mx-auto mt-16 max-w-3xl sm:mt-24">
