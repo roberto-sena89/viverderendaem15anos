@@ -209,7 +209,7 @@ function HomePage() {
 
       <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6">
         <div className="border-border/60 bg-background/70 mx-auto flex w-full max-w-3xl items-center justify-between gap-3 rounded-full border py-2 pr-2 pl-2 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl">
-          <Link to="/" className="flex min-w-0 items-center gap-2.5 rounded-full pr-3">
+          <Link to="/" aria-label="Viver de Renda em 15 Anos — página inicial" className="flex min-w-0 items-center gap-2.5 rounded-full pr-3">
             <img
               src={logoIcone}
               alt="Logo Viver de Renda em 15 Anos"
@@ -262,7 +262,7 @@ function HomePage() {
           </span>
 
           <h1 className="font-hero mx-auto mt-8 max-w-4xl text-[clamp(2.3rem,7vw,4.4rem)] leading-[1.05] font-extrabold tracking-tighter text-balance">
-            Organize a sua carteira e descubra em quantos anos você{" "}
+            Viver de Renda em 15 Anos: organize sua carteira e descubra em quantos anos você{" "}
             <span className="text-gradient-brand">vive de renda</span>
           </h1>
 
