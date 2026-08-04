@@ -80,40 +80,39 @@ export function ModalDetalhePanorama({
 
   return (
     <Dialog open={aberto} onOpenChange={(v) => !v && aoFechar()}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto p-cartao sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex flex-wrap items-center gap-2 text-left">
-            <span className="font-display text-xl">{linha.ticker}</span>
+          <DialogTitle className="flex min-w-0 flex-wrap items-center gap-2 text-left">
+            <span className="t-h3 min-w-0 truncate">{linha.ticker}</span>
             {rotuloCategoria ? (
-              <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[0.65rem] font-semibold tracking-[0.1em] text-primary uppercase">
+              <span className="t-label shrink-0 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-primary">
                 {rotuloCategoria}
               </span>
             ) : null}
           </DialogTitle>
-          <DialogDescription className="text-left">{linha.nome}</DialogDescription>
+          <DialogDescription className="t-body-sm texto-seguro text-left">
+            {linha.nome}
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="pilha-secao">
           {/* preço + variações */}
-          <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-wrap items-end justify-between gap-bloco">
             <div className="min-w-0">
-              <p className="text-[0.68rem] tracking-[0.14em] text-muted-foreground uppercase">
-                Cotação atual
-              </p>
-              <p className="font-display text-3xl tabular-nums">{linha.valor}</p>
-              <p className={`text-sm tabular-nums ${corVar(linha.variacao)}`}>
+              <p className="t-label">Cotação atual</p>
+              <p className="t-metric truncate">{linha.valor}</p>
+              <p className={`t-num ${corVar(linha.variacao)}`}>
                 {fmtPercent(linha.variacao)} no dia
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-[0.68rem] tracking-[0.14em] text-muted-foreground uppercase">
-                Variação em {periodo}
-              </p>
-              <p className={`font-display text-2xl tabular-nums ${corVar(variacaoPeriodo)}`}>
+            <div className="min-w-0 text-right">
+              <p className="t-label">Variação em {periodo}</p>
+              <p className={`t-metric-sm truncate ${corVar(variacaoPeriodo)}`}>
                 {fmtPercent(variacaoPeriodo)}
               </p>
             </div>
           </div>
+
 
           {/* seletor de período */}
           {simbolo ? (
