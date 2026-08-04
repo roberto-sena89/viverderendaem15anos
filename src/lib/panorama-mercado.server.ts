@@ -121,6 +121,12 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
   const { buscarCommodities } = await import("@/lib/commodities.server");
   const { gradeCriptoComCache } = await import("@/lib/cripto.server");
   const { gradeEtfsComCache } = await import("@/lib/etfs.server");
+  const { INDICES: DEFS_INDICES } = await import("@/lib/indices-base");
+  const { COMMODITIES: DEFS_COMMODITIES } = await import("@/lib/commodities-base");
+  const simboloIndice = (codigo: string) =>
+    DEFS_INDICES.find((d) => d.codigo === codigo)?.simbolos?.[0] ?? null;
+  const simboloCommodity = (codigo: string) =>
+    DEFS_COMMODITIES.find((d) => d.codigo === codigo)?.simbolos?.[0] ?? null;
 
   const [indicesGrade, acoes, fiis, cripto, etfs, indices, tesouro, commodities] = await Promise.all([
     seguro(() => gradeComCache("indices")),
