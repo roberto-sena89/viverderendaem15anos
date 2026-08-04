@@ -8,6 +8,7 @@ import { Panel, TickerMark } from "@/components/panel";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { panoramaMercado } from "@/lib/market.functions";
 import type { ItemVariacao, PeriodoPanorama } from "@/lib/market.server";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 
 const PERIODOS: PeriodoPanorama[] = ["1D", "7D", "30D", "6M", "1A", "5A"];
@@ -45,7 +46,7 @@ function ListaVariacao({
           ))}
         </div>
       ) : itens.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Sem dados no momento.</p>
+        <EstadoVazio compacto className="border-0" titulo="Sem dados no momento" />
       ) : (
         <ul className="space-y-1">
           {itens.map((item) => (

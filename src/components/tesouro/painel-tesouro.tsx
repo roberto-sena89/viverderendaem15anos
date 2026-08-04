@@ -14,6 +14,7 @@ import { INDEXADORES, faixaPrazo, type IndexadorTitulo, type LinhaTesouro } from
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { SkeletonLinhasGrade } from "@/components/skeleton-grade";
 
 type Ordem = "vencimento" | "maiorTaxa" | "menorPrazo" | "menorMinimo";
 type Prazo = "todos" | "curto" | "medio" | "longo";
@@ -160,11 +161,7 @@ export function PainelTesouro({
         </div>
 
         {isLoading ? (
-          <div className="pilha-bloco">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-12 w-full rounded-xl" />
-            ))}
-          </div>
+          <SkeletonLinhasGrade quantidade={8} colunas={4} />
         ) : (
           <TabelaTesouro
             linhas={filtradas}
