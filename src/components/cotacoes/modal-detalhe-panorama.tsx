@@ -95,7 +95,7 @@ export function ModalDetalhePanorama({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="container-panorama pilha-secao px-0">
+        <div className="pilha-secao">
           {/* preço + variações */}
           <div className="flex flex-wrap items-end justify-between gap-bloco">
             <div className="min-w-0">
