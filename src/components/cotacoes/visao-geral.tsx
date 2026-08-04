@@ -139,8 +139,12 @@ function Termometro({ data }: { data: PanoramaMercado }) {
               key={l.ticker}
               className="min-w-0 rounded-xl border border-border/60 bg-background/40 p-bloco"
             >
-              <p className="t-label truncate">{l.ticker}</p>
-              <p className="t-num mt-0.5 truncate font-display">{l.valor}</p>
+              <TextoTruncado as="p" className="t-label truncate">
+                {l.ticker}
+              </TextoTruncado>
+              <TextoTruncado as="p" className="t-num mt-0.5 truncate font-display">
+                {l.valor}
+              </TextoTruncado>
               <div className="mt-1 flex items-end justify-between gap-2">
                 <span className={`t-num-sm truncate ${corVar(l.variacao)}`}>
                   {fmtPercent(l.variacao)}
