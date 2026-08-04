@@ -333,7 +333,7 @@ function AuthPage() {
             Continuar com Google
           </Button>
 
-          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground sm:my-6">
+          <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground sm:my-7">
             <span className="h-px flex-1 bg-border" />ou<span className="h-px flex-1 bg-border" />
           </div>
 
