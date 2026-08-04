@@ -28,6 +28,9 @@ export const Route = createFileRoute("/verificar-email")({
     ],
     links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/verificar-email" }],
   }),
+  component: VerifyEmailPage,
+});
+
 const COOLDOWN_SEGUNDOS = 60;
 const MAX_REENVIOS = 5;
 
