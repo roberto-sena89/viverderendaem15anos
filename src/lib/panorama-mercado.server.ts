@@ -128,10 +128,14 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
   ]);
 
   /* --- faixa superior de índices --- */
+  const ehIndice = (t: string) => !/USD|BRL|BTC|ETH|EUR/i.test(t);
   const faixaIndices = (indicesGrade?.linhas ?? []).slice(0, 6).map((l) => ({
     ticker: l.ticker,
     nome: l.nome,
-    valor: moeda(l.preco, l.moeda === "USD" ? "USD" : "BRL"),
+    valor:
+      l.preco !== null && ehIndice(l.ticker)
+        ? `${nf(l.preco, 0)} pts`
+        : moeda(l.preco, l.moeda === "USD" ? "USD" : "BRL"),
     variacao: l.variacaoPercent,
     spark: l.spark ?? [],
   }));

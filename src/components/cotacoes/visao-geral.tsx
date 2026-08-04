@@ -124,7 +124,7 @@ function Termometro({ data }: { data: PanoramaMercado }) {
               <p className="truncate text-[0.68rem] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
                 {l.ticker}
               </p>
-              <p className="mt-0.5 truncate font-display text-base tabular-nums">{l.valor}</p>
+              <p className="mt-0.5 truncate font-display text-[0.95rem] tabular-nums">{l.valor}</p>
               <div className="mt-1 flex items-end justify-between gap-2">
                 <span className={`text-[0.7rem] tabular-nums ${corVar(l.variacao)}`}>
                   {fmtPercent(l.variacao)}
