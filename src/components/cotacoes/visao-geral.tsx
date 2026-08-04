@@ -13,6 +13,9 @@ import {
   type ResumoCategoria,
 } from "@/lib/panorama-mercado.functions";
 
+/** Abre a aba do terminal, opcionalmente já filtrada por um ticker. */
+export type AbrirAba = (id: string, filtro?: string) => void;
+
 const ICONE_ABA = Object.fromEntries(ABAS_COTACOES.map((a) => [a.id, a.icone]));
 
 export function VisaoGeralMercado({
@@ -20,7 +23,7 @@ export function VisaoGeralMercado({
   aoAbrirAba,
 }: {
   intervaloMs: number;
-  aoAbrirAba?: (id: string) => void;
+  aoAbrirAba?: AbrirAba;
 }) {
   const buscar = useServerFn(panoramaMercado);
 
@@ -63,7 +66,7 @@ export function VisaoGeralMercado({
           bodyClassName="p-0"
           action={<TrendingUp className="size-4 text-positive" aria-hidden />}
         >
-          <ListaCompacta linhas={data.altas} />
+          <ListaCompacta linhas={data.altas} aoAbrirAba={aoAbrirAba} />
         </Panel>
         <Panel
           title="Maiores baixas do dia"
@@ -71,7 +74,7 @@ export function VisaoGeralMercado({
           bodyClassName="p-0"
           action={<TrendingDown className="size-4 text-negative" aria-hidden />}
         >
-          <ListaCompacta linhas={data.baixas} />
+          <ListaCompacta linhas={data.baixas} aoAbrirAba={aoAbrirAba} />
         </Panel>
       </div>
     </div>
