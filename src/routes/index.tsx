@@ -262,7 +262,7 @@ function HomePage() {
           </span>
 
           <h1 className="font-hero mx-auto mt-8 max-w-4xl text-[clamp(2.3rem,7vw,4.4rem)] leading-[1.05] font-extrabold tracking-tighter text-balance">
-            Organize a sua carteira e descubra em quantos anos você{" "}
+            Viver de Renda em 15 Anos: organize sua carteira e descubra em quantos anos você{" "}
             <span className="text-gradient-brand">vive de renda</span>
           </h1>
 
