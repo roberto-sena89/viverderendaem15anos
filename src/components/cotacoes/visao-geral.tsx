@@ -13,6 +13,9 @@ import {
   type ResumoCategoria,
 } from "@/lib/panorama-mercado.functions";
 
+/** Abre a aba do terminal, opcionalmente já filtrada por um ticker. */
+export type AbrirAba = (id: string, filtro?: string) => void;
+
 const ICONE_ABA = Object.fromEntries(ABAS_COTACOES.map((a) => [a.id, a.icone]));
 
 export function VisaoGeralMercado({
@@ -20,7 +23,7 @@ export function VisaoGeralMercado({
   aoAbrirAba,
 }: {
   intervaloMs: number;
-  aoAbrirAba?: (id: string) => void;
+  aoAbrirAba?: AbrirAba;
 }) {
   const buscar = useServerFn(panoramaMercado);
 
@@ -63,7 +66,7 @@ export function VisaoGeralMercado({
           bodyClassName="p-0"
           action={<TrendingUp className="size-4 text-positive" aria-hidden />}
         >
-          <ListaCompacta linhas={data.altas} />
+          <ListaCompacta linhas={data.altas} aoAbrirAba={aoAbrirAba} />
         </Panel>
         <Panel
           title="Maiores baixas do dia"
@@ -71,7 +74,7 @@ export function VisaoGeralMercado({
           bodyClassName="p-0"
           action={<TrendingDown className="size-4 text-negative" aria-hidden />}
         >
-          <ListaCompacta linhas={data.baixas} />
+          <ListaCompacta linhas={data.baixas} aoAbrirAba={aoAbrirAba} />
         </Panel>
       </div>
     </div>
@@ -151,28 +154,34 @@ function CartaoCategoria({
   aoAbrirAba,
 }: {
   resumo: ResumoCategoria;
-  aoAbrirAba?: (id: string) => void;
+  aoAbrirAba?: AbrirAba;
 }) {
   const Icone = ICONE_ABA[resumo.id];
   const clicavel = Boolean(aoAbrirAba);
 
-  const conteudo = (
-    <>
-      <div className="flex items-start gap-3">
+  return (
+    <div className="panel group flex h-full flex-col p-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
+      <button
+        type="button"
+        disabled={!clicavel}
+        onClick={() => aoAbrirAba?.(resumo.id)}
+        aria-label={`Abrir aba ${resumo.rotulo}`}
+        className="flex items-start gap-3 rounded-lg text-left focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none disabled:cursor-default"
+      >
         <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-primary/25 bg-primary/10 text-primary">
           {Icone ? <Icone className="size-4" aria-hidden /> : null}
         </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">{resumo.rotulo}</p>
-          <p className="truncate text-xs text-muted-foreground">{resumo.legenda}</p>
-        </div>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold">{resumo.rotulo}</span>
+          <span className="block truncate text-xs text-muted-foreground">{resumo.legenda}</span>
+        </span>
         {clicavel ? (
           <ArrowUpRight
             className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
             aria-hidden
           />
         ) : null}
-      </div>
+      </button>
 
       {resumo.indisponivel ? (
         <p className="mt-4 text-sm text-muted-foreground">Sem dados disponíveis no momento.</p>
@@ -222,72 +231,106 @@ function CartaoCategoria({
           ) : null}
 
           {resumo.altas.length ? (
-            <ul className="mt-3 space-y-1.5 border-t border-border/60 pt-3">
+            <ul className="mt-3 space-y-1 border-t border-border/60 pt-3">
               {resumo.altas.map((l) => (
-                <li key={`${resumo.id}-${l.ticker}`} className="flex items-center gap-2">
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-medium">{l.ticker}</span>
-                    <span className="block truncate text-[0.68rem] text-muted-foreground">
-                      {l.nome}
-                    </span>
-                  </span>
-                  <span className="shrink-0 text-right">
-                    <span className="block text-xs tabular-nums">{l.valor}</span>
-                    {l.variacao !== null ? (
-                      <span className={`block text-[0.68rem] tabular-nums ${corVar(l.variacao)}`}>
-                        {fmtPercent(l.variacao)}
-                      </span>
-                    ) : null}
-                  </span>
+                <li key={`${resumo.id}-${l.ticker}`}>
+                  <LinhaClicavel linha={l} aoAbrirAba={aoAbrirAba} compacta />
                 </li>
               ))}
             </ul>
           ) : null}
+
+          {clicavel ? (
+            <button
+              type="button"
+              onClick={() => aoAbrirAba?.(resumo.id)}
+              className="mt-3 self-start text-xs font-medium text-primary hover:underline focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+            >
+              Ver grade completa de {resumo.rotulo} →
+            </button>
+          ) : null}
         </>
       )}
+    </div>
+  );
+}
+
+/* ------------------------------- listas ---------------------------------- */
+
+function LinhaClicavel({
+  linha,
+  aoAbrirAba,
+  compacta = false,
+}: {
+  linha: LinhaResumo;
+  aoAbrirAba?: AbrirAba;
+  compacta?: boolean;
+}) {
+  const conteudo = (
+    <>
+      <span className="min-w-0 flex-1">
+        <span className={`block truncate font-medium ${compacta ? "text-xs" : "text-sm"}`}>
+          {linha.ticker}
+        </span>
+        <span
+          className={`block truncate text-muted-foreground ${compacta ? "text-[0.68rem]" : "text-xs"}`}
+        >
+          {linha.nome}
+        </span>
+      </span>
+      {compacta ? null : (
+        <Sparkline
+          serie={linha.spark}
+          positivo={(linha.variacao ?? 0) >= 0}
+          largura={56}
+          altura={22}
+        />
+      )}
+      <span className="shrink-0 text-right">
+        <span className={`block tabular-nums ${compacta ? "text-xs" : "text-sm"}`}>
+          {linha.valor}
+        </span>
+        {linha.variacao !== null ? (
+          <span
+            className={`block tabular-nums ${compacta ? "text-[0.68rem]" : "text-xs"} ${corVar(linha.variacao)}`}
+          >
+            {fmtPercent(linha.variacao)}
+          </span>
+        ) : null}
+      </span>
     </>
   );
 
-  const classe =
-    "panel group flex h-full flex-col p-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg";
+  const base = compacta
+    ? "flex w-full items-center gap-2 rounded-md px-1 py-1 text-left"
+    : "flex w-full items-center gap-3 px-4 py-2 text-left";
 
-  if (!clicavel) return <div className={classe}>{conteudo}</div>;
+  if (!aoAbrirAba) return <div className={base}>{conteudo}</div>;
 
   return (
     <button
       type="button"
-      onClick={() => aoAbrirAba?.(resumo.id)}
-      aria-label={`Abrir aba ${resumo.rotulo}`}
-      className={`${classe} focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`}
+      onClick={() => aoAbrirAba(linha.destino, linha.ticker)}
+      aria-label={`Abrir ${linha.ticker} na aba correspondente`}
+      className={`${base} transition-colors hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`}
     >
       {conteudo}
     </button>
   );
 }
 
-/* ------------------------------- listas ---------------------------------- */
-
-function ListaCompacta({ linhas }: { linhas: LinhaResumo[] }) {
+function ListaCompacta({ linhas, aoAbrirAba }: { linhas: LinhaResumo[]; aoAbrirAba?: AbrirAba }) {
   if (linhas.length === 0) {
     return <p className="p-4 text-sm text-muted-foreground">Sem dados disponíveis no momento.</p>;
   }
   return (
     <ul className="divide-y divide-border/60">
       {linhas.map((l) => (
-        <li key={l.ticker} className="flex items-center gap-3 px-4 py-2">
-          <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-medium">{l.ticker}</span>
-            <span className="block truncate text-xs text-muted-foreground">{l.nome}</span>
-          </span>
-          <Sparkline serie={l.spark} positivo={(l.variacao ?? 0) >= 0} largura={56} altura={22} />
-          <span className="shrink-0 text-right">
-            <span className="block text-sm tabular-nums">{l.valor}</span>
-            <span className={`block text-xs tabular-nums ${corVar(l.variacao)}`}>
-              {fmtPercent(l.variacao)}
-            </span>
-          </span>
+        <li key={`${l.destino}-${l.ticker}`}>
+          <LinhaClicavel linha={l} aoAbrirAba={aoAbrirAba} />
         </li>
       ))}
     </ul>
   );
 }
+

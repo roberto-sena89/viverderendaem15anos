@@ -69,6 +69,12 @@ function Cotacoes() {
     return () => window.clearInterval(id);
   }, []);
 
+  const abrirAba = useCallback((id: string, filtro?: string) => {
+    setAba(id);
+    setBusca(filtro ?? "");
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const aoAtualizar = useCallback((quando: number, incompleto: boolean) => {
     setUltima(quando);
     setParcial(incompleto);
@@ -152,7 +158,7 @@ function Cotacoes() {
 
 
           <TabsContent value="geral" className="mt-4">
-            <VisaoGeralMercado intervaloMs={intervalo} aoAbrirAba={setAba} />
+            <VisaoGeralMercado intervaloMs={intervalo} aoAbrirAba={abrirAba} />
           </TabsContent>
 
           <TabsContent value="fiis" className="mt-4">
