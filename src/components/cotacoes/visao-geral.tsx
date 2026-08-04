@@ -329,8 +329,8 @@ function LinhaClicavel({
 
 
   const base = compacta
-    ? "flex w-full items-center gap-2 rounded-md px-1 py-1 text-left"
-    : "flex w-full items-center gap-3 px-4 py-2 text-left";
+    ? "alvo-toque-linha flex w-full items-center gap-2 rounded-md px-1 py-1 text-left"
+    : "alvo-toque-linha flex w-full items-center gap-3 px-4 py-2 text-left";
 
   if (!aoDetalhar) return <div className={base}>{conteudo}</div>;
 
@@ -339,7 +339,7 @@ function LinhaClicavel({
       type="button"
       onClick={() => aoDetalhar(linha)}
       aria-label={`Ver detalhes de ${linha.ticker}`}
-      className={`${base} transition-colors hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`}
+      className={`${base} foco-visivel transition-colors hover:bg-primary/10`}
     >
       {conteudo}
     </button>
