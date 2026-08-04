@@ -7,6 +7,8 @@
  * multiplica chamadas externas: ele apenas lê e resume o que está em cache.
  */
 
+export type MetricaResumo = { rotulo: string; valor: string; variacao?: number | null };
+
 export type LinhaResumo = {
   ticker: string;
   nome: string;
@@ -15,9 +17,11 @@ export type LinhaResumo = {
   spark: number[];
   /** Aba do terminal que deve ser aberta ao clicar na linha. */
   destino: string;
+  /** Símbolo no provedor de histórico (Yahoo). Null quando não há série. */
+  simbolo: string | null;
+  /** Métricas já conhecidas da categoria, exibidas no modal de detalhe. */
+  detalhes: MetricaResumo[];
 };
-
-export type MetricaResumo = { rotulo: string; valor: string; variacao?: number | null };
 
 export type ResumoCategoria = {
   /** Corresponde ao id da aba em ABAS_COTACOES. */
