@@ -80,7 +80,7 @@ export function ModalDetalhePanorama({
 
   return (
     <Dialog open={aberto} onOpenChange={(v) => !v && aoFechar()}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto p-cartao sm:max-w-2xl">
+      <DialogContent className="max-h-[90dvh] w-[calc(100vw-2rem)] max-w-[42rem] overflow-y-auto p-cartao sm:max-w-[42rem]">
         <DialogHeader>
           <DialogTitle className="flex min-w-0 flex-wrap items-center gap-2 text-left">
             <span className="t-h3 min-w-0 truncate">{linha.ticker}</span>
@@ -171,7 +171,7 @@ export function ModalDetalhePanorama({
           {data?.janelas?.length ? (
             <div>
               <p className="t-card-title mb-2 text-muted-foreground">Performance histórica</p>
-              <dl className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+              <dl className="grade-metricas">
                 {data.janelas.map((j) => (
                   <div key={j.rotulo} className="rounded-lg bg-muted/40 px-2 py-1.5 text-center">
                     <dt className="t-label truncate">
@@ -188,7 +188,7 @@ export function ModalDetalhePanorama({
 
           {/* estatísticas de risco/retorno */}
           {data ? (
-            <dl className="grid grid-cols-2 gap-bloco sm:grid-cols-4">
+            <dl className="grade-metricas">
               <Info rotulo="Retorno a.a. (5 anos)" valor={fmtPercent(data.estatisticas.retornoAnualizadoPercent)} />
               <Info rotulo="Volatilidade anual" valor={fmtPercent(data.estatisticas.volatilidadeAnualPercent)} />
               <Info rotulo="Maior queda" valor={fmtPercent(data.estatisticas.drawdownMaximoPercent)} />
@@ -207,7 +207,7 @@ export function ModalDetalhePanorama({
           {linha.detalhes.length ? (
             <div>
               <p className="t-card-title mb-2 text-muted-foreground">Indicadores</p>
-              <dl className="grid grid-cols-2 gap-bloco sm:grid-cols-3">
+              <dl className="grade-metricas">
                 {linha.detalhes.slice(0, 6).map((m) => (
                   <Info key={m.rotulo} rotulo={m.rotulo} valor={m.valor} />
                 ))}

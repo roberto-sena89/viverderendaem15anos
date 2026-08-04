@@ -1112,3 +1112,41 @@ canvas {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
+/* ---------------------------------------------------------------
+ * Grid responsivo do panorama: max-width e margens uniformes para
+ * evitar variação de respiro entre breakpoints e texto respingando.
+ * --------------------------------------------------------------- */
+
+/* Contêiner central de qualquer superfície do panorama (aba ou modal). */
+@utility container-panorama {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: var(--spacing-cartao);
+  min-width: 0;
+}
+
+/* Grade auto-ajustável de cartões: mesma largura mínima em todo breakpoint. */
+@utility grade-panorama {
+  display: grid;
+  gap: var(--spacing-bloco);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  min-width: 0;
+}
+
+/* Grade de painéis largos (listas de altas/baixas). */
+@utility grade-paineis {
+  display: grid;
+  gap: var(--spacing-bloco);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+  min-width: 0;
+}
+
+/* Grade densa de métricas/indicadores dentro de cartões e do modal. */
+@utility grade-metricas {
+  display: grid;
+  gap: var(--spacing-bloco);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr));
+  min-width: 0;
+}
