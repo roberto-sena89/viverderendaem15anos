@@ -1150,3 +1150,36 @@ canvas {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr));
   min-width: 0;
 }
+
+/* ---------------------------------------------------------------
+ * Acessibilidade: foco visível e alvos de toque mínimos (WCAG 2.5.8).
+ * --------------------------------------------------------------- */
+
+/* Anel de foco padrão, sempre visível em qualquer superfície. */
+@utility foco-visivel {
+  &:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-md, 0.5rem);
+  }
+}
+
+/* Alvo de toque confortável: 44x44 em ponteiros grossos (dedo). */
+@utility alvo-toque {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+
+  @media (pointer: fine) {
+    min-height: 2.25rem;
+    min-width: 2.25rem;
+  }
+}
+
+/* Alvo de toque de linha/lista: altura mínima, largura livre. */
+@utility alvo-toque-linha {
+  min-height: 2.75rem;
+
+  @media (pointer: fine) {
+    min-height: 2rem;
+  }
+}
