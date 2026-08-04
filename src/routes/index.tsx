@@ -41,6 +41,7 @@ export const Route = createFileRoute("/")({
         name: "twitter:image:alt",
         content: "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
       },
+    ],
     links: [
       { rel: "canonical", href: URL },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
