@@ -56,6 +56,11 @@ export const Route = createFileRoute("/")({
               "@id": `${URL}#organization`,
               name: "Viver de Renda em 15 Anos",
               url: URL,
+              logo: {
+                "@type": "ImageObject",
+                url: `https://viverderendaem15anos.lovable.app${logoIcone}`,
+              },
+              image: OG_IMAGE,
               description:
                 "Plataforma de controle de investimentos, dividendos e planejamento da independência financeira.",
             },
