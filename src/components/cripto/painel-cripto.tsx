@@ -25,6 +25,7 @@ import { gradeCripto } from "@/lib/cripto.functions";
 import type { CategoriaCripto, LinhaCripto } from "@/lib/cripto-base";
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 /** Cripto negocia 24/7: mantemos uma atualização mínima mesmo no modo manual. */
 const INTERVALO_MINIMO = 30_000;
@@ -279,9 +280,10 @@ export function PainelCripto({
 
           <div className="min-w-0">
             {linhas.length === 0 ? (
-              <p className="p-6 text-sm text-muted-foreground">
-                Nenhuma criptomoeda corresponde aos filtros aplicados.
-              </p>
+              <EstadoVazio
+                titulo="Nenhuma criptomoeda encontrada"
+                descricao="Nenhuma moeda corresponde aos filtros aplicados. Tente outro termo de busca ou revise os filtros."
+              />
             ) : (
               <>
                 <div className="hidden md:block">

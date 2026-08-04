@@ -39,6 +39,7 @@ import { useSalvarAtivo } from "@/lib/data";
 import { Input } from "@/components/ui/input";
 import { formatarNumeroBR, numeroBR } from "@/lib/formato-numero";
 import { toast } from "sonner";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 type ColunaId =
   | "quantidade"
@@ -311,9 +312,11 @@ export function CarteiraGrupos({
 
   if (grupos.length === 0) {
     return (
-      <div className="surface-card p-12 text-center text-sm text-muted-foreground">
-        Nenhum ativo cadastrado ainda. Registre um lançamento para começar a acompanhar sua carteira.
-      </div>
+      <EstadoVazio
+        className="surface-card"
+        titulo="Sua carteira está vazia"
+        descricao="Nenhum ativo cadastrado ainda. Registre um lançamento para começar a acompanhar sua carteira."
+      />
     );
   }
 

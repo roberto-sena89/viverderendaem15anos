@@ -57,6 +57,7 @@ import { useAtivos } from "@/lib/data";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { mesclarPrecosEtfs, useEtfsAoVivo } from "@/lib/etfs-tempo-real";
 import { usePrecosBrapiEtfs } from "@/lib/etfs-brapi";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 const CHAVE_COLUNAS = "etfs:colunas";
 const COLUNAS_PADRAO: ColunaEtfId[] = [
@@ -494,13 +495,16 @@ export function PainelEtfs({ intervaloMs, busca }: Props) {
           />
 
           {!grade.isLoading && !visiveis.length ? (
-            <p className="flex flex-col items-center gap-2 p-10 text-center text-sm text-muted-foreground">
-              <LineChart className="size-6" aria-hidden />
-              Nenhum ETF corresponde aos filtros aplicados.
-              <Button variant="outline" size="sm" onClick={limpar}>
-                Limpar filtros
-              </Button>
-            </p>
+            <EstadoVazio
+              icone={LineChart}
+              titulo="Nenhum ETF encontrado"
+              descricao="Nenhum ETF corresponde aos filtros aplicados. Ajuste os critérios ou limpe os filtros."
+              acao={
+                <Button variant="outline" size="sm" onClick={limpar}>
+                  Limpar filtros
+                </Button>
+              }
+            />
           ) : null}
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-3 text-sm">

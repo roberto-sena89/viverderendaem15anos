@@ -48,6 +48,7 @@ import { useAtivos } from "@/lib/data";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { mesclarPrecos, useFiisAoVivo } from "@/lib/fiis-tempo-real";
 import { useValorAtrasado } from "@/lib/fiis-virtualizacao";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 const CHAVE_COLUNAS = "fiis:colunas";
 const COLUNAS_PADRAO: ColunaId[] = ["patrimonio", "pvp", "dy12", "liquidez", "tipo", "var12m", "segmento"];
@@ -481,13 +482,16 @@ export function PainelFiis({ intervaloMs, busca }: Props) {
         />
 
         {!grade.isLoading && !visiveis.length ? (
-          <p className="flex flex-col items-center gap-2 p-10 text-center text-sm text-muted-foreground">
-            <Building2 className="size-6" aria-hidden />
-            Nenhum fundo corresponde aos filtros aplicados.
-            <Button variant="outline" size="sm" onClick={limpar}>
-              Limpar filtros
-            </Button>
-          </p>
+          <EstadoVazio
+            icone={Building2}
+            titulo="Nenhum FII encontrado"
+            descricao="Nenhum fundo corresponde aos filtros aplicados. Ajuste os critérios ou limpe os filtros."
+            acao={
+              <Button variant="outline" size="sm" onClick={limpar}>
+                Limpar filtros
+              </Button>
+            }
+          />
         ) : null}
 
         <div className="flex flex-wrap items-center justify-between gap-bloco border-t border-border p-bloco text-sm">

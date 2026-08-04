@@ -19,6 +19,8 @@ import {
 } from "@/components/cotacoes/formatos";
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { gradeMercado, type CategoriaMercado, type LinhaCotacao } from "@/lib/grade-mercado.functions";
+import { EstadoVazio } from "@/components/estado-vazio";
+import { SkeletonLinhasGrade } from "@/components/skeleton-grade";
 
 type Ordem = { coluna: "ticker" | "preco" | "variacaoPercent" | "volume"; desc: boolean };
 
@@ -117,11 +119,7 @@ export function GradeCotacoes({
 
   if (isLoading) {
     return (
-      <div className="pilha-bloco p-cartao">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="h-11 w-full" />
-        ))}
-      </div>
+      <SkeletonLinhasGrade quantidade={8} colunas={4} />
     );
   }
 
@@ -166,9 +164,10 @@ export function GradeCotacoes({
       </div>
 
       {linhas.length === 0 ? (
-        <p className="t-body-sm p-cartao text-muted-foreground">
-          Nenhum ativo corresponde aos filtros aplicados.
-        </p>
+        <EstadoVazio
+          titulo="Nenhum ativo encontrado"
+          descricao="Nenhum ativo corresponde aos filtros aplicados."
+        />
       ) : (
         <>
           {/* Desktop / tablet */}
