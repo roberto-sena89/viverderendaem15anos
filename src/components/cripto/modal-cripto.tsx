@@ -35,9 +35,9 @@ const PERIODOS = [
 
 function Item({ rotulo, valor, cor }: { rotulo: string; valor: string; cor?: string }) {
   return (
-    <div className="rounded-lg border border-border bg-muted/30 p-2.5">
-      <p className="text-[0.68rem] tracking-wide text-muted-foreground uppercase">{rotulo}</p>
-      <p className={`mt-0.5 text-sm font-semibold tabular-nums ${cor ?? ""}`}>{valor}</p>
+    <div className="rounded-lg border border-border bg-muted/30 p-bloco">
+      <p className="t-label">{rotulo}</p>
+      <p className={`t-num mt-0.5 font-semibold ${cor ?? ""}`}>{valor}</p>
     </div>
   );
 }
@@ -105,7 +105,7 @@ export function ModalCripto({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="pilha-secao">
           <div className="flex flex-wrap items-end gap-x-4 gap-y-1">
             <p className="font-display text-3xl tabular-nums">{fmtPreco(brl, "R$")}</p>
             <p className="text-sm text-muted-foreground tabular-nums">{fmtPreco(linha.precoUsd, "US$")}</p>
@@ -185,7 +185,7 @@ export function ModalCripto({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-bloco sm:grid-cols-4">
             <Item rotulo="Capitalização" valor={fmtCompacto(linha.capitalizacao)} />
             <Item rotulo="Volume 24h" valor={fmtCompacto(linha.volume24h)} />
             <Item rotulo="Máxima 24h" valor={fmtPreco(linha.maximo24h, "US$")} />
@@ -197,9 +197,9 @@ export function ModalCripto({
           </div>
 
           {posicao ? (
-            <div className="rounded-lg border border-primary/30 bg-primary/[0.06] p-3">
-              <p className="text-sm font-medium">Sua posição</p>
-              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="rounded-lg border border-primary/30 bg-primary/[0.06] p-bloco">
+              <p className="t-card-title">Sua posição</p>
+              <div className="mt-bloco grid grid-cols-2 gap-bloco sm:grid-cols-4">
                 <Item rotulo="Quantidade" valor={posicao.quantidade.toLocaleString("pt-BR")} />
                 <Item rotulo="Preço médio" valor={fmtPreco(posicao.precoMedio, "R$")} />
                 <Item
@@ -215,7 +215,7 @@ export function ModalCripto({
             </div>
           ) : null}
 
-          <p className="text-xs text-muted-foreground">
+          <p className="t-caption">
             Criptomoedas são ativos de altíssima volatilidade e negociam 24 horas por dia, inclusive
             fins de semana. Os dados são informativos e não constituem recomendação de investimento.
           </p>

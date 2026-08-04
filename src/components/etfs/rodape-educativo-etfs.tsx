@@ -1,4 +1,5 @@
 import { BookOpen } from "lucide-react";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 const TOPICOS: { titulo: string; texto: string }[] = [
   {
@@ -26,20 +27,20 @@ const TOPICOS: { titulo: string; texto: string }[] = [
 /** Rodapé educativo da grade de ETFs. */
 export function RodapeEducativoEtfs() {
   return (
-    <section className="panel p-4" aria-labelledby="glossario-etfs">
-      <h2 id="glossario-etfs" className="flex items-center gap-2 text-sm font-semibold">
-        <BookOpen className="size-4 text-primary" aria-hidden />
+    <section className="panel p-cartao" aria-labelledby="glossario-etfs">
+      <h2 id="glossario-etfs" className="t-card-title flex items-center gap-2">
+        <BookOpen className="size-4 shrink-0 text-primary" aria-hidden />
         Como interpretar esta grade
       </h2>
-      <dl className="mt-3 grid gap-4 sm:grid-cols-2">
+      <dl className="mt-bloco grid gap-secao sm:grid-cols-2">
         {TOPICOS.map((t) => (
-          <div key={t.titulo}>
-            <dt className="text-sm font-medium">{t.titulo}</dt>
-            <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{t.texto}</dd>
+          <div key={t.titulo} className="min-w-0">
+            <TextoTruncado as="dt" className="text-sm font-medium block">{t.titulo}</TextoTruncado>
+            <dd className="mt-1 t-body-sm leading-relaxed text-muted-foreground">{t.texto}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">
+      <p className="mt-bloco border-t border-border pt-3 t-caption text-muted-foreground">
         Dados de preço em tempo quase real durante o pregão; indicadores fundamentais atualizados
         diariamente. Conteúdo informativo, sem recomendação de compra ou venda.
       </p>

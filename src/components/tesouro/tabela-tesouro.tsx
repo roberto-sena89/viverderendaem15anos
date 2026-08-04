@@ -9,6 +9,7 @@ import {
   type LinhaTesouro,
 } from "@/lib/tesouro-base";
 import { cn } from "@/lib/utils";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 const anos = (v: number) => (v >= 1 ? `${fmtNum(v, 1)} anos` : `${Math.round(v * 12)} meses`);
 
@@ -39,14 +40,14 @@ export function TabelaTesouro({
       {/* Desktop */}
       <div className="hidden overflow-hidden rounded-xl border border-border lg:block">
         <table className="w-full table-fixed text-sm">
-          <thead className="bg-muted/40 text-xs text-muted-foreground">
+          <thead className="bg-muted/40">
             <tr>
-              <th className="w-[34%] px-3 py-2.5 text-left font-medium">Título</th>
-              <th className="w-[16%] px-3 py-2.5 text-right font-medium">Rentabilidade anual</th>
-              <th className="w-[13%] px-3 py-2.5 text-right font-medium">Vencimento</th>
-              <th className="w-[13%] px-3 py-2.5 text-right font-medium">Preço unitário</th>
-              <th className="w-[13%] px-3 py-2.5 text-right font-medium">Mínimo</th>
-              <th className="w-[11%] px-3 py-2.5 text-right font-medium">Estimada</th>
+              <th className="w-[34%] px-3 py-2.5 text-left t-label">Título</th>
+              <th className="w-[16%] px-3 py-2.5 text-right t-label">Rentabilidade anual</th>
+              <th className="w-[13%] px-3 py-2.5 text-right t-label">Vencimento</th>
+              <th className="w-[13%] px-3 py-2.5 text-right t-label">Preço unitário</th>
+              <th className="w-[13%] px-3 py-2.5 text-right t-label">Mínimo</th>
+              <th className="w-[11%] px-3 py-2.5 text-right t-label">Estimada</th>
             </tr>
           </thead>
           <tbody>
@@ -81,7 +82,7 @@ export function TabelaTesouro({
                       >
                         {rotuloIndexador(l.indexador)}
                       </span>
-                      <span className="truncate font-medium">{l.nome}</span>
+                      <TextoTruncado as="span" className="truncate font-medium">{l.nome}</TextoTruncado>
                       {l.jurosSemestrais ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -119,7 +120,7 @@ export function TabelaTesouro({
       </div>
 
       {/* Mobile / tablet */}
-      <div className="grid gap-2 lg:hidden">
+      <div className="grid gap-bloco lg:hidden">
         {linhas.map((l) => {
           const favorito = favoritos.includes(`TD:${l.id}`);
           return (
@@ -127,7 +128,7 @@ export function TabelaTesouro({
               key={l.id}
               type="button"
               onClick={() => aoAbrir(l)}
-              className="rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-muted/40"
+              className="rounded-xl border border-border bg-card p-cartao text-left transition-colors hover:bg-muted/40"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -139,8 +140,8 @@ export function TabelaTesouro({
                   >
                     {rotuloIndexador(l.indexador)}
                   </span>
-                  <p className="mt-1 truncate text-sm font-medium">{l.nome}</p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <TextoTruncado as="p" className="mt-1 truncate text-sm font-medium block">{l.nome}</TextoTruncado>
+                  <p className="t-caption">
                     Vence em {fmtData(l.vencimento)} · {anos(l.anosAteVencimento)}
                   </p>
                 </div>
@@ -157,7 +158,7 @@ export function TabelaTesouro({
                   <Star className={cn("size-4", favorito && "fill-amber-400 text-amber-400")} />
                 </span>
               </div>
-              <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+              <div className="mt-bloco grid grid-cols-3 gap-2 text-xs">
                 <div>
                   <p className="text-muted-foreground">Rentabilidade</p>
                   <p className="font-semibold tabular-nums">{textoTaxa(l)}</p>
@@ -171,7 +172,7 @@ export function TabelaTesouro({
                   <p className="tabular-nums">{fmtBRL(l.investimentoMinimo)}</p>
                 </div>
               </div>
-              <p className="mt-1.5 text-[11px] text-muted-foreground">{defTipo(l.tipo).sigla}</p>
+              <p className="mt-1.5 t-caption">{defTipo(l.tipo).sigla}</p>
             </button>
           );
         })}

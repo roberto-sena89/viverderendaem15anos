@@ -53,7 +53,7 @@ export function ModalCommodity({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="pilha-secao">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="min-w-0">
               <p className="font-display text-3xl tabular-nums">
@@ -86,7 +86,7 @@ export function ModalCommodity({
             {mercado.rotulo}
           </p>
 
-          <div className="panel p-4">
+          <div className="panel p-cartao">
             <p className="panel-title mb-2">Últimos 30 pregões</p>
             <Sparkline
               serie={linha.spark}
@@ -97,19 +97,19 @@ export function ModalCommodity({
             />
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-3">
+          <div className="grid gap-secao sm:grid-cols-3">
             {indicadores.map((i) => (
-              <div key={i.rotulo} className="panel p-3">
-                <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">{i.rotulo}</p>
-                <p className="font-display mt-1 text-sm tabular-nums">{i.valor}</p>
+              <div key={i.rotulo} className="panel p-bloco">
+                <p className="t-label">{i.rotulo}</p>
+                <p className="t-num-sm mt-1 font-display">{i.valor}</p>
               </div>
             ))}
           </div>
 
-          <p className="text-sm text-muted-foreground">{linha.descricao}</p>
+          <p className="t-body-sm text-muted-foreground">{linha.descricao}</p>
 
           {correlacao ? (
-            <p className="text-xs text-muted-foreground">
+            <p className="t-caption">
               Ativos correlacionados na B3: <strong>{correlacao.tickers.join(", ")}</strong> — {correlacao.frase}.
             </p>
           ) : null}

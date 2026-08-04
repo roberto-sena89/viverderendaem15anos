@@ -67,9 +67,9 @@ export function FiltrosEtfs({
   total: number;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="pilha-secao">
       <div>
-        <p className="mb-2 text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
+        <p className="mb-2 t-label">
           Ranking rápido
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -92,7 +92,7 @@ export function FiltrosEtfs({
       </div>
 
       <div>
-        <p className="mb-2 text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
+        <p className="mb-2 t-label">
           Classe de exposição
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -115,9 +115,9 @@ export function FiltrosEtfs({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-secao sm:grid-cols-2 xl:grid-cols-4">
         <label className="space-y-1.5 text-xs">
-          <span className="font-semibold tracking-wide text-muted-foreground uppercase">Mercado</span>
+          <span className="t-label">Mercado</span>
           <Select value={mercado} onValueChange={(v) => aoTrocarMercado(v as MercadoEtf | "todos")}>
             <SelectTrigger className="h-9 text-sm">
               <SelectValue />
@@ -131,7 +131,7 @@ export function FiltrosEtfs({
         </label>
 
         <label className="space-y-1.5 text-xs">
-          <span className="font-semibold tracking-wide text-muted-foreground uppercase">Gestora</span>
+          <span className="t-label">Gestora</span>
           <Select value={gestora} onValueChange={aoTrocarGestora}>
             <SelectTrigger className="h-9 text-sm">
               <SelectValue placeholder="Todas as gestoras" />
@@ -169,7 +169,7 @@ export function FiltrosEtfs({
 
         <div className="space-y-1.5 text-xs sm:col-span-2 xl:col-span-4">
           <div className="flex items-baseline justify-between gap-2">
-            <span className="font-semibold tracking-wide text-muted-foreground uppercase">
+            <span className="t-label">
               Patrimônio mínimo
             </span>
             <span className="tabular-nums">
@@ -229,7 +229,7 @@ function FaixaSlider({
   return (
     <div className="space-y-1.5 text-xs">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="font-semibold tracking-wide text-muted-foreground uppercase">{rotulo}</span>
+        <span className="t-label">{rotulo}</span>
         <span className="tabular-nums">
           {fmt(valor[0])} – {valor[1] >= max ? `${fmt(max)}+` : fmt(valor[1])}
         </span>

@@ -376,7 +376,7 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="space-y-4 pb-20">
+      <div className="pilha-secao pb-20">
         <ResumoAcoes
           ibovespa={grade.data?.ibovespa ?? null}
           maiorAlta={maiorAlta}
@@ -396,7 +396,7 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
           }
           bodyClassName="p-0"
           action={
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-bloco">
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -464,7 +464,7 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
                   </div>
 
                   {/* chips compactos: cabem sem qualquer rolagem */}
-                  <div className="flex flex-col gap-2 px-4 pt-1 pb-4">
+                  <div className="flex flex-col gap-bloco px-4 pt-1 pb-4">
                     {GRUPOS_COLUNA.map((grupo) => (
                       <div key={grupo} className="flex flex-wrap items-center gap-1.5">
                         <span className="w-24 shrink-0 truncate text-[0.65rem] tracking-wide text-muted-foreground uppercase">
@@ -541,7 +541,7 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
             </div>
           }
         >
-          <div className="hidden border-b border-border p-4 lg:block">{painelFiltros}</div>
+          <div className="hidden border-b border-border p-cartao lg:block">{painelFiltros}</div>
 
           <TabelaAcoes
             linhas={visiveis}
@@ -570,7 +570,7 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
             </p>
           ) : null}
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-3 text-sm">
+          <div className="flex flex-wrap items-center justify-between gap-bloco border-t border-border p-bloco text-sm">
             <span className="text-muted-foreground">
               Exibindo{" "}
               <strong className="text-foreground tabular-nums">
@@ -622,7 +622,7 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
         <RodapeEducativoAcoes />
 
         {selecionados.length ? (
-          <div className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[min(560px,calc(100%-2rem))] flex-wrap items-center gap-2 rounded-xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur">
+          <div className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[min(560px,calc(100%-2rem))] flex-wrap items-center gap-bloco rounded-xl border border-border bg-card/95 p-cartao shadow-lg backdrop-blur">
             <Star className="size-4 text-primary" aria-hidden />
             <span className="text-sm">
               <strong className="tabular-nums">{selecionados.length}</strong> selecionadas:{" "}

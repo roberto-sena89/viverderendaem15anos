@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TextoTruncado } from "@/components/texto-truncado";
 import type { LinhaCripto } from "@/lib/cripto-base";
 
 const LIMITE = 8;
@@ -177,8 +178,12 @@ export function BuscaCripto({
                   </span>
                 )}
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-semibold">{l.ticker}</span>
-                  <span className="block truncate text-[0.68rem] text-muted-foreground">{l.nome}</span>
+                  <TextoTruncado as="span" className="t-ticker block" texto={l.ticker} passivo>
+                    {l.ticker}
+                  </TextoTruncado>
+                  <TextoTruncado as="span" className="t-subtexto block" texto={l.nome} passivo>
+                    {l.nome}
+                  </TextoTruncado>
                 </span>
                 {l.rank ? (
                   <span className="shrink-0 text-[0.65rem] tabular-nums text-muted-foreground">#{l.rank}</span>

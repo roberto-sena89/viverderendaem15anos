@@ -9,12 +9,13 @@ import { GradeCotacoes } from "@/components/cotacoes/grade-cotacoes";
 import { corVar, fmtPercent, fmtPreco, fmtVolume } from "@/components/cotacoes/formatos";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { gradeMercado, type CategoriaMercado, type LinhaCotacao } from "@/lib/grade-mercado.functions";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 function Card({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
-    <div className="panel p-3">
-      <p className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">{titulo}</p>
-      <div className="mt-1.5">{children}</div>
+    <div className="panel p-cartao">
+      <p className="t-label">{titulo}</p>
+      <div className="mt-bloco">{children}</div>
     </div>
   );
 }
@@ -32,10 +33,10 @@ function Destaque({
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="min-w-0">
-        <p className="font-display truncate text-base leading-tight">{linha.ticker}</p>
-        <p className="truncate text-xs text-muted-foreground">{fmtPreco(linha.preco, linha.moeda)}</p>
+        <TextoTruncado as="p" className="t-ticker font-display" texto={linha.ticker}>{linha.ticker}</TextoTruncado>
+        <TextoTruncado as="p" className="t-subtexto" texto={fmtPreco(linha.preco, linha.moeda)}>{fmtPreco(linha.preco, linha.moeda)}</TextoTruncado>
       </div>
-      <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold tabular-nums">
+      <span className="t-num inline-flex shrink-0 items-center gap-1 font-semibold">
         {icone}
         {valor}
       </span>
@@ -99,15 +100,15 @@ export function PainelCategoria({
   const baixas = (data?.linhas ?? []).filter((l) => (l.variacaoPercent ?? 0) < 0).length;
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="pilha-secao">
+      <div className="grid gap-secao sm:grid-cols-2 xl:grid-cols-4">
         <Card titulo={`Panorama · ${titulo}`}>
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
-              <p className={`font-display text-xl leading-none tabular-nums ${corVar(media)}`}>
+              <p className={`t-metric-sm ${corVar(media)}`}>
                 {fmtPercent(media)}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground tabular-nums">
+              <p className="t-num-sm mt-1 text-muted-foreground">
                 <span className="text-positive">{altas} em alta</span> ·{" "}
                 <span className="text-negative">{baixas} em baixa</span>
               </p>

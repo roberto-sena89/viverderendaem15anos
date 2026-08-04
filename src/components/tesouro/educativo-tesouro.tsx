@@ -1,5 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { TIPOS_TITULO } from "@/lib/tesouro-base";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 const PERGUNTAS = [
   {
@@ -31,33 +32,33 @@ const PERGUNTAS = [
 /** Rodapé educativo: glossário dos títulos e dúvidas frequentes. */
 export function EducativoTesouro() {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h3 className="text-sm font-semibold">Tipos de título</h3>
-        <dl className="mt-3 space-y-3">
+    <div className="grid gap-secao lg:grid-cols-2">
+      <div className="rounded-xl border border-border bg-card p-cartao">
+        <h3 className="t-card-title">Tipos de título</h3>
+        <dl className="mt-bloco pilha-bloco">
           {TIPOS_TITULO.map((t) => (
             <div key={t.id}>
               <dt className="text-sm font-medium">
                 {t.rotulo}{" "}
                 <span className="text-xs font-normal text-muted-foreground">({t.sigla})</span>
               </dt>
-              <dd className="text-xs text-muted-foreground">{t.explicacao}</dd>
+              <dd className="t-body-sm text-muted-foreground">{t.explicacao}</dd>
             </div>
           ))}
         </dl>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <h3 className="text-sm font-semibold">Perguntas frequentes</h3>
+      <div className="rounded-xl border border-border bg-card p-cartao">
+        <h3 className="t-card-title">Perguntas frequentes</h3>
         <Accordion type="single" collapsible className="mt-1">
           {PERGUNTAS.map((p) => (
             <AccordionItem key={p.q} value={p.q}>
               <AccordionTrigger className="text-left text-sm">{p.q}</AccordionTrigger>
-              <AccordionContent className="text-xs text-muted-foreground">{p.a}</AccordionContent>
+              <AccordionContent className="t-body-sm text-muted-foreground">{p.a}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
-        <p className="mt-3 text-[11px] text-muted-foreground">
+        <p className="mt-bloco t-caption">
           Preços e taxas oficiais do Tesouro Nacional, divulgados uma vez por dia útil. Conteúdo
           informativo, sem recomendação de investimento.
         </p>

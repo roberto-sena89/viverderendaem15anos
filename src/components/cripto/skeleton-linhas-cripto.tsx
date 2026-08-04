@@ -33,9 +33,9 @@ export function SkeletonLinhasCripto({ quantidade }: { quantidade: number }) {
       </div>
 
       {/* Mobile: imita os cartões */}
-      <div className="space-y-2 p-3 md:hidden">
+      <div className="pilha-bloco p-bloco md:hidden">
         {itens.map((_, i) => (
-          <div key={i} className="rounded-xl border border-border p-3">
+          <div key={i} className="rounded-xl border border-border p-cartao">
             <div className="flex items-center gap-2">
               <Skeleton className="size-8 shrink-0 rounded-full" />
               <div className="flex min-w-0 flex-1 flex-col gap-1.5">

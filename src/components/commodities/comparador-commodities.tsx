@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import type { LinhaCommodity } from "@/lib/commodities-base";
 import { corVar, fmtDinheiro, fmtVar } from "@/components/commodities/card-commodity";
 import { cn } from "@/lib/utils";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 const CORES = ["#22c55e", "#f59e0b", "#38bdf8", "#f43f5e", "#a78bfa", "#facc15"];
 
@@ -45,8 +46,8 @@ export function ComparadorCommodities({
           <DialogTitle>Comparar commodities ({linhas.length})</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="panel p-3">
+        <div className="pilha-secao">
+          <div className="panel p-cartao">
             <p className="panel-title mb-2">Performance normalizada (30 pregões, % desde o início)</p>
             <div className="h-[260px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -84,25 +85,25 @@ export function ComparadorCommodities({
             </div>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-secao sm:grid-cols-2 lg:grid-cols-3">
             {linhas.map((l, i) => (
-              <div key={l.codigo} className="panel p-3">
-                <p className="flex items-center gap-1.5 text-sm font-semibold">
+              <div key={l.codigo} className="panel p-bloco">
+                <p className="flex min-w-0 items-center gap-1.5">
                   <span
                     className="inline-block size-2 shrink-0 rounded-full"
                     style={{ background: CORES[i % CORES.length] }}
                     aria-hidden
                   />
-                  <span className="truncate">{l.nome}</span>
+                  <TextoTruncado as="span" className="t-ticker min-w-0" texto={l.nome}>{l.nome}</TextoTruncado>
                 </p>
                 <p className="font-display mt-1 text-base tabular-nums">
                   {fmtDinheiro(l.precoUsd, "US$")}
                   <span className="ml-1 text-[0.7rem] font-normal text-muted-foreground">/ {l.unidade}</span>
                 </p>
-                <p className="text-xs text-muted-foreground tabular-nums">
+                <p className="t-num-sm text-muted-foreground">
                   {fmtDinheiro(l.precoUsd === null ? null : l.precoUsd * usdBrl, "R$")}
                 </p>
-                <div className="mt-2 grid grid-cols-3 gap-1 border-t border-border pt-2 text-center text-[0.68rem]">
+                <div className="t-caption mt-bloco grid grid-cols-3 gap-1 border-t border-border pt-bloco text-center">
                   {[
                     { r: "Dia", v: l.variacaoDia },
                     { r: "30d", v: l.variacao30d },

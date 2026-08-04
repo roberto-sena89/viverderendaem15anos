@@ -10,6 +10,7 @@ import {
   type LinhaCommodity,
 } from "@/lib/commodities-base";
 import { cn } from "@/lib/utils";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 export type Moeda = "usd" | "brl" | "ambas";
 
@@ -102,7 +103,7 @@ export function CardCommodity({
       }}
       aria-label={`${linha.nome} — ${linha.bolsa}`}
       className={cn(
-        "panel group cursor-pointer p-3.5 transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        "panel group cursor-pointer p-cartao transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
         destaque && "bg-muted/20",
         selecionado && "border-primary/60",
       )}
@@ -110,12 +111,9 @@ export function CardCommodity({
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-1.5">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="font-display truncate text-sm font-semibold">{linha.nome}</span>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-[18rem] text-xs">{linha.descricao}</TooltipContent>
-            </Tooltip>
+            <TextoTruncado as="span" className="t-ticker font-display min-w-0" texto={linha.nome}>
+              {linha.nome}
+            </TextoTruncado>
             <span
               className={cn(
                 "shrink-0 rounded-full px-1.5 py-0.5 text-[0.6rem] font-semibold tracking-wide uppercase",
@@ -125,9 +123,9 @@ export function CardCommodity({
               {linha.bolsa}
             </span>
           </div>
-          <p className="truncate text-xs text-muted-foreground">
+          <TextoTruncado as="p" className="t-caption" texto={`Contrato futuro · cotação por ${linha.unidade}`}>
             Contrato futuro · cotação por {linha.unidade}
-          </p>
+          </TextoTruncado>
         </div>
 
         <div className="flex shrink-0 items-center gap-1">
@@ -153,7 +151,7 @@ export function CardCommodity({
         </div>
       </div>
 
-      <div className="mt-2.5 flex items-end justify-between gap-3">
+      <div className="mt-bloco flex items-end justify-between gap-bloco">
         <div className="min-w-0">
           {moeda !== "brl" ? (
             <p
@@ -197,7 +195,7 @@ export function CardCommodity({
         />
       </div>
 
-      <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-[0.7rem]">
+      <div className="t-caption mt-bloco flex items-center justify-between gap-2 border-t border-border pt-bloco">
         <span className={cn("truncate", corVar(linha.variacaoDia))}>
           {linha.variacaoDia !== null ? `${fmtVar(linha.variacaoDia)} no dia` : "Sem dado intradiário"}
         </span>
@@ -212,7 +210,7 @@ export function CardCommodity({
       </div>
 
       {naCarteira.length > 0 ? (
-        <p className="mt-2 rounded-md bg-primary-soft px-2 py-1 text-[0.68rem] text-accent-foreground">
+        <p className="t-caption mt-bloco rounded-md bg-primary-soft px-2 py-1 text-accent-foreground">
           Na sua carteira: {naCarteira.join(", ")} · {correlacao?.frase}
         </p>
       ) : null}
@@ -223,7 +221,7 @@ export function CardCommodity({
 /** Placeholder no formato exato do card. */
 export function CardCommoditySkeleton() {
   return (
-    <div className="panel animate-pulse p-3.5">
+    <div className="panel animate-pulse p-cartao">
       <div className="h-3.5 w-28 rounded bg-muted" />
       <div className="mt-2 h-3 w-36 rounded bg-muted/70" />
       <div className="mt-4 h-6 w-32 rounded bg-muted" />

@@ -43,7 +43,7 @@ export function RodapeEducativoAcoes() {
           </AccordionItem>
         ))}
       </Accordion>
-      <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+      <p className="t-caption mt-secao leading-relaxed">
         Os dados desta página vêm de fontes públicas de mercado e podem sofrer atraso ou divergência. Indicadores
         fundamentalistas são sincronizados diariamente, a partir dos balanços das companhias; preços e variações
         acompanham o pregão da B3. Nada aqui constitui recomendação de compra ou venda.

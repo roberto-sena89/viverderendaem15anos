@@ -22,9 +22,9 @@ import { useAtivos } from "@/lib/data";
 
 function Item({ rotulo, valor, cor }: { rotulo: string; valor: string; cor?: string }) {
   return (
-    <div className="rounded-lg border border-border bg-muted/30 p-2.5">
-      <p className="text-[0.68rem] tracking-wide text-muted-foreground uppercase">{rotulo}</p>
-      <p className={`mt-0.5 text-sm font-semibold tabular-nums ${cor ?? ""}`}>{valor}</p>
+    <div className="min-w-0 rounded-lg border border-border bg-muted/30 p-bloco">
+      <p className="t-label truncate">{rotulo}</p>
+      <p className={`t-num mt-0.5 truncate font-semibold ${cor ?? ""}`}>{valor}</p>
     </div>
   );
 }
@@ -80,7 +80,7 @@ export function ModalFii({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="pilha-secao">
           <div className="flex flex-wrap items-end gap-x-4 gap-y-1">
             <p className="font-display text-3xl tabular-nums">{fmtMoeda(linha.preco)}</p>
             <p className={`text-sm font-semibold tabular-nums ${corVar(linha.variacaoPercent)}`}>
@@ -91,7 +91,7 @@ export function ModalFii({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-bloco sm:grid-cols-4">
             <Item rotulo="Patrimônio líquido" valor={fmtCompacto(linha.patrimonio)} />
             <Item rotulo="Valor de mercado" valor={fmtCompacto(linha.valorMercado)} />
             <Item rotulo="P/VP" valor={fmtNumero(linha.pvp, 2)} />
@@ -119,7 +119,7 @@ export function ModalFii({
           </div>
 
           {posicao ? (
-            <div className="rounded-lg border border-primary/30 bg-primary-soft/40 p-3 text-sm">
+            <div className="rounded-lg border border-primary/30 bg-primary-soft/40 p-bloco text-sm">
               <p className="font-semibold">Sua posição</p>
               <p className="mt-1 text-muted-foreground">
                 {posicao.quantidade.toLocaleString("pt-BR")} cotas · preço médio {fmtMoeda(posicao.precoMedio)} ·{" "}

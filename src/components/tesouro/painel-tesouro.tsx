@@ -113,7 +113,7 @@ export function PainelTesouro({
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="space-y-4">
+      <div className="pilha-secao">
         <ResumoTesouro dados={data} />
 
         {/* Filtros em chips, sem barras de rolagem */}
@@ -160,7 +160,7 @@ export function PainelTesouro({
         </div>
 
         {isLoading ? (
-          <div className="space-y-2">
+          <div className="pilha-bloco">
             {Array.from({ length: 8 }).map((_, i) => (
               <Skeleton key={i} className="h-12 w-full rounded-xl" />
             ))}
@@ -175,7 +175,7 @@ export function PainelTesouro({
           />
         )}
 
-        <p className="text-[11px] text-muted-foreground">
+        <p className="t-caption">
           {filtradas.length} de {linhas.length} títulos · preços de {fmtData(data?.precosDe)} ·
           fonte: Tesouro Nacional (Tesouro Transparente) e Banco Central.
         </p>

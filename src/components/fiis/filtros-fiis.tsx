@@ -60,9 +60,9 @@ export function FiltrosFiis({
   total: number;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="pilha-secao">
       <div>
-        <p className="mb-2 text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
+        <p className="t-label mb-2">
           Ranking rápido
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -85,7 +85,7 @@ export function FiltrosFiis({
       </div>
 
       <div>
-        <p className="mb-2 text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
+        <p className="t-label mb-2">
           Tipo de fundo
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -109,9 +109,9 @@ export function FiltrosFiis({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-bloco sm:grid-cols-2 xl:grid-cols-4">
         <label className="space-y-1.5 text-xs">
-          <span className="font-semibold tracking-wide text-muted-foreground uppercase">Segmento</span>
+          <span className="t-label">Segmento</span>
           <Select value={segmento} onValueChange={aoTrocarSegmento}>
             <SelectTrigger className="h-9 text-sm">
               <SelectValue placeholder="Todos os segmentos" />
@@ -158,7 +158,7 @@ export function FiltrosFiis({
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-bloco">
         <p className="inline-flex items-center gap-2 text-sm">
           <SlidersHorizontal className="size-4 text-muted-foreground" aria-hidden />
           <strong className="font-semibold tabular-nums">{total.toLocaleString("pt-BR")}</strong>
@@ -199,7 +199,7 @@ function FaixaSlider({
   return (
     <div className="space-y-1.5 text-xs">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="font-semibold tracking-wide text-muted-foreground uppercase">{rotulo}</span>
+        <span className="t-label">{rotulo}</span>
         <span className="tabular-nums">
           {fmt(valor[0])} – {valor[1] >= max ? `${fmt(max)}+` : fmt(valor[1])}
         </span>

@@ -5,6 +5,7 @@ import { SimuladorTesouro } from "@/components/tesouro/simulador-tesouro";
 import { fmtBRL, fmtData, fmtNum, fmtPct } from "@/components/tesouro/resumo-tesouro";
 import { corIndexador, defTipo, rotuloIndexador, textoTaxa, type LinhaTesouro } from "@/lib/tesouro-base";
 import { cn } from "@/lib/utils";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 /** Detalhes completos de um título público, com simulador integrado. */
 export function ModalTitulo({
@@ -48,11 +49,11 @@ export function ModalTitulo({
               </span>
             ) : null}
           </div>
-          <DialogTitle className="text-left">{linha.nome}</DialogTitle>
-          <DialogDescription className="text-left">{def.explicacao}</DialogDescription>
+          <DialogTitle className="t-card-title text-left">{linha.nome}</DialogTitle>
+          <DialogDescription className="t-subtexto text-left">{def.explicacao}</DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-bloco sm:grid-cols-4">
           <Bloco rotulo="Rentabilidade" valor={textoTaxa(linha)} destaque />
           <Bloco rotulo="Vencimento" valor={fmtData(linha.vencimento)} />
           <Bloco rotulo="Preço unitário" valor={fmtBRL(linha.precoCompra)} />
@@ -69,10 +70,10 @@ export function ModalTitulo({
             <SimuladorTesouro linha={linha} cdi={cdi} />
           </TabsContent>
 
-          <TabsContent value="dados" className="mt-4 space-y-4">
+          <TabsContent value="dados" className="mt-secao pilha-bloco">
             {serie.length > 1 ? (
-              <div className="rounded-xl border border-border bg-card p-3">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="rounded-xl border border-border bg-card p-cartao">
+                <div className="flex items-center justify-between t-caption">
                   <span>Preço unitário nos últimos 18 meses</span>
                   <span className={variacao && variacao < 0 ? "text-negative" : "text-positive"}>
                     {variacao === null ? "—" : `${variacao > 0 ? "+" : ""}${fmtNum(variacao)}%`}
@@ -111,20 +112,20 @@ export function ModalTitulo({
 
 function Bloco({ rotulo, valor, destaque }: { rotulo: string; valor: string; destaque?: boolean }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <p className="text-[11px] text-muted-foreground">{rotulo}</p>
-      <p className={`mt-0.5 truncate font-semibold tabular-nums ${destaque ? "text-primary" : ""}`}>
+    <div className="min-w-0 rounded-xl border border-border bg-card p-bloco">
+      <TextoTruncado as="p" className="t-label block">{rotulo}</TextoTruncado>
+      <TextoTruncado as="p" className={`t-num mt-0.5 block font-semibold ${destaque ? "text-primary" : ""}`}>
         {valor}
-      </p>
+      </TextoTruncado>
     </div>
   );
 }
 
 function Dado({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
-    <div>
-      <dt className="text-xs text-muted-foreground">{rotulo}</dt>
-      <dd className="font-medium tabular-nums">{valor}</dd>
+    <div className="min-w-0">
+      <dt className="t-label">{rotulo}</dt>
+      <TextoTruncado as="dd" className="font-medium tabular-nums block">{valor}</TextoTruncado>
     </div>
   );
 }

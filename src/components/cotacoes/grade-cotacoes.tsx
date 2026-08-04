@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { ModalAtivo } from "@/components/cotacoes/modal-ativo";
+import { TextoTruncado } from "@/components/texto-truncado";
 import {
   corVar,
   fmtPercent,
@@ -116,7 +117,7 @@ export function GradeCotacoes({
 
   if (isLoading) {
     return (
-      <div className="space-y-2 p-4">
+      <div className="pilha-bloco p-cartao">
         {Array.from({ length: 8 }).map((_, i) => (
           <Skeleton key={i} className="h-11 w-full" />
         ))}
@@ -147,7 +148,7 @@ export function GradeCotacoes({
           aria-label="Volume mínimo negociado"
           className="h-8 w-[150px] text-sm"
         />
-        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+        <span className="t-num-sm ml-auto text-muted-foreground">
           {linhas.length} ativo{linhas.length === 1 ? "" : "s"}
         </span>
         {ocultarAtualizar ? null : (
@@ -165,7 +166,7 @@ export function GradeCotacoes({
       </div>
 
       {linhas.length === 0 ? (
-        <p className="p-6 text-sm text-muted-foreground">
+        <p className="t-body-sm p-cartao text-muted-foreground">
           Nenhum ativo corresponde aos filtros aplicados.
         </p>
       ) : (
@@ -245,11 +246,11 @@ export function GradeCotacoes({
                         </button>
                       </td>
                       <td className="min-w-0 py-2">
-                        <p className="truncate font-medium">{l.ticker}</p>
-                        <p className="truncate text-xs text-muted-foreground">
+                        <TextoTruncado as="p" className="t-ticker font-medium" texto={l.ticker}>{l.ticker}</TextoTruncado>
+                        <TextoTruncado as="p" className="t-subtexto" texto={`${l.nome}${l.grupo ? ` · ${l.grupo}` : ""}`}>
                           {l.nome}
                           {l.grupo ? ` · ${l.grupo}` : ""}
-                        </p>
+                        </TextoTruncado>
                       </td>
                       <td
                         className={`py-2 text-right font-medium tabular-nums ${
@@ -318,8 +319,8 @@ export function GradeCotacoes({
                       />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium">{l.ticker}</span>
-                      <span className="block truncate text-xs text-muted-foreground">{l.nome}</span>
+                      <TextoTruncado as="span" className="t-ticker block" texto={l.ticker} passivo>{l.ticker}</TextoTruncado>
+                      <TextoTruncado as="span" className="t-subtexto block" texto={l.nome} passivo>{l.nome}</TextoTruncado>
                     </span>
                     <Sparkline serie={l.spark} positivo={pos} largura={56} altura={24} />
                     <span className="shrink-0 text-right">

@@ -14,6 +14,7 @@ import {
 } from "@/components/etfs/formatos-etf";
 import { COR_CLASSE_ETF, type LinhaEtf } from "@/lib/etfs-base";
 import { useEhMobile, useJanelaVirtual } from "@/lib/fiis-virtualizacao";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 export type ColunaEtfId =
   | "var30d"
@@ -247,9 +248,12 @@ export function BadgeClasse({ linha }: { linha: LinhaEtf }) {
 function BadgeNeutro({ texto }: { texto: string | null }) {
   if (!texto) return <span className="text-muted-foreground">—</span>;
   return (
-    <span className="inline-block max-w-[160px] truncate rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[0.68rem] text-muted-foreground">
+    <TextoTruncado
+      as="span"
+      className="inline-block max-w-[160px] truncate rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[0.68rem] text-muted-foreground"
+    >
       {texto}
-    </span>
+    </TextoTruncado>
   );
 }
 
@@ -336,7 +340,7 @@ export function TabelaEtfs({
 
   if (carregando) {
     return (
-      <div className="space-y-2 p-4">
+      <div className="pilha-bloco p-cartao">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3">
             <Skeleton className="size-8 rounded-lg" />
@@ -445,12 +449,12 @@ export function TabelaEtfs({
                             {l.ticker.slice(0, 2)}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate font-display text-[0.9rem] leading-tight">
+                            <span className="t-ticker font-display block">
                               {l.ticker}
                             </span>
-                            <span className="block truncate text-xs text-muted-foreground">
+                            <TextoTruncado as="span" className="t-subtexto block">
                               {nomeFundo(l)}
-                            </span>
+                            </TextoTruncado>
                           </span>
                         </div>
                       </td>
@@ -511,7 +515,7 @@ export function TabelaEtfs({
           </div>
         ) : (
           /* Mobile */
-          <div className="grid gap-2 p-3 md:hidden">
+          <div className="grid gap-bloco p-cartao md:hidden">
             {espacoTopo > 0 ? <div aria-hidden style={{ height: espacoTopo }} /> : null}
             {naJanela.map((l, i) => {
               const flash = flashes.get(l.ticker);
@@ -521,7 +525,7 @@ export function TabelaEtfs({
                   key={l.ticker}
                   type="button"
                   onClick={() => aoAbrir(l)}
-                  className={`rounded-lg border border-border bg-card p-3 text-left ${
+                  className={`rounded-lg border border-border bg-card p-bloco text-left ${
                     posicao ? "border-l-2 border-l-primary" : ""
                   }`}
                 >
@@ -532,14 +536,14 @@ export function TabelaEtfs({
                         aoClicar={() => aoFavoritar(l.ticker)}
                         ticker={l.ticker}
                       />
-                      <span className="min-w-0">
-                        <span className="font-display block text-sm">
+                      <span className="min-w-0 flex-1">
+                        <span className="t-ticker font-display block">
                           <span className="mr-1 text-xs text-muted-foreground tabular-nums">
                             {inicioRanking + janela.inicio + i + 1}.
                           </span>
                           {l.ticker}
                         </span>
-                        <span className="block truncate text-xs text-muted-foreground">{nomeFundo(l)}</span>
+                        <TextoTruncado as="span" className="t-subtexto block">{nomeFundo(l)}</TextoTruncado>
                       </span>
                     </div>
                     <div className="text-right">
@@ -556,13 +560,13 @@ export function TabelaEtfs({
                       </span>
                     </div>
                   </div>
-                  <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-border/60 pt-2 text-xs">
+                  <div className="mt-bloco grid grid-cols-2 gap-x-3 gap-y-1 border-t border-border/60 pt-2 text-xs">
                     <Info2 rotulo="Patrimônio" valor={fmtCompacto(l.capitalizacao)} />
                     <Info2 rotulo="Dividend yield" valor={fmtPctSimples(l.dy12, 2)} />
                     <Info2 rotulo="Var. 12m" valor={fmtPct(l.var12m)} cor={corVar(l.var12m)} />
                     <Info2 rotulo="Var. 5 anos" valor={fmtPct(l.var60m)} cor={corVar(l.var60m)} />
                   </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <div className="mt-bloco flex flex-wrap items-center gap-1.5">
                     <BadgeClasse linha={l} />
                     {l.gestora ? (
                       <span className="rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[0.68rem] text-muted-foreground">

@@ -304,7 +304,7 @@ export function PainelEtfs({ intervaloMs, busca }: Props) {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="space-y-4 pb-20">
+      <div className="pilha-secao pb-20">
         <ResumoEtfs
           ibovespa={grade.data?.ibovespa ?? null}
           maiorAlta={maiorAlta}
