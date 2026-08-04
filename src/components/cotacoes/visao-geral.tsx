@@ -282,14 +282,10 @@ function LinhaClicavel({
   const conteudo = (
     <>
       <span className="min-w-0 flex-1">
-        <span className={`block truncate font-medium ${compacta ? "text-xs" : "text-sm"}`}>
+        <span className={`t-ticker block ${compacta ? "text-[0.8125rem]" : ""}`}>
           {linha.ticker}
         </span>
-        <span
-          className={`block truncate text-muted-foreground ${compacta ? "text-[0.68rem]" : "text-xs"}`}
-        >
-          {linha.nome}
-        </span>
+        <span className="t-subtexto block">{linha.nome}</span>
       </span>
       {compacta ? null : (
         <Sparkline
@@ -300,19 +296,16 @@ function LinhaClicavel({
         />
       )}
       <span className="shrink-0 text-right">
-        <span className={`block tabular-nums ${compacta ? "text-xs" : "text-sm"}`}>
-          {linha.valor}
-        </span>
+        <span className={`${compacta ? "t-num-sm" : "t-num"} block`}>{linha.valor}</span>
         {linha.variacao !== null ? (
-          <span
-            className={`block tabular-nums ${compacta ? "text-[0.68rem]" : "text-xs"} ${corVar(linha.variacao)}`}
-          >
+          <span className={`t-num-sm block ${corVar(linha.variacao)}`}>
             {fmtPercent(linha.variacao)}
           </span>
         ) : null}
       </span>
     </>
   );
+
 
   const base = compacta
     ? "flex w-full items-center gap-2 rounded-md px-1 py-1 text-left"
