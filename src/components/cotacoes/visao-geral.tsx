@@ -53,7 +53,7 @@ export function VisaoGeralMercado({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="pilha-secao">
       <ModalDetalhePanorama
         linha={detalhe?.linha ?? null}
         rotuloCategoria={detalhe?.categoria}
@@ -64,7 +64,7 @@ export function VisaoGeralMercado({
 
       <Termometro data={data} />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-bloco md:grid-cols-2 xl:grid-cols-3">
         {data.categorias.map((c) => (
           <CartaoCategoria
             key={c.id}
@@ -75,7 +75,7 @@ export function VisaoGeralMercado({
         ))}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-bloco lg:grid-cols-2">
         <Panel
           title="Maiores altas do dia"
           hint="Ações, FIIs e criptomoedas"
@@ -96,6 +96,7 @@ export function VisaoGeralMercado({
     </div>
   );
 }
+
 
 /* ------------------------------- termômetro ------------------------------ */
 
