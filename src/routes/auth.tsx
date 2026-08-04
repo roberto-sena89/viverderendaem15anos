@@ -315,7 +315,7 @@ function AuthPage() {
           </span>
 
 
-          <h1 className="font-display mt-4 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+          <h1 className="font-display mt-4 text-[1.375rem] leading-tight font-semibold tracking-tight text-balance sm:text-3xl">
             Acesse sua conta no Viver de Renda em 15 Anos
           </h1>
           <p className="mt-1.5 text-sm text-pretty text-muted-foreground">
@@ -325,7 +325,7 @@ function AuthPage() {
           <Button
             type="button"
             variant="outline"
-            className="mt-6 h-11 w-full gap-2"
+            className="mt-5 h-12 w-full gap-2 sm:mt-6 sm:h-11"
             disabled={loading}
             onClick={signInWithGoogle}
           >
@@ -333,20 +333,27 @@ function AuthPage() {
             Continuar com Google
           </Button>
 
-          <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground sm:my-6">
             <span className="h-px flex-1 bg-border" />ou<span className="h-px flex-1 bg-border" />
           </div>
 
-          <div className="rounded-2xl border border-border bg-card/50 p-4 backdrop-blur-sm sm:p-5">
+          <div className="rounded-2xl border border-border bg-card/50 p-3.5 backdrop-blur-sm sm:p-5">
             <Tabs defaultValue="signin">
-              <TabsList className="grid w-full grid-cols-2 gap-1">
-                <TabsTrigger value="signin" className="min-w-0 truncate px-2 text-xs sm:text-sm">
+              <TabsList className="grid h-auto w-full grid-cols-2 gap-1">
+                <TabsTrigger
+                  value="signin"
+                  className="min-h-11 min-w-0 truncate px-2 text-sm sm:min-h-9"
+                >
                   Entrar
                 </TabsTrigger>
-                <TabsTrigger value="signup" className="min-w-0 truncate px-2 text-xs sm:text-sm">
+                <TabsTrigger
+                  value="signup"
+                  className="min-h-11 min-w-0 truncate px-2 text-sm sm:min-h-9"
+                >
                   Criar conta
                 </TabsTrigger>
               </TabsList>
+
 
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4 pt-4">
