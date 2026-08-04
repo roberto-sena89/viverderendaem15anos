@@ -378,6 +378,15 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
     variacao: l.variacao24h,
     spark: l.spark ?? [],
     destino: "cripto",
+    simbolo: `${l.ticker.toUpperCase()}-USD`,
+    detalhes: [
+      { rotulo: "Variação 7d", valor: pct(l.variacao7d), variacao: l.variacao7d },
+      { rotulo: "Variação 30d", valor: pct(l.variacao30d), variacao: l.variacao30d },
+      { rotulo: "Variação 12m", valor: pct(l.variacao12m), variacao: l.variacao12m },
+      { rotulo: "Cap. de mercado", valor: compacto(l.capitalizacao) },
+      { rotulo: "Volume 24h", valor: compacto(l.volume24h) },
+      { rotulo: "Ranking", valor: l.rank ? `#${l.rank}` : "—" },
+    ],
   });
   const resumoCripto: ResumoCategoria = moedas.length
     ? {
