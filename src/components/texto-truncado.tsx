@@ -13,6 +13,7 @@ export function TextoTruncado({
   as: Tag = "span",
   texto,
   lado = "top",
+  passivo = false,
 }: {
   children: React.ReactNode;
   className?: string;
@@ -20,6 +21,8 @@ export function TextoTruncado({
   /** Conteúdo do tooltip; por padrão usa o texto renderizado. */
   texto?: string;
   lado?: "top" | "bottom" | "left" | "right";
+  /** Não adiciona foco/clique próprio (para uso dentro de botões). */
+  passivo?: boolean;
 }) {
   const ref = React.useRef<HTMLElement | null>(null);
   const [truncado, setTruncado] = React.useState(false);
@@ -46,9 +49,9 @@ export function TextoTruncado({
   const elemento = (
     <Tag
       ref={ref as React.Ref<never>}
-      className={cn(className, truncado && "cursor-help")}
-      tabIndex={truncado ? 0 : undefined}
-      onClick={truncado ? () => setAberto((v) => !v) : undefined}
+      className={cn(className, truncado && !passivo && "cursor-help")}
+      tabIndex={truncado && !passivo ? 0 : undefined}
+      onClick={truncado && !passivo ? () => setAberto((v) => !v) : undefined}
     >
       {children}
     </Tag>
