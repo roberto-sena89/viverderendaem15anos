@@ -6,7 +6,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { corVar, fmtPercent } from "@/components/cotacoes/formatos";
 import { ABAS_COTACOES } from "@/lib/cotacoes-abas";
-import { panoramaMercado, type LinhaResumo, type ResumoCategoria } from "@/lib/panorama-mercado.functions";
+import {
+  panoramaMercado,
+  type LinhaResumo,
+  type PanoramaMercado,
+  type ResumoCategoria,
+} from "@/lib/panorama-mercado.functions";
 
 const ICONE_ABA = Object.fromEntries(ABAS_COTACOES.map((a) => [a.id, a.icone]));
 
@@ -75,7 +80,7 @@ export function VisaoGeralMercado({
 
 /* ------------------------------- termômetro ------------------------------ */
 
-function Termometro({ data }: { data: NonNullable<Awaited<ReturnType<typeof buscarTipo>>> }) {
+function Termometro({ data }: { data: PanoramaMercado }) {
   const t = data.termometro;
   const emAlta = t.percentual;
   const clima =
@@ -138,9 +143,6 @@ function Termometro({ data }: { data: NonNullable<Awaited<ReturnType<typeof busc
     </section>
   );
 }
-
-// Apenas para tipagem do componente acima.
-declare function buscarTipo(): Promise<import("@/lib/panorama-mercado.functions").PanoramaMercado>;
 
 /* ---------------------------- cartão por aba ----------------------------- */
 
