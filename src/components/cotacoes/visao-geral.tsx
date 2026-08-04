@@ -55,6 +55,7 @@ export function VisaoGeralMercado({
   }
 
   return (
+    <TooltipProvider delayDuration={150}>
     <div className="pilha-secao">
       <ModalDetalhePanorama
         linha={detalhe?.linha ?? null}
