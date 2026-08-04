@@ -248,7 +248,11 @@ function CartaoCategoria({
           ) : null}
 
           {resumo.amplitude && resumo.amplitude.total > 0 ? (
-            <div className="mt-bloco flex h-1.5 overflow-hidden rounded-full bg-muted">
+            <div
+              role="img"
+              aria-label={`${resumo.amplitude.emAlta} de ${resumo.amplitude.total} ativos em alta`}
+              className="mt-bloco flex h-1.5 overflow-hidden rounded-full bg-muted"
+            >
               <span
                 className="h-full bg-positive"
                 style={{
