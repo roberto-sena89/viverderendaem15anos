@@ -277,7 +277,7 @@ function CartaoCategoria({
             <button
               type="button"
               onClick={() => aoAbrirAba?.(resumo.id)}
-              className="t-caption mt-bloco self-start font-medium text-primary hover:underline focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              className="foco-visivel alvo-toque-linha t-caption mt-bloco inline-flex items-center self-start rounded-md font-medium text-primary underline-offset-4 hover:underline"
             >
               Ver grade completa de {resumo.rotulo} →
             </button>
