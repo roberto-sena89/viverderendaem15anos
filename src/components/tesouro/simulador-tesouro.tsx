@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fmtBRL, fmtNum, fmtPct } from "@/components/tesouro/resumo-tesouro";
 import { aliquotaIr, simular, type LinhaTesouro } from "@/lib/tesouro-base";
+import { TextoTruncado } from "@/components/texto-truncado";
 
 const diasAte = (iso: string) =>
   Math.max(1, Math.round((new Date(`${iso}T12:00:00`).getTime() - Date.now()) / 86_400_000));
@@ -35,8 +36,8 @@ export function SimuladorTesouro({ linha, cdi }: { linha: LinhaTesouro; cdi: num
   const antecipado = dias < diasVencimento;
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <div className="pilha-secao">
+      <div className="grid gap-secao sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="valor-simulacao">Valor investido</Label>
           <Input
@@ -83,7 +84,7 @@ export function SimuladorTesouro({ linha, cdi }: { linha: LinhaTesouro; cdi: num
         </div>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid gap-bloco sm:grid-cols-3">
         <Metrica rotulo="Valor bruto" valor={fmtBRL(resultado.valorBruto)} />
         <Metrica
           rotulo="Valor líquido"
@@ -97,7 +98,7 @@ export function SimuladorTesouro({ linha, cdi }: { linha: LinhaTesouro; cdi: num
         />
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-1.5 rounded-xl border border-border bg-muted/20 p-3 text-xs sm:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-1.5 rounded-xl border border-border bg-muted/20 p-bloco text-xs sm:grid-cols-4">
         <Item rotulo="Rentabilidade estimada" valor={`${fmtPct(taxa)} a.a.`} />
         <Item rotulo={`IR (${fmtNum(aliquotaIr(dias) * 100, 1)}%)`} valor={`- ${fmtBRL(resultado.ir)}`} />
         <Item
@@ -113,7 +114,7 @@ export function SimuladorTesouro({ linha, cdi }: { linha: LinhaTesouro; cdi: num
         ) : null}
       </dl>
 
-      <p className="text-[11px] text-muted-foreground">
+      <p className="t-caption">
         Projeção informativa. Títulos indexados usam o IPCA acumulado em 12 meses e a Selic atual
         como referência futura; o resultado real depende da inflação e dos juros ao longo do período.
       </p>
@@ -134,13 +135,13 @@ function Metrica({
 }) {
   return (
     <div
-      className={`rounded-xl border p-3 ${destaque ? "border-primary/40 bg-primary/5" : "border-border bg-card"}`}
+      className={`min-w-0 rounded-xl border p-bloco ${destaque ? "border-primary/40 bg-primary/5" : "border-border bg-card"}`}
     >
-      <p className="text-xs text-muted-foreground">{rotulo}</p>
-      <p className={`mt-1 text-lg font-semibold tabular-nums ${destaque ? "text-primary" : ""}`}>
+      <TextoTruncado as="p" className="t-label block">{rotulo}</TextoTruncado>
+      <TextoTruncado as="p" className={`t-num mt-1 block font-semibold ${destaque ? "text-primary" : ""}`}>
         {valor}
-      </p>
-      {detalhe ? <p className="text-[11px] text-muted-foreground">{detalhe}</p> : null}
+      </TextoTruncado>
+      {detalhe ? <p className="t-caption">{detalhe}</p> : null}
     </div>
   );
 }
