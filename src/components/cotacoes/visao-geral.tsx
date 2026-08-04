@@ -44,9 +44,9 @@ export function VisaoGeralMercado({
 
   if (isLoading || !data) {
     return (
-      <div className="space-y-4">
+      <div className="container-panorama pilha-secao">
         <Skeleton className="h-40 w-full rounded-2xl" />
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grade-panorama">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-56 w-full rounded-2xl" />
           ))}
@@ -57,7 +57,7 @@ export function VisaoGeralMercado({
 
   return (
     <TooltipProvider delayDuration={150}>
-    <div className="pilha-secao">
+    <div className="container-panorama pilha-secao">
       <ModalDetalhePanorama
         linha={detalhe?.linha ?? null}
         rotuloCategoria={detalhe?.categoria}
@@ -68,7 +68,7 @@ export function VisaoGeralMercado({
 
       <Termometro data={data} />
 
-      <div className="grid gap-bloco md:grid-cols-2 xl:grid-cols-3">
+      <div className="grade-panorama">
         {data.categorias.map((c) => (
           <CartaoCategoria
             key={c.id}
@@ -79,7 +79,7 @@ export function VisaoGeralMercado({
         ))}
       </div>
 
-      <div className="grid gap-bloco lg:grid-cols-2">
+      <div className="grade-paineis">
         <Panel
           title="Maiores altas do dia"
           hint="Ações, FIIs e criptomoedas"
@@ -138,7 +138,7 @@ function Termometro({ data }: { data: PanoramaMercado }) {
           </div>
         </div>
 
-        <div className="grid min-w-0 grid-cols-2 gap-bloco sm:grid-cols-3 xl:grid-cols-6">
+        <div className="grade-metricas">
           {data.indices.map((l) => (
             <div
               key={l.ticker}
@@ -233,7 +233,7 @@ function CartaoCategoria({
           ) : null}
 
           {resumo.metricas.length ? (
-            <dl className="mt-bloco grid grid-cols-3 gap-2">
+            <dl className="grade-metricas mt-bloco">
               {resumo.metricas.slice(0, 3).map((m) => (
                 <div key={m.rotulo} className="min-w-0 rounded-lg bg-muted/40 px-2 py-1.5">
                   <TextoTruncado as="dt" className="t-label truncate">
