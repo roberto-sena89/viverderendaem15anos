@@ -80,40 +80,39 @@ export function ModalDetalhePanorama({
 
   return (
     <Dialog open={aberto} onOpenChange={(v) => !v && aoFechar()}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto p-cartao sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex flex-wrap items-center gap-2 text-left">
-            <span className="font-display text-xl">{linha.ticker}</span>
+          <DialogTitle className="flex min-w-0 flex-wrap items-center gap-2 text-left">
+            <span className="t-h3 min-w-0 truncate">{linha.ticker}</span>
             {rotuloCategoria ? (
-              <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[0.65rem] font-semibold tracking-[0.1em] text-primary uppercase">
+              <span className="t-label shrink-0 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-primary">
                 {rotuloCategoria}
               </span>
             ) : null}
           </DialogTitle>
-          <DialogDescription className="text-left">{linha.nome}</DialogDescription>
+          <DialogDescription className="t-body-sm texto-seguro text-left">
+            {linha.nome}
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="pilha-secao">
           {/* preço + variações */}
-          <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-wrap items-end justify-between gap-bloco">
             <div className="min-w-0">
-              <p className="text-[0.68rem] tracking-[0.14em] text-muted-foreground uppercase">
-                Cotação atual
-              </p>
-              <p className="font-display text-3xl tabular-nums">{linha.valor}</p>
-              <p className={`text-sm tabular-nums ${corVar(linha.variacao)}`}>
+              <p className="t-label">Cotação atual</p>
+              <p className="t-metric truncate">{linha.valor}</p>
+              <p className={`t-num ${corVar(linha.variacao)}`}>
                 {fmtPercent(linha.variacao)} no dia
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-[0.68rem] tracking-[0.14em] text-muted-foreground uppercase">
-                Variação em {periodo}
-              </p>
-              <p className={`font-display text-2xl tabular-nums ${corVar(variacaoPeriodo)}`}>
+            <div className="min-w-0 text-right">
+              <p className="t-label">Variação em {periodo}</p>
+              <p className={`t-metric-sm truncate ${corVar(variacaoPeriodo)}`}>
                 {fmtPercent(variacaoPeriodo)}
               </p>
             </div>
           </div>
+
 
           {/* seletor de período */}
           {simbolo ? (
@@ -129,7 +128,7 @@ export function ModalDetalhePanorama({
                   type="button"
                   aria-selected={periodo === p.id}
                   onClick={() => setPeriodo(p.id)}
-                  className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
+                  className={`t-caption min-w-12 flex-1 rounded-lg px-2 py-1.5 font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
                     periodo === p.id
                       ? "bg-background text-primary shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
@@ -154,7 +153,7 @@ export function ModalDetalhePanorama({
                 className="h-40 w-full"
               />
             ) : (
-              <p className="py-12 text-center text-sm text-muted-foreground">
+              <p className="t-body-sm py-12 text-center text-muted-foreground">
                 {isError
                   ? "Não foi possível carregar o histórico agora."
                   : "Histórico indisponível para este ativo."}
@@ -171,14 +170,14 @@ export function ModalDetalhePanorama({
           {/* performance por janela */}
           {data?.janelas?.length ? (
             <div>
-              <p className="panel-title mb-2">Performance histórica</p>
+              <p className="t-card-title mb-2 text-muted-foreground">Performance histórica</p>
               <dl className="grid grid-cols-3 gap-2 sm:grid-cols-6">
                 {data.janelas.map((j) => (
                   <div key={j.rotulo} className="rounded-lg bg-muted/40 px-2 py-1.5 text-center">
-                    <dt className="text-[0.65rem] tracking-[0.08em] text-muted-foreground uppercase">
+                    <dt className="t-label truncate">
                       {j.rotulo}
                     </dt>
-                    <dd className={`text-xs font-semibold tabular-nums ${corVar(j.variacaoPercent)}`}>
+                    <dd className={`t-num-sm font-semibold ${corVar(j.variacaoPercent)}`}>
                       {fmtPercent(j.variacaoPercent)}
                     </dd>
                   </div>
@@ -189,7 +188,7 @@ export function ModalDetalhePanorama({
 
           {/* estatísticas de risco/retorno */}
           {data ? (
-            <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-bloco sm:grid-cols-4">
               <Info rotulo="Retorno a.a. (5 anos)" valor={fmtPercent(data.estatisticas.retornoAnualizadoPercent)} />
               <Info rotulo="Volatilidade anual" valor={fmtPercent(data.estatisticas.volatilidadeAnualPercent)} />
               <Info rotulo="Maior queda" valor={fmtPercent(data.estatisticas.drawdownMaximoPercent)} />
@@ -207,8 +206,8 @@ export function ModalDetalhePanorama({
           {/* métricas próprias da categoria */}
           {linha.detalhes.length ? (
             <div>
-              <p className="panel-title mb-2">Indicadores</p>
-              <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <p className="t-card-title mb-2 text-muted-foreground">Indicadores</p>
+              <dl className="grid grid-cols-2 gap-bloco sm:grid-cols-3">
                 {linha.detalhes.slice(0, 6).map((m) => (
                   <Info key={m.rotulo} rotulo={m.rotulo} valor={m.valor} />
                 ))}
@@ -240,8 +239,8 @@ const num = (v: number) =>
 function Info({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
     <div className="min-w-0">
-      <dt className="text-xs text-muted-foreground">{rotulo}</dt>
-      <dd className="truncate text-sm font-medium tabular-nums">{valor}</dd>
+      <dt className="t-label truncate">{rotulo}</dt>
+      <dd className="t-num truncate font-medium">{valor}</dd>
     </div>
   );
 }

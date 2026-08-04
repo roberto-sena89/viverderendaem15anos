@@ -1046,3 +1046,69 @@ canvas {
   letter-spacing: 0.04em;
   color: currentColor;
 }
+
+/* ---------------------------------------------------------------
+ * Tokens de espaçamento e tipografia do terminal de cotações.
+ * Garantem hierarquia e margens consistentes em qualquer breakpoint.
+ * --------------------------------------------------------------- */
+
+@theme inline {
+  /* Espaçamentos fluidos: p-cartao, gap-bloco, space-y-secao… */
+  --spacing-cartao: clamp(0.85rem, 0.6rem + 1vw, 1.25rem);
+  --spacing-bloco: clamp(0.7rem, 0.5rem + 0.8vw, 1rem);
+  --spacing-secao: clamp(1rem, 0.75rem + 1.1vw, 1.5rem);
+}
+
+/* Pilha vertical padrão de uma seção do panorama. */
+@utility pilha-secao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-secao);
+  min-width: 0;
+}
+
+/* Bloco interno (cartão, painel) com respiro consistente. */
+@utility pilha-bloco {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-bloco);
+  min-width: 0;
+}
+
+/* Ticker/símbolo: nunca estoura a caixa, sempre em uma linha. */
+@utility t-ticker {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-snug);
+  letter-spacing: 0.02em;
+  font-weight: var(--fw-semibold);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Nome longo do ativo, secundário e truncado. */
+@utility t-subtexto {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-normal);
+  color: var(--color-muted-foreground);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Número tabular compacto usado em listas e grades densas. */
+@utility t-num {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-snug);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+@utility t-num-sm {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-normal);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
