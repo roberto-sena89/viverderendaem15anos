@@ -159,6 +159,14 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
       variacao: l.variacaoPercent,
       spark: l.spark ?? [],
       destino,
+      simbolo: l.simbolo ?? null,
+      detalhes: [
+        { rotulo: "Fech. anterior", valor: moeda(l.fechamentoAnterior, l.moeda === "USD" ? "USD" : "BRL") },
+        { rotulo: "Mínima do dia", valor: moeda(l.minimo, l.moeda === "USD" ? "USD" : "BRL") },
+        { rotulo: "Máxima do dia", valor: moeda(l.maximo, l.moeda === "USD" ? "USD" : "BRL") },
+        { rotulo: "Volume", valor: compacto(l.volume) },
+        ...l.extra.slice(0, 4),
+      ],
     });
   const mapaAcao = mapaB3("acoes");
   const mapaFii = mapaB3("fiis");
