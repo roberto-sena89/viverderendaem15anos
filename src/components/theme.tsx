@@ -26,9 +26,19 @@ export function useTheme() {
 
 export function ThemeToggle() {
   const { dark, toggle } = useTheme();
+  const rotulo = dark ? "Ativar tema claro" : "Ativar tema escuro";
   return (
-    <Button variant="ghost" size="icon" onClick={toggle} aria-label="Alternar tema">
-      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      onClick={toggle}
+      aria-label={rotulo}
+      title={rotulo}
+      aria-pressed={dark}
+    >
+      {dark ? <Sun className="size-4" aria-hidden /> : <Moon className="size-4" aria-hidden />}
+      <span className="sr-only">{rotulo}</span>
     </Button>
   );
 }
