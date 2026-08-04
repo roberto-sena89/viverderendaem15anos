@@ -56,6 +56,11 @@ export const Route = createFileRoute("/")({
               "@id": `${URL}#organization`,
               name: "Viver de Renda em 15 Anos",
               url: URL,
+              logo: {
+                "@type": "ImageObject",
+                url: `https://viverderendaem15anos.lovable.app${logoIcone}`,
+              },
+              image: OG_IMAGE,
               description:
                 "Plataforma de controle de investimentos, dividendos e planejamento da independência financeira.",
             },
@@ -99,17 +104,30 @@ export const Route = createFileRoute("/")({
               "@id": `${URL}#breadcrumb`,
               itemListElement: [
                 { "@type": "ListItem", position: 1, name: "Início", item: URL },
+              ],
+            },
+            {
+              "@type": "ItemList",
+              "@id": `${URL}#conteudo`,
+              name: "Conteúdo gratuito",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Calculadora de juros compostos",
+                  url: `${URL}calculadora-juros-compostos`,
+                },
                 {
                   "@type": "ListItem",
                   position: 2,
-                  name: "Calculadora de juros compostos",
-                  item: `${URL}calculadora-juros-compostos`,
+                  name: "Guia de liberdade financeira",
+                  url: `${URL}guia-liberdade-financeira`,
                 },
                 {
                   "@type": "ListItem",
                   position: 3,
-                  name: "Guia de liberdade financeira",
-                  item: `${URL}guia-liberdade-financeira`,
+                  name: "O que é renda passiva",
+                  url: `${URL}o-que-e-renda-passiva`,
                 },
               ],
             },
