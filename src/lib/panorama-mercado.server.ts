@@ -13,6 +13,8 @@ export type LinhaResumo = {
   valor: string;
   variacao: number | null;
   spark: number[];
+  /** Aba do terminal que deve ser aberta ao clicar na linha. */
+  destino: string;
 };
 
 export type MetricaResumo = { rotulo: string; valor: string; variacao?: number | null };
@@ -138,18 +140,24 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
         : moeda(l.preco, l.moeda === "USD" ? "USD" : "BRL"),
     variacao: l.variacaoPercent,
     spark: l.spark ?? [],
+    destino: "indices",
   }));
 
   /* --- Ações --- */
   const linhasAcoes = acoes?.linhas ?? [];
   const acoesOrd = ordenar(linhasAcoes, (l) => l.variacaoPercent);
-  const mapaB3 = (l: (typeof linhasAcoes)[number]): LinhaResumo => ({
-    ticker: l.ticker,
-    nome: l.nome,
-    valor: moeda(l.preco, l.moeda === "USD" ? "USD" : "BRL"),
-    variacao: l.variacaoPercent,
-    spark: l.spark ?? [],
-  });
+  const mapaB3 =
+    (destino: string) =>
+    (l: (typeof linhasAcoes)[number]): LinhaResumo => ({
+      ticker: l.ticker,
+      nome: l.nome,
+      valor: moeda(l.preco, l.moeda === "USD" ? "USD" : "BRL"),
+      variacao: l.variacaoPercent,
+      spark: l.spark ?? [],
+      destino,
+    });
+  const mapaAcao = mapaB3("acoes");
+  const mapaFii = mapaB3("fiis");
   const ampAcoes = amplitudeDe(linhasAcoes.map((l) => l.variacaoPercent));
   const resumoAcoes: ResumoCategoria = linhasAcoes.length
     ? {
@@ -168,8 +176,8 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
           { rotulo: "Em alta", valor: `${ampAcoes.emAlta}` },
           { rotulo: "Em baixa", valor: `${ampAcoes.emBaixa}` },
         ],
-        altas: acoesOrd.slice(0, 3).map(mapaB3),
-        baixas: acoesOrd.slice(-3).reverse().map(mapaB3),
+        altas: acoesOrd.slice(0, 3).map(mapaAcao),
+        baixas: acoesOrd.slice(-3).reverse().map(mapaAcao),
         amplitude: ampAcoes,
         indisponivel: false,
       }
@@ -196,8 +204,8 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
           { rotulo: "Em alta", valor: `${ampFiis.emAlta}` },
           { rotulo: "Em baixa", valor: `${ampFiis.emBaixa}` },
         ],
-        altas: fiisOrd.slice(0, 3).map(mapaB3),
-        baixas: fiisOrd.slice(-3).reverse().map(mapaB3),
+        altas: fiisOrd.slice(0, 3).map(mapaFii),
+        baixas: fiisOrd.slice(-3).reverse().map(mapaFii),
         amplitude: ampFiis,
         indisponivel: false,
       }
@@ -219,6 +227,7 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
           : `${nf(l.valor, 0)} pts`,
     variacao: l.variacaoDiaPercent,
     spark: l.spark ?? [],
+    destino: "indices",
   });
   const bolsasOrd = ordenar(bolsas, (l) => l.variacaoDiaPercent);
   const ampIndices = amplitudeDe(bolsas.map((l) => l.variacaoDiaPercent));
@@ -271,6 +280,7 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
           valor: pct(t.taxaCompra),
           variacao: null,
           spark: t.serie.slice(-24).map((p) => p.preco),
+          destino: "tesouro",
         })),
         baixas: [],
         amplitude: null,
@@ -288,6 +298,7 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
     valor: moeda(l.preco, l.mercado === "internacional" ? "USD" : "BRL"),
     variacao: l.variacaoPercent,
     spark: [],
+    destino: "etfs",
   });
   const resumoEtfs: ResumoCategoria = linhasEtfs.length
     ? {
@@ -327,6 +338,7 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
     valor: moeda(l.precoUsd, "USD"),
     variacao: l.variacao24h,
     spark: l.spark ?? [],
+    destino: "cripto",
   });
   const resumoCripto: ResumoCategoria = moedas.length
     ? {
@@ -358,6 +370,7 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
     valor: moeda(l.precoUsd, "USD"),
     variacao: l.variacaoDia,
     spark: l.spark ?? [],
+    destino: "commodities",
   });
   const petroleo = comms.find((l) => /brent|petr/i.test(l.nome));
   const ouro = comms.find((l) => /ouro|gold/i.test(l.nome));
@@ -397,8 +410,8 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
 
   /* --- destaques do dia (B3 + cripto) --- */
   const universo: LinhaResumo[] = [
-    ...linhasAcoes.map(mapaB3),
-    ...linhasFiis.map(mapaB3),
+    ...linhasAcoes.map(mapaAcao),
+    ...linhasFiis.map(mapaFii),
     ...moedas.map(mapaCripto),
   ].filter((l) => l.variacao !== null);
   const universoOrd = [...universo].sort((a, b) => (b.variacao ?? 0) - (a.variacao ?? 0));
