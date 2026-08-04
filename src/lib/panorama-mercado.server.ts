@@ -305,6 +305,12 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
           variacao: null,
           spark: t.serie.slice(-24).map((p) => p.preco),
           destino: "tesouro",
+          simbolo: null,
+          detalhes: [
+            { rotulo: "Taxa de compra", valor: pct(t.taxaCompra) },
+            { rotulo: "Rentabilidade estimada", valor: pct(t.rentabilidadeEstimada) },
+            { rotulo: "Vencimento", valor: new Date(t.vencimento).toLocaleDateString("pt-BR") },
+          ],
         })),
         baixas: [],
         amplitude: null,
