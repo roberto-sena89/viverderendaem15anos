@@ -419,6 +419,15 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
     variacao: l.variacaoDia,
     spark: l.spark ?? [],
     destino: "commodities",
+    simbolo: simboloCommodity(l.codigo),
+    detalhes: [
+      { rotulo: "Variação 30d", valor: pct(l.variacao30d), variacao: l.variacao30d },
+      { rotulo: "Variação 12m", valor: pct(l.variacao12m), variacao: l.variacao12m },
+      { rotulo: "Mínima 12m", valor: moeda(l.minima12m, "USD") },
+      { rotulo: "Máxima 12m", valor: moeda(l.maxima12m, "USD") },
+      { rotulo: "Bolsa", valor: l.bolsa },
+      { rotulo: "Unidade", valor: l.unidade },
+    ],
   });
   const petroleo = comms.find((l) => /brent|petr/i.test(l.nome));
   const ouro = comms.find((l) => /ouro|gold/i.test(l.nome));
