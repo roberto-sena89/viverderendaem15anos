@@ -13,9 +13,11 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { cjk } from "@streamdown/cjk";
-import { code } from "@streamdown/code";
+// Os plugins `code` (Shiki) e `mermaid` foram removidos de propósito: juntos
+// adicionavam ~2,3 MB gzip ao bundle do worker e estouravam o limite de deploy
+// (site respondia 502). O assistente financeiro não renderiza diagramas nem
+// blocos de código com realce.
 import { math } from "@streamdown/math";
-import { mermaid } from "@streamdown/mermaid";
 import type { UIMessage } from "ai";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
