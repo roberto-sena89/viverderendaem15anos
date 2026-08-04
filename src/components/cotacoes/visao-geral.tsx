@@ -1,18 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowUpRight, TrendingDown, TrendingUp } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
-import { corVar, fmtPercent, fmtPreco } from "@/components/cotacoes/formatos";
-import { visaoGeralMercado, type LinhaCotacao } from "@/lib/grade-mercado.functions";
+import { corVar, fmtPercent } from "@/components/cotacoes/formatos";
+import { ABAS_COTACOES } from "@/lib/cotacoes-abas";
+import {
+  panoramaMercado,
+  type LinhaResumo,
+  type PanoramaMercado,
+  type ResumoCategoria,
+} from "@/lib/panorama-mercado.functions";
 
-export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
-  const buscar = useServerFn(visaoGeralMercado);
+const ICONE_ABA = Object.fromEntries(ABAS_COTACOES.map((a) => [a.id, a.icone]));
 
+export function VisaoGeralMercado({
+  intervaloMs,
+  aoAbrirAba,
+}: {
+  intervaloMs: number;
+  aoAbrirAba?: (id: string) => void;
+}) {
+  const buscar = useServerFn(panoramaMercado);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["visao-geral-mercado"],
+    queryKey: ["panorama-mercado"],
     queryFn: () => buscar(),
     refetchInterval: intervaloMs > 0 ? intervaloMs : false,
     refetchIntervalInBackground: false,
@@ -20,27 +33,28 @@ export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
     gcTime: 30 * 60_000,
   });
 
-
-  if (isLoading) {
+  if (isLoading || !data) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-24 w-full" />
-        ))}
+      <div className="space-y-4">
+        <Skeleton className="h-40 w-full rounded-2xl" />
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-56 w-full rounded-2xl" />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {(data?.indices ?? []).map((l) => (
-          <CardIndice key={l.ticker} linha={l} />
+    <div className="space-y-5">
+      <Termometro data={data} />
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {data.categorias.map((c) => (
+          <CartaoCategoria key={c.id} resumo={c} aoAbrirAba={aoAbrirAba} />
         ))}
       </div>
-
-
-
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel
@@ -49,7 +63,7 @@ export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
           bodyClassName="p-0"
           action={<TrendingUp className="size-4 text-positive" aria-hidden />}
         >
-          <ListaCompacta linhas={data?.altas ?? []} />
+          <ListaCompacta linhas={data.altas} />
         </Panel>
         <Panel
           title="Maiores baixas do dia"
@@ -57,46 +71,219 @@ export function VisaoGeralMercado({ intervaloMs }: { intervaloMs: number }) {
           bodyClassName="p-0"
           action={<TrendingDown className="size-4 text-negative" aria-hidden />}
         >
-          <ListaCompacta linhas={data?.baixas ?? []} />
+          <ListaCompacta linhas={data.baixas} />
         </Panel>
       </div>
     </div>
   );
 }
 
-function CardIndice({ linha }: { linha: LinhaCotacao }) {
-  const pos = (linha.variacaoPercent ?? 0) >= 0;
+/* ------------------------------- termômetro ------------------------------ */
+
+function Termometro({ data }: { data: PanoramaMercado }) {
+  const t = data.termometro;
+  const emAlta = t.percentual;
+  const clima =
+    emAlta >= 60 ? "Predomínio comprador" : emAlta <= 40 ? "Predomínio vendedor" : "Mercado equilibrado";
+
   return (
-    <div className="panel p-3">
-      <p className="truncate text-xs tracking-[0.08em] text-muted-foreground uppercase">{linha.ticker}</p>
-      <p className="mt-1 font-display text-lg tabular-nums">{fmtPreco(linha.preco, linha.moeda)}</p>
-      <div className="mt-1 flex items-end justify-between gap-2">
-        <span className={`text-xs tabular-nums ${corVar(linha.variacaoPercent)}`}>
-          {fmtPercent(linha.variacaoPercent)}
-        </span>
-        <Sparkline serie={linha.spark} positivo={pos} largura={64} altura={22} />
+    <section className="panel relative overflow-hidden p-4 sm:p-5">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full bg-primary/10 blur-3xl"
+      />
+      <div className="relative grid gap-5 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-center">
+        <div className="min-w-0">
+          <p className="text-[0.7rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+            Panorama do mercado
+          </p>
+          <p className="mt-1 font-display text-2xl leading-tight sm:text-3xl">{clima}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t.emAlta} em alta · {t.emBaixa} em baixa · {t.total} ativos monitorados
+          </p>
+
+          <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-muted">
+            <span
+              className="h-full bg-positive transition-[width] duration-700"
+              style={{ width: `${emAlta}%` }}
+            />
+            <span className="h-full flex-1 bg-negative/70" />
+          </div>
+          <div className="mt-1.5 flex justify-between text-[0.7rem] tabular-nums text-muted-foreground">
+            <span className="text-positive">{emAlta}% em alta</span>
+            <span className="text-negative">{100 - emAlta}% em baixa</span>
+          </div>
+        </div>
+
+        <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+          {data.indices.map((l) => (
+            <div
+              key={l.ticker}
+              className="min-w-0 rounded-xl border border-border/60 bg-background/40 p-2.5"
+            >
+              <p className="truncate text-[0.68rem] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+                {l.ticker}
+              </p>
+              <p className="mt-0.5 truncate font-display text-[0.95rem] tabular-nums">{l.valor}</p>
+              <div className="mt-1 flex items-end justify-between gap-2">
+                <span className={`text-[0.7rem] tabular-nums ${corVar(l.variacao)}`}>
+                  {fmtPercent(l.variacao)}
+                </span>
+                <Sparkline
+                  serie={l.spark}
+                  positivo={(l.variacao ?? 0) >= 0}
+                  largura={48}
+                  altura={18}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-function ListaCompacta({ linhas }: { linhas: LinhaCotacao[] }) {
+/* ---------------------------- cartão por aba ----------------------------- */
+
+function CartaoCategoria({
+  resumo,
+  aoAbrirAba,
+}: {
+  resumo: ResumoCategoria;
+  aoAbrirAba?: (id: string) => void;
+}) {
+  const Icone = ICONE_ABA[resumo.id];
+  const clicavel = Boolean(aoAbrirAba);
+
+  const conteudo = (
+    <>
+      <div className="flex items-start gap-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-primary/25 bg-primary/10 text-primary">
+          {Icone ? <Icone className="size-4" aria-hidden /> : null}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold">{resumo.rotulo}</p>
+          <p className="truncate text-xs text-muted-foreground">{resumo.legenda}</p>
+        </div>
+        {clicavel ? (
+          <ArrowUpRight
+            className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
+            aria-hidden
+          />
+        ) : null}
+      </div>
+
+      {resumo.indisponivel ? (
+        <p className="mt-4 text-sm text-muted-foreground">Sem dados disponíveis no momento.</p>
+      ) : (
+        <>
+          {resumo.destaque ? (
+            <div className="mt-4">
+              <p className="truncate text-[0.7rem] tracking-[0.1em] text-muted-foreground uppercase">
+                {resumo.destaque.rotulo}
+              </p>
+              <div className="mt-0.5 flex items-baseline gap-2">
+                <span className="truncate font-display text-xl tabular-nums sm:text-2xl">
+                  {resumo.destaque.valor}
+                </span>
+                {resumo.destaque.variacao !== null ? (
+                  <span className={`text-xs tabular-nums ${corVar(resumo.destaque.variacao)}`}>
+                    {fmtPercent(resumo.destaque.variacao)}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+
+          {resumo.metricas.length ? (
+            <dl className="mt-3 grid grid-cols-3 gap-2">
+              {resumo.metricas.slice(0, 3).map((m) => (
+                <div key={m.rotulo} className="min-w-0 rounded-lg bg-muted/40 px-2 py-1.5">
+                  <dt className="truncate text-[0.65rem] tracking-[0.08em] text-muted-foreground uppercase">
+                    {m.rotulo}
+                  </dt>
+                  <dd className="truncate text-xs font-medium tabular-nums">{m.valor}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
+
+          {resumo.amplitude && resumo.amplitude.total > 0 ? (
+            <div className="mt-3 flex h-1.5 overflow-hidden rounded-full bg-muted">
+              <span
+                className="h-full bg-positive"
+                style={{
+                  width: `${Math.round((resumo.amplitude.emAlta / resumo.amplitude.total) * 100)}%`,
+                }}
+              />
+              <span className="h-full flex-1 bg-negative/60" />
+            </div>
+          ) : null}
+
+          {resumo.altas.length ? (
+            <ul className="mt-3 space-y-1.5 border-t border-border/60 pt-3">
+              {resumo.altas.map((l) => (
+                <li key={`${resumo.id}-${l.ticker}`} className="flex items-center gap-2">
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-xs font-medium">{l.ticker}</span>
+                    <span className="block truncate text-[0.68rem] text-muted-foreground">
+                      {l.nome}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-right">
+                    <span className="block text-xs tabular-nums">{l.valor}</span>
+                    {l.variacao !== null ? (
+                      <span className={`block text-[0.68rem] tabular-nums ${corVar(l.variacao)}`}>
+                        {fmtPercent(l.variacao)}
+                      </span>
+                    ) : null}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </>
+      )}
+    </>
+  );
+
+  const classe =
+    "panel group flex h-full flex-col p-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg";
+
+  if (!clicavel) return <div className={classe}>{conteudo}</div>;
+
+  return (
+    <button
+      type="button"
+      onClick={() => aoAbrirAba?.(resumo.id)}
+      aria-label={`Abrir aba ${resumo.rotulo}`}
+      className={`${classe} focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`}
+    >
+      {conteudo}
+    </button>
+  );
+}
+
+/* ------------------------------- listas ---------------------------------- */
+
+function ListaCompacta({ linhas }: { linhas: LinhaResumo[] }) {
   if (linhas.length === 0) {
     return <p className="p-4 text-sm text-muted-foreground">Sem dados disponíveis no momento.</p>;
   }
   return (
     <ul className="divide-y divide-border/60">
       {linhas.map((l) => (
-        <li key={`${l.categoria}-${l.ticker}`} className="flex items-center gap-3 px-4 py-2">
+        <li key={l.ticker} className="flex items-center gap-3 px-4 py-2">
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-medium">{l.ticker}</span>
             <span className="block truncate text-xs text-muted-foreground">{l.nome}</span>
           </span>
-          <Sparkline serie={l.spark} positivo={(l.variacaoPercent ?? 0) >= 0} largura={56} altura={22} />
+          <Sparkline serie={l.spark} positivo={(l.variacao ?? 0) >= 0} largura={56} altura={22} />
           <span className="shrink-0 text-right">
-            <span className="block text-sm tabular-nums">{fmtPreco(l.preco, l.moeda)}</span>
-            <span className={`block text-xs tabular-nums ${corVar(l.variacaoPercent)}`}>
-              {fmtPercent(l.variacaoPercent)}
+            <span className="block text-sm tabular-nums">{l.valor}</span>
+            <span className={`block text-xs tabular-nums ${corVar(l.variacao)}`}>
+              {fmtPercent(l.variacao)}
             </span>
           </span>
         </li>

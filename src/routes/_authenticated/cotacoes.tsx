@@ -152,7 +152,7 @@ function Cotacoes() {
 
 
           <TabsContent value="geral" className="mt-4">
-            <VisaoGeralMercado intervaloMs={intervalo} />
+            <VisaoGeralMercado intervaloMs={intervalo} aoAbrirAba={setAba} />
           </TabsContent>
 
           <TabsContent value="fiis" className="mt-4">
