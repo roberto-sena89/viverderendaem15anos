@@ -4,7 +4,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ResumoTesouro, fmtData } from "@/components/tesouro/resumo-tesouro";
 import { TabelaTesouro } from "@/components/tesouro/tabela-tesouro";
 import { ModalTitulo } from "@/components/tesouro/modal-titulo";

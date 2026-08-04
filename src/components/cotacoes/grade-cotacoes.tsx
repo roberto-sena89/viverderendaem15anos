@@ -5,7 +5,6 @@ import { ArrowDown, ArrowUp, RefreshCw, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { ModalAtivo } from "@/components/cotacoes/modal-ativo";
 import { TextoTruncado } from "@/components/texto-truncado";
