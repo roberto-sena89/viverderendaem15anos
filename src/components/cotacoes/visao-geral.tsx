@@ -10,6 +10,7 @@ import { corVar, fmtPercent } from "@/components/cotacoes/formatos";
 import { TextoTruncado } from "@/components/texto-truncado";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ABAS_COTACOES } from "@/lib/cotacoes-abas";
+import { EstadoVazio } from "@/components/estado-vazio";
 import {
   panoramaMercado,
   type LinhaResumo,
@@ -349,7 +350,14 @@ function ListaCompacta({
   aoDetalhar?: (linha: LinhaResumo) => void;
 }) {
   if (linhas.length === 0) {
-    return <p className="p-4 text-sm text-muted-foreground">Sem dados disponíveis no momento.</p>;
+    return (
+      <EstadoVazio
+        compacto
+        className="border-0"
+        titulo="Sem dados disponíveis"
+        descricao="Não há cotações para esta categoria no momento."
+      />
+    );
   }
   return (
     <ul className="divide-y divide-border/60">

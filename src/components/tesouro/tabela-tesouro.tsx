@@ -10,6 +10,7 @@ import {
 } from "@/lib/tesouro-base";
 import { cn } from "@/lib/utils";
 import { TextoTruncado } from "@/components/texto-truncado";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 const anos = (v: number) => (v >= 1 ? `${fmtNum(v, 1)} anos` : `${Math.round(v * 12)} meses`);
 
@@ -29,9 +30,10 @@ export function TabelaTesouro({
 }) {
   if (!linhas.length) {
     return (
-      <div className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-        Nenhum título corresponde aos filtros selecionados.
-      </div>
+      <EstadoVazio
+        titulo="Nenhum título encontrado"
+        descricao="Nenhum título do Tesouro corresponde aos filtros selecionados."
+      />
     );
   }
 

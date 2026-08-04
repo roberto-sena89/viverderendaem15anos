@@ -56,6 +56,7 @@ import { useAtivos } from "@/lib/data";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { mesclarPrecosAcoes, useAcoesAoVivo } from "@/lib/acoes-tempo-real";
 import { useValorAtrasado } from "@/lib/fiis-virtualizacao";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 const CHAVE_COLUNAS = "acoes:colunas";
 const COLUNAS_PADRAO: ColunaAcaoId[] = [
@@ -561,13 +562,16 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
           />
 
           {!grade.isLoading && !visiveis.length ? (
-            <p className="flex flex-col items-center gap-2 p-10 text-center text-sm text-muted-foreground">
-              <LineChart className="size-6" aria-hidden />
-              Nenhuma ação corresponde aos filtros aplicados.
-              <Button variant="outline" size="sm" onClick={limpar}>
-                Limpar filtros
-              </Button>
-            </p>
+            <EstadoVazio
+              icone={LineChart}
+              titulo="Nenhuma ação encontrada"
+              descricao="Nenhuma ação corresponde aos filtros aplicados. Ajuste os critérios ou limpe os filtros."
+              acao={
+                <Button variant="outline" size="sm" onClick={limpar}>
+                  Limpar filtros
+                </Button>
+              }
+            />
           ) : null}
 
           <div className="flex flex-wrap items-center justify-between gap-bloco border-t border-border p-bloco text-sm">

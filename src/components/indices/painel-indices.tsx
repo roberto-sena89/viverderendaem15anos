@@ -19,6 +19,7 @@ import {
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import { cn } from "@/lib/utils";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 type Ordem = "buscados" | "maior12m" | "menor12m";
 
@@ -177,9 +178,10 @@ export function PainelIndices({
               ))}
             </div>
           ) : secoes.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              Nenhum índice encontrado para a busca.
-            </p>
+            <EstadoVazio
+              titulo="Nenhum índice encontrado"
+              descricao="Nenhum índice corresponde à busca. Tente outro nome ou código."
+            />
           ) : (
             secoes.map((s) => {
               const aberta = !recolhidas[s.id];

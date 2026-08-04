@@ -25,6 +25,8 @@ import { gradeCripto } from "@/lib/cripto.functions";
 import type { CategoriaCripto, LinhaCripto } from "@/lib/cripto-base";
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
+import { EstadoVazio } from "@/components/estado-vazio";
+import { SkeletonCartoesGrade } from "@/components/skeleton-grade";
 
 /** Cripto negocia 24/7: mantemos uma atualização mínima mesmo no modo manual. */
 const INTERVALO_MINIMO = 30_000;
@@ -159,11 +161,7 @@ export function PainelCripto({
   if (isLoading) {
     return (
       <div className="pilha-secao">
-        <div className="grid grid-cols-2 gap-bloco sm:grid-cols-3 xl:grid-cols-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-[86px] w-full rounded-xl" />
-          ))}
-        </div>
+        <SkeletonCartoesGrade quantidade={6} altura="h-[86px]" className="grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 2xl:grid-cols-6" />
         <Skeleton className="h-[420px] w-full rounded-xl" />
       </div>
     );
@@ -279,9 +277,10 @@ export function PainelCripto({
 
           <div className="min-w-0">
             {linhas.length === 0 ? (
-              <p className="p-6 text-sm text-muted-foreground">
-                Nenhuma criptomoeda corresponde aos filtros aplicados.
-              </p>
+              <EstadoVazio
+                titulo="Nenhuma criptomoeda encontrada"
+                descricao="Nenhuma moeda corresponde aos filtros aplicados. Tente outro termo de busca ou revise os filtros."
+              />
             ) : (
               <>
                 <div className="hidden md:block">

@@ -29,6 +29,7 @@ import {
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { EstadoVazio } from "@/components/estado-vazio";
 
 type Ordem = "buscadas" | "maior12m" | "menor12m";
 
@@ -351,11 +352,14 @@ export function PainelCommodities({
               ))}
             </div>
           ) : secoes.length === 0 ? (
-            <p className="t-body-sm py-8 text-center text-muted-foreground">
-              {filtrosAtivos > 0
-                ? "Nenhuma commodity corresponde aos filtros de categoria, bolsa ou pregão selecionados."
-                : "Nenhuma commodity encontrada para a busca."}
-            </p>
+            <EstadoVazio
+              titulo="Nenhuma commodity encontrada"
+              descricao={
+                filtrosAtivos > 0
+                  ? "Nenhuma commodity corresponde aos filtros de categoria, bolsa ou pregão selecionados."
+                  : "Nenhuma commodity encontrada para a busca."
+              }
+            />
           ) : (
             secoes.map((s) => {
               const aberta = !recolhidas[s.id];
