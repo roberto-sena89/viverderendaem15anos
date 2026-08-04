@@ -192,8 +192,8 @@ function CartaoCategoria({
           {Icone ? <Icone className="size-4" aria-hidden /> : null}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="t-card-title block truncate">{resumo.rotulo}</span>
-          <span className="t-subtexto block">{resumo.legenda}</span>
+          <TextoTruncado className="t-card-title block truncate">{resumo.rotulo}</TextoTruncado>
+          <TextoTruncado className="t-subtexto block">{resumo.legenda}</TextoTruncado>
         </span>
         {clicavel ? (
           <ArrowUpRight
