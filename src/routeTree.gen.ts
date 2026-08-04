@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CalculadoraJurosCompostosRouteImport } from './routes/calculadora-juros-compostos'
 import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as OQueERendaPassivaRouteImport } from './routes/o-que-e-renda-passiva'
 import { Route as QuantoRende1MilhaoPorMesRouteImport } from './routes/quanto-rende-1-milhao-por-mes'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
@@ -70,6 +71,11 @@ const GuiaLiberdadeFinanceiraRoute = GuiaLiberdadeFinanceiraRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OQueERendaPassivaRoute = OQueERendaPassivaRouteImport.update({
+  id: '/o-que-e-renda-passiva',
+  path: '/o-que-e-renda-passiva',
   getParentRoute: () => rootRouteImport,
 } as any)
 const QuantoRende1MilhaoPorMesRoute =
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/o-que-e-renda-passiva': typeof OQueERendaPassivaRoute
   '/quanto-rende-1-milhao-por-mes': typeof QuantoRende1MilhaoPorMesRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
@@ -251,6 +258,7 @@ export interface FileRoutesByTo {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/o-que-e-renda-passiva': typeof OQueERendaPassivaRoute
   '/quanto-rende-1-milhao-por-mes': typeof QuantoRende1MilhaoPorMesRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
@@ -286,6 +294,7 @@ export interface FileRoutesById {
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
+  '/o-que-e-renda-passiva': typeof OQueERendaPassivaRoute
   '/quanto-rende-1-milhao-por-mes': typeof QuantoRende1MilhaoPorMesRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
@@ -321,6 +330,7 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/o-que-e-renda-passiva'
     | '/quanto-rende-1-milhao-por-mes'
     | '/recuperar-senha'
     | '/redefinir-senha'
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/o-que-e-renda-passiva'
     | '/quanto-rende-1-milhao-por-mes'
     | '/recuperar-senha'
     | '/redefinir-senha'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
+    | '/o-que-e-renda-passiva'
     | '/quanto-rende-1-milhao-por-mes'
     | '/recuperar-senha'
     | '/redefinir-senha'
@@ -423,6 +435,7 @@ export interface RootRouteChildren {
   CalculadoraJurosCompostosRoute: typeof CalculadoraJurosCompostosRoute
   GuiaLiberdadeFinanceiraRoute: typeof GuiaLiberdadeFinanceiraRoute
   McpRoute: typeof McpRoute
+  OQueERendaPassivaRoute: typeof OQueERendaPassivaRoute
   QuantoRende1MilhaoPorMesRoute: typeof QuantoRende1MilhaoPorMesRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
@@ -481,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/o-que-e-renda-passiva': {
+      id: '/o-que-e-renda-passiva'
+      path: '/o-que-e-renda-passiva'
+      fullPath: '/o-que-e-renda-passiva'
+      preLoaderRoute: typeof OQueERendaPassivaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/quanto-rende-1-milhao-por-mes': {
@@ -708,6 +728,7 @@ const rootRouteChildren: RootRouteChildren = {
   CalculadoraJurosCompostosRoute: CalculadoraJurosCompostosRoute,
   GuiaLiberdadeFinanceiraRoute: GuiaLiberdadeFinanceiraRoute,
   McpRoute: McpRoute,
+  OQueERendaPassivaRoute: OQueERendaPassivaRoute,
   QuantoRende1MilhaoPorMesRoute: QuantoRende1MilhaoPorMesRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
