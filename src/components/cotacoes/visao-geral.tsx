@@ -286,10 +286,10 @@ function LinhaClicavel({
   const conteudo = (
     <>
       <span className="min-w-0 flex-1">
-        <span className={`t-ticker block ${compacta ? "text-[0.8125rem]" : ""}`}>
+        <TextoTruncado className={`t-ticker block ${compacta ? "text-[0.8125rem]" : ""}`}>
           {linha.ticker}
-        </span>
-        <span className="t-subtexto block">{linha.nome}</span>
+        </TextoTruncado>
+        <TextoTruncado className="t-subtexto block">{linha.nome}</TextoTruncado>
       </span>
       {compacta ? null : (
         <Sparkline
