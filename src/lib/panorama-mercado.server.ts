@@ -246,6 +246,12 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
     variacao: l.variacaoDiaPercent,
     spark: l.spark ?? [],
     destino: "indices",
+    simbolo: simboloIndice(l.codigo),
+    detalhes: [
+      { rotulo: "Variação 12m", valor: pct(l.variacao12m), variacao: l.variacao12m },
+      { rotulo: "Fonte", valor: l.fonte },
+      ...l.extras.slice(0, 4),
+    ],
   });
   const bolsasOrd = ordenar(bolsas, (l) => l.variacaoDiaPercent);
   const ampIndices = amplitudeDe(bolsas.map((l) => l.variacaoDiaPercent));
