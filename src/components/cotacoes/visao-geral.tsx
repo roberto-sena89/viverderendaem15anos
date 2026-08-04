@@ -176,7 +176,7 @@ function CartaoCategoria({
   const clicavel = Boolean(aoAbrirAba);
 
   return (
-    <div className="panel group flex h-full flex-col p-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
+    <div className="panel group flex h-full flex-col p-cartao text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
       <button
         type="button"
         disabled={!clicavel}
@@ -188,8 +188,8 @@ function CartaoCategoria({
           {Icone ? <Icone className="size-4" aria-hidden /> : null}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold">{resumo.rotulo}</span>
-          <span className="block truncate text-xs text-muted-foreground">{resumo.legenda}</span>
+          <span className="t-card-title block truncate">{resumo.rotulo}</span>
+          <span className="t-subtexto block">{resumo.legenda}</span>
         </span>
         {clicavel ? (
           <ArrowUpRight
@@ -200,20 +200,18 @@ function CartaoCategoria({
       </button>
 
       {resumo.indisponivel ? (
-        <p className="mt-4 text-sm text-muted-foreground">Sem dados disponíveis no momento.</p>
+        <p className="t-body-sm mt-bloco text-muted-foreground">Sem dados disponíveis no momento.</p>
       ) : (
         <>
           {resumo.destaque ? (
-            <div className="mt-4">
-              <p className="truncate text-[0.7rem] tracking-[0.1em] text-muted-foreground uppercase">
-                {resumo.destaque.rotulo}
-              </p>
-              <div className="mt-0.5 flex items-baseline gap-2">
-                <span className="truncate font-display text-xl tabular-nums sm:text-2xl">
-                  {resumo.destaque.valor}
-                </span>
+            <div className="mt-bloco min-w-0">
+              <p className="t-label truncate">{resumo.destaque.rotulo}</p>
+              <div className="mt-0.5 flex min-w-0 items-baseline gap-2">
+                <span className="t-metric-sm min-w-0 truncate">{resumo.destaque.valor}</span>
                 {resumo.destaque.variacao !== null ? (
-                  <span className={`text-xs tabular-nums ${corVar(resumo.destaque.variacao)}`}>
+                  <span
+                    className={`t-num-sm shrink-0 ${corVar(resumo.destaque.variacao)}`}
+                  >
                     {fmtPercent(resumo.destaque.variacao)}
                   </span>
                 ) : null}
@@ -222,20 +220,18 @@ function CartaoCategoria({
           ) : null}
 
           {resumo.metricas.length ? (
-            <dl className="mt-3 grid grid-cols-3 gap-2">
+            <dl className="mt-bloco grid grid-cols-3 gap-2">
               {resumo.metricas.slice(0, 3).map((m) => (
                 <div key={m.rotulo} className="min-w-0 rounded-lg bg-muted/40 px-2 py-1.5">
-                  <dt className="truncate text-[0.65rem] tracking-[0.08em] text-muted-foreground uppercase">
-                    {m.rotulo}
-                  </dt>
-                  <dd className="truncate text-xs font-medium tabular-nums">{m.valor}</dd>
+                  <dt className="t-label truncate">{m.rotulo}</dt>
+                  <dd className="t-num-sm truncate font-medium">{m.valor}</dd>
                 </div>
               ))}
             </dl>
           ) : null}
 
           {resumo.amplitude && resumo.amplitude.total > 0 ? (
-            <div className="mt-3 flex h-1.5 overflow-hidden rounded-full bg-muted">
+            <div className="mt-bloco flex h-1.5 overflow-hidden rounded-full bg-muted">
               <span
                 className="h-full bg-positive"
                 style={{
@@ -247,7 +243,7 @@ function CartaoCategoria({
           ) : null}
 
           {resumo.altas.length ? (
-            <ul className="mt-3 space-y-1 border-t border-border/60 pt-3">
+            <ul className="mt-bloco space-y-1 border-t border-border/60 pt-bloco">
               {resumo.altas.map((l) => (
                 <li key={`${resumo.id}-${l.ticker}`}>
                   <LinhaClicavel linha={l} aoDetalhar={aoDetalhar} compacta />
@@ -260,13 +256,14 @@ function CartaoCategoria({
             <button
               type="button"
               onClick={() => aoAbrirAba?.(resumo.id)}
-              className="mt-3 self-start text-xs font-medium text-primary hover:underline focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              className="t-caption mt-bloco self-start font-medium text-primary hover:underline focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
               Ver grade completa de {resumo.rotulo} →
             </button>
           ) : null}
         </>
       )}
+
     </div>
   );
 }
