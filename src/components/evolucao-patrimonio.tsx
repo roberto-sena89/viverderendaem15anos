@@ -723,10 +723,10 @@ export function EvolucaoPatrimonio() {
       >
 
 
-        <div className="w-full max-w-full overflow-hidden pb-1 sm:-mx-2 sm:w-[calc(100%+1rem)] sm:max-w-none sm:overflow-x-auto sm:overflow-y-hidden sm:[scrollbar-width:thin]">
+        <div className="-mx-2 w-[calc(100%+1rem)] max-w-none overflow-x-auto overflow-y-hidden pb-1 [scrollbar-width:thin]">
           <div
-            className="h-[260px] w-full min-w-0 sm:h-[380px] sm:min-w-[var(--mw)] xl:h-[430px]"
-            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * 44)}px` } as Record<string, string>}
+            className="h-[260px] w-full min-w-[var(--mw)] sm:h-[380px] xl:h-[430px]"
+            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * (dadosGrafico.length <= 14 ? 88 : 56))}px` } as Record<string, string>}
           >
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={-2} barCategoryGap="10%" maxBarSize={34}>
@@ -768,7 +768,7 @@ export function EvolucaoPatrimonio() {
                 onMouseEnter={() => setDestaque("patrimonio")}
                 onMouseLeave={() => setDestaque(null)}
               >
-                {mostrarRotulos && destaque !== "aportadoAcum" && destaque !== "anterior" ? (
+                {mostrarRotulos && dadosGrafico.length <= 14 && destaque !== "aportadoAcum" && destaque !== "anterior" ? (
                 <LabelList
                   dataKey="patrimonio"
                   position="top"
@@ -792,7 +792,7 @@ export function EvolucaoPatrimonio() {
                 onMouseEnter={() => setDestaque("aportadoAcum")}
                 onMouseLeave={() => setDestaque(null)}
               >
-                {mostrarRotulos && destaque !== "patrimonio" && destaque !== "anterior" ? (
+                {mostrarRotulos && dadosGrafico.length <= 14 && destaque !== "patrimonio" && destaque !== "anterior" ? (
                 <LabelList
                   dataKey="aportadoAcum"
                   position="top"
