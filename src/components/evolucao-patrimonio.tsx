@@ -729,7 +729,7 @@ export function EvolucaoPatrimonio() {
             style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * 44)}px` } as Record<string, string>}
           >
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={0} barCategoryGap="35%" maxBarSize={14}>
+            <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={0} barCategoryGap="30%" maxBarSize={34}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
@@ -763,7 +763,7 @@ export function EvolucaoPatrimonio() {
                 name="Patrimônio"
                 fill="var(--color-serie-patrimonio)"
                 fillOpacity={destaque && destaque !== "patrimonio" ? 0.28 : 1}
-                radius={[3, 3, 0, 0]}
+                radius={[0, 0, 0, 0]}
                 isAnimationActive={false}
                 onMouseEnter={() => setDestaque("patrimonio")}
                 onMouseLeave={() => setDestaque(null)}
@@ -772,7 +772,7 @@ export function EvolucaoPatrimonio() {
                 <LabelList
                   dataKey="patrimonio"
                   position="top"
-                  offset={14}
+                  offset={6}
                   formatter={(v: number) => compacto(Number(v))}
                   style={{
                     fontSize: 10,
@@ -787,7 +787,7 @@ export function EvolucaoPatrimonio() {
                 name="Total investido"
                 fill="var(--color-serie-investido)"
                 fillOpacity={destaque && destaque !== "aportadoAcum" ? 0.28 : 1}
-                radius={[3, 3, 0, 0]}
+                radius={[0, 0, 0, 0]}
                 isAnimationActive={false}
                 onMouseEnter={() => setDestaque("aportadoAcum")}
                 onMouseLeave={() => setDestaque(null)}
@@ -796,7 +796,7 @@ export function EvolucaoPatrimonio() {
                 <LabelList
                   dataKey="aportadoAcum"
                   position="top"
-                  offset={4}
+                  offset={6}
                   formatter={(v: number) => compacto(Number(v))}
                   style={{
                     fontSize: 10,
@@ -806,6 +806,7 @@ export function EvolucaoPatrimonio() {
                 />
                 ) : null}
               </Bar>
+
 
               {comparar ? (
                 <Line
