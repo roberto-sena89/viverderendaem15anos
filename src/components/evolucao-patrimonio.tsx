@@ -763,7 +763,7 @@ export function EvolucaoPatrimonio() {
                 name="Patrimônio"
                 fill="var(--color-serie-patrimonio)"
                 fillOpacity={destaque && destaque !== "patrimonio" ? 0.28 : 1}
-                radius={[3, 3, 0, 0]}
+                radius={[0, 0, 0, 0]}
                 isAnimationActive={false}
                 onMouseEnter={() => setDestaque("patrimonio")}
                 onMouseLeave={() => setDestaque(null)}
@@ -772,7 +772,7 @@ export function EvolucaoPatrimonio() {
                 <LabelList
                   dataKey="patrimonio"
                   position="top"
-                  offset={14}
+                  offset={6}
                   formatter={(v: number) => compacto(Number(v))}
                   style={{
                     fontSize: 10,
@@ -787,7 +787,7 @@ export function EvolucaoPatrimonio() {
                 name="Total investido"
                 fill="var(--color-serie-investido)"
                 fillOpacity={destaque && destaque !== "aportadoAcum" ? 0.28 : 1}
-                radius={[3, 3, 0, 0]}
+                radius={[0, 0, 0, 0]}
                 isAnimationActive={false}
                 onMouseEnter={() => setDestaque("aportadoAcum")}
                 onMouseLeave={() => setDestaque(null)}
@@ -796,7 +796,7 @@ export function EvolucaoPatrimonio() {
                 <LabelList
                   dataKey="aportadoAcum"
                   position="top"
-                  offset={4}
+                  offset={6}
                   formatter={(v: number) => compacto(Number(v))}
                   style={{
                     fontSize: 10,
@@ -806,6 +806,7 @@ export function EvolucaoPatrimonio() {
                 />
                 ) : null}
               </Bar>
+
 
               {comparar ? (
                 <Line
