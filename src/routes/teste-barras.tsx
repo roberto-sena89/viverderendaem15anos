@@ -35,10 +35,10 @@ function Grafico({ n }: { n: number }) {
   return (
     <div data-teste={n} className="mb-8">
       <p className="mb-1 text-sm">{n} períodos</p>
-      <div className="w-full overflow-hidden sm:overflow-x-auto">
+      <div className="overflow-x-auto">
         <div
-          className="h-[380px] w-full sm:min-w-[var(--mw)]"
-          style={{ ["--mw" as string]: `${Math.max(320, dados.length * 44)}px` } as Record<string, string>}
+          className="h-[380px] w-full min-w-[var(--mw)]"
+          style={{ ["--mw" as string]: `${Math.max(320, dados.length * 56)}px` } as Record<string, string>}
         >
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={dados} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={-2} barCategoryGap="10%" maxBarSize={34}>
@@ -54,10 +54,10 @@ function Grafico({ n }: { n: number }) {
               />
               <YAxis tick={{ fontSize: 11 }} width={52} tickFormatter={compacto} />
               <Bar dataKey="patrimonio" fill="#10b981" isAnimationActive={false}>
-                <LabelList dataKey="patrimonio" position="top" offset={6} formatter={(v: number) => compacto(Number(v))} style={{ fontSize: 10 }} />
+                {dados.length <= 14 ? <LabelList dataKey="patrimonio" position="top" offset={6} formatter={(v: number) => compacto(Number(v))} style={{ fontSize: 10 }} /> : null}
               </Bar>
               <Bar dataKey="aportadoAcum" fill="#065f46" isAnimationActive={false}>
-                <LabelList dataKey="aportadoAcum" position="top" offset={6} formatter={(v: number) => compacto(Number(v))} style={{ fontSize: 10 }} />
+                {dados.length <= 14 ? <LabelList dataKey="aportadoAcum" position="top" offset={6} formatter={(v: number) => compacto(Number(v))} style={{ fontSize: 10 }} /> : null}
               </Bar>
             </ComposedChart>
           </ResponsiveContainer>
