@@ -726,7 +726,7 @@ export function EvolucaoPatrimonio() {
         <div className="-mx-2 w-[calc(100%+1rem)] max-w-none overflow-x-auto overflow-y-hidden pb-1 [scrollbar-width:thin]">
           <div
             className="h-[260px] w-full min-w-[var(--mw)] sm:h-[380px] xl:h-[430px]"
-            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * 56)}px` } as Record<string, string>}
+            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * (dadosGrafico.length <= 14 ? 88 : 56))}px` } as Record<string, string>}
           >
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={-2} barCategoryGap="10%" maxBarSize={34}>
