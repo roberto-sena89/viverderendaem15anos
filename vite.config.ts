@@ -14,6 +14,9 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    server: {
+      allowedHosts: [".monkeycode-ai.live"],
+    },
     plugins: [mcpPlugin()],
   },
 });

@@ -23,8 +23,16 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { listarMensagens, limparConversa } from "@/lib/chat.functions";
+import { PERFIS, usePerfilInvestidor, type PerfilInvestidor } from "@/lib/perfil-investidor";
 import logoIA from "@/assets/tecnico-ia.png";
 
 export const Route = createFileRoute("/_authenticated/chat")({
@@ -40,7 +48,8 @@ export const Route = createFileRoute("/_authenticated/chat")({
       { property: "og:title", content: "Técnico IA — Assistente da sua carteira" },
       {
         property: "og:description",
-        content: "Análises da sua carteira de ações, FIIs e renda fixa com inteligência artificial.",
+        content:
+          "Análises da sua carteira de ações, FIIs e renda fixa com inteligência artificial.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -51,17 +60,17 @@ export const Route = createFileRoute("/_authenticated/chat")({
 });
 
 const SUGESTOES = [
-  "Como PETR4 se comportou nos últimos 10 anos?",
-  "Qual a projeção da Selic para os próximos anos?",
-  "Compare BOVA11 com IVVB11 em retorno e risco",
   "Analise a diversificação da minha carteira",
+  "Quanto falta para eu viver de renda?",
+  "Quanto devo aportar por mês para antecipar minha independência?",
+  "Quais ativos devo olhar para fortalecer minha carteira?",
 ];
-
 
 function ChatPage() {
   const queryClient = useQueryClient();
   const fetchMensagens = useServerFn(listarMensagens);
   const clearFn = useServerFn(limparConversa);
+  const { perfil, salvar } = usePerfilInvestidor();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [input, setInput] = useState("");
 
@@ -87,11 +96,13 @@ function ChatPage() {
         headers: async (): Promise<Record<string, string>> => {
           const { data } = await supabase.auth.getSession();
           const token = data.session?.access_token;
-          return token ? { Authorization: `Bearer ${token}` } : {};
+          return {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            "X-Perfil-Investidor": perfil,
+          };
         },
-
       }),
-    [],
+    [perfil],
   );
 
   const { messages, sendMessage, setMessages, status } = useChat({
@@ -147,7 +158,7 @@ function ChatPage() {
       description="Seu consultor de investimentos com acesso aos dados reais da sua carteira."
     >
       <div className="flex h-[calc(100vh-11rem)] min-h-[32rem] flex-col gap-4">
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-card/60 px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-card/60 px-4 py-3">
           <div className="flex items-center gap-3">
             <img
               src={logoIA}
@@ -164,10 +175,29 @@ function ChatPage() {
               </p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={limpar} disabled={messages.length === 0 || carregando}>
-            <Eraser className="mr-2 size-4" />
-            Limpar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
+              <SelectTrigger className="w-44" aria-label="Perfil de investidor">
+                <SelectValue placeholder="Perfil" />
+              </SelectTrigger>
+              <SelectContent>
+                {PERFIS.map((p) => (
+                  <SelectItem key={p.valor} value={p.valor}>
+                    {p.rotulo}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={limpar}
+              disabled={messages.length === 0 || carregando}
+            >
+              <Eraser className="mr-2 size-4" />
+              Limpar
+            </Button>
+          </div>
         </div>
 
         <Conversation className="flex-1 rounded-xl border border-border/60 bg-card/40">
@@ -221,7 +251,6 @@ function ChatPage() {
                   </Message>
                 );
               })
-
             )}
             {status === "submitted" ? (
               <div className="px-2 pt-2">
@@ -248,7 +277,8 @@ function ChatPage() {
           <PromptInputFooter className="justify-between">
             <span className="text-xs text-muted-foreground">
               <RefreshCw className="mr-1 inline size-3" />
-              Respostas baseadas na sua carteira atual
+              Respostas baseadas na sua carteira e no seu perfil{" "}
+              {PERFIS.find((p) => p.valor === perfil)?.rotulo.toLowerCase()}
             </span>
             <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
           </PromptInputFooter>
