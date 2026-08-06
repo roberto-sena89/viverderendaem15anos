@@ -20,7 +20,6 @@ import { Route as QuantoRende1MilhaoPorMesRouteImport } from './routes/quanto-re
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as TesteBarrasRouteImport } from './routes/teste-barras'
 import { Route as VerificarEmailRouteImport } from './routes/verificar-email'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -98,11 +97,6 @@ const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TesteBarrasRoute = TesteBarrasRouteImport.update({
-  id: '/teste-barras',
-  path: '/teste-barras',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerificarEmailRoute = VerificarEmailRouteImport.update({
@@ -235,7 +229,6 @@ export interface FileRoutesByFullPath {
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/teste-barras': typeof TesteBarrasRoute
   '/verificar-email': typeof VerificarEmailRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -270,7 +263,6 @@ export interface FileRoutesByTo {
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/teste-barras': typeof TesteBarrasRoute
   '/verificar-email': typeof VerificarEmailRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -307,7 +299,6 @@ export interface FileRoutesById {
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/teste-barras': typeof TesteBarrasRoute
   '/verificar-email': typeof VerificarEmailRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -344,7 +335,6 @@ export interface FileRouteTypes {
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/sitemap.xml'
-    | '/teste-barras'
     | '/verificar-email'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -379,7 +369,6 @@ export interface FileRouteTypes {
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/sitemap.xml'
-    | '/teste-barras'
     | '/verificar-email'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -415,7 +404,6 @@ export interface FileRouteTypes {
     | '/recuperar-senha'
     | '/redefinir-senha'
     | '/sitemap.xml'
-    | '/teste-barras'
     | '/verificar-email'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -452,7 +440,6 @@ export interface RootRouteChildren {
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  TesteBarrasRoute: typeof TesteBarrasRoute
   VerificarEmailRoute: typeof VerificarEmailRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -542,13 +529,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/teste-barras': {
-      id: '/teste-barras'
-      path: '/teste-barras'
-      fullPath: '/teste-barras'
-      preLoaderRoute: typeof TesteBarrasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verificar-email': {
@@ -753,7 +733,6 @@ const rootRouteChildren: RootRouteChildren = {
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  TesteBarrasRoute: TesteBarrasRoute,
   VerificarEmailRoute: VerificarEmailRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
