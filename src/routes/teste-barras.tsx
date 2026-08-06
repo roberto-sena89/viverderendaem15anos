@@ -38,7 +38,7 @@ function Grafico({ n }: { n: number }) {
       <div className="overflow-x-auto">
         <div
           className="h-[380px] w-full min-w-[var(--mw)]"
-          style={{ ["--mw" as string]: `${Math.max(320, dados.length * 64)}px` } as Record<string, string>}
+          style={{ ["--mw" as string]: `${Math.max(320, dados.length * 76)}px` } as Record<string, string>}
         >
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={dados} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={-2} barCategoryGap="10%" maxBarSize={34}>
