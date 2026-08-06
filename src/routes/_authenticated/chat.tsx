@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Eraser, LineChart, RefreshCw } from "lucide-react";
+import { Eraser, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import {
@@ -60,10 +60,14 @@ export const Route = createFileRoute("/_authenticated/chat")({
 });
 
 const SUGESTOES = [
-  "Analise a diversificação da minha carteira",
+  "Faça uma auditoria completa da minha carteira",
+  "Como está minha diversificação e concentração?",
   "Quanto falta para eu viver de renda?",
   "Quanto devo aportar por mês para antecipar minha independência?",
+  "Sugira um plano de rebalanceamento para minha carteira",
   "Quais ativos devo olhar para fortalecer minha carteira?",
+  "Como está meu progresso rumo às minhas metas?",
+  "O que está acontecendo no mercado hoje?",
 ];
 
 function ChatPage() {
@@ -155,7 +159,7 @@ function ChatPage() {
   return (
     <AppShell
       title="Técnico IA"
-      description="Seu consultor de investimentos com acesso aos dados reais da sua carteira."
+      description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
       <div className="flex h-[calc(100vh-11rem)] min-h-[32rem] flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-card/60 px-4 py-3">
@@ -176,6 +180,16 @@ function ChatPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
+              disabled={carregando}
+              className="hidden sm:inline-flex"
+            >
+              <ShieldCheck className="mr-2 size-4" />
+              Auditoria Premium
+            </Button>
             <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
               <SelectTrigger className="w-44" aria-label="Perfil de investidor">
                 <SelectValue placeholder="Perfil" />
@@ -218,8 +232,8 @@ function ChatPage() {
                     className="size-14 object-contain"
                   />
                 }
-                title="Fale com o Técnico IA"
-                description="Ele conhece seus ativos, aportes e dividendos registrados na plataforma."
+                title="Fale com o Técnico IA PRO"
+                description="Ele conhece seus ativos, aportes, dividendos e metas — e usa dados reais de mercado, notícias e agenda econômica."
               >
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {SUGESTOES.map((s) => (
@@ -272,13 +286,13 @@ function ChatPage() {
             autoFocus
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Pergunte sobre aportes, rebalanceamento, dividendos..."
+            placeholder="Peça uma auditoria, rebalanceamento, comparação de ativos ou o que está acontecendo no mercado..."
           />
           <PromptInputFooter className="justify-between">
             <span className="text-xs text-muted-foreground">
               <RefreshCw className="mr-1 inline size-3" />
-              Respostas baseadas na sua carteira e no seu perfil{" "}
-              {PERFIS.find((p) => p.valor === perfil)?.rotulo.toLowerCase()}
+              Modo PRO · carteira, perfil{" "}
+              {PERFIS.find((p) => p.valor === perfil)?.rotulo.toLowerCase()} e mercado em tempo real
             </span>
             <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
           </PromptInputFooter>

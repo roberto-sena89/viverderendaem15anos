@@ -3,12 +3,66 @@ import { createClient } from "@supabase/supabase-js";
 import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
-import { brl, classeDoAtivo, planoPadrao, projetar, type ProjecaoInput } from "@/lib/portfolio";
+import {
+  alocacaoIdeal,
+  brl,
+  classeDoAtivo,
+  CLASSE_POS_FIXADO,
+  planoPadrao,
+  projetar,
+  resumoCarteira,
+  type ProjecaoInput,
+} from "@/lib/portfolio";
+import { agregarNoticias } from "@/lib/noticias.server";
 import type { Database } from "@/integrations/supabase/types";
 
-const SISTEMA = `Você é o "Técnico IA", assistente de investimentos da plataforma Investidor em 15 Anos.
+type PerfilInvestidor = "conservador" | "moderado" | "agressivo";
 
-Perfil: consultor experiente em investimentos de longo prazo no Brasil (ações, FIIs, ETFs nacionais e internacionais, renda fixa e Tesouro Direto). Fala português do Brasil, direto ao ponto, com tom profissional e didático.
+/** Alocação estratégica recomendada para cada perfil de investidor. */
+const ALOCACAO_POR_PERFIL: Record<PerfilInvestidor, Record<string, number>> = {
+  conservador: {
+    [CLASSE_POS_FIXADO]: 70,
+    "ETFs - Brasil": 12,
+    "ETFs - Global": 12,
+    FIIs: 6,
+  },
+  moderado: {
+    [CLASSE_POS_FIXADO]: 50,
+    "ETFs - Brasil": 20,
+    "ETFs - Global": 20,
+    FIIs: 10,
+  },
+  agressivo: {
+    [CLASSE_POS_FIXADO]: 30,
+    "ETFs - Brasil": 30,
+    "ETFs - Global": 25,
+    FIIs: 10,
+    Ações: 5,
+  },
+};
+
+interface AtivoLinha {
+  ticker: string;
+  categoria: string;
+  quantidade: number;
+  preco_medio: number;
+  preco_atual: number;
+  dy: number;
+}
+
+interface PlanoLinha {
+  idade_atual?: number | null;
+  idade_aposentadoria?: number | null;
+  aporte_mensal?: number | null;
+  aumento_anual?: number | null;
+  rentabilidade_anual?: number | null;
+  inflacao_anual?: number | null;
+  taxa_retirada?: number | null;
+}
+
+const SISTEMA = `Você é o "Técnico IA", consultor PRO da plataforma Investidor em 15 Anos — um serviço premium de assessoria financeira educativa.
+
+Sua missão: guiar o usuário em toda a jornada de investimento — diagnóstico da carteira, aportes, dividendos, rebalanceamento, metas e independência financeira — com análises profundas, números reais e planos de ação concretos.
 
 Ferramentas de mercado (use sempre que a pergunta envolver preços, desempenho, comparações ou juros):
 - cotacao: preço em tempo quase real de uma ação, FII, ETF ou índice.
@@ -16,28 +70,37 @@ Ferramentas de mercado (use sempre que a pergunta envolver preços, desempenho, 
 - procurarAtivo: descobre o código correto quando o usuário cita o nome da empresa/fundo.
 - indicadorEconomico: séries do Banco Central (Selic, CDI, IPCA, IGP-M, dólar, poupança).
 - projecaoJuros: projeções do Boletim Focus para os próximos anos (Selic, IPCA, PIB, câmbio).
+- compararAtivos: compara dois ou mais ativos lado a lado (retorno anualizado, drawdown, volatilidade). Prefira esta ferramenta a chamar historico várias vezes.
+- noticiasMercado: últimas notícias financeiras (InfoMoney, Money Times, Investing Brasil).
+- agendaEconomica: próximos eventos (Copom, FOMC, IPCA, payroll, balanços).
 
 Ferramentas de análise da carteira:
-- projetarIndependencia: projeta o patrimônio ano a ano usando o plano salvo do usuário (idade, aportes, rentabilidade, inflação e taxa de retirada) somado ao patrimônio real da carteira. Use para responder "quanto falta para me aposentar", "quanto preciso investir para viver de renda", "quando fico independente", "quanto devo aportar por mês".
-- sugerirAtivos: sugere ativos da B3 (ações, FIIs ou BDRs) com melhor dividend yield, valor de mercado ou receita, para ajudar no rebalanceamento e na rentabilização da carteira. Leve em conta o perfil do investidor (abaixo) e as classes subalocadas da carteira.
+- analisarCarteira: auditoria completa da carteira (saúde, concentração, diversificação, risco, pontos fortes e fracos). Use em perguntas do tipo "analise minha carteira", "como está minha diversificação", "qual o risco da minha carteira".
+- projetarIndependencia: projeta patrimônio ano a ano, renda passiva e data da independência financeira usando o plano salvo + patrimônio real. Simula aportes/rentabilidade alternativos.
+- projetarRendaPassiva: projeta a evolução dos dividendos/renda passiva da carteira nos próximos anos.
+- sugerirRebalanceamento: compara a alocação atual com a estratégia ideal e indica quanto aportar/vender em cada classe.
+- avaliarMetas: mostra o progresso das metas financeiras do usuário (reserva, primeiro milhão etc.).
+- alocacaoRecomendada: devolve a alocação estratégica ideal para o perfil do usuário.
+- sugerirAtivos: lista ativos da B3 (ações, FIIs, BDRs) por dividend yield, valor de mercado ou receita.
 
 Regras com dados de mercado:
-- Nunca invente cotações, retornos ou projeções — chame a ferramenta correspondente.
+- Nunca invente cotações, retornos, projeções ou notícias — chame a ferramenta correspondente.
 - Cite a data/período dos dados e a fonte quando apresentar números de mercado.
-- Para comparar ativos, chame historico para cada um e compare retorno anualizado, drawdown e volatilidade.
 - Se um código não existir, use procurarAtivo antes de responder.
 
-Regras de projeção de independência financeira:
-- Sempre use a ferramenta projetarIndependencia para responder perguntas sobre aposentadoria, independência financeira ou renda passiva. Não calcule essas projeções manualmente.
-- Quando o usuário perguntar "quanto devo aportar", projete com o plano atual e, se necessário, simule aportes maiores para mostrar em quantos anos a meta seria antecipada.
-- Explique a lógica da regra dos 4% (taxa de retirada) usada na estimativa de renda passiva.
+Regras de projeção e análise:
+- Use analisarCarteira antes de emitir diagnóstico sobre diversificação, risco ou concentração.
+- Use projetarIndependencia para qualquer pergunta sobre aposentadoria, independência financeira ou renda passiva. Não calcule manualmente.
+- Para "quanto devo aportar", projete o cenário atual e simule aportes maiores para mostrar a antecipação da meta.
+- Explique a regra dos 4% (taxa de retirada) quando falar de renda passiva.
+- Ao sugerir rebalanceamento, use sugerirRebalanceamento e alocacaoRecomendada (perfil do usuário) em conjunto.
 
-Como responder:
-- Use os dados reais da carteira do usuário (fornecidos abaixo) sempre que fizerem sentido.
-- Explique o raciocínio em passos curtos e use markdown (títulos curtos, listas, tabelas, negrito em números).
-- Sugira ações concretas: rebalanceamento, aportes, metas, diversificação, reserva de emergência.
-- Nunca prometa rentabilidade. Deixe claro que são análises educativas, não recomendação personalizada de investimento regulada pela CVM.
-- Se a carteira estiver vazia, ajude o usuário a montar a estratégia inicial e a registrar os primeiros aportes na plataforma.
+Como responder (estilo PRO):
+- Estruture respostas como um consultor: Diagnóstico → Números → Plano de ação (3-5 passos concretos) → Cuidados.
+- Use markdown (títulos curtos, listas, tabelas, negrito em números) e monte tabelas para comparativos.
+- Traga contexto educacional breve quando ajudar, sem encher.
+- Nunca prometa rentabilidade. Deixe claro que são análises educativas, não recomendação personalizada regulada pela CVM.
+- Se a carteira estiver vazia, ajude a montar a estratégia inicial e oriente a registrar os primeiros aportes.
 
 Perfil do investidor do usuário: "{PERFIL}"`;
 
@@ -119,6 +182,316 @@ function textoDaMensagem(message: UIMessage) {
     .trim();
 }
 
+const ARRED = (v: number) => Math.round(v * 100) / 100;
+
+function ativosParaModelo(linhas: AtivoLinha[]): Parameters<typeof resumoCarteira>[0] {
+  return linhas.map((a) => ({
+    id: a.ticker,
+    ticker: a.ticker,
+    nome: a.ticker,
+    categoria: a.categoria as never,
+    quantidade: a.quantidade,
+    precoMedio: a.preco_medio,
+    precoAtual: a.preco_atual,
+    dy: a.dy,
+  }));
+}
+
+function alocacaoAtualPorClasse(
+  ativos: AtivoLinha[],
+): { classe: string; valor: number; pct: number }[] {
+  const total = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
+  const mapa = new Map<string, number>();
+  for (const a of ativos) {
+    const classe = classeDoAtivo({
+      id: "",
+      ticker: a.ticker,
+      nome: a.ticker,
+      categoria: a.categoria as never,
+      quantidade: a.quantidade,
+      precoMedio: a.preco_medio,
+      precoAtual: a.preco_atual,
+      dy: a.dy,
+    });
+    mapa.set(classe, (mapa.get(classe) ?? 0) + a.quantidade * a.preco_atual);
+  }
+  return [...mapa.entries()]
+    .map(([classe, valor]) => ({
+      classe,
+      valor,
+      pct: total > 0 ? (valor / total) * 100 : 0,
+    }))
+    .sort((x, y) => y.valor - x.valor);
+}
+
+function analisarCarteiraDe(ativos: AtivoLinha[]) {
+  const total = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
+  const investido = ativos.reduce((s, a) => s + a.quantidade * a.preco_medio, 0);
+  const dividendos = ativos.reduce((s, a) => s + (a.quantidade * a.preco_atual * a.dy) / 100, 0);
+  const dy = total > 0 ? (dividendos / total) * 100 : 0;
+  const classes = alocacaoAtualPorClasse(ativos);
+
+  const ordenados = [...ativos].sort(
+    (x, y) => y.quantidade * y.preco_atual - x.quantidade * x.preco_atual,
+  );
+  const top1 = ordenados[0];
+  const top1Valor = top1 ? top1.quantidade * top1.preco_atual : 0;
+  const top3Valor = ordenados.slice(0, 3).reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
+  const top5Valor = ordenados.slice(0, 5).reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
+  const top1Pct = total > 0 ? (top1Valor / total) * 100 : 0;
+  const top3Pct = total > 0 ? (top3Valor / total) * 100 : 0;
+  const top5Pct = total > 0 ? (top5Valor / total) * 100 : 0;
+
+  const concentracao = classes.length === 0 ? 0 : Math.max(...classes.map((c) => c.pct));
+  const temRendaFixa = classes.some((c) => c.classe === CLASSE_POS_FIXADO);
+  const temEquities = classes.some((c) =>
+    ["Ações", "ETFs - Brasil", "ETFs - Global", "BDRs", "Stocks"].includes(c.classe),
+  );
+  const temFiis = classes.some((c) => c.classe === "FIIs");
+
+  const pontosFracos: string[] = [];
+  const pontosFortes: string[] = [];
+
+  if (ativos.length === 0) {
+    pontosFracos.push("Carteira vazia: comece definindo o perfil e faça o primeiro aporte.");
+  }
+  if (top1Pct > 50)
+    pontosFracos.push(
+      `Concentração alta no topo: ${top1?.ticker} sozinho pesa ${top1Pct.toFixed(0)}% do patrimônio.`,
+    );
+  else if (top1Pct > 30)
+    pontosFracos.push(
+      `Concentração relevante: ${top1?.ticker} responde por ${top1Pct.toFixed(0)}% da carteira.`,
+    );
+  else if (top1Pct > 0 && top1Pct <= 30)
+    pontosFortes.push(
+      `Boa distribuição: nenhum ativo passa de ${top1Pct.toFixed(0)}% da carteira.`,
+    );
+  if (ativos.length > 0 && ativos.length < 5)
+    pontosFracos.push(`Poucos ativos (${ativos.length}): risco individual ainda alto.`);
+  else if (ativos.length >= 10)
+    pontosFortes.push(`Carteira com ${ativos.length} ativos: boa capilaridade de posições.`);
+  if (!temRendaFixa && ativos.length > 0)
+    pontosFracos.push(
+      "Sem reserva/renda fixa: carteira fica exposta a quedas sem colchão de segurança.",
+    );
+  if (!temEquities && ativos.length > 0)
+    pontosFracos.push("Sem exposição a ações/ETFs: baixo potencial de crescimento de longo prazo.");
+  if (!temFiis && ativos.length > 0)
+    pontosFracos.push("Sem FIIs: faltam ativos geradores de renda recorrente (dividendos).");
+  if (temEquities && temRendaFixa && ativos.length > 0)
+    pontosFortes.push("Mix equilibrado entre renda fixa e renda variável.");
+  if (dy >= 6)
+    pontosFortes.push(`DY elevado (${dy.toFixed(1)}% a.a.): boa geração de renda passiva.`);
+  else if (dy > 0 && dy < 2 && ativos.length > 0)
+    pontosFracos.push(`DY baixo (${dy.toFixed(1)}%): renda passiva ainda tímida.`);
+  if (top3Pct < 60 && ativos.length >= 5)
+    pontosFortes.push("Os 3 maiores ativos somam menos de 60%: concentração sob controle.");
+  if (concentracao > 70)
+    pontosFracos.push(
+      `A classe dominante concentra ${concentracao.toFixed(0)}%: rebalancear para a estratégia-alvo reduz risco.`,
+    );
+
+  const score = Math.max(
+    0,
+    Math.min(
+      100,
+      (ativos.length >= 10 ? 25 : ativos.length >= 5 ? 18 : ativos.length >= 3 ? 12 : 4) +
+        (top1Pct <= 15 ? 25 : top1Pct <= 30 ? 18 : top1Pct <= 50 ? 8 : 2) +
+        (temRendaFixa ? 15 : 0) +
+        (temEquities ? 15 : 0) +
+        (temFiis ? 10 : 0) +
+        (dy >= 4 ? 10 : dy >= 2 ? 5 : 0),
+    ),
+  );
+
+  return {
+    patrimonio_total: Math.round(total),
+    total_investido: Math.round(investido),
+    lucro_total: Math.round(total - investido),
+    rentabilidade_pct: ARRED(investido > 0 ? ((total - investido) / investido) * 100 : 0),
+    dividendos_estimados_12m: Math.round(dividendos),
+    dy_carteira_pct: ARRED(dy),
+    numero_ativos: ativos.length,
+    numero_classes: classes.length,
+    alocacao_por_classe: classes.map((c) => ({
+      classe: c.classe,
+      valor: Math.round(c.valor),
+      pct: ARRED(c.pct),
+    })),
+    concentracao: {
+      maior_ativo: top1?.ticker ?? null,
+      top1_pct: ARRED(top1Pct),
+      top3_pct: ARRED(top3Pct),
+      top5_pct: ARRED(top5Pct),
+    },
+    score_diversificacao: score,
+    pontos_fortes: pontosFortes,
+    pontos_fracos: pontosFracos,
+    selo:
+      score >= 75
+        ? "Saúde financeira sólida"
+        : score >= 50
+          ? "Carteira em construção"
+          : "Riscos a corrigir",
+  };
+}
+
+function planoDeRebalanceamento(
+  ativos: AtivoLinha[],
+  alvo: Record<string, number>,
+): Record<string, unknown> {
+  const atual = alocacaoAtualPorClasse(ativos);
+  const total = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
+  const presentes = new Set(atual.map((c) => c.classe));
+  const todas = [...new Set([...Object.keys(alvo), ...presentes])];
+
+  const linhas = todas.map((classe) => {
+    const linha = atual.find((c) => c.classe === classe);
+    const pctAtual = linha?.pct ?? 0;
+    const pctAlvo = alvo[classe] ?? 0;
+    const valorAtual = linha?.valor ?? 0;
+    const valorAlvo = (pctAlvo / 100) * total;
+    const diferenca = valorAlvo - valorAtual;
+    return {
+      classe,
+      pct_atual: ARRED(pctAtual),
+      pct_alvo: pctAlvo,
+      valor_atual: Math.round(valorAtual),
+      valor_alvo: Math.round(valorAlvo),
+      diferenca: Math.round(diferenca),
+      status: Math.abs(diferenca) < 100 ? "ok" : diferenca > 0 ? "aportar" : "reduzir",
+    };
+  });
+
+  const aportar = linhas
+    .filter((l) => l.status === "aportar")
+    .sort((a, b) => b.diferenca - a.diferenca);
+  const reduzir = linhas
+    .filter((l) => l.status === "reduzir")
+    .sort((a, b) => a.diferenca - b.diferenca);
+
+  return {
+    patrimonio_atual: Math.round(total),
+    alvo_utilizado: alvo,
+    por_classe: linhas,
+    prioridades_de_aporte: aportar.slice(0, 4).map((l) => ({
+      classe: l.classe,
+      pct_atual: l.pct_atual,
+      pct_alvo: l.pct_alvo,
+      quanto_aportar: l.diferenca,
+    })),
+    classes_sobrealocadas: reduzir.slice(0, 4).map((l) => ({
+      classe: l.classe,
+      pct_atual: l.pct_atual,
+      pct_alvo: l.pct_alvo,
+      quanto_reduzir: Math.abs(l.diferenca),
+    })),
+  };
+}
+
+interface EventoAgenda {
+  id: string;
+  titulo: string;
+  detalhe: string;
+  quando: string;
+  tipo: "Brasil" | "EUA" | "Empresas";
+}
+
+function proximosEventos(): EventoAgenda[] {
+  const agora = new Date();
+  const eventos: EventoAgenda[] = [];
+
+  const copom = [
+    "2026-01-28",
+    "2026-03-18",
+    "2026-05-06",
+    "2026-06-17",
+    "2026-08-05",
+    "2026-09-16",
+    "2026-11-04",
+    "2026-12-09",
+  ];
+  const fomc = [
+    "2026-01-28",
+    "2026-03-18",
+    "2026-04-29",
+    "2026-06-17",
+    "2026-07-29",
+    "2026-09-16",
+    "2026-11-04",
+    "2026-12-16",
+  ];
+
+  for (const data of copom) {
+    eventos.push({
+      id: `copom-${data}`,
+      titulo: "Decisão do Copom",
+      detalhe: "Taxa Selic · Banco Central",
+      quando: `${data}T21:30:00.000Z`,
+      tipo: "Brasil",
+    });
+  }
+  for (const data of fomc) {
+    eventos.push({
+      id: `fomc-${data}`,
+      titulo: "Decisão do Fed (FOMC)",
+      detalhe: "Juros dos EUA",
+      quando: `${data}T19:00:00.000Z`,
+      tipo: "EUA",
+    });
+  }
+
+  const primeiraSexta = (ano: number, mes: number) => {
+    const d = new Date(Date.UTC(ano, mes, 1));
+    while (d.getUTCDay() !== 5) d.setUTCDate(d.getUTCDate() + 1);
+    return d;
+  };
+
+  for (let i = 0; i < 4; i++) {
+    const base = new Date(Date.UTC(agora.getUTCFullYear(), agora.getUTCMonth() + i, 1));
+    const ano = base.getUTCFullYear();
+    const mes = base.getUTCMonth();
+    eventos.push({
+      id: `ipca-${ano}-${mes}`,
+      titulo: "IPCA do mês",
+      detalhe: "Inflação oficial · IBGE",
+      quando: new Date(Date.UTC(ano, mes, 10, 12, 0)).toISOString(),
+      tipo: "Brasil",
+    });
+    eventos.push({
+      id: `ipca15-${ano}-${mes}`,
+      titulo: "IPCA-15",
+      detalhe: "Prévia da inflação · IBGE",
+      quando: new Date(Date.UTC(ano, mes, 25, 12, 0)).toISOString(),
+      tipo: "Brasil",
+    });
+    const sexta = primeiraSexta(ano, mes);
+    sexta.setUTCHours(12, 30);
+    eventos.push({
+      id: `payroll-${ano}-${mes}`,
+      titulo: "Payroll (EUA)",
+      detalhe: "Relatório de emprego norte-americano",
+      quando: sexta.toISOString(),
+      tipo: "EUA",
+    });
+    if ([1, 4, 7, 10].includes(mes)) {
+      eventos.push({
+        id: `balancos-${ano}-${mes}`,
+        titulo: "Temporada de balanços",
+        detalhe: "Resultados trimestrais das companhias da B3",
+        quando: new Date(Date.UTC(ano, mes, 5, 21, 0)).toISOString(),
+        tipo: "Empresas",
+      });
+    }
+  }
+
+  return eventos
+    .filter((e) => new Date(e.quando).getTime() > agora.getTime() - 3 * 3_600_000)
+    .sort((a, b) => a.quando.localeCompare(b.quando))
+    .slice(0, 8);
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
@@ -166,28 +539,34 @@ export const Route = createFileRoute("/api/chat")({
           if (error) console.error("Falha ao salvar mensagem do usuário:", error.message);
         }
 
-        const [{ data: ativos }, { data: aportes }, { data: dividendos }, { data: plano }] =
-          await Promise.all([
-            supabase
-              .from("ativos")
-              .select("ticker, categoria, quantidade, preco_medio, preco_atual, dy"),
-            supabase
-              .from("aportes")
-              .select("data, ticker, quantidade, preco")
-              .order("data", { ascending: false })
-              .limit(20),
-            supabase
-              .from("dividendos")
-              .select("data, ticker, valor")
-              .order("data", { ascending: false })
-              .limit(50),
-            supabase
-              .from("plano_config")
-              .select(
-                "idade_atual, idade_aposentadoria, aporte_mensal, aumento_anual, rentabilidade_anual, inflacao_anual, taxa_retirada",
-              )
-              .maybeSingle(),
-          ]);
+        const [
+          { data: ativos },
+          { data: aportes },
+          { data: dividendos },
+          { data: plano },
+          { data: metas },
+        ] = await Promise.all([
+          supabase
+            .from("ativos")
+            .select("ticker, categoria, quantidade, preco_medio, preco_atual, dy"),
+          supabase
+            .from("aportes")
+            .select("data, ticker, quantidade, preco")
+            .order("data", { ascending: false })
+            .limit(20),
+          supabase
+            .from("dividendos")
+            .select("data, ticker, valor")
+            .order("data", { ascending: false })
+            .limit(50),
+          supabase
+            .from("plano_config")
+            .select(
+              "idade_atual, idade_aposentadoria, aporte_mensal, aumento_anual, rentabilidade_anual, inflacao_anual, taxa_retirada",
+            )
+            .maybeSingle(),
+          supabase.from("metas").select("nome, alvo, ordem").order("ordem", { ascending: true }),
+        ]);
 
         const totalAtual = (ativos ?? []).reduce(
           (s, a) => s + Number(a.quantidade) * Number(a.preco_atual),
@@ -225,6 +604,24 @@ export const Route = createFileRoute("/api/chat")({
             valor: Number(d.valor),
           })),
         );
+
+        const contextoMetas = (metas ?? []).length
+          ? (metas ?? [])
+              .map((m) => {
+                const pct = m.alvo > 0 ? (totalAtual / m.alvo) * 100 : 0;
+                return `- ${m.nome}: alvo ${brl(m.alvo)} → ${pct.toFixed(0)}% concluído (falta ${brl(Math.max(0, m.alvo - totalAtual))})`;
+              })
+              .join("\n")
+          : "Nenhuma meta cadastrada.";
+
+        const ativosLinha = (ativos ?? []).map((a) => ({
+          ticker: a.ticker,
+          categoria: a.categoria,
+          quantidade: Number(a.quantidade),
+          preco_medio: Number(a.preco_medio),
+          preco_atual: Number(a.preco_atual),
+          dy: Number(a.dy),
+        }));
 
         const gateway = createLovableAiGatewayProvider(
           lovableApiKey,
@@ -388,12 +785,193 @@ export const Route = createFileRoute("/api/chat")({
               }
             },
           }),
+          analisarCarteira: tool({
+            description:
+              "Auditoria completa da carteira do usuário: saúde financeira, concentração, diversificação por classe, riscos, pontos fortes e fracos. Use antes de dar diagnóstico sobre a carteira.",
+            inputSchema: z.object({}),
+            execute: async () => analisarCarteiraDe(ativosLinha),
+          }),
+          sugerirRebalanceamento: tool({
+            description:
+              "Compara a alocação atual da carteira com a estratégia-alvo (perfil do usuário) e indica quanto aportar em cada classe subalocada e quanto reduzir nas sobrealocadas. Use junto com alocacaoRecomendada.",
+            inputSchema: z.object({}),
+            execute: async () =>
+              planoDeRebalanceamento(ativosLinha, ALOCACAO_POR_PERFIL[perfilValido]),
+          }),
+          alocacaoRecomendada: tool({
+            description:
+              "Devolve a alocação estratégica ideal por classe de ativos para um perfil de investidor (conservador, moderado ou agressivo). Use ao responder sobre diversificação ou rebalanceamento.",
+            inputSchema: z.object({
+              perfil: z
+                .enum(["conservador", "moderado", "agressivo"])
+                .optional()
+                .describe("Perfil a consultar; usa o perfil do usuário se omitido"),
+            }),
+            execute: async ({ perfil }) => {
+              const p = perfil ?? perfilValido;
+              const alvo = ALOCACAO_POR_PERFIL[p];
+              return {
+                perfil: p,
+                alocacao: Object.entries(alvo).map(([classe, pct]) => ({ classe, pct })),
+              };
+            },
+          }),
+          compararAtivos: tool({
+            description:
+              "Compara dois ou mais ativos lado a lado (retorno anualizado, drawdown máximo, volatilidade, desempenho ano a ano) no mesmo período. Prefira esta ferramenta a chamar historico várias vezes.",
+            inputSchema: z.object({
+              tickers: z
+                .array(z.string())
+                .min(2)
+                .max(5)
+                .describe('Códigos dos ativos (ex.: ["PETR4", "VALE3"])'),
+              periodo: z.enum(["1mo", "6mo", "1y", "2y", "5y", "10y", "max"]).optional(),
+              intervalo: z.enum(["1d", "1wk", "1mo"]).optional(),
+            }),
+            execute: async ({ tickers, periodo, intervalo }) => {
+              const resumos = [];
+              for (const t of tickers) {
+                try {
+                  const h = await mercado.buscarHistorico(t, periodo ?? "5y", intervalo ?? "1mo");
+                  resumos.push({
+                    ticker: h.simbolo,
+                    nome: h.nome,
+                    moeda: h.moeda,
+                    retorno_total_pct: ARRED(h.resumo.retornoTotalPercent ?? 0),
+                    retorno_anualizado_pct: ARRED(h.resumo.retornoAnualizadoPercent ?? 0),
+                    drawdown_maximo_pct: ARRED(h.resumo.drawdownMaximoPercent ?? 0),
+                    volatilidade_anual_pct: ARRED(h.resumo.volatilidadeAnualPercent ?? 0),
+                    preco_atual: h.resumo.ultimoPreco,
+                    preco_inicio: h.resumo.primeiroPreco,
+                    desempenho_ano_a_ano: h.resumo.anos.map((a) => ({
+                      ano: a.ano,
+                      variacao_pct: ARRED(a.variacaoPercent),
+                    })),
+                  });
+                } catch (e) {
+                  resumos.push({
+                    ticker: t,
+                    nome: null,
+                    moeda: null,
+                    erro: e instanceof Error ? e.message : "Sem histórico disponível",
+                  });
+                }
+              }
+              return {
+                periodo: periodo ?? "5y",
+                intervalo: intervalo ?? "1mo",
+                comparacao: resumos,
+              };
+            },
+          }),
+          projetarRendaPassiva: tool({
+            description:
+              "Projeta a evolução dos dividendos/renda passiva da carteira nos próximos anos, usando o DY atual, os aportes e a rentabilidade do plano. Use em perguntas sobre renda passiva, dividendos e 'viver de renda'.",
+            inputSchema: z.object({
+              anos: z
+                .number()
+                .int()
+                .min(1)
+                .max(40)
+                .optional()
+                .describe("Horizonte em anos (padrão: até a aposentadoria do plano)"),
+            }),
+            execute: async ({ anos }) => {
+              const entrada: ProjecaoInput = { ...planoConfig };
+              if (anos && anos > 0) {
+                entrada.idadeAposentadoria = entrada.idadeAtual + anos;
+              }
+              const linhas = projetar(entrada);
+              const modelo = ativosParaModelo(ativosLinha);
+              const dyAtual = ativosLinha.length ? resumoCarteira(modelo).dyCarteira : 0;
+              return {
+                dy_carteira_atual_pct: ARRED(dyAtual),
+                dividendos_estimados_12m_atual: Math.round(
+                  resumoCarteira(modelo).dividendosEstimados12m,
+                ),
+                premissas: {
+                  rentabilidade_anual_pct: entrada.rentabilidadeAnual,
+                  inflacao_anual_pct: entrada.inflacaoAnual,
+                  aporte_mensal: entrada.aporteMensal,
+                  taxa_retirada_pct: entrada.taxaRetirada,
+                },
+                projecao_renda_passiva: linhas.map((l) => ({
+                  ano: l.ano,
+                  idade: l.idade,
+                  patrimonio: Math.round(l.patrimonio),
+                  renda_passiva_mensal_estimada: Math.round(l.rendaPassivaMensal),
+                  renda_passiva_anual_estimada: Math.round(l.rendaPassivaMensal * 12),
+                })),
+              };
+            },
+          }),
+          avaliarMetas: tool({
+            description:
+              "Mostra o progresso das metas financeiras do usuário (reserva de emergência, primeiro milhão etc.) comparado com o patrimônio atual da carteira.",
+            inputSchema: z.object({}),
+            execute: async () => ({
+              patrimonio_atual: Math.round(totalAtual),
+              metas: (metas ?? []).map((m) => ({
+                nome: m.nome,
+                alvo: m.alvo,
+                progresso_pct: m.alvo > 0 ? ARRED((totalAtual / m.alvo) * 100) : 0,
+                falta: Math.round(Math.max(0, m.alvo - totalAtual)),
+                atingida: totalAtual >= m.alvo,
+              })),
+            }),
+          }),
+          noticiasMercado: tool({
+            description:
+              "Últimas notícias financeiras agregadas (InfoMoney, Money Times, Investing Brasil etc.), com manchete, resumo, fonte e link. Use quando o usuário perguntar sobre o que está acontecendo no mercado.",
+            inputSchema: z.object({
+              categoria: z
+                .string()
+                .optional()
+                .describe(
+                  "Filtra por categoria: Mercados, Ações, Renda Fixa, Fundos Imobiliários, Câmbio & Cripto, Economia, Internacional, Empresas",
+                ),
+              limite: z.number().int().min(1).max(15).optional(),
+            }),
+            execute: async ({ categoria, limite }) => {
+              try {
+                const todas = await agregarNoticias();
+                const filtradas = categoria
+                  ? todas.filter((n) => n.categoria.toLowerCase().includes(categoria.toLowerCase()))
+                  : todas;
+                return filtradas.slice(0, limite ?? 8).map((n) => ({
+                  titulo: n.titulo,
+                  resumo: n.resumo,
+                  fonte: n.fonte,
+                  url: n.url,
+                  categoria: n.categoria,
+                  publicado_em: n.publicadoEm,
+                  tickers: n.tickers,
+                  urgente: n.urgente,
+                }));
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          agendaEconomica: tool({
+            description:
+              "Próximos eventos econômicos: decisões do Copom (Selic), do Fed (FOMC), IPCA, IPCA-15, payroll (EUA) e temporada de balanços da B3, com data e horário.",
+            inputSchema: z.object({}),
+            execute: async () => ({
+              eventos: proximosEventos().map((e) => ({
+                titulo: e.titulo,
+                detalhe: e.detalhe,
+                quando: e.quando,
+                tipo: e.tipo,
+              })),
+            }),
+          }),
         };
 
         const result = streamText({
           model: gateway("openai/gpt-5.5"),
           system: SISTEMA.replace("{PERFIL}", perfilValido).concat(
-            `\n\n### Carteira atual do usuário\n${contexto}\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`,
+            `\n\n### Carteira atual do usuário\n${contexto}\n\n### Metas financeiras do usuário\n${contextoMetas}\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`,
           ),
           messages: await convertToModelMessages(messages),
           tools: ferramentas,
