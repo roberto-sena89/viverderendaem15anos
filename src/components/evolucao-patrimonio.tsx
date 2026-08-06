@@ -792,7 +792,7 @@ export function EvolucaoPatrimonio() {
                 onMouseEnter={() => setDestaque("aportadoAcum")}
                 onMouseLeave={() => setDestaque(null)}
               >
-                {mostrarRotulos && destaque !== "patrimonio" && destaque !== "anterior" ? (
+                {mostrarRotulos && dadosGrafico.length <= 14 && destaque !== "patrimonio" && destaque !== "anterior" ? (
                 <LabelList
                   dataKey="aportadoAcum"
                   position="top"
