@@ -22,6 +22,7 @@ import { CarteiraGrupos } from "@/components/carteira-grupos";
 import { DetalheEvolucaoMensal } from "@/components/detalhe-evolucao-mensal";
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
+import { SaudeCarteira } from "@/components/saude-carteira";
 import { TooltipEvolucao } from "@/components/tooltip-evolucao";
 import {
   Select,
@@ -48,9 +49,15 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Resumo · Investidor em 15 Anos" },
-      { name: "description", content: "Patrimônio, rentabilidade, dividendos e evolução da carteira em tempo real." },
+      {
+        name: "description",
+        content: "Patrimônio, rentabilidade, dividendos e evolução da carteira em tempo real.",
+      },
       { property: "og:title", content: "Resumo · Investidor em 15 Anos" },
-      { property: "og:description", content: "Acompanhe patrimônio, rentabilidade e dividendos da sua carteira." },
+      {
+        property: "og:description",
+        content: "Acompanhe patrimônio, rentabilidade e dividendos da sua carteira.",
+      },
       { name: "robots", content: "noindex, follow" },
     ],
     links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/dashboard" }],
@@ -65,7 +72,6 @@ const tooltipStyle = {
   color: "var(--color-popover-foreground)",
   fontSize: "13px",
 };
-
 
 const PERIODOS = [
   { valor: "inicio", rotulo: "Desde o início" },
@@ -124,7 +130,8 @@ function Dashboard() {
     ...categorias.map((c) => ({ valor: c, rotulo: c })),
   ];
 
-  const ativosEvolucao = tipoEvolucao === "todos" ? ativos : ativos.filter((a) => a.categoria === tipoEvolucao);
+  const ativosEvolucao =
+    tipoEvolucao === "todos" ? ativos : ativos.filter((a) => a.categoria === tipoEvolucao);
   const resumo = resumoCarteira(ativos);
   // mesma classificação usada na aba "Carteira" (CarteiraGrupos), para os dois painéis
   // exibirem sempre a mesma contagem de classes e o mesmo patrimônio.
@@ -158,7 +165,9 @@ function Dashboard() {
   // "Renda Fixa" é a categoria principal; "Tesouro Direto" entra como sub-categoria dela.
   const SUBCATEGORIAS_RF = ["Tesouro Direto", "Tesouro"];
   const soma = (cats: string[]) =>
-    ativosComposicao.filter((a) => cats.includes(a.categoria)).reduce((s, a) => s + valorAtual(a), 0);
+    ativosComposicao
+      .filter((a) => cats.includes(a.categoria))
+      .reduce((s, a) => s + valorAtual(a), 0);
 
   const porCategoria = categorias
     .filter((c) => !SUBCATEGORIAS_RF.includes(c))
@@ -169,7 +178,11 @@ function Dashboard() {
           cor: corCategoria("Renda Fixa"),
           value: soma(["Renda Fixa", ...SUBCATEGORIAS_RF]),
           subs: [
-            { name: "Tesouro Direto", cor: corCategoria("Tesouro Direto"), value: soma(SUBCATEGORIAS_RF) },
+            {
+              name: "Tesouro Direto",
+              cor: corCategoria("Tesouro Direto"),
+              value: soma(SUBCATEGORIAS_RF),
+            },
           ].filter((s) => s.value > 0),
         };
       }
@@ -182,19 +195,14 @@ function Dashboard() {
     })
     .filter((c) => c.value > 0);
 
-
-
-
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
       <StatusCotacoes />
       <AbasCarteira />
 
-
-
       <ResumoKpis />
 
-
+      <SaudeCarteira carteira={ativos} />
 
       <div className="grid gap-4 text-[12px] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel
@@ -254,7 +262,9 @@ function Dashboard() {
                     <span className="ponto-legenda serie-aplicado" aria-hidden />
                     Valor aplicado
                   </span>
-                  <strong className="text-lg font-semibold tabular-nums">{brl(totalAplicado, 2)}</strong>
+                  <strong className="text-lg font-semibold tabular-nums">
+                    {brl(totalAplicado, 2)}
+                  </strong>
                 </button>
                 <button
                   type="button"
@@ -267,7 +277,9 @@ function Dashboard() {
                     Ganho de Capital
                   </span>
                   <span className="flex flex-wrap items-baseline gap-2">
-                    <strong className="text-lg font-semibold tabular-nums">{brl(totalGanho, 2)}</strong>
+                    <strong className="text-lg font-semibold tabular-nums">
+                      {brl(totalGanho, 2)}
+                    </strong>
                     <span className="text-xs font-medium tabular-nums">
                       {variacao >= 0 ? "+" : ""}
                       {variacao.toFixed(2).replace(".", ",")}%
@@ -284,8 +296,6 @@ function Dashboard() {
             dados={dadosEvolucao}
           />
 
-
-
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -295,7 +305,11 @@ function Dashboard() {
                 barCategoryGap="35%"
                 maxBarSize={14}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="mes"
                   tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
@@ -317,8 +331,21 @@ function Dashboard() {
                   offset={16}
                   content={<TooltipEvolucao rotuloPeriodo="Mês" serie={dadosEvolucao} />}
                 />
-                <Bar dataKey="aplicado" stackId="p" fill="var(--color-serie-investido)" name="Valor aplicado" isAnimationActive={false} />
-                <Bar dataKey="ganho" stackId="p" fill="var(--color-serie-ganho)" name="Ganho de Capital" radius={[3, 3, 0, 0]} isAnimationActive={false} />
+                <Bar
+                  dataKey="aplicado"
+                  stackId="p"
+                  fill="var(--color-serie-investido)"
+                  name="Valor aplicado"
+                  isAnimationActive={false}
+                />
+                <Bar
+                  dataKey="ganho"
+                  stackId="p"
+                  fill="var(--color-serie-ganho)"
+                  name="Ganho de Capital"
+                  radius={[3, 3, 0, 0]}
+                  isAnimationActive={false}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -368,7 +395,9 @@ function Dashboard() {
                     <p className="text-[0.85rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
                       Total
                     </p>
-                    <p className="num font-display text-base font-bold">{brl(totalComposicao, 2)}</p>
+                    <p className="num font-display text-base font-bold">
+                      {brl(totalComposicao, 2)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -383,12 +412,20 @@ function Dashboard() {
                         style={{ borderLeft: `3px solid ${cor}` }}
                       >
                         <span className="flex min-w-0 items-center gap-2 font-medium text-foreground">
-                          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: cor }} />
+                          <span
+                            className="size-2.5 shrink-0 rounded-full"
+                            style={{ backgroundColor: cor }}
+                          />
                           <span className="truncate whitespace-pre-line">{c.name}</span>
                         </span>
                         <span className="ml-auto flex shrink-0 items-baseline gap-2">
-                          <span className="num text-[0.875rem] text-muted-foreground">{brl(c.value, 2)}</span>
-                          <span className="num w-12 text-right font-semibold" style={{ color: cor }}>
+                          <span className="num text-[0.875rem] text-muted-foreground">
+                            {brl(c.value, 2)}
+                          </span>
+                          <span
+                            className="num w-12 text-right font-semibold"
+                            style={{ color: cor }}
+                          >
                             {pct(percentual)}
                           </span>
                         </span>
@@ -397,7 +434,8 @@ function Dashboard() {
                         <ul className="ml-4 space-y-1.5 border-l border-border pl-3">
                           {c.subs.map((s) => {
                             const corSub = s.cor;
-                            const pctSub = totalComposicao > 0 ? (s.value / totalComposicao) * 100 : 0;
+                            const pctSub =
+                              totalComposicao > 0 ? (s.value / totalComposicao) * 100 : 0;
                             return (
                               <li
                                 key={s.name}
@@ -411,8 +449,13 @@ function Dashboard() {
                                   <span className="truncate">{s.name}</span>
                                 </span>
                                 <span className="ml-auto flex shrink-0 items-baseline gap-2">
-                                  <span className="num text-[0.8rem] text-muted-foreground">{brl(s.value, 2)}</span>
-                                  <span className="num w-12 text-right font-semibold" style={{ color: corSub }}>
+                                  <span className="num text-[0.8rem] text-muted-foreground">
+                                    {brl(s.value, 2)}
+                                  </span>
+                                  <span
+                                    className="num w-12 text-right font-semibold"
+                                    style={{ color: corSub }}
+                                  >
                                     {pct(pctSub)}
                                   </span>
                                 </span>
@@ -424,13 +467,11 @@ function Dashboard() {
                     </li>
                   );
                 })}
-
               </ul>
             </div>
           )}
         </Panel>
       </div>
-
 
       <section className="panel overflow-hidden text-[12px]">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
@@ -456,9 +497,6 @@ function Dashboard() {
           </div>
         )}
       </section>
-
-
     </AppShell>
   );
 }
-
