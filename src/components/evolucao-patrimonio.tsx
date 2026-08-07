@@ -172,7 +172,53 @@ function TooltipCategoria({ active, payload }: { active?: boolean; payload?: any
 }
 
 
+/**
+ * Tick do eixo X com tooltip nativo (<title>): mostra o rótulo completo e os
+ * valores das barras daquele período, mesmo quando os rótulos estão ocultos.
+ */
+function TickEixoX({
+  x,
+  y,
+  payload,
+  angulo,
+  ancora,
+  serie,
+}: {
+  x?: number;
+  y?: number;
+  payload?: { value?: string };
+  angulo: number;
+  ancora: "end" | "middle";
+  serie: Array<{ rotulo?: string; rotuloCompleto?: string; patrimonio?: number; aportadoAcum?: number }>;
+}) {
+  const rotulo = String(payload?.value ?? "");
+  const ponto = serie.find((p) => p.rotulo === rotulo);
+  const patrimonio = Number(ponto?.patrimonio ?? 0);
+  const investido = Number(ponto?.aportadoAcum ?? 0);
+  const titulo = ponto
+    ? `${ponto.rotuloCompleto ?? rotulo}\nPatrimônio: ${brl(patrimonio, 2)}\nTotal investido: ${brl(investido, 2)}\nGanho de capital: ${brl(patrimonio - investido, 2)}`
+    : rotulo;
+
+  return (
+    <g transform={`translate(${x ?? 0},${y ?? 0})`}>
+      <title>{titulo}</title>
+      <text
+        x={0}
+        y={0}
+        dy={12}
+        textAnchor={ancora}
+        transform={`rotate(${angulo})`}
+        fill="var(--color-muted-foreground)"
+        fontSize={11}
+      >
+        {rotulo}
+      </text>
+    </g>
+  );
+}
+
 /** Tooltip com destaque da série sob o cursor, variação mês a mês e ganho acumulado. */
+
 function TooltipEvolucao({
   active,
   payload,
