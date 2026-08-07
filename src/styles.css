@@ -195,6 +195,88 @@
   --fw-bold: 700;
 }
 
+/* ---------------------------------------------------------------
+ * Tokens tipográficos expostos ao Tailwind.
+ * Geram utilidades semânticas (text-h1, text-body-sm, font-semibold,
+ * leading-snug-ds, tracking-heading…) já com line-height e tracking
+ * corretos — evita ajustar font-size/weight à mão em componentes.
+ * --------------------------------------------------------------- */
+@theme inline {
+  --text-display: var(--fs-display);
+  --text-display--line-height: var(--lh-tight);
+  --text-display--letter-spacing: var(--tracking-display);
+  --text-display--font-weight: var(--fw-bold);
+
+  --text-h1: var(--fs-h1);
+  --text-h1--line-height: var(--lh-tight);
+  --text-h1--letter-spacing: var(--tracking-heading);
+  --text-h1--font-weight: var(--fw-semibold);
+
+  --text-h2: var(--fs-h2);
+  --text-h2--line-height: var(--lh-snug);
+  --text-h2--letter-spacing: var(--tracking-heading);
+  --text-h2--font-weight: var(--fw-semibold);
+
+  --text-h3: var(--fs-h3);
+  --text-h3--line-height: var(--lh-snug);
+  --text-h3--letter-spacing: var(--tracking-heading);
+  --text-h3--font-weight: var(--fw-semibold);
+
+  --text-metric: var(--fs-metric);
+  --text-metric--line-height: var(--lh-tight);
+  --text-metric--letter-spacing: var(--tracking-display);
+  --text-metric--font-weight: var(--fw-bold);
+
+  --text-metric-sm: var(--fs-metric-sm);
+  --text-metric-sm--line-height: var(--lh-tight);
+  --text-metric-sm--letter-spacing: var(--tracking-heading);
+  --text-metric-sm--font-weight: var(--fw-semibold);
+
+  --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-relaxed);
+  --text-body--letter-spacing: var(--tracking-body);
+  --text-body--font-weight: var(--fw-regular);
+
+  --text-body-sm: var(--fs-body-sm);
+  --text-body-sm--line-height: var(--lh-normal);
+  --text-body-sm--letter-spacing: var(--tracking-body);
+  --text-body-sm--font-weight: var(--fw-regular);
+
+  --text-label: var(--fs-label);
+  --text-label--line-height: var(--lh-snug);
+  --text-label--letter-spacing: var(--tracking-label);
+  --text-label--font-weight: var(--fw-semibold);
+
+  --text-caption: var(--fs-caption);
+  --text-caption--line-height: var(--lh-normal);
+  --text-caption--letter-spacing: 0.01em;
+  --text-caption--font-weight: var(--fw-medium);
+
+  --text-table: var(--fs-table);
+  --text-table--line-height: var(--lh-snug);
+
+  --text-table-head: var(--fs-table-head);
+  --text-table-head--line-height: var(--lh-snug);
+  --text-table-head--letter-spacing: var(--tracking-label);
+  --text-table-head--font-weight: var(--fw-semibold);
+
+  /* Pesos semânticos: font-regular, font-medium, font-semibold, font-bold */
+  --font-weight-regular: var(--fw-regular);
+  --font-weight-medium: var(--fw-medium);
+  --font-weight-semibold: var(--fw-semibold);
+  --font-weight-bold: var(--fw-bold);
+
+  /* Alturas de linha e tracking do design system */
+  --leading-tight-ds: var(--lh-tight);
+  --leading-snug-ds: var(--lh-snug);
+  --leading-normal-ds: var(--lh-normal);
+  --leading-relaxed-ds: var(--lh-relaxed);
+
+
+}
+
+
+
 
 /* Escala de gutter/tipografia por breakpoint: 320 → 1920 */
 @media (min-width: 641px) {
@@ -398,8 +480,8 @@
     background-color: var(--color-primary);
     color: var(--color-primary-foreground);
     padding: 0.625rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--fs-body-sm);
+    font-weight: var(--fw-semibold);
     transition: transform 150ms ease;
   }
 
@@ -551,8 +633,8 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   gap: 0.5rem;
   padding-left: 0.625rem;
   font-family: var(--font-display);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
@@ -727,8 +809,8 @@ h3 {
   gap: 0.25rem;
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
   color: color-mix(in oklab, var(--color-success) 70%, var(--color-foreground));
   background-color: color-mix(in oklab, var(--color-success) 14%, transparent);
@@ -740,8 +822,8 @@ h3 {
   gap: 0.25rem;
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
   color: color-mix(in oklab, var(--color-destructive) 70%, var(--color-foreground));
   background-color: color-mix(in oklab, var(--color-destructive) 14%, transparent);
@@ -760,8 +842,8 @@ table {
 
 table thead th {
   font-size: var(--fs-table-head);
-  line-height: 1.25;
-  font-weight: 600;
+  line-height: var(--lh-snug);
+  font-weight: var(--fw-semibold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
@@ -772,8 +854,8 @@ table thead th {
 
 table tbody td {
   font-size: var(--fs-table);
-  line-height: 1.4;
-  font-weight: 500;
+  line-height: var(--lh-normal);
+  font-weight: var(--fw-medium);
   font-variant-numeric: tabular-nums;
 }
 
@@ -792,7 +874,7 @@ table tfoot tr {
   z-index: 1;
   border-top: 2px solid color-mix(in oklab, var(--color-border) 100%, transparent);
   background-color: color-mix(in oklab, var(--color-muted) 92%, var(--color-card));
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 /* Indicação visual (sombras nas bordas) de que há conteúdo lateral. */
@@ -992,8 +1074,8 @@ canvas {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
+  font-size: var(--fs-label);
+  line-height: var(--lh-snug);
 }
 
 @utility chip-legenda {
@@ -1004,7 +1086,7 @@ canvas {
   border: 1px solid color-mix(in oklab, currentColor 30%, transparent);
   background: color-mix(in oklab, currentColor 10%, transparent);
   padding: 0.25rem 0.75rem;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
 }
 
@@ -1042,7 +1124,7 @@ canvas {
 }
 
 @utility rotulo-serie {
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
   color: currentColor;
 }
