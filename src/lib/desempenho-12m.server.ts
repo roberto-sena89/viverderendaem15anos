@@ -9,7 +9,7 @@
  * porque a variação de 12 meses muda muito pouco ao longo do dia.
  */
 
-import { normalizarSimbolo } from "./market.server";
+import { cdiAcumulado12m, normalizarSimbolo } from "./market.server";
 
 export type Desempenho12m = {
   ticker: string;
@@ -64,7 +64,9 @@ async function buscarSerie(ticker: string): Promise<Desempenho12m> {
     const json = (await res.json().catch(() => null)) as ChartResp | null;
     const r = json?.chart?.result?.[0];
     const closes = r?.indicators?.adjclose?.[0]?.adjclose ?? r?.indicators?.quote?.[0]?.close ?? [];
-    const serie = closes.filter((v): v is number => typeof v === "number" && Number.isFinite(v) && v > 0);
+    const serie = closes.filter(
+      (v): v is number => typeof v === "number" && Number.isFinite(v) && v > 0,
+    );
     if (serie.length < 2) continue;
 
     const primeiro = serie[0];
@@ -102,7 +104,7 @@ async function comCache(ticker: string): Promise<Desempenho12m> {
       if (valor.retorno12m !== null) cache.set(chave, { em: Date.now(), valor });
       return valor;
     })
-    .catch(() => (salvo?.valor ?? vazio(chave)))
+    .catch(() => salvo?.valor ?? vazio(chave))
     .finally(() => emVoo.delete(chave));
 
   emVoo.set(chave, promessa);
@@ -114,10 +116,116 @@ export async function desempenho12mLote(tickers: string[]): Promise<{
   ativos: Desempenho12m[];
   benchmark: number | null;
 }> {
-  const unicos = [...new Set(tickers.map((t) => t.trim().toUpperCase()).filter(Boolean))].slice(0, 80);
+  const unicos = [...new Set(tickers.map((t) => t.trim().toUpperCase()).filter(Boolean))].slice(
+    0,
+    80,
+  );
   const [ativos, ibov] = await Promise.all([
     Promise.all(unicos.map((t) => comCache(t))),
     comCache("^BVSP"),
   ]);
   return { ativos, benchmark: ibov.retorno12m };
+}
+
+export type LinhaBenchmark = {
+  codigo: string;
+  nome: string;
+  retorno12m: number | null;
+  fonte: string;
+};
+
+export type ComparativoBenchmark = {
+  benchmark: string;
+  excedente: number | null;
+};
+
+export type RespostaBenchmarkCarteira = {
+  /** Retorno ponderado de 12m da carteira (pesos = valor atual). */
+  retornoCarteira: number | null;
+  /** Quanto do valor da carteira tem histórico de 12m (%). */
+  cobertura: number;
+  valorTotal: number;
+  benchmarks: LinhaBenchmark[];
+  comparativo: ComparativoBenchmark[];
+};
+
+/**
+ * Benchmark da carteira em 12 meses: retorno ponderado da carteira contra
+ * Ibovespa, IFIX, S&P 500 (Yahoo) e CDI acumulado (Banco Central/SGS 12).
+ */
+export async function benchmarkCarteira(
+  ativos: { ticker: string; valor: number }[],
+): Promise<RespostaBenchmarkCarteira> {
+  const comValor = ativos.filter((a) => a.valor > 0);
+  const valorTotal = comValor.reduce((s, a) => s + a.valor, 0);
+  if (!comValor.length || !valorTotal) {
+    return {
+      retornoCarteira: null,
+      cobertura: 0,
+      valorTotal: 0,
+      benchmarks: [],
+      comparativo: [],
+    };
+  }
+
+  const [lote, cdi] = await Promise.all([
+    // O Yahoo não expõe série do IFIX; usamos XFIX11.SA (ETF que replica o índice) como fallback.
+    desempenho12mLote([...comValor.map((a) => a.ticker), "^IFIX", "XFIX11.SA", "^GSPC"]),
+    cdiAcumulado12m(),
+  ]);
+
+  const porTicker = new Map(lote.ativos.map((d) => [d.ticker.toUpperCase(), d.retorno12m]));
+  const ifix =
+    porTicker.get("^IFIX") ?? porTicker.get("XFIX11.SA") ?? porTicker.get("IFIX.SA") ?? null;
+
+  let retornoPonderado = 0;
+  let valorCoberto = 0;
+  for (const a of comValor) {
+    const r = porTicker.get(a.ticker.toUpperCase());
+    if (r === null || r === undefined || !Number.isFinite(r)) continue;
+    retornoPonderado += a.valor * r;
+    valorCoberto += a.valor;
+  }
+  const retornoCarteira = valorCoberto > 0 ? retornoPonderado / valorCoberto : null;
+
+  const benchmarks: LinhaBenchmark[] = [
+    {
+      codigo: "IBOV",
+      nome: "Ibovespa",
+      retorno12m: lote.benchmark,
+      fonte: "Yahoo Finance",
+    },
+    {
+      codigo: "IFIX",
+      nome: "IFIX (Fundos Imobiliários)",
+      retorno12m: ifix,
+      fonte: "Yahoo Finance",
+    },
+    {
+      codigo: "CDI",
+      nome: "CDI acumulado 12m",
+      retorno12m: cdi,
+      fonte: "Banco Central (SGS 12)",
+    },
+    {
+      codigo: "SPX",
+      nome: "S&P 500",
+      retorno12m: porTicker.get("^GSPC") ?? null,
+      fonte: "Yahoo Finance",
+    },
+  ];
+
+  const comparativo: ComparativoBenchmark[] = benchmarks.map((b) => ({
+    benchmark: b.codigo,
+    excedente:
+      b.retorno12m !== null && retornoCarteira !== null ? retornoCarteira - b.retorno12m : null,
+  }));
+
+  return {
+    retornoCarteira,
+    cobertura: valorCoberto / valorTotal,
+    valorTotal,
+    benchmarks,
+    comparativo,
+  };
 }

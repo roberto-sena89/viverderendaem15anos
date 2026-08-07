@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Eraser, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
+import { Eraser, FileText, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import {
@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { listarMensagens, limparConversa } from "@/lib/chat.functions";
+import { gerarRelatorioAuditoria } from "@/lib/relatorio.functions";
+import { gerarPdfRelatorioAuditoria } from "@/lib/relatorio-auditoria-pdf";
 import { PERFIS, usePerfilInvestidor, type PerfilInvestidor } from "@/lib/perfil-investidor";
 import logoIA from "@/assets/tecnico-ia.png";
 
@@ -77,6 +79,8 @@ function ChatPage() {
   const { perfil, salvar } = usePerfilInvestidor();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [input, setInput] = useState("");
+  const [gerandoRelatorio, setGerandoRelatorio] = useState(false);
+  const gerarRelatorio = useServerFn(gerarRelatorioAuditoria);
 
   const historico = useQuery({
     queryKey: ["chat-mensagens"],
@@ -156,6 +160,27 @@ function ChatPage() {
     }
   }
 
+  async function gerarRelatorioPdf() {
+    if (gerandoRelatorio) return;
+    setGerandoRelatorio(true);
+    try {
+      const dados = await gerarRelatorio({ data: { perfil } });
+      await gerarPdfRelatorioAuditoria(dados);
+      toast.success("Relatório PDF dos Auditores gerado");
+    } catch (error) {
+      toast.error("Não foi possível gerar o relatório", {
+        description:
+          error instanceof Error
+            ? error.message.includes("403")
+              ? "Você não tem permissão para gerar relatórios."
+              : error.message
+            : undefined,
+      });
+    } finally {
+      setGerandoRelatorio(false);
+    }
+  }
+
   return (
     <AppShell
       title="Técnico IA"
@@ -189,6 +214,16 @@ function ChatPage() {
             >
               <ShieldCheck className="mr-2 size-4" />
               Auditoria Premium
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={gerarRelatorioPdf}
+              disabled={gerandoRelatorio}
+              className="hidden sm:inline-flex"
+            >
+              <FileText className="mr-2 size-4" />
+              {gerandoRelatorio ? "Gerando..." : "Relatório PDF dos Auditores"}
             </Button>
             <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
               <SelectTrigger className="w-44" aria-label="Perfil de investidor">

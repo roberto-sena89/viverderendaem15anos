@@ -22,14 +22,15 @@ async function buscar(url: string, timeoutMs: number, comUA = false): Promise<Re
     return await fetch(url, {
       // O Yahoo rejeita (429) requisições com User-Agent de navegador vindas de
       // servidores; por padrão enviamos apenas Accept e só usamos o UA no retry.
-      headers: comUA ? { "User-Agent": UA, Accept: "application/json" } : { Accept: "application/json" },
+      headers: comUA
+        ? { "User-Agent": UA, Accept: "application/json" }
+        : { Accept: "application/json" },
       signal: controller.signal,
     });
   } finally {
     clearTimeout(timer);
   }
 }
-
 
 async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
   const emCache = cache.get(url);
@@ -70,7 +71,6 @@ async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
   );
 }
 
-
 /** Normaliza tickers da B3: PETR4 -> PETR4.SA. Mantém índices (^BVSP) e símbolos estrangeiros. */
 export function normalizarSimbolo(entrada: string): string {
   const t = entrada.trim().toUpperCase();
@@ -88,12 +88,12 @@ export const INDICES: Record<string, string> = {
   SP500: "^GSPC",
   NASDAQ: "^IXIC",
   DOLAR: "BRL=X",
-  "DÓLAR": "BRL=X",
+  DÓLAR: "BRL=X",
   EURO: "EURBRL=X",
   BITCOIN: "BTC-USD",
   OURO: "GC=F",
   PETROLEO: "BZ=F",
-  "PETRÓLEO": "BZ=F",
+  PETRÓLEO: "BZ=F",
 };
 
 type ChartResponse = {
@@ -114,7 +114,10 @@ type ChartResponse = {
         exchangeName?: string;
       };
       timestamp?: number[];
-      indicators: { quote?: Array<{ close?: (number | null)[] }>; adjclose?: Array<{ adjclose?: (number | null)[] }> };
+      indicators: {
+        quote?: Array<{ close?: (number | null)[] }>;
+        adjclose?: Array<{ adjclose?: (number | null)[] }>;
+      };
     }>;
   };
 };
@@ -248,7 +251,10 @@ export async function buscarHistorico(
 
   const closes = r.indicators.adjclose?.[0]?.adjclose ?? r.indicators.quote?.[0]?.close ?? [];
   const serie = r.timestamp
-    .map((t, i) => ({ data: new Date(t * 1000).toISOString().slice(0, 10), fechamento: closes[i] ?? null }))
+    .map((t, i) => ({
+      data: new Date(t * 1000).toISOString().slice(0, 10),
+      fechamento: closes[i] ?? null,
+    }))
     .filter((p): p is { data: string; fechamento: number } => typeof p.fechamento === "number");
 
   const primeiro = serie[0]?.fechamento ?? null;
@@ -272,9 +278,10 @@ export async function buscarHistorico(
     if (anterior > 0) retornos.push(serie[i].fechamento / anterior - 1);
   }
   const media = retornos.length ? retornos.reduce((s, v) => s + v, 0) / retornos.length : 0;
-  const variancia = retornos.length > 1
-    ? retornos.reduce((s, v) => s + (v - media) ** 2, 0) / (retornos.length - 1)
-    : 0;
+  const variancia =
+    retornos.length > 1
+      ? retornos.reduce((s, v) => s + (v - media) ** 2, 0) / (retornos.length - 1)
+      : 0;
   const periodosPorAno = intervalo === "1d" ? 252 : intervalo === "1wk" ? 52 : 12;
 
   const porAno = new Map<number, { primeiro: number; ultimo: number }>();
@@ -297,7 +304,9 @@ export async function buscarHistorico(
       ultimoPreco: ultimo,
       retornoTotalPercent: primeiro && ultimo ? ((ultimo - primeiro) / primeiro) * 100 : null,
       retornoAnualizadoPercent:
-        primeiro && ultimo && anosDecorridos > 0.5 ? ((ultimo / primeiro) ** (1 / anosDecorridos) - 1) * 100 : null,
+        primeiro && ultimo && anosDecorridos > 0.5
+          ? ((ultimo / primeiro) ** (1 / anosDecorridos) - 1) * 100
+          : null,
       maximo: serie.length ? Math.max(...serie.map((p) => p.fechamento)) : null,
       minimo: serie.length ? Math.min(...serie.map((p) => p.fechamento)) : null,
       drawdownMaximoPercent: serie.length ? drawdown * 100 : null,
@@ -314,7 +323,15 @@ export async function buscarHistorico(
   };
 }
 
-type SearchResponse = { quotes?: Array<{ symbol?: string; shortname?: string; longname?: string; exchange?: string; quoteType?: string }> };
+type SearchResponse = {
+  quotes?: Array<{
+    symbol?: string;
+    shortname?: string;
+    longname?: string;
+    exchange?: string;
+    quoteType?: string;
+  }>;
+};
 
 export async function procurarAtivo(termo: string) {
   const data = await getJson<SearchResponse>(
@@ -356,6 +373,33 @@ export async function buscarIndicador(indicador: keyof typeof SGS | string, ulti
   };
 }
 
+type PontoSgs = { data: string; valor: string };
+
+/** Séries do SGS por intervalo de datas (o endpoint "ultimos/N" limita em 240 pontos). */
+async function serieSgs(codigo: number, mesesAtras: number): Promise<PontoSgs[]> {
+  const fim = new Date();
+  const inicio = new Date(fim);
+  inicio.setMonth(inicio.getMonth() - mesesAtras);
+  const br = (d: Date) =>
+    `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  const dados = await getJson<PontoSgs[]>(
+    `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${codigo}/dados?formato=json&dataInicial=${br(inicio)}&dataFinal=${br(fim)}`,
+  );
+  return Array.isArray(dados) ? dados : [];
+}
+
+/**
+ * Retorno acumulado do CDI nos últimos 12 meses (%). Compõe as taxas diárias
+ * (SGS 12) dos últimos ~252 dias úteis — o benchmark natural da renda fixa.
+ */
+export async function cdiAcumulado12m(): Promise<number | null> {
+  const pontos = await serieSgs(12, 14);
+  const diarias = pontos.map((p) => Number(p.valor)).filter((v) => Number.isFinite(v) && v > 0);
+  if (diarias.length < 200) return null;
+  const janela = diarias.slice(-252);
+  return (janela.reduce((acc, v) => acc * (1 + v / 100), 1) - 1) * 100;
+}
+
 type FocusResponse = {
   value: Array<{
     Indicador: string;
@@ -377,12 +421,12 @@ export async function buscarProjecoes(indicador = "Selic") {
     juros: "Selic",
     ipca: "IPCA",
     inflacao: "IPCA",
-    "inflação": "IPCA",
+    inflação: "IPCA",
     pib: "PIB Total",
     cambio: "Câmbio",
-    "câmbio": "Câmbio",
+    câmbio: "Câmbio",
     dolar: "Câmbio",
-    "dólar": "Câmbio",
+    dólar: "Câmbio",
     igpm: "IGP-M",
   };
   const alvo = mapa[nome] ?? "Selic";
@@ -566,7 +610,9 @@ type BrapiDetalhe = {
     regularMarketChangePercent?: number | null;
     marketCap?: number | null;
     financialData?: { totalRevenue?: number | null } | null;
-    dividendsData?: { cashDividends?: Array<{ rate?: number | null; paymentDate?: string | null }> } | null;
+    dividendsData?: {
+      cashDividends?: Array<{ rate?: number | null; paymentDate?: string | null }>;
+    } | null;
   }>;
 };
 
@@ -586,7 +632,9 @@ const LOTES_POR_CHAMADA = 10;
 const TIPO_BRAPI: Record<TipoRanking, string> = { acoes: "stock", fiis: "fund", bdrs: "bdr" };
 
 /** Soma dos proventos pagos nos últimos 12 meses. */
-function proventos12m(dividendos: Array<{ rate?: number | null; paymentDate?: string | null }>): number {
+function proventos12m(
+  dividendos: Array<{ rate?: number | null; paymentDate?: string | null }>,
+): number {
   const limite = Date.now() - 365 * 24 * 60 * 60 * 1000;
   const agora = Date.now();
   return dividendos.reduce((soma, d) => {
@@ -646,7 +694,12 @@ function linhasTabela(html: string): string[][] {
     .filter((c) => c.length > 3);
 }
 
-type IndicadorPapel = { dy: number | null; psr?: number | null; receita: number | null; liquidez: number };
+type IndicadorPapel = {
+  dy: number | null;
+  psr?: number | null;
+  receita: number | null;
+  liquidez: number;
+};
 
 /** Ações: DY e receita 12m (valor de mercado ÷ PSR) de toda a bolsa. */
 async function indicadoresAcoes(): Promise<Map<string, IndicadorPapel>> {
@@ -670,7 +723,9 @@ async function indicadoresAcoes(): Promise<Map<string, IndicadorPapel>> {
 }
 
 /** FIIs: DY, valor de mercado e receita operacional aproximada (FFO). */
-async function indicadoresFiis(): Promise<Map<string, IndicadorPapel & { valorMercado: number | null }>> {
+async function indicadoresFiis(): Promise<
+  Map<string, IndicadorPapel & { valorMercado: number | null }>
+> {
   const html = await getTexto("https://www.fundamentus.com.br/fii_resultado.php");
   const mapa = new Map<string, IndicadorPapel & { valorMercado: number | null }>();
   for (const c of linhasTabela(html)) {
@@ -769,9 +824,7 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
     }
   } else {
     // BDRs não têm tabela agregada: preenche fundamentos aos poucos (cache 24h)
-    const base = itens
-      .sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0))
-      .slice(0, 80);
+    const base = itens.sort((a, b) => (b.valorMercado ?? 0) - (a.valorMercado ?? 0)).slice(0, 80);
     const pendentes = base.filter(
       (a) => !fundamentos.has(a.ticker) || fundamentos.get(a.ticker)!.expira < Date.now(),
     );
@@ -888,16 +941,21 @@ const emPregaoBR = () => {
   );
   const dia = String(p.weekday ?? "").toLowerCase();
   const hora = Number(p.hour ?? 0);
-  return !(dia.startsWith("sáb") || dia.startsWith("sab") || dia.startsWith("dom")) && hora >= 9 && hora < 18;
+  return (
+    !(dia.startsWith("sáb") || dia.startsWith("sab") || dia.startsWith("dom")) &&
+    hora >= 9 &&
+    hora < 18
+  );
 };
 
-export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Promise<PanoramaMercado> {
+export async function buscarPanoramaMercado(
+  periodo: PeriodoPanorama = "1D",
+): Promise<PanoramaMercado> {
   const ttl = emPregaoBR() ? 25_000 : 10 * 60_000;
   const cacheado = cachePanorama.get(periodo);
   if (cacheado && Date.now() - cacheado.em < ttl) return cacheado.dados;
 
   const faixa = FAIXAS[periodo] ?? FAIXAS["1D"];
-
 
   const indicePromise = getJson<ChartResponse>(
     `${YAHOO}/v8/finance/chart/%5EBVSP?range=${faixa.range}&interval=${faixa.interval}`,
@@ -920,8 +978,16 @@ export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Pr
     const d = new Date(t * 1000);
     const rotulo =
       periodo === "1D"
-        ? d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" })
-        : d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo" });
+        ? d.toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone: "America/Sao_Paulo",
+          })
+        : d.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            timeZone: "America/Sao_Paulo",
+          });
     pontos.push({ rotulo, valor: v });
   });
 
@@ -932,7 +998,11 @@ export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Pr
   const candidatos = (lista?.stocks ?? [])
     .filter((s) => {
       const t = s.stock?.toUpperCase() ?? "";
-      return /^[A-Z]{4}(3|4|5|6|11)$/.test(t) && typeof s.change === "number" && typeof s.close === "number";
+      return (
+        /^[A-Z]{4}(3|4|5|6|11)$/.test(t) &&
+        typeof s.change === "number" &&
+        typeof s.close === "number"
+      );
     })
     .map<ItemVariacao>((s) => ({
       ticker: s.stock.toUpperCase(),
@@ -963,7 +1033,7 @@ export async function buscarPanoramaMercado(periodo: PeriodoPanorama = "1D"): Pr
   };
 
   // Só guarda respostas úteis: falha total das fontes não deve virar cache.
-  if (preco !== null || ordenados.length > 0) cachePanorama.set(periodo, { em: Date.now(), dados: resultado });
+  if (preco !== null || ordenados.length > 0)
+    cachePanorama.set(periodo, { em: Date.now(), dados: resultado });
   return resultado;
 }
-

@@ -4,7 +4,6 @@ import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage }
 import { z } from "zod";
 import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
 import {
-  alocacaoIdeal,
   brl,
   classeDoAtivo,
   CLASSE_POS_FIXADO,
@@ -13,42 +12,15 @@ import {
   resumoCarteira,
   type ProjecaoInput,
 } from "@/lib/portfolio";
+import {
+  ALOCACAO_POR_PERFIL,
+  ARRED,
+  analisarCarteiraDe,
+  planoDeRebalanceamento,
+  type AtivoLinha,
+} from "@/lib/auditoria";
 import { agregarNoticias } from "@/lib/noticias.server";
 import type { Database } from "@/integrations/supabase/types";
-
-type PerfilInvestidor = "conservador" | "moderado" | "agressivo";
-
-/** Alocação estratégica recomendada para cada perfil de investidor. */
-const ALOCACAO_POR_PERFIL: Record<PerfilInvestidor, Record<string, number>> = {
-  conservador: {
-    [CLASSE_POS_FIXADO]: 70,
-    "ETFs - Brasil": 12,
-    "ETFs - Global": 12,
-    FIIs: 6,
-  },
-  moderado: {
-    [CLASSE_POS_FIXADO]: 50,
-    "ETFs - Brasil": 20,
-    "ETFs - Global": 20,
-    FIIs: 10,
-  },
-  agressivo: {
-    [CLASSE_POS_FIXADO]: 30,
-    "ETFs - Brasil": 30,
-    "ETFs - Global": 25,
-    FIIs: 10,
-    Ações: 5,
-  },
-};
-
-interface AtivoLinha {
-  ticker: string;
-  categoria: string;
-  quantidade: number;
-  preco_medio: number;
-  preco_atual: number;
-  dy: number;
-}
 
 interface PlanoLinha {
   idade_atual?: number | null;
@@ -95,6 +67,13 @@ Ferramentas de análise da carteira:
 - historicoAportes: aportes do usuário mês a mês e por ativo (disciplina, média mensal, constância).
 - historicoDividendos: proventos recebidos mês a mês e por ativo, com yield on cost.
 - desempenhoCarteira12m: desempenho de 12 meses de cada ativo da carteira.
+- benchmarkCarteira: retorno de 12 meses da carteira comparado aos benchmarks Ibovespa, IFIX, CDI acumulado e S&P 500 (excedente em pontos percentuais). Use em perguntas de desempenho da carteira frente ao mercado.
+- educacaoPush: detecta lacunas (gaps) entre carteira/plano e a estratégia ideal (reserva de emergência, renda fixa, concentração, diversificação, metas, plano, disciplina de aportes) e devolve conteúdo educativo + ações do plano. Use ao final de auditorias e sempre que detectar um gap no diagnóstico.
+- calcularTributos: estima a tributação da carteira (dividendos isentos, JCP 15%, renda fixa regressiva, ganho de capital em ações/FIIs/ETFs). Use em perguntas sobre imposto de renda, DARF, planejamento tributário.
+
+Recursos premium (função PRO/PREMIUM do assistente):
+- O botão "Relatório PDF dos Auditores" na interface gera um PDF profissional completo: visão geral, KPIs, alocação, concentração, pontos fortes e de atenção, plano de rebalanceamento, projeção de independência, metas e detalhamento da carteira. Ao ser acionado, basta o usuário clicar; informe que o relatório está disponível quando solicitado e explique seus principais números.
+- Analise sempre com profundidade de consultoria: combine dados da carteira com contexto de mercado, benchmark e premissas do plano.
 
 Regras com dados de mercado:
 - Nunca invente cotações, retornos, projeções ou notícias — chame a ferramenta correspondente.
@@ -113,13 +92,24 @@ Base de conhecimento (use como referência analítica, sempre com bom senso e co
 - Reserva de emergência: 6 a 12 meses de custo de vida em liquidez diária, antes de qualquer renda variável.
 - Independência financeira: regra dos 4% (patrimônio ≈ 25× o gasto anual); juros compostos e constância de aporte pesam mais que acertar o "timing".
 
+Conhecimento profissional (nível PRO — use para elevar a qualidade das análises):
+- Renda passiva por ativo: ações pagam dividendos (isenção para PF); FIIs distribuem rendimento isento (tijolo/papel/FOF têm dinâmicas diferentes); renda fixa paga juros (prefixado/IPCA/Selic); ETFs de dividendos concentram exposição com custo baixo. Fale de renda passiva sempre com o DY projetado, não só o histórico.
+- Análise de valuation: P/L abaixo do setor + ROE alto sugere subavaliação; EV/EBIT é mais robusto que P/L para comparar empresas com estruturas de capital diferentes; PSR ajuda em empresas sem lucro; margem líquida e dívida líquida/EBITDA mostram qualidade do balanço.
+- Renda fixa estratégica: escada de títulos (laddering) reduz risco de reinvestimento; IPCA+ vence a inflação real; prefixado paga mais se juros caírem; compare sempre o prêmio em relação à Selic/CDI vigente e à inflação implícita.
+- Alocação de longo prazo: diversificação entre classes (renda fixa, ações, FIIs, exterior) é o principal controle de risco; rebalancear periodicamente (ex.: anual ou ao desviar >5%) mantém o risco do plano; reduza concentração em moeda e em setor.
+- Perfis: conservador prioriza preservação e liquidez; moderado equilibra crescimento e estabilidade; agressivo aceita maior volatilidade por retorno. Adapte o tom e o nível de risco às respostas, respeitando o perfil salvo do usuário.
+- Juros compostos: o tempo é o multiplicador mais importante; aportes regulares e crescentes aceleram a meta; evite rupturas de aporte; reinvista proventos para potencializar o efeito.
+- Técnicas de gestão de risco: posição máxima de 10-15% por ativo, stop disciplinado quando aplicável, exposição cambial controlada e reserva de oportunidade em liquidez.
+
 Regras de projeção e análise:
 - Use analisarCarteira antes de emitir diagnóstico sobre diversificação, risco ou concentração.
 - Use projetarIndependencia para qualquer pergunta sobre aposentadoria, independência financeira ou renda passiva. Não calcule manualmente.
 - Para "quanto devo aportar", projete o cenário atual e simule aportes maiores para mostrar a antecipação da meta.
 - Explique a regra dos 4% (taxa de retirada) quando falar de renda passiva.
 - Ao sugerir rebalanceamento, use sugerirRebalanceamento e alocacaoRecomendada (perfil do usuário) em conjunto.
-- Em auditorias completas, combine analisarCarteira + desempenhoCarteira12m + historicoAportes + historicoDividendos + indicesMercado (comparação com benchmarks).
+- Em auditorias completas, combine analisarCarteira + desempenhoCarteira12m + benchmarkCarteira + historicoAportes + historicoDividendos + indicesMercado (comparação com benchmarks) + educacaoPush (conteúdo educativo e ações do plano para cada lacuna detectada).
+- Ao detectar um gap no plano ou na carteira (sem reserva de emergência, concentração alta, poucos ativos, sem FIIs, DY baixo, sem metas, plano não configurado, disciplina de aporte fraca), chame educacaoPush e apresente ao usuário o conteúdo educativo e as ações do plano — isso é a entrega de valor do consultor PRO.
+- Em perguntas sobre impostos, use calcularTributos e complemente com contexto educacional de planejamento tributário.
 
 Como responder (estilo PRO):
 - Estruture respostas como um consultor: Diagnóstico → Números → Plano de ação (3-5 passos concretos) → Cuidados.
@@ -208,8 +198,6 @@ function textoDaMensagem(message: UIMessage) {
     .trim();
 }
 
-const ARRED = (v: number) => Math.round(v * 100) / 100;
-
 function ativosParaModelo(linhas: AtivoLinha[]): Parameters<typeof resumoCarteira>[0] {
   return linhas.map((a) => ({
     id: a.ticker,
@@ -221,199 +209,6 @@ function ativosParaModelo(linhas: AtivoLinha[]): Parameters<typeof resumoCarteir
     precoAtual: a.preco_atual,
     dy: a.dy,
   }));
-}
-
-function alocacaoAtualPorClasse(
-  ativos: AtivoLinha[],
-): { classe: string; valor: number; pct: number }[] {
-  const total = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
-  const mapa = new Map<string, number>();
-  for (const a of ativos) {
-    const classe = classeDoAtivo({
-      id: "",
-      ticker: a.ticker,
-      nome: a.ticker,
-      categoria: a.categoria as never,
-      quantidade: a.quantidade,
-      precoMedio: a.preco_medio,
-      precoAtual: a.preco_atual,
-      dy: a.dy,
-    });
-    mapa.set(classe, (mapa.get(classe) ?? 0) + a.quantidade * a.preco_atual);
-  }
-  return [...mapa.entries()]
-    .map(([classe, valor]) => ({
-      classe,
-      valor,
-      pct: total > 0 ? (valor / total) * 100 : 0,
-    }))
-    .sort((x, y) => y.valor - x.valor);
-}
-
-function analisarCarteiraDe(ativos: AtivoLinha[]) {
-  const total = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
-  const investido = ativos.reduce((s, a) => s + a.quantidade * a.preco_medio, 0);
-  const dividendos = ativos.reduce((s, a) => s + (a.quantidade * a.preco_atual * a.dy) / 100, 0);
-  const dy = total > 0 ? (dividendos / total) * 100 : 0;
-  const classes = alocacaoAtualPorClasse(ativos);
-
-  const ordenados = [...ativos].sort(
-    (x, y) => y.quantidade * y.preco_atual - x.quantidade * x.preco_atual,
-  );
-  const top1 = ordenados[0];
-  const top1Valor = top1 ? top1.quantidade * top1.preco_atual : 0;
-  const top3Valor = ordenados.slice(0, 3).reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
-  const top5Valor = ordenados.slice(0, 5).reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
-  const top1Pct = total > 0 ? (top1Valor / total) * 100 : 0;
-  const top3Pct = total > 0 ? (top3Valor / total) * 100 : 0;
-  const top5Pct = total > 0 ? (top5Valor / total) * 100 : 0;
-
-  const concentracao = classes.length === 0 ? 0 : Math.max(...classes.map((c) => c.pct));
-  const temRendaFixa = classes.some((c) => c.classe === CLASSE_POS_FIXADO);
-  const temEquities = classes.some((c) =>
-    ["Ações", "ETFs - Brasil", "ETFs - Global", "BDRs", "Stocks"].includes(c.classe),
-  );
-  const temFiis = classes.some((c) => c.classe === "FIIs");
-
-  const pontosFracos: string[] = [];
-  const pontosFortes: string[] = [];
-
-  if (ativos.length === 0) {
-    pontosFracos.push("Carteira vazia: comece definindo o perfil e faça o primeiro aporte.");
-  }
-  if (top1Pct > 50)
-    pontosFracos.push(
-      `Concentração alta no topo: ${top1?.ticker} sozinho pesa ${top1Pct.toFixed(0)}% do patrimônio.`,
-    );
-  else if (top1Pct > 30)
-    pontosFracos.push(
-      `Concentração relevante: ${top1?.ticker} responde por ${top1Pct.toFixed(0)}% da carteira.`,
-    );
-  else if (top1Pct > 0 && top1Pct <= 30)
-    pontosFortes.push(
-      `Boa distribuição: nenhum ativo passa de ${top1Pct.toFixed(0)}% da carteira.`,
-    );
-  if (ativos.length > 0 && ativos.length < 5)
-    pontosFracos.push(`Poucos ativos (${ativos.length}): risco individual ainda alto.`);
-  else if (ativos.length >= 10)
-    pontosFortes.push(`Carteira com ${ativos.length} ativos: boa capilaridade de posições.`);
-  if (!temRendaFixa && ativos.length > 0)
-    pontosFracos.push(
-      "Sem reserva/renda fixa: carteira fica exposta a quedas sem colchão de segurança.",
-    );
-  if (!temEquities && ativos.length > 0)
-    pontosFracos.push("Sem exposição a ações/ETFs: baixo potencial de crescimento de longo prazo.");
-  if (!temFiis && ativos.length > 0)
-    pontosFracos.push("Sem FIIs: faltam ativos geradores de renda recorrente (dividendos).");
-  if (temEquities && temRendaFixa && ativos.length > 0)
-    pontosFortes.push("Mix equilibrado entre renda fixa e renda variável.");
-  if (dy >= 6)
-    pontosFortes.push(`DY elevado (${dy.toFixed(1)}% a.a.): boa geração de renda passiva.`);
-  else if (dy > 0 && dy < 2 && ativos.length > 0)
-    pontosFracos.push(`DY baixo (${dy.toFixed(1)}%): renda passiva ainda tímida.`);
-  if (top3Pct < 60 && ativos.length >= 5)
-    pontosFortes.push("Os 3 maiores ativos somam menos de 60%: concentração sob controle.");
-  if (concentracao > 70)
-    pontosFracos.push(
-      `A classe dominante concentra ${concentracao.toFixed(0)}%: rebalancear para a estratégia-alvo reduz risco.`,
-    );
-
-  const score = Math.max(
-    0,
-    Math.min(
-      100,
-      (ativos.length >= 10 ? 25 : ativos.length >= 5 ? 18 : ativos.length >= 3 ? 12 : 4) +
-        (top1Pct <= 15 ? 25 : top1Pct <= 30 ? 18 : top1Pct <= 50 ? 8 : 2) +
-        (temRendaFixa ? 15 : 0) +
-        (temEquities ? 15 : 0) +
-        (temFiis ? 10 : 0) +
-        (dy >= 4 ? 10 : dy >= 2 ? 5 : 0),
-    ),
-  );
-
-  return {
-    patrimonio_total: Math.round(total),
-    total_investido: Math.round(investido),
-    lucro_total: Math.round(total - investido),
-    rentabilidade_pct: ARRED(investido > 0 ? ((total - investido) / investido) * 100 : 0),
-    dividendos_estimados_12m: Math.round(dividendos),
-    dy_carteira_pct: ARRED(dy),
-    numero_ativos: ativos.length,
-    numero_classes: classes.length,
-    alocacao_por_classe: classes.map((c) => ({
-      classe: c.classe,
-      valor: Math.round(c.valor),
-      pct: ARRED(c.pct),
-    })),
-    concentracao: {
-      maior_ativo: top1?.ticker ?? null,
-      top1_pct: ARRED(top1Pct),
-      top3_pct: ARRED(top3Pct),
-      top5_pct: ARRED(top5Pct),
-    },
-    score_diversificacao: score,
-    pontos_fortes: pontosFortes,
-    pontos_fracos: pontosFracos,
-    selo:
-      score >= 75
-        ? "Saúde financeira sólida"
-        : score >= 50
-          ? "Carteira em construção"
-          : "Riscos a corrigir",
-  };
-}
-
-function planoDeRebalanceamento(
-  ativos: AtivoLinha[],
-  alvo: Record<string, number>,
-): Record<string, unknown> {
-  const atual = alocacaoAtualPorClasse(ativos);
-  const total = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
-  const presentes = new Set(atual.map((c) => c.classe));
-  const todas = [...new Set([...Object.keys(alvo), ...presentes])];
-
-  const linhas = todas.map((classe) => {
-    const linha = atual.find((c) => c.classe === classe);
-    const pctAtual = linha?.pct ?? 0;
-    const pctAlvo = alvo[classe] ?? 0;
-    const valorAtual = linha?.valor ?? 0;
-    const valorAlvo = (pctAlvo / 100) * total;
-    const diferenca = valorAlvo - valorAtual;
-    return {
-      classe,
-      pct_atual: ARRED(pctAtual),
-      pct_alvo: pctAlvo,
-      valor_atual: Math.round(valorAtual),
-      valor_alvo: Math.round(valorAlvo),
-      diferenca: Math.round(diferenca),
-      status: Math.abs(diferenca) < 100 ? "ok" : diferenca > 0 ? "aportar" : "reduzir",
-    };
-  });
-
-  const aportar = linhas
-    .filter((l) => l.status === "aportar")
-    .sort((a, b) => b.diferenca - a.diferenca);
-  const reduzir = linhas
-    .filter((l) => l.status === "reduzir")
-    .sort((a, b) => a.diferenca - b.diferenca);
-
-  return {
-    patrimonio_atual: Math.round(total),
-    alvo_utilizado: alvo,
-    por_classe: linhas,
-    prioridades_de_aporte: aportar.slice(0, 4).map((l) => ({
-      classe: l.classe,
-      pct_atual: l.pct_atual,
-      pct_alvo: l.pct_alvo,
-      quanto_aportar: l.diferenca,
-    })),
-    classes_sobrealocadas: reduzir.slice(0, 4).map((l) => ({
-      classe: l.classe,
-      pct_atual: l.pct_atual,
-      pct_alvo: l.pct_alvo,
-      quanto_reduzir: Math.abs(l.diferenca),
-    })),
-  };
 }
 
 interface EventoAgenda {
@@ -842,6 +637,55 @@ export const Route = createFileRoute("/api/chat")({
               };
             },
           }),
+          educacaoPush: tool({
+            description:
+              "Detecta lacunas (gaps) entre a carteira/plano do usuário e a estratégia ideal — reserva de emergência, renda fixa, concentração, diversificação, metas, plano e disciplina de aportes — e devolve, para cada gap, conteúdo educativo e ações concretas do plano. Use ao final de auditorias, rebalanceamentos ou sempre que detectar um gap no diagnóstico (ex.: sem reserva de emergência).",
+            inputSchema: z.object({
+              gap: z
+                .enum([
+                  "carteira_vazia",
+                  "reserva_emergencia",
+                  "sem_renda_fixa",
+                  "concentracao",
+                  "poucos_ativos",
+                  "sem_acoes",
+                  "sem_fiis",
+                  "dy_baixo",
+                  "sem_metas",
+                  "plano_nao_definido",
+                  "aporte_irregular",
+                ])
+                .optional()
+                .describe("Gap específico a detalhar; sem ele, devolve todos os detectados"),
+            }),
+            execute: async ({ gap }) => {
+              try {
+                const { educacaoPush } = await import("@/lib/educacao-push");
+                return educacaoPush(
+                  {
+                    ativos: ativosLinha,
+                    aportes: (aportes ?? []).map((a) => ({
+                      data: a.data,
+                      ticker: a.ticker,
+                      quantidade: Number(a.quantidade),
+                      preco: Number(a.preco),
+                    })),
+                    metas: (metas ?? []).map((m) => ({
+                      nome: m.nome,
+                      alvo: m.alvo,
+                      ordem: m.ordem,
+                    })),
+                    planoConfig,
+                    perfil: perfilValido,
+                    planoSalvo: Boolean(plano),
+                  },
+                  gap,
+                );
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
           compararAtivos: tool({
             description:
               "Compara dois ou mais ativos lado a lado (retorno anualizado, drawdown máximo, volatilidade, desempenho ano a ano) no mesmo período. Prefira esta ferramenta a chamar historico várias vezes.",
@@ -1023,15 +867,25 @@ export const Route = createFileRoute("/api/chat")({
               ordenar: z.enum(["dy", "pl", "pvp", "roe", "pontuacao", "valorMercado"]).optional(),
               limite: z.number().int().min(1).max(25).optional(),
             }),
-            execute: async ({ setor, dyMinimo, plMaximo, pvpMaximo, roeMinimo, ordenar, limite }) => {
+            execute: async ({
+              setor,
+              dyMinimo,
+              plMaximo,
+              pvpMaximo,
+              roeMinimo,
+              ordenar,
+              limite,
+            }) => {
               try {
                 const { gradeAcoesComCache } = await import("@/lib/acoes.server");
                 const grade = await gradeAcoesComCache();
                 const filtradas = grade.linhas.filter((l) => {
                   if (setor && !l.setor.toLowerCase().includes(setor.toLowerCase())) return false;
                   if (dyMinimo != null && (l.dy12 ?? 0) < dyMinimo) return false;
-                  if (plMaximo != null && !(l.pl != null && l.pl > 0 && l.pl <= plMaximo)) return false;
-                  if (pvpMaximo != null && !(l.pvp != null && l.pvp > 0 && l.pvp <= pvpMaximo)) return false;
+                  if (plMaximo != null && !(l.pl != null && l.pl > 0 && l.pl <= plMaximo))
+                    return false;
+                  if (pvpMaximo != null && !(l.pvp != null && l.pvp > 0 && l.pvp <= pvpMaximo))
+                    return false;
                   if (roeMinimo != null && (l.roe ?? -999) < roeMinimo) return false;
                   return true;
                 });
@@ -1107,15 +961,25 @@ export const Route = createFileRoute("/api/chat")({
               ordenar: z.enum(["dy", "pvp", "liquidez", "patrimonio"]).optional(),
               limite: z.number().int().min(1).max(25).optional(),
             }),
-            execute: async ({ tipo, segmento, dyMinimo, pvpMaximo, vacanciaMaxima, ordenar, limite }) => {
+            execute: async ({
+              tipo,
+              segmento,
+              dyMinimo,
+              pvpMaximo,
+              vacanciaMaxima,
+              ordenar,
+              limite,
+            }) => {
               try {
                 const { gradeFiisComCache } = await import("@/lib/fiis.server");
                 const grade = await gradeFiisComCache();
                 const filtrados = grade.linhas.filter((l) => {
                   if (tipo && !l.tipo.toLowerCase().includes(tipo.toLowerCase())) return false;
-                  if (segmento && !l.segmento.toLowerCase().includes(segmento.toLowerCase())) return false;
+                  if (segmento && !l.segmento.toLowerCase().includes(segmento.toLowerCase()))
+                    return false;
                   if (dyMinimo != null && (l.dy12 ?? 0) < dyMinimo) return false;
-                  if (pvpMaximo != null && !(l.pvp != null && l.pvp > 0 && l.pvp <= pvpMaximo)) return false;
+                  if (pvpMaximo != null && !(l.pvp != null && l.pvp > 0 && l.pvp <= pvpMaximo))
+                    return false;
                   if (vacanciaMaxima != null && (l.vacancia ?? 0) > vacanciaMaxima) return false;
                   return true;
                 });
@@ -1162,7 +1026,9 @@ export const Route = createFileRoute("/api/chat")({
               classe: z
                 .string()
                 .optional()
-                .describe("Ações Brasil, Internacional, Renda Fixa, Cripto, Commodities, Setorial/Temático"),
+                .describe(
+                  "Ações Brasil, Internacional, Renda Fixa, Cripto, Commodities, Setorial/Temático",
+                ),
               ordenar: z.enum(["var12m", "var60m", "dy", "capitalizacao"]).optional(),
               limite: z.number().int().min(1).max(25).optional(),
             }),
@@ -1171,7 +1037,9 @@ export const Route = createFileRoute("/api/chat")({
                 const { gradeEtfsComCache } = await import("@/lib/etfs.server");
                 const grade = await gradeEtfsComCache();
                 const filtrados = classe
-                  ? grade.linhas.filter((l) => l.classe.toLowerCase().includes(classe.toLowerCase()))
+                  ? grade.linhas.filter((l) =>
+                      l.classe.toLowerCase().includes(classe.toLowerCase()),
+                    )
                   : grade.linhas;
                 const chave = ordenar ?? "var12m";
                 const valor = (l: (typeof filtrados)[number]) =>
@@ -1299,7 +1167,9 @@ export const Route = createFileRoute("/api/chat")({
                 const { buscarCommodities } = await import("@/lib/commodities.server");
                 const r = await buscarCommodities();
                 const linhas = categoria
-                  ? r.linhas.filter((l) => l.categoria.toLowerCase().includes(categoria.toLowerCase()))
+                  ? r.linhas.filter((l) =>
+                      l.categoria.toLowerCase().includes(categoria.toLowerCase()),
+                    )
                   : r.linhas;
                 return {
                   usd_brl: r.usdBrl,
@@ -1330,7 +1200,9 @@ export const Route = createFileRoute("/api/chat")({
                 const { buscarIndices } = await import("@/lib/indices.server");
                 const r = await buscarIndices();
                 const linhas = categoria
-                  ? r.linhas.filter((l) => l.categoria.toLowerCase().includes(categoria.toLowerCase()))
+                  ? r.linhas.filter((l) =>
+                      l.categoria.toLowerCase().includes(categoria.toLowerCase()),
+                    )
                   : r.linhas;
                 return {
                   atualizado_em: r.atualizadoEm,
@@ -1444,6 +1316,104 @@ export const Route = createFileRoute("/api/chat")({
                   .map(([ticker, valor]) => ({ ticker, total_recebido: ARRED(valor) }))
                   .sort((a, b) => b.total_recebido - a.total_recebido),
               };
+            },
+          }),
+          calcularTributos: tool({
+            description:
+              "Calcula a tributação estimada da carteira do usuário: dividendos (isenção para PF em ações/FIIs), JCP (15% na fonte), renda fixa (tabela regressiva 22,5% a 15%) e ganho de capital (ações com isenção até R$ 20 mil/mês, FIIs 20%, ETFs 15%). Use em perguntas sobre impostos, IR, 'quanto vou pagar de imposto', liquidez de IR, DARF.",
+            inputSchema: z.object({}),
+            execute: async () => {
+              const modelo = ativosParaModelo(ativosLinha);
+              const total = ativosLinha.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
+              const dividendosEstimados = resumoCarteira(modelo).dividendosEstimados12m;
+
+              const porClasse: Record<
+                string,
+                { valor: number; rendimento: number; regime: string }
+              > = {};
+              for (const a of ativosLinha) {
+                const classe = classeDoAtivo({
+                  id: "",
+                  ticker: a.ticker,
+                  nome: a.ticker,
+                  categoria: a.categoria as never,
+                  quantidade: a.quantidade,
+                  precoMedio: a.preco_medio,
+                  precoAtual: a.preco_atual,
+                  dy: a.dy,
+                });
+                const valor = a.quantidade * a.preco_atual;
+                const rend = (valor * a.dy) / 100;
+                if (!porClasse[classe]) porClasse[classe] = { valor: 0, rendimento: 0, regime: "" };
+                porClasse[classe].valor += valor;
+                porClasse[classe].rendimento += rend;
+              }
+
+              const rendaFixa = porClasse[CLASSE_POS_FIXADO]?.valor ?? 0;
+              const regimeRendaFixa =
+                "Tabela regressiva de IR: 22,5% (até 180 dias) → 20% (181-360) → 17,5% (361-720) → 15% (acima de 720 dias). Juros incidem na fonte; aplicações em CDB/LCI/LCA podem ter isenção (LCI/LCA).";
+              const proventosAcoes = porClasse["Ações"]?.rendimento ?? 0;
+              const proventosEtfsBr = porClasse["ETFs - Brasil"]?.rendimento ?? 0;
+              const proventosFiis =
+                (porClasse["FIIs"]?.rendimento ?? 0) + (porClasse["BDRs"]?.rendimento ?? 0);
+              const proventosRendaFixa = rendaFixa > 0 ? (rendaFixa * 0.12) / 100 : 0;
+
+              return {
+                patrimonio_total: Math.round(total),
+                dividendos_estimados_12m: Math.round(dividendosEstimados),
+                notas_regime_tributario: {
+                  dividendos_de_acoes: "Isentos de IR para pessoa física (desde a Lei 9.779/99).",
+                  jcp: "Juros sobre capital próprio pagam 15% de imposto de renda na fonte.",
+                  proventos_fiis:
+                    "Distribuição de FIIs é isenta de IR para PF (nos termos da Lei 8.668/93).",
+                  ganho_capital_acoes:
+                    "Venda até R$ 20.000/mês isenta; acima disso, 15% sobre o ganho (day trade: 20%).",
+                  ganho_capital_fiis:
+                    "20% sobre o ganho na venda de cotas de FIIs (sem isenção mensal).",
+                  renda_fixa: regimeRendaFixa,
+                  etfs: "ETFs de renda variável pagam 15% sobre o ganho de capital; ETFs de renda fixa seguem a tabela regressiva.",
+                },
+                estimativa_anual: {
+                  proventos_acoes_estimados: Math.round(proventosAcoes),
+                  proventos_etfs_brasil_estimados: Math.round(proventosEtfsBr),
+                  proventos_fiis_estimados: Math.round(proventosFiis),
+                  proventos_renda_fixa_estimados: Math.round(proventosRendaFixa),
+                  imposto_estimado_anual: Math.round(
+                    (proventosFiis + proventosAcoes + proventosEtfsBr) * 0 +
+                      proventosRendaFixa * 0.15,
+                  ),
+                },
+                resumo:
+                  "Dividendos de ações e proventos de FIIs são isentos para PF. O principal imposto a planejar é o ganho de capital na venda (15% em ações acima de R$ 20 mil/mês e 20% em FIIs) e o IR regressivo da renda fixa. Consulte um contador para apuração detalhada.",
+              };
+            },
+          }),
+          benchmarkCarteira: tool({
+            description:
+              "Compara o retorno de 12 meses da carteira do usuário (ponderado pelo valor atual) com os principais benchmarks: Ibovespa, IFIX, CDI acumulado 12m e S&P 500. Retorna o excedente (pp) da carteira sobre cada benchmark. Use em perguntas do tipo 'como minha carteira está performando frente ao mercado?'.",
+            inputSchema: z.object({}),
+            execute: async () => {
+              try {
+                if (ativosLinha.length === 0) {
+                  return {
+                    retornoCarteira: null,
+                    cobertura: 0,
+                    valorTotal: 0,
+                    benchmarks: [],
+                    comparativo: [],
+                    aviso: "Carteira vazia.",
+                  };
+                }
+                const { benchmarkCarteira } = await import("@/lib/desempenho-12m.server");
+                return await benchmarkCarteira(
+                  ativosLinha.map((a) => ({
+                    ticker: a.ticker,
+                    valor: a.quantidade * a.preco_atual,
+                  })),
+                );
+              } catch (e) {
+                return erro(e);
+              }
             },
           }),
           desempenhoCarteira12m: tool({
