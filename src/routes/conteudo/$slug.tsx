@@ -1,18 +1,28 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
 import { FormularioNewsletter } from "@/components/formulario-newsletter";
-import { CONTEUDO_POR_SLUG, CONTEUDOS, caminhoConteudo } from "@/lib/conteudo-publico";
+import { dadosVivosConteudo } from "@/lib/dados-vivos.functions";
+import { CONTEUDO_POR_SLUG, caminhoConteudo, conteudosRelacionados } from "@/lib/conteudo-publico";
 import ogImagem from "@/assets/og-home.jpg.asset.json";
 
 const SITE = "https://viverderendaem15anos.lovable.app";
 const OG_IMAGE = `${SITE}${ogImagem.url}`;
 
 export const Route = createFileRoute("/conteudo/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params, context }) => {
     const conteudo = CONTEUDO_POR_SLUG.get(params.slug);
     if (!conteudo) throw notFound();
+    // Pré-busca os dividend yields atuais para os exemplos de renda passiva:
+    // no SSR o HTML já sai com os números; nas navegações seguintes os dados
+    // ficam quentes no queryClient.
+    await context.queryClient.ensureQueryData({
+      queryKey: ["dados-vivos-conteudo"],
+      queryFn: () => dadosVivosConteudo(),
+      staleTime: 60_000,
+    });
     return conteudo;
   },
   head: ({ loaderData }) => {
@@ -108,9 +118,74 @@ const dataCurta = (iso: string) =>
     day: "numeric",
   });
 
+const reais = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  maximumFractionDigits: 0,
+});
+
+/** Renda mensal de um capital aplicado à taxa do DY informado (a.a.). */
+const rendaMensal = (capital: number, dyPct: number) => (capital * (dyPct / 100)) / 12;
+
+/** Capital necessário para gerar uma renda mensal alvo à taxa do DY. */
+const capitalParaRenda = (alvoMensal: number, dyPct: number) => (alvoMensal * 12) / (dyPct / 100);
+
+const formatarReais = (valor: number) => reais.format(valor);
+
+/** Renda passiva de exemplo com dividend yields atuais do mercado. */
+function BlocoRendaHoje({ atualizadoEm }: { atualizadoEm: string | null }) {
+  const { data } = useQuery({
+    queryKey: ["dados-vivos-conteudo"],
+    queryFn: () => dadosVivosConteudo(),
+    staleTime: 60_000,
+  });
+  const amostras = [
+    { rotulo: "Ações de dividendos", dy: data?.dyAcoes },
+    { rotulo: "FIIs (fundos imobiliários)", dy: data?.dyFiis },
+  ].filter((a): a is { rotulo: string; dy: number } => typeof a.dy === "number" && a.dy > 0);
+
+  if (amostras.length === 0) return null;
+
+  return (
+    <section className="mt-10 rounded-2xl border border-border bg-card p-6">
+      <div className="flex items-center gap-2">
+        <TrendingUp className="size-4 text-primary" />
+        <h2 className="text-lg font-semibold">
+          Quanto rendem R$ 100 mil com os dividendos de hoje?
+        </h2>
+      </div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        {amostras.map(({ rotulo, dy }) => (
+          <div key={rotulo} className="rounded-xl border border-border bg-background p-4">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{rotulo}</p>
+            <p className="mt-2 text-2xl font-semibold">
+              {formatarReais(rendaMensal(100_000, dy))}
+              <span className="ml-2 text-sm font-normal text-muted-foreground">/mês</span>
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              DY médio de {dy.toFixed(1)}% a.a. — para R$ 5 mil/mês, um patrimônio de{" "}
+              <strong className="text-foreground">
+                {formatarReais(capitalParaRenda(5_000, dy))}
+              </strong>
+              .
+            </p>
+          </div>
+        ))}
+      </div>
+      {atualizadoEm && (
+        <p className="mt-4 text-xs text-muted-foreground">
+          Dividend yields médios do mercado em {dataCurta(atualizadoEm)}. Rendimentos passados não
+          garantem resultados futuros.
+        </p>
+      )}
+    </section>
+  );
+}
+
 function ConteudoPage() {
   const conteudo = Route.useLoaderData();
-  const relacionados = CONTEUDOS.filter((c) => c.slug !== conteudo.slug).slice(0, 3);
+  const relacionados = conteudosRelacionados(conteudo.slug, 4);
+  const temMaisDaCategoria = relacionados.some((c) => c.categoria === conteudo.categoria);
 
   return (
     <div className="min-h-dvh bg-background">
@@ -153,6 +228,8 @@ function ConteudoPage() {
             Atualizado em {dataCurta(conteudo.atualizadoEm)}
           </p>
           <p className="mt-5 text-lg text-muted-foreground">{conteudo.intro}</p>
+
+          <BlocoRendaHoje atualizadoEm={conteudo.atualizadoEm} />
 
           <section className="mt-10 space-y-10">
             {conteudo.secoes.map((secao) => (
@@ -209,7 +286,9 @@ function ConteudoPage() {
 
           {relacionados.length > 0 && (
             <nav className="mt-12" aria-label="Mais conteúdo">
-              <h2 className="text-xl font-semibold">Leia também</h2>
+              <h2 className="text-xl font-semibold">
+                {temMaisDaCategoria ? `Mais sobre ${conteudo.categoria}` : "Leia também"}
+              </h2>
               <div className="mt-4 space-y-3">
                 {relacionados.map((c) => (
                   <Link

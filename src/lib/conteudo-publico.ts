@@ -1793,5 +1793,18 @@ export const CONTEUDOS: ConteudoPublico[] = [
 /** Slug -> conteúdo, para lookup rápido na rota e no sitemap. */
 export const CONTEUDO_POR_SLUG = new Map(CONTEUDOS.map((c) => [c.slug, c]));
 
+/**
+ * Interlinks automáticos para a página de um conteúdo: prioriza os guias da
+ * mesma categoria (na ordem de publicação) e completa com os demais, sempre
+ * determinístico e sem repetir o próprio artigo.
+ */
+export function conteudosRelacionados(slug: string, limite = 4): ConteudoPublico[] {
+  const atual = CONTEUDO_POR_SLUG.get(slug);
+  if (!atual || limite <= 0) return [];
+  const mesmos = CONTEUDOS.filter((c) => c.slug !== slug && c.categoria === atual.categoria);
+  const outros = CONTEUDOS.filter((c) => c.slug !== slug && c.categoria !== atual.categoria);
+  return [...mesmos, ...outros].slice(0, limite);
+}
+
 /** Caminho público da página de um conteúdo. */
 export const caminhoConteudo = (slug: string) => `/conteudo/${slug}`;
