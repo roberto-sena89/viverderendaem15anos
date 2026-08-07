@@ -9,7 +9,12 @@ import { TabelaTesouro } from "@/components/tesouro/tabela-tesouro";
 import { ModalTitulo } from "@/components/tesouro/modal-titulo";
 import { EducativoTesouro } from "@/components/tesouro/educativo-tesouro";
 import { gradeTesouro } from "@/lib/tesouro.functions";
-import { INDEXADORES, faixaPrazo, type IndexadorTitulo, type LinhaTesouro } from "@/lib/tesouro-base";
+import {
+  INDEXADORES,
+  faixaPrazo,
+  type IndexadorTitulo,
+  type LinhaTesouro,
+} from "@/lib/tesouro-base";
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import { useAtivos } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -39,11 +44,7 @@ const normalizar = (t: string) =>
     .toUpperCase();
 
 /** Grade completa dos títulos públicos do Tesouro Direto. */
-export function PainelTesouro({
-  busca,
-}: {
-  busca: string;
-}) {
+export function PainelTesouro({ busca }: { busca: string }) {
   const buscar = useServerFn(gradeTesouro);
   const { favoritos, alternar } = useFavoritos();
   const { data: ativos } = useAtivos();
@@ -78,7 +79,8 @@ export function PainelTesouro({
           }
           if (!texto.includes(ano)) return false;
           if (l.indexador === "SELIC") return texto.includes("SELIC");
-          if (l.indexador === "IPCA") return texto.includes("IPCA") || texto.includes("RENDA") || texto.includes("EDUCA");
+          if (l.indexador === "IPCA")
+            return texto.includes("IPCA") || texto.includes("RENDA") || texto.includes("EDUCA");
           return texto.includes("PREFIX");
         })
         .reduce((s, a) => s + a.quantidade * (a.precoAtual || a.precoMedio), 0);
@@ -89,7 +91,7 @@ export function PainelTesouro({
 
   const filtradas = useMemo(() => {
     const termo = busca.trim().toLowerCase();
-    let lista = linhas.filter((l) => {
+    const lista = linhas.filter((l) => {
       if (indexadores.length && !indexadores.includes(l.indexador)) return false;
       if (prazo !== "todos" && faixaPrazo(l.anosAteVencimento) !== prazo) return false;
       if (comCupom !== "todos" && l.jurosSemestrais !== (comCupom === "sim")) return false;
@@ -101,7 +103,8 @@ export function PainelTesouro({
       vencimento: (a, b) => a.vencimento.localeCompare(b.vencimento),
       maiorTaxa: (a, b) => (b.taxaCompra ?? -Infinity) - (a.taxaCompra ?? -Infinity),
       menorPrazo: (a, b) => a.anosAteVencimento - b.anosAteVencimento,
-      menorMinimo: (a, b) => (a.investimentoMinimo ?? Infinity) - (b.investimentoMinimo ?? Infinity),
+      menorMinimo: (a, b) =>
+        (a.investimentoMinimo ?? Infinity) - (b.investimentoMinimo ?? Infinity),
     };
     return [...lista].sort(por[ordem]);
   }, [linhas, busca, favoritos, indexadores, prazo, comCupom, ordem]);
@@ -134,10 +137,16 @@ export function PainelTesouro({
             </Chip>
           ))}
           <span className="mx-1 h-5 w-px bg-border" aria-hidden />
-          <Chip ativo={comCupom === "sim"} onClick={() => setComCupom(comCupom === "sim" ? "todos" : "sim")}>
+          <Chip
+            ativo={comCupom === "sim"}
+            onClick={() => setComCupom(comCupom === "sim" ? "todos" : "sim")}
+          >
             Com juros semestrais
           </Chip>
-          <Chip ativo={comCupom === "nao"} onClick={() => setComCupom(comCupom === "nao" ? "todos" : "nao")}>
+          <Chip
+            ativo={comCupom === "nao"}
+            onClick={() => setComCupom(comCupom === "nao" ? "todos" : "nao")}
+          >
             Sem cupom
           </Chip>
 

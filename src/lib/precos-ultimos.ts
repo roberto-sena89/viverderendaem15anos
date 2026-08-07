@@ -45,13 +45,12 @@ function useSessaoAtiva(): boolean {
   return ativa;
 }
 
-
 /** Mapa ticker -> último preço salvo no banco. */
 export function useUltimosPrecosSalvos(tickers: string[]): Map<string, PrecoPersistido> {
   const buscar = useServerFn(lerUltimosPrecos);
   const autenticado = useSessaoAtiva();
   const lista = useMemo(
-    () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t)))].sort(),
+    () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.-]{2,12}$/.test(t)))].sort(),
     [tickers],
   );
 
@@ -82,7 +81,7 @@ export function usePersistirPrecos(tickers: string[]) {
   const autenticado = useSessaoAtiva();
   const ultimoEnvio = useRef(0);
   const lista = useMemo(
-    () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t)))].sort(),
+    () => [...new Set(tickers.map(chavePreco).filter((t) => /^[A-Z0-9.-]{2,12}$/.test(t)))].sort(),
     [tickers],
   );
 
@@ -99,4 +98,3 @@ export function usePersistirPrecos(tickers: string[]) {
     return () => clearInterval(id);
   }, [autenticado, lista, sincronizar]);
 }
-

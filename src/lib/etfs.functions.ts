@@ -27,7 +27,7 @@ export const precosEtfsBrapi = createServerFn({ method: "GET" })
     tickers: Array.isArray(d?.tickers)
       ? d.tickers
           .map((t) => String(t).trim().toUpperCase())
-          .filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t))
+          .filter((t) => /^[A-Z0-9.-]{2,12}$/.test(t))
           .slice(0, 100)
       : [],
   }))

@@ -35,7 +35,7 @@ function parsearItens(url: URL) {
     const [tickerBruto, categoriaBruta] = parte.split(":");
     const ticker = (tickerBruto ?? "").trim().toUpperCase();
     const categoria = decodeURIComponent((categoriaBruta ?? "").trim());
-    if (!/^[A-Z0-9.\-]{1,15}$/.test(ticker)) continue;
+    if (!/^[A-Z0-9.-]{1,15}$/.test(ticker)) continue;
     if (!CATEGORIAS_VALIDAS.has(categoria)) continue;
     if (vistos.has(ticker)) continue;
     vistos.add(ticker);

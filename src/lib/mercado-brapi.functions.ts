@@ -12,7 +12,7 @@ export const cotacaoBrapi = createServerFn({ method: "GET" })
       .slice(0, 12),
   }))
   .handler(async ({ data }): Promise<CotacaoBrapi> => {
-    if (!/^[A-Z0-9.\-]{2,12}$/.test(data.symbol)) throw new Error("Ativo inexistente na BRAPI.");
+    if (!/^[A-Z0-9.-]{2,12}$/.test(data.symbol)) throw new Error("Ativo inexistente na BRAPI.");
     const { getQuote } = await import("@/lib/brapi-quote.server");
     return getQuote(data.symbol);
   });

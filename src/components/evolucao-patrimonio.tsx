@@ -18,7 +18,6 @@ import {
   Cell,
   ComposedChart,
   LabelList,
-
   Line,
   Pie,
   PieChart,
@@ -44,11 +43,23 @@ import {
 } from "@/lib/portfolio";
 
 /** Classe de alocação a partir de uma categoria solta (aportes não trazem o ativo). */
-const classeDaCategoria = (categoria: string) =>
-  classeDoAtivo({ categoria } as Ativo);
+const classeDaCategoria = (categoria: string) => classeDoAtivo({ categoria } as Ativo);
 import { cn } from "@/lib/utils";
 
-const MESES_CURTO = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const MESES_CURTO = [
+  "Jan",
+  "Fev",
+  "Mar",
+  "Abr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Set",
+  "Out",
+  "Nov",
+  "Dez",
+];
 const MESES_LONGO = [
   "Janeiro",
   "Fevereiro",
@@ -83,12 +94,15 @@ const compacto = (v: number) => {
   return `R$ ${Math.round(v)}`;
 };
 const chaveMes = (d: string) => d.slice(0, 7);
-const rotuloMes = (chave: string) => `${MESES_CURTO[Number(chave.slice(5, 7)) - 1]}/${chave.slice(2, 4)}`;
+const rotuloMes = (chave: string) =>
+  `${MESES_CURTO[Number(chave.slice(5, 7)) - 1]}/${chave.slice(2, 4)}`;
 const rotuloMesLongo = (chave: string) =>
   `${MESES_LONGO[Number(chave.slice(5, 7)) - 1]}/${chave.slice(0, 4)}`;
 
 function baixarCsv(nome: string, linhas: (string | number)[][]) {
-  const csv = linhas.map((l) => l.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n");
+  const csv = linhas
+    .map((l) => l.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";"))
+    .join("\n");
   const url = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }));
   const a = document.createElement("a");
   a.href = url;
@@ -123,11 +137,23 @@ const CORES_SERIE: Record<SerieChave, string> = {
   anterior: "var(--color-muted-foreground)",
 };
 
+type DadosRoscaTooltip = {
+  categoria: string;
+  valor: number;
+  parte: number;
+  antes: number;
+  cor: string;
+};
+
 /** Tooltip da rosca de distribuição: usa a cor da categoria e traz uma leitura em texto. */
-function TooltipCategoria({ active, payload }: { active?: boolean; payload?: any[] }) {
-  const item = payload?.[0]?.payload as
-    | { categoria: string; valor: number; parte: number; antes: number; cor: string }
-    | undefined;
+function TooltipCategoria({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: Array<{ payload: DadosRoscaTooltip }>;
+}) {
+  const item = payload?.[0]?.payload;
   if (!active || !item) return null;
 
   const delta = item.parte - item.antes;
@@ -152,7 +178,11 @@ function TooltipCategoria({ active, payload }: { active?: boolean; payload?: any
       style={{ borderColor: item.cor, boxShadow: `0 8px 30px -12px ${item.cor}` }}
     >
       <div className="flex items-center gap-2">
-        <span className="size-2.5 shrink-0 rounded-full" style={{ background: item.cor }} aria-hidden />
+        <span
+          className="size-2.5 shrink-0 rounded-full"
+          style={{ background: item.cor }}
+          aria-hidden
+        />
         <span className="min-w-0 flex-1 truncate text-xs font-semibold" style={{ color: item.cor }}>
           {item.categoria}
         </span>
@@ -170,7 +200,6 @@ function TooltipCategoria({ active, payload }: { active?: boolean; payload?: any
     </div>
   );
 }
-
 
 /**
  * Tick do eixo X acessível: tooltip nativo (<title>) no mouse, foco por teclado
@@ -241,7 +270,6 @@ function TickEixoX({
   );
 }
 
-
 /** Tooltip com destaque da série sob o cursor, variação mês a mês e ganho acumulado. */
 
 function TooltipEvolucao({
@@ -252,20 +280,31 @@ function TooltipEvolucao({
   serie,
 }: {
   active?: boolean;
-  payload?: Array<{ dataKey?: string | number; name?: string; value?: number; payload?: Record<string, unknown> }>;
+  payload?: Array<{
+    dataKey?: string | number;
+    name?: string;
+    value?: number;
+    payload?: Record<string, unknown>;
+  }>;
   label?: string;
   destaque: SerieChave | null;
   serie?: Array<{ id?: string; rotulo?: string; patrimonio?: number; aportadoAcum?: number }>;
 }) {
   if (!active || !payload?.length) return null;
 
-  const linha = (payload[0]?.payload ?? {}) as { id?: string; rotulo?: string; patrimonio?: number; aportadoAcum?: number };
+  const linha = (payload[0]?.payload ?? {}) as {
+    id?: string;
+    rotulo?: string;
+    patrimonio?: number;
+    aportadoAcum?: number;
+  };
   const patrimonio = Number(linha.patrimonio ?? 0);
   const investido = Number(linha.aportadoAcum ?? 0);
   const ganho = patrimonio - investido;
   const ganhoPct = investido > 0 ? (ganho / investido) * 100 : null;
 
-  const idx = serie?.findIndex((p) => (linha.id ? p.id === linha.id : p.rotulo === linha.rotulo)) ?? -1;
+  const idx =
+    serie?.findIndex((p) => (linha.id ? p.id === linha.id : p.rotulo === linha.rotulo)) ?? -1;
   const antes = idx > 0 ? serie?.[idx - 1] : undefined;
   const baseAntes = Number(antes?.patrimonio ?? 0);
   const deltaAbs = antes ? patrimonio - baseAntes : null;
@@ -274,7 +313,9 @@ function TooltipEvolucao({
 
   return (
     <div className="pointer-events-none min-w-[15rem] rounded-xl border border-border bg-popover/95 p-3 shadow-lg backdrop-blur-sm">
-      <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
       <ul className="space-y-1.5">
         {payload.map((item) => {
           const chave = String(item.dataKey ?? "") as SerieChave;
@@ -313,10 +354,15 @@ function TooltipEvolucao({
         <div className="flex items-center justify-between gap-4">
           <span className="text-muted-foreground">Ganho de capital</span>
           <span
-            className={cn("font-semibold tabular-nums", ganho >= 0 ? "text-serie-ganho" : "text-destructive")}
+            className={cn(
+              "font-semibold tabular-nums",
+              ganho >= 0 ? "text-serie-ganho" : "text-destructive",
+            )}
           >
             {brl(ganho, 2)}
-            {ganhoPct !== null ? <span className="ml-1 text-[0.68rem]">({fmtPct(ganhoPct)})</span> : null}
+            {ganhoPct !== null ? (
+              <span className="ml-1 text-[0.68rem]">({fmtPct(ganhoPct)})</span>
+            ) : null}
           </span>
         </div>
         <div className="flex items-center justify-between gap-4">
@@ -325,11 +371,16 @@ function TooltipEvolucao({
             <span className="text-muted-foreground">—</span>
           ) : (
             <span
-              className={cn("font-semibold tabular-nums", deltaAbs >= 0 ? "text-serie-ganho" : "text-destructive")}
+              className={cn(
+                "font-semibold tabular-nums",
+                deltaAbs >= 0 ? "text-serie-ganho" : "text-destructive",
+              )}
             >
               {deltaAbs >= 0 ? "+" : ""}
               {brl(deltaAbs, 2)}
-              {deltaPct !== null ? <span className="ml-1 text-[0.68rem]">({fmtPct(deltaPct)})</span> : null}
+              {deltaPct !== null ? (
+                <span className="ml-1 text-[0.68rem]">({fmtPct(deltaPct)})</span>
+              ) : null}
             </span>
           )}
         </div>
@@ -341,7 +392,6 @@ function TooltipEvolucao({
     </div>
   );
 }
-
 
 function Kpi({
   rotulo,
@@ -361,13 +411,18 @@ function Kpi({
         {serie ? <span className={cn("ponto-legenda", classeSerie)} aria-hidden /> : null}
         {rotulo}
       </p>
-      <p className={cn("mt-1 truncate font-display text-base font-bold", classeSerie ?? "text-foreground")}>{valor}</p>
+      <p
+        className={cn(
+          "mt-1 truncate font-display text-base font-bold",
+          classeSerie ?? "text-foreground",
+        )}
+      >
+        {valor}
+      </p>
       {sub ? <p className="t-caption truncate">{sub}</p> : null}
     </div>
   );
-
 }
-
 
 function Skeleton() {
   return (
@@ -407,15 +462,21 @@ export function EvolucaoPatrimonio() {
     const hoje = new Date();
     const chaves: string[] = [];
     const d = new Date(Number(inicio.slice(0, 4)), Number(inicio.slice(5, 7)) - 1, 1);
-    while (d.getFullYear() < hoje.getFullYear() || (d.getFullYear() === hoje.getFullYear() && d.getMonth() <= hoje.getMonth())) {
+    while (
+      d.getFullYear() < hoje.getFullYear() ||
+      (d.getFullYear() === hoje.getFullYear() && d.getMonth() <= hoje.getMonth())
+    ) {
       chaves.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
       d.setMonth(d.getMonth() + 1);
     }
     const porMes = new Map<string, number>();
-    for (const a of ordenados) porMes.set(chaveMes(a.data), (porMes.get(chaveMes(a.data)) ?? 0) + valorAporte(a));
+    for (const a of ordenados)
+      porMes.set(chaveMes(a.data), (porMes.get(chaveMes(a.data)) ?? 0) + valorAporte(a));
 
-    const totalInvestido = resumo.totalInvestido || ordenados.reduce((s, a) => s + valorAporte(a), 0);
-    const fatorFinal = totalInvestido > 0 ? (resumo.totalAtual || totalInvestido) / totalInvestido : 1;
+    const totalInvestido =
+      resumo.totalInvestido || ordenados.reduce((s, a) => s + valorAporte(a), 0);
+    const fatorFinal =
+      totalInvestido > 0 ? (resumo.totalAtual || totalInvestido) / totalInvestido : 1;
 
     let acum = 0;
     return chaves.map((chave, i) => {
@@ -440,7 +501,9 @@ export function EvolucaoPatrimonio() {
   const recorte = useMemo(() => {
     if (serie.length === 0) return [];
     if (periodo === "custom" && (inicioCustom || fimCustom)) {
-      return serie.filter((p) => (!inicioCustom || p.chave >= inicioCustom) && (!fimCustom || p.chave <= fimCustom));
+      return serie.filter(
+        (p) => (!inicioCustom || p.chave >= inicioCustom) && (!fimCustom || p.chave <= fimCustom),
+      );
     }
     const meses = PERIODOS.find((p) => p.id === periodo)?.meses ?? 0;
     if (!meses) return serie;
@@ -476,7 +539,8 @@ export function EvolucaoPatrimonio() {
   /** Dados do gráfico, com série de comparação opcional (período anterior sobreposto). */
   const dadosGrafico = useMemo(() => {
     const base = linhas;
-    if (!comparar || base.length === 0) return base.map((l) => ({ ...l, anterior: null as number | null }));
+    if (!comparar || base.length === 0)
+      return base.map((l) => ({ ...l, anterior: null as number | null }));
     const idxInicio = serie.findIndex((p) => p.chave === recorte[0]?.chave);
     const anterior = serie.slice(Math.max(0, idxInicio - base.length), Math.max(0, idxInicio));
     return base.map((l, i) => ({ ...l, anterior: anterior[i]?.patrimonio ?? null }));
@@ -485,7 +549,8 @@ export function EvolucaoPatrimonio() {
   const primeiro = recorte[0];
   const ultimo = recorte[recorte.length - 1];
   const variacao = primeiro && ultimo ? ultimo.patrimonio - primeiro.patrimonio : 0;
-  const variacaoPct = primeiro && primeiro.patrimonio > 0 ? (variacao / primeiro.patrimonio) * 100 : 0;
+  const variacaoPct =
+    primeiro && primeiro.patrimonio > 0 ? (variacao / primeiro.patrimonio) * 100 : 0;
   const positivo = variacao >= 0;
 
   /** Distribuição atual por classe (mesma paleta da aba Rebalanceamento). */
@@ -516,19 +581,28 @@ export function EvolucaoPatrimonio() {
         parte: totalAtual > 0 ? (valor / totalAtual) * 100 : 0,
         antes: totalAntes > 0 ? ((antesPorCat.get(categoria) ?? 0) / totalAntes) * 100 : 0,
         cor: corClasse(categoria),
-
       }));
   }, [ativos, aportes, primeiro]);
 
   /** Indicadores complementares do período. */
   const indicadores = useMemo(() => {
     const comAporte = recorte.filter((p) => p.aportado > 0);
-    const maior = comAporte.reduce<Ponto | null>((m, p) => (!m || p.aportado > m.aportado ? p : m), null);
-    const menor = comAporte.reduce<Ponto | null>((m, p) => (!m || p.aportado < m.aportado ? p : m), null);
-    const media = comAporte.length ? comAporte.reduce((s, p) => s + p.aportado, 0) / comAporte.length : 0;
+    const maior = comAporte.reduce<Ponto | null>(
+      (m, p) => (!m || p.aportado > m.aportado ? p : m),
+      null,
+    );
+    const menor = comAporte.reduce<Ponto | null>(
+      (m, p) => (!m || p.aportado < m.aportado ? p : m),
+      null,
+    );
+    const media = comAporte.length
+      ? comAporte.reduce((s, p) => s + p.aportado, 0) / comAporte.length
+      : 0;
 
     const variacoes = recorte.map((p, i, arr) =>
-      i === 0 || arr[i - 1].patrimonio <= 0 ? 0 : ((p.patrimonio - arr[i - 1].patrimonio) / arr[i - 1].patrimonio) * 100,
+      i === 0 || arr[i - 1].patrimonio <= 0
+        ? 0
+        : ((p.patrimonio - arr[i - 1].patrimonio) / arr[i - 1].patrimonio) * 100,
     );
     const melhorIdx = variacoes.indexOf(Math.max(...(variacoes.length ? variacoes : [0])));
     const piorIdx = variacoes.indexOf(Math.min(...(variacoes.length ? variacoes : [0])));
@@ -536,17 +610,42 @@ export function EvolucaoPatrimonio() {
     const totalMeses = serie.length;
     const anos = Math.floor(totalMeses / 12);
     const meses = totalMeses % 12;
-    const tempo = [anos ? `${anos} ${anos === 1 ? "ano" : "anos"}` : "", meses ? `${meses} ${meses === 1 ? "mês" : "meses"}` : ""]
-      .filter(Boolean)
-      .join(" e ") || "—";
+    const tempo =
+      [
+        anos ? `${anos} ${anos === 1 ? "ano" : "anos"}` : "",
+        meses ? `${meses} ${meses === 1 ? "mês" : "meses"}` : "",
+      ]
+        .filter(Boolean)
+        .join(" e ") || "—";
 
-    return { maior, menor, media, melhor: recorte[melhorIdx], melhorPct: variacoes[melhorIdx] ?? 0, pior: recorte[piorIdx], piorPct: variacoes[piorIdx] ?? 0, tempo };
+    return {
+      maior,
+      menor,
+      media,
+      melhor: recorte[melhorIdx],
+      melhorPct: variacoes[melhorIdx] ?? 0,
+      pior: recorte[piorIdx],
+      piorPct: variacoes[piorIdx] ?? 0,
+      tempo,
+    };
   }, [recorte, serie]);
 
   const exportar = () => {
     baixarCsv(`evolucao-patrimonio-${granularidade}.csv`, [
-      ["Período", "Patrimônio final", "Aportado no período", "Rentabilidade (R$)", "Rentabilidade (%)"],
-      ...linhasFiltradas.map((l) => [l.titulo, l.patrimonio.toFixed(2), l.aportado.toFixed(2), l.rendimento.toFixed(2), l.rendimentoPct.toFixed(2)]),
+      [
+        "Período",
+        "Patrimônio final",
+        "Aportado no período",
+        "Rentabilidade (R$)",
+        "Rentabilidade (%)",
+      ],
+      ...linhasFiltradas.map((l) => [
+        l.titulo,
+        l.patrimonio.toFixed(2),
+        l.aportado.toFixed(2),
+        l.rendimento.toFixed(2),
+        l.rendimentoPct.toFixed(2),
+      ]),
     ]);
   };
 
@@ -584,10 +683,10 @@ export function EvolucaoPatrimonio() {
       >
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-center">
           <div className="min-w-0">
-            <p className="t-label text-foreground">
-              Patrimônio total atual
+            <p className="t-label text-foreground">Patrimônio total atual</p>
+            <p className="font-display text-3xl font-black tracking-tight text-serie-patrimonio sm:text-4xl">
+              {brl(resumo.totalAtual, 2)}
             </p>
-            <p className="font-display text-3xl font-black tracking-tight text-serie-patrimonio sm:text-4xl">{brl(resumo.totalAtual, 2)}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Investido: {brl(resumo.totalInvestido, 2)} · Rendimento: {brl(resumo.lucroTotal, 2)} (
               {pct(resumo.rentabilidade)})
@@ -595,27 +694,32 @@ export function EvolucaoPatrimonio() {
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-card/60 p-3">
-              <p className="t-label text-foreground">
-                Variação no período
-              </p>
+              <p className="t-label text-foreground">Variação no período</p>
               <p
                 className={cn(
                   "mt-1 flex items-center gap-1 font-display text-lg font-bold tabular-nums",
                   positivo ? "text-serie-ganho" : "text-destructive",
                 )}
               >
-                {positivo ? <ArrowUpRight className="size-4" /> : <ArrowDownRight className="size-4" />}
+                {positivo ? (
+                  <ArrowUpRight className="size-4" />
+                ) : (
+                  <ArrowDownRight className="size-4" />
+                )}
                 {brl(Math.abs(variacao), 2)}
               </p>
-              <p className={cn("text-xs font-semibold tabular-nums", positivo ? "text-serie-ganho" : "text-destructive")}>
+              <p
+                className={cn(
+                  "text-xs font-semibold tabular-nums",
+                  positivo ? "text-serie-ganho" : "text-destructive",
+                )}
+              >
                 {positivo ? "+" : "−"}
                 {pct(Math.abs(variacaoPct))}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-card/60 p-3">
-              <p className="t-label text-foreground">
-                Rentabilidade acumulada
-              </p>
+              <p className="t-label text-foreground">Rentabilidade acumulada</p>
               <p
                 className={cn(
                   "mt-1 font-display text-lg font-bold tabular-nums",
@@ -627,7 +731,6 @@ export function EvolucaoPatrimonio() {
               </p>
               <p className="text-xs text-muted-foreground">desde o início</p>
             </div>
-
           </div>
         </div>
       </Panel>
@@ -664,7 +767,11 @@ export function EvolucaoPatrimonio() {
                 className="h-9 w-full pl-8 text-xs"
               />
             </div>
-            <div className="flex min-w-0 rounded-full border border-border p-0.5" role="group" aria-label="Granularidade">
+            <div
+              className="flex min-w-0 rounded-full border border-border p-0.5"
+              role="group"
+              aria-label="Granularidade"
+            >
               {(["mensal", "anual"] as const).map((g) => (
                 <button
                   key={g}
@@ -673,7 +780,9 @@ export function EvolucaoPatrimonio() {
                   aria-pressed={granularidade === g}
                   className={cn(
                     "flex-1 rounded-full px-3 py-1 text-xs font-semibold capitalize transition-colors",
-                    granularidade === g ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted",
+                    granularidade === g
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted",
                   )}
                 >
                   {g}
@@ -717,7 +826,7 @@ export function EvolucaoPatrimonio() {
         hint="Comparativo mês a mês entre o valor de mercado da carteira e o capital aportado."
         action={
           <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
-            {([
+            {[
               {
                 chave: "patrimonio" as const,
                 rotulo: "Patrimônio",
@@ -734,7 +843,7 @@ export function EvolucaoPatrimonio() {
                 fundo: "bg-serie-investido/15",
                 valor: ultimoPonto?.aportadoAcum,
               },
-            ]).map((s) => (
+            ].map((s) => (
               <button
                 key={s.chave}
                 type="button"
@@ -748,13 +857,15 @@ export function EvolucaoPatrimonio() {
                 className={cn(
                   "flex min-w-0 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left transition-all sm:shrink-0",
                   destaque === s.chave
-
                     ? "border-primary/50 bg-card shadow-sm"
                     : "border-border bg-muted/30 hover:bg-muted/60",
                   destaque && destaque !== s.chave && "opacity-50",
                 )}
               >
-                <span className={cn("grid size-7 shrink-0 place-items-center rounded-lg", s.fundo)} aria-hidden>
+                <span
+                  className={cn("grid size-7 shrink-0 place-items-center rounded-lg", s.fundo)}
+                  aria-hidden
+                >
                   <s.Icone className={cn("size-4", s.cor)} />
                 </span>
                 <span className="min-w-0 flex-1">
@@ -762,12 +873,15 @@ export function EvolucaoPatrimonio() {
                     <span className={cn("ponto-legenda", s.cor)} aria-hidden />
                     {s.rotulo}
                   </span>
-                  <span className={cn("block truncate font-display text-[0.8rem] font-bold tabular-nums", s.cor)}>
+                  <span
+                    className={cn(
+                      "block truncate font-display text-[0.8rem] font-bold tabular-nums",
+                      s.cor,
+                    )}
+                  >
                     {typeof s.valor === "number" ? brl(s.valor, 2) : "—"}
                   </span>
                 </span>
-
-
               </button>
             ))}
             {comparar ? (
@@ -792,112 +906,130 @@ export function EvolucaoPatrimonio() {
           </div>
         }
       >
-
-
         <div className="-mx-2 w-[calc(100%+1rem)] max-w-none overflow-x-auto overflow-y-hidden pb-1 [scrollbar-width:thin]">
           <div
             className="h-[260px] w-full min-w-[var(--mw)] sm:h-[380px] xl:h-[430px]"
-            style={{ ["--mw" as string]: `${Math.max(320, dadosGrafico.length * (dadosGrafico.length <= 14 ? 88 : 56))}px` } as Record<string, string>}
+            style={
+              {
+                ["--mw" as string]: `${Math.max(320, dadosGrafico.length * (dadosGrafico.length <= 14 ? 88 : 56))}px`,
+              } as Record<string, string>
+            }
           >
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dadosGrafico} margin={{ top: 24, right: 12, left: 4, bottom: 8 }} barGap={-2} barCategoryGap="10%" maxBarSize={34}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-              <XAxis
-                dataKey="rotulo"
-                tick={
-                  <TickEixoX
-                    angulo={granularidade === "mensal" && dadosGrafico.length > 10 ? -35 : 0}
-                    ancora={granularidade === "mensal" && dadosGrafico.length > 10 ? "end" : "middle"}
-                    serie={dadosGrafico}
-                  />
-                }
-                tickLine={false}
-                axisLine={{ stroke: "var(--color-border)" }}
-                interval={0}
-                height={granularidade === "mensal" && dadosGrafico.length > 10 ? 48 : 28}
-                tickMargin={8}
-              />
-
-
-              <YAxis
-                tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
-                tickLine={false}
-                axisLine={false}
-                width={52}
-                tickMargin={4}
-                tickFormatter={compacto}
-              />
-              <Tooltip
-                cursor={{ fill: "var(--color-muted)", opacity: 0.22 }}
-                wrapperStyle={{ outline: "none", zIndex: 30 }}
-                allowEscapeViewBox={{ x: false, y: true }}
-                offset={16}
-                content={<TooltipEvolucao destaque={destaque} serie={dadosGrafico} />}
-              />
-              <Bar
-                dataKey="patrimonio"
-                name="Patrimônio"
-                fill="var(--color-serie-patrimonio)"
-                fillOpacity={destaque && destaque !== "patrimonio" ? 0.28 : 1}
-                radius={[0, 0, 0, 0]}
-                isAnimationActive={false}
-                onMouseEnter={() => setDestaque("patrimonio")}
-                onMouseLeave={() => setDestaque(null)}
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart
+                data={dadosGrafico}
+                margin={{ top: 24, right: 12, left: 4, bottom: 8 }}
+                barGap={-2}
+                barCategoryGap="10%"
+                maxBarSize={34}
               >
-                {mostrarRotulos && dadosGrafico.length <= 14 && destaque !== "aportadoAcum" && destaque !== "anterior" ? (
-                <LabelList
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="rotulo"
+                  tick={
+                    <TickEixoX
+                      angulo={granularidade === "mensal" && dadosGrafico.length > 10 ? -35 : 0}
+                      ancora={
+                        granularidade === "mensal" && dadosGrafico.length > 10 ? "end" : "middle"
+                      }
+                      serie={dadosGrafico}
+                    />
+                  }
+                  tickLine={false}
+                  axisLine={{ stroke: "var(--color-border)" }}
+                  interval={0}
+                  height={granularidade === "mensal" && dadosGrafico.length > 10 ? 48 : 28}
+                  tickMargin={8}
+                />
+
+                <YAxis
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={52}
+                  tickMargin={4}
+                  tickFormatter={compacto}
+                />
+                <Tooltip
+                  cursor={{ fill: "var(--color-muted)", opacity: 0.22 }}
+                  wrapperStyle={{ outline: "none", zIndex: 30 }}
+                  allowEscapeViewBox={{ x: false, y: true }}
+                  offset={16}
+                  content={<TooltipEvolucao destaque={destaque} serie={dadosGrafico} />}
+                />
+                <Bar
                   dataKey="patrimonio"
-                  position="top"
-                  offset={6}
-                  formatter={(v: number) => compacto(Number(v))}
-                  style={{
-                    fontSize: 10,
-                    fontWeight: destaque === "patrimonio" ? 700 : 600,
-                    fill: "var(--color-serie-patrimonio)",
-                  }}
-                />
-                ) : null}
-              </Bar>
-              <Bar
-                dataKey="aportadoAcum"
-                name="Total investido"
-                fill="var(--color-serie-investido)"
-                fillOpacity={destaque && destaque !== "aportadoAcum" ? 0.28 : 1}
-                radius={[0, 0, 0, 0]}
-                isAnimationActive={false}
-                onMouseEnter={() => setDestaque("aportadoAcum")}
-                onMouseLeave={() => setDestaque(null)}
-              >
-                {mostrarRotulos && dadosGrafico.length <= 14 && destaque !== "patrimonio" && destaque !== "anterior" ? (
-                <LabelList
+                  name="Patrimônio"
+                  fill="var(--color-serie-patrimonio)"
+                  fillOpacity={destaque && destaque !== "patrimonio" ? 0.28 : 1}
+                  radius={[0, 0, 0, 0]}
+                  isAnimationActive={false}
+                  onMouseEnter={() => setDestaque("patrimonio")}
+                  onMouseLeave={() => setDestaque(null)}
+                >
+                  {mostrarRotulos &&
+                  dadosGrafico.length <= 14 &&
+                  destaque !== "aportadoAcum" &&
+                  destaque !== "anterior" ? (
+                    <LabelList
+                      dataKey="patrimonio"
+                      position="top"
+                      offset={6}
+                      formatter={(v: number) => compacto(Number(v))}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: destaque === "patrimonio" ? 700 : 600,
+                        fill: "var(--color-serie-patrimonio)",
+                      }}
+                    />
+                  ) : null}
+                </Bar>
+                <Bar
                   dataKey="aportadoAcum"
-                  position="top"
-                  offset={6}
-                  formatter={(v: number) => compacto(Number(v))}
-                  style={{
-                    fontSize: 10,
-                    fontWeight: destaque === "aportadoAcum" ? 700 : 600,
-                    fill: "var(--color-serie-investido)",
-                  }}
-                />
+                  name="Total investido"
+                  fill="var(--color-serie-investido)"
+                  fillOpacity={destaque && destaque !== "aportadoAcum" ? 0.28 : 1}
+                  radius={[0, 0, 0, 0]}
+                  isAnimationActive={false}
+                  onMouseEnter={() => setDestaque("aportadoAcum")}
+                  onMouseLeave={() => setDestaque(null)}
+                >
+                  {mostrarRotulos &&
+                  dadosGrafico.length <= 14 &&
+                  destaque !== "patrimonio" &&
+                  destaque !== "anterior" ? (
+                    <LabelList
+                      dataKey="aportadoAcum"
+                      position="top"
+                      offset={6}
+                      formatter={(v: number) => compacto(Number(v))}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: destaque === "aportadoAcum" ? 700 : 600,
+                        fill: "var(--color-serie-investido)",
+                      }}
+                    />
+                  ) : null}
+                </Bar>
+
+                {comparar ? (
+                  <Line
+                    type="monotone"
+                    dataKey="anterior"
+                    name="Período anterior"
+                    stroke="var(--color-muted-foreground)"
+                    strokeWidth={1.5}
+                    strokeDasharray="5 4"
+                    dot={false}
+                    connectNulls
+                  />
                 ) : null}
-              </Bar>
-
-
-              {comparar ? (
-                <Line
-                  type="monotone"
-                  dataKey="anterior"
-                  name="Período anterior"
-                  stroke="var(--color-muted-foreground)"
-                  strokeWidth={1.5}
-                  strokeDasharray="5 4"
-                  dot={false}
-                  connectNulls
-                />
-              ) : null}
-            </ComposedChart>
-          </ResponsiveContainer>
+              </ComposedChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
@@ -905,7 +1037,8 @@ export function EvolucaoPatrimonio() {
             inclusive quando os rótulos das barras estão ocultos. */}
         <table className="sr-only">
           <caption>
-            Evolução de patrimônio: valores de patrimônio, total investido e ganho de capital por período.
+            Evolução de patrimônio: valores de patrimônio, total investido e ganho de capital por
+            período.
           </caption>
           <thead>
             <tr>
@@ -926,24 +1059,19 @@ export function EvolucaoPatrimonio() {
             ))}
           </tbody>
         </table>
-
-
-
-
-
       </Panel>
-
 
       {/* 4. Comparativo período a período */}
       <Panel title={granularidade === "mensal" ? "Comparativo mês a mês" : "Comparativo ano a ano"}>
         {linhasFiltradas.length === 0 ? (
-          <p className="py-6 text-center text-xs text-muted-foreground">Nenhum período encontrado para a busca.</p>
+          <p className="py-6 text-center text-xs text-muted-foreground">
+            Nenhum período encontrado para a busca.
+          </p>
         ) : (
           <>
             {/* Desktop / tablet */}
             <div className="-mx-4 hidden overflow-x-auto px-4 md:block sm:-mx-5 sm:px-5">
               <table className="w-full min-w-[46rem] table-auto text-sm">
-
                 <thead>
                   <tr className="text-left text-[0.65rem] uppercase tracking-wide text-muted-foreground">
                     <th className="py-2 font-semibold">Período</th>
@@ -957,10 +1085,16 @@ export function EvolucaoPatrimonio() {
                 <tbody>
                   {[...linhasFiltradas].reverse().map((l, i, arr) => {
                     const ant = arr[i + 1];
-                    const varPct = ant && ant.patrimonio > 0 ? ((l.patrimonio - ant.patrimonio) / ant.patrimonio) * 100 : 0;
+                    const varPct =
+                      ant && ant.patrimonio > 0
+                        ? ((l.patrimonio - ant.patrimonio) / ant.patrimonio) * 100
+                        : 0;
                     const pos = varPct >= 0;
                     return (
-                      <tr key={l.id} className="border-t border-border/60 transition-colors hover:bg-muted/40">
+                      <tr
+                        key={l.id}
+                        className="border-t border-border/60 transition-colors hover:bg-muted/40"
+                      >
                         <td className="py-2">
                           <Link
                             to="/historico-aportes"
@@ -968,11 +1102,16 @@ export function EvolucaoPatrimonio() {
                           >
                             <span className="truncate">{l.titulo}</span>
 
-                            <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+                            <ChevronRight
+                              className="size-3.5 shrink-0 text-muted-foreground"
+                              aria-hidden
+                            />
                           </Link>
                         </td>
                         <td className="py-2 text-right tabular-nums">{brl(l.patrimonio, 2)}</td>
-                        <td className="py-2 text-right tabular-nums text-muted-foreground">{brl(l.aportado, 2)}</td>
+                        <td className="py-2 text-right tabular-nums text-muted-foreground">
+                          {brl(l.aportado, 2)}
+                        </td>
                         <td
                           className={cn(
                             "py-2 text-right tabular-nums",
@@ -991,7 +1130,10 @@ export function EvolucaoPatrimonio() {
                           {pct(l.rendimentoPct)}
                         </td>
                         <td
-                          className={cn("py-2 text-right tabular-nums", pos ? "text-success" : "text-destructive")}
+                          className={cn(
+                            "py-2 text-right tabular-nums",
+                            pos ? "text-success" : "text-destructive",
+                          )}
                         >
                           {pos ? "▲" : "▼"} {pct(Math.abs(varPct))}
                         </td>
@@ -1006,7 +1148,10 @@ export function EvolucaoPatrimonio() {
             <ul className="space-y-2 md:hidden">
               {[...linhasFiltradas].reverse().map((l, i, arr) => {
                 const ant = arr[i + 1];
-                const varPct = ant && ant.patrimonio > 0 ? ((l.patrimonio - ant.patrimonio) / ant.patrimonio) * 100 : 0;
+                const varPct =
+                  ant && ant.patrimonio > 0
+                    ? ((l.patrimonio - ant.patrimonio) / ant.patrimonio) * 100
+                    : 0;
                 const pos = varPct >= 0;
                 return (
                   <li key={l.id}>
@@ -1017,12 +1162,22 @@ export function EvolucaoPatrimonio() {
                       <div className="flex items-center justify-between gap-2">
                         <span className="flex min-w-0 items-center gap-2">
                           <span
-                            className={cn("size-2 shrink-0 rounded-full", pos ? "bg-success" : "bg-destructive")}
+                            className={cn(
+                              "size-2 shrink-0 rounded-full",
+                              pos ? "bg-success" : "bg-destructive",
+                            )}
                             aria-hidden
                           />
-                          <span className="truncate font-display text-sm font-semibold">{l.titulo}</span>
+                          <span className="truncate font-display text-sm font-semibold">
+                            {l.titulo}
+                          </span>
                         </span>
-                        <span className={cn("text-xs font-semibold", pos ? "text-success" : "text-destructive")}>
+                        <span
+                          className={cn(
+                            "text-xs font-semibold",
+                            pos ? "text-success" : "text-destructive",
+                          )}
+                        >
                           {pos ? "▲" : "▼"} {pct(Math.abs(varPct))}
                         </span>
                       </div>
@@ -1037,13 +1192,23 @@ export function EvolucaoPatrimonio() {
                         </div>
                         <div>
                           <dt className="text-muted-foreground">Rentab. (R$)</dt>
-                          <dd className={cn("tabular-nums", l.rendimento >= 0 ? "text-success" : "text-destructive")}>
+                          <dd
+                            className={cn(
+                              "tabular-nums",
+                              l.rendimento >= 0 ? "text-success" : "text-destructive",
+                            )}
+                          >
                             {brl(l.rendimento, 2)}
                           </dd>
                         </div>
                         <div>
                           <dt className="text-muted-foreground">Rentab. (%)</dt>
-                          <dd className={cn("tabular-nums", l.rendimentoPct >= 0 ? "text-success" : "text-destructive")}>
+                          <dd
+                            className={cn(
+                              "tabular-nums",
+                              l.rendimentoPct >= 0 ? "text-success" : "text-destructive",
+                            )}
+                          >
                             {l.rendimentoPct >= 0 ? "+" : ""}
                             {pct(l.rendimentoPct)}
                           </dd>
@@ -1059,9 +1224,14 @@ export function EvolucaoPatrimonio() {
       </Panel>
 
       {/* 5. Distribuição por categoria */}
-      <Panel title="Distribuição atual do patrimônio" hint="Comparado com a composição no início do período.">
+      <Panel
+        title="Distribuição atual do patrimônio"
+        hint="Comparado com a composição no início do período."
+      >
         {distribuicao.length === 0 ? (
-          <p className="py-6 text-center text-xs text-muted-foreground">Nenhum ativo na carteira.</p>
+          <p className="py-6 text-center text-xs text-muted-foreground">
+            Nenhum ativo na carteira.
+          </p>
         ) : (
           <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-center">
             <div className="h-48">
@@ -1093,14 +1263,22 @@ export function EvolucaoPatrimonio() {
                 <li key={d.categoria}>
                   <button
                     type="button"
-                    onClick={() => setCategoriaFiltro((c) => (c === d.categoria ? null : d.categoria))}
+                    onClick={() =>
+                      setCategoriaFiltro((c) => (c === d.categoria ? null : d.categoria))
+                    }
                     aria-pressed={categoriaFiltro === d.categoria}
                     className={cn(
                       "grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2 gap-y-0.5 rounded-xl border px-3 py-2 text-left text-xs transition-colors",
-                      categoriaFiltro === d.categoria ? "border-primary bg-primary/10" : "border-border hover:bg-muted",
+                      categoriaFiltro === d.categoria
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:bg-muted",
                     )}
                   >
-                    <span className="size-2.5 shrink-0 rounded-full" style={{ background: d.cor }} aria-hidden />
+                    <span
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ background: d.cor }}
+                      aria-hidden
+                    />
                     <span className="min-w-0 truncate font-medium">{d.categoria}</span>
                     <span className="shrink-0 tabular-nums font-semibold">{pct(d.parte)}</span>
                     <span className="col-start-2 col-span-2 text-[0.65rem] text-muted-foreground tabular-nums">
@@ -1110,7 +1288,6 @@ export function EvolucaoPatrimonio() {
                 </li>
               ))}
             </ul>
-
           </div>
         )}
       </Panel>
@@ -1130,7 +1307,12 @@ export function EvolucaoPatrimonio() {
             sub={indicadores.menor ? rotuloMesLongo(indicadores.menor.chave) : undefined}
             serie="investido"
           />
-          <Kpi rotulo="Média mensal" valor={brl(indicadores.media, 2)} sub="meses com aporte" serie="investido" />
+          <Kpi
+            rotulo="Média mensal"
+            valor={brl(indicadores.media, 2)}
+            sub="meses com aporte"
+            serie="investido"
+          />
           <Kpi
             rotulo="Melhor mês"
             valor={`+${pct(Math.abs(indicadores.melhorPct))}`}
@@ -1157,9 +1339,9 @@ export function EvolucaoPatrimonio() {
           />
         </div>
         <p className="t-caption mt-3 flex items-center gap-1.5">
-
           <CalendarDays className="size-3.5" aria-hidden />
-          Valores históricos estimados a partir dos aportes registrados e da valorização atual da carteira.
+          Valores históricos estimados a partir dos aportes registrados e da valorização atual da
+          carteira.
         </p>
       </Panel>
     </section>

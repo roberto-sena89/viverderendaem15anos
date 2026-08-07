@@ -4,10 +4,21 @@ import { Loader2, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
+type OAuthDetails = {
+  redirect_url?: string | null;
+  redirect_to?: string | null;
+  client?: { name?: string | null } | null;
+};
+
+type OAuthResult = {
+  data?: OAuthDetails | null;
+  error?: { message: string } | null;
+};
+
 type OAuthApi = {
-  getAuthorizationDetails: (id: string) => Promise<{ data: any; error: any }>;
-  approveAuthorization: (id: string) => Promise<{ data: any; error: any }>;
-  denyAuthorization: (id: string) => Promise<{ data: any; error: any }>;
+  getAuthorizationDetails: (id: string) => Promise<OAuthResult>;
+  approveAuthorization: (id: string) => Promise<OAuthResult>;
+  denyAuthorization: (id: string) => Promise<OAuthResult>;
 };
 
 const oauth = () => (supabase.auth as unknown as { oauth: OAuthApi }).oauth;
@@ -46,14 +57,15 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
   errorComponent: ({ error }) => (
     <main className="grid min-h-dvh place-items-center p-6 text-center">
       <p className="text-sm text-muted-foreground">
-        Não foi possível carregar esta solicitação de acesso: {String((error as Error)?.message ?? error)}
+        Não foi possível carregar esta solicitação de acesso:{" "}
+        {String((error as Error)?.message ?? error)}
       </p>
     </main>
   ),
 });
 
 function Consent() {
-  const details = Route.useLoaderData() as any;
+  const details = Route.useLoaderData() as OAuthDetails;
   const { authorization_id } = Route.useSearch();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,8 +104,8 @@ function Consent() {
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          {clientName} poderá consultar sua carteira, dividendos e metas e registrar aportes em seu nome. Você pode
-          revogar o acesso a qualquer momento.
+          {clientName} poderá consultar sua carteira, dividendos e metas e registrar aportes em seu
+          nome. Você pode revogar o acesso a qualquer momento.
         </p>
         {error && (
           <p role="alert" className="rounded-lg bg-destructive/10 p-3 text-xs text-destructive">
@@ -101,7 +113,12 @@ function Consent() {
           </p>
         )}
         <div className="flex gap-3">
-          <Button variant="outline" className="flex-1" disabled={busy} onClick={() => decide(false)}>
+          <Button
+            variant="outline"
+            className="flex-1"
+            disabled={busy}
+            onClick={() => decide(false)}
+          >
             Recusar
           </Button>
           <Button className="flex-1" disabled={busy} onClick={() => decide(true)}>

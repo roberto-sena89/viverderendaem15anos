@@ -143,7 +143,7 @@ async function baixarPagina(url: string, mercado: MercadoEtf): Promise<BaseEtf[]
     const linhas: BaseEtf[] = [];
     for (const tr of corpo.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)) {
       const bruto = tr[1];
-      const ticker = (bruto.match(/etfs(?:-global)?\/([a-z0-9.\-]+)\//i)?.[1] ?? "").toUpperCase();
+      const ticker = (bruto.match(/etfs(?:-global)?\/([a-z0-9.-]+)\//i)?.[1] ?? "").toUpperCase();
       if (!ticker) continue;
       const nome = semTags(bruto.match(/title="([^"]+)"/)?.[1] ?? "") || ticker;
       const pais = bruto.match(/flags\/([A-Z]{2,3})\.svg/)?.[1] ?? null;
@@ -292,7 +292,11 @@ async function buscarIbovespa(): Promise<ResumoIbovEtf | null> {
       const data = (await res.json()) as {
         chart?: {
           result?: Array<{
-            meta?: { regularMarketPrice?: number; chartPreviousClose?: number; previousClose?: number };
+            meta?: {
+              regularMarketPrice?: number;
+              chartPreviousClose?: number;
+              previousClose?: number;
+            };
             indicators?: { quote?: Array<{ close?: (number | null)[] }> };
           }>;
         };
@@ -361,8 +365,7 @@ function montarLinha(b: BaseEtf | null, ticker: string, vivo: PrecoVivo | undefi
 
     preco,
     fechamentoAnterior,
-    variacao:
-      preco !== null && fechamentoAnterior !== null ? preco - fechamentoAnterior : null,
+    variacao: preco !== null && fechamentoAnterior !== null ? preco - fechamentoAnterior : null,
     variacaoPercent,
     volume: vivo?.volume ?? null,
 
@@ -402,7 +405,9 @@ async function montarGrade(): Promise<RespostaEtfs> {
     linhas.push(montarLinha(null, ticker, vivo));
   }
 
-  linhas.sort((a, b) => (b.capitalizacao ?? 0) - (a.capitalizacao ?? 0) || (b.volume ?? 0) - (a.volume ?? 0));
+  linhas.sort(
+    (a, b) => (b.capitalizacao ?? 0) - (a.capitalizacao ?? 0) || (b.volume ?? 0) - (a.volume ?? 0),
+  );
 
   return {
     linhas,

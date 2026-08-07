@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { PrecoPersistido } from "@/lib/precos-ultimos.server";
 
-const tickerValido = (t: unknown) => /^[A-Z0-9.\-]{2,12}$/.test(String(t));
+const tickerValido = (t: unknown) => /^[A-Z0-9.-]{2,12}$/.test(String(t));
 
 const normalizarLista = (d: { tickers?: unknown }) => ({
   tickers: Array.isArray(d?.tickers)

@@ -37,7 +37,7 @@ export const chaveBrapi = (t: string) => t.trim().toUpperCase().replace(/\.SA$/i
 export function usePrecosBrapiCarteira(tickers: string[]): Map<string, PrecoVivoCarteira> {
   const buscar = useServerFn(precosEtfsBrapi);
   const lista = useMemo(
-    () => [...new Set(tickers.map(chaveBrapi).filter((t) => /^[A-Z0-9.\-]{2,12}$/.test(t)))].sort(),
+    () => [...new Set(tickers.map(chaveBrapi).filter((t) => /^[A-Z0-9.-]{2,12}$/.test(t)))].sort(),
     [tickers],
   );
   const chave = lista.join(",");
