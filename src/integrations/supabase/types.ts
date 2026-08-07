@@ -368,6 +368,42 @@ export type Database = {
         }
         Relationships: []
       }
+      relatorios: {
+        Row: {
+          created_at: string
+          id: string
+          patrimonio_total: number | null
+          perfil: string | null
+          resumo: Json | null
+          score_diversificacao: number | null
+          tipo: string
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          patrimonio_total?: number | null
+          perfil?: string | null
+          resumo?: Json | null
+          score_diversificacao?: number | null
+          tipo: string
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          patrimonio_total?: number | null
+          perfil?: string | null
+          resumo?: Json | null
+          score_diversificacao?: number | null
+          tipo?: string
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       sincronizacoes: {
         Row: {
           atualizados: number
