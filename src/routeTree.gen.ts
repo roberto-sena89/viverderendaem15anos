@@ -36,6 +36,7 @@ import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
 import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
+import { Route as AuthenticatedSeoRouteImport } from './routes/_authenticated/seo'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.melhores-livros-financas'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -184,6 +185,11 @@ const AuthenticatedRebalanceamentoRoute =
     path: '/rebalanceamento',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSeoRoute = AuthenticatedSeoRouteImport.update({
+  id: '/seo',
+  path: '/seo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -251,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -286,6 +293,7 @@ export interface FileRoutesByTo {
   '/planejador': typeof AuthenticatedPlanejadorRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -323,6 +331,7 @@ export interface FileRoutesById {
   '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
   '/_authenticated/rankings': typeof AuthenticatedRankingsRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
+  '/_authenticated/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/planejador'
     | '/rankings'
     | '/rebalanceamento'
+    | '/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
@@ -395,6 +405,7 @@ export interface FileRouteTypes {
     | '/planejador'
     | '/rankings'
     | '/rebalanceamento'
+    | '/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
@@ -431,6 +442,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planejador'
     | '/_authenticated/rankings'
     | '/_authenticated/rebalanceamento'
+    | '/_authenticated/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
     | '/.lovable/oauth/consent'
@@ -655,6 +667,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRebalanceamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/seo': {
+      id: '/_authenticated/seo'
+      path: '/seo'
+      fullPath: '/seo'
+      preLoaderRoute: typeof AuthenticatedSeoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -721,6 +740,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanejadorRoute: typeof AuthenticatedPlanejadorRoute
   AuthenticatedRankingsRoute: typeof AuthenticatedRankingsRoute
   AuthenticatedRebalanceamentoRoute: typeof AuthenticatedRebalanceamentoRoute
+  AuthenticatedSeoRoute: typeof AuthenticatedSeoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -737,6 +757,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanejadorRoute: AuthenticatedPlanejadorRoute,
   AuthenticatedRankingsRoute: AuthenticatedRankingsRoute,
   AuthenticatedRebalanceamentoRoute: AuthenticatedRebalanceamentoRoute,
+  AuthenticatedSeoRoute: AuthenticatedSeoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
