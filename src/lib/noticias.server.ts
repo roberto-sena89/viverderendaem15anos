@@ -20,6 +20,13 @@ export type CategoriaNoticia =
   | "Internacional"
   | "Empresas";
 
+import {
+  FRESCOR_NOTICIAS,
+  gravarCacheNoticias,
+  idadeMs,
+  lerCacheNoticias,
+} from "@/lib/noticias-cache.server";
+
 export const CATEGORIAS_NOTICIA: CategoriaNoticia[] = [
   "Mercados",
   "Ações",
@@ -55,14 +62,54 @@ interface FonteRss {
 }
 
 const FONTES: FonteRss[] = [
-  { nome: "InfoMoney", url: "https://www.infomoney.com.br/mercados/feed/", categoria: "Mercados", peso: 10 },
-  { nome: "InfoMoney", url: "https://www.infomoney.com.br/economia/feed/", categoria: "Economia", peso: 9 },
-  { nome: "InfoMoney", url: "https://www.infomoney.com.br/onde-investir/feed/", categoria: "Renda Fixa", peso: 8 },
-  { nome: "Money Times", url: "https://www.moneytimes.com.br/feed/", categoria: "Mercados", peso: 8 },
-  { nome: "Money Times", url: "https://www.moneytimes.com.br/tag/fundos-imobiliarios/feed/", categoria: "Fundos Imobiliários", peso: 7 },
-  { nome: "Investing.com", url: "https://br.investing.com/rss/news_25.rss", categoria: "Mercados", peso: 7 },
-  { nome: "Investing.com", url: "https://br.investing.com/rss/news_1.rss", categoria: "Internacional", peso: 6 },
-  { nome: "Investing.com", url: "https://br.investing.com/rss/news_301.rss", categoria: "Câmbio & Cripto", peso: 6 },
+  {
+    nome: "InfoMoney",
+    url: "https://www.infomoney.com.br/mercados/feed/",
+    categoria: "Mercados",
+    peso: 10,
+  },
+  {
+    nome: "InfoMoney",
+    url: "https://www.infomoney.com.br/economia/feed/",
+    categoria: "Economia",
+    peso: 9,
+  },
+  {
+    nome: "InfoMoney",
+    url: "https://www.infomoney.com.br/onde-investir/feed/",
+    categoria: "Renda Fixa",
+    peso: 8,
+  },
+  {
+    nome: "Money Times",
+    url: "https://www.moneytimes.com.br/feed/",
+    categoria: "Mercados",
+    peso: 8,
+  },
+  {
+    nome: "Money Times",
+    url: "https://www.moneytimes.com.br/tag/fundos-imobiliarios/feed/",
+    categoria: "Fundos Imobiliários",
+    peso: 7,
+  },
+  {
+    nome: "Investing.com",
+    url: "https://br.investing.com/rss/news_25.rss",
+    categoria: "Mercados",
+    peso: 7,
+  },
+  {
+    nome: "Investing.com",
+    url: "https://br.investing.com/rss/news_1.rss",
+    categoria: "Internacional",
+    peso: 6,
+  },
+  {
+    nome: "Investing.com",
+    url: "https://br.investing.com/rss/news_301.rss",
+    categoria: "Câmbio & Cripto",
+    peso: 6,
+  },
   {
     nome: "Valor Econômico",
     url: "https://news.google.com/rss/search?q=when:2d+site:valor.globo.com&hl=pt-BR&gl=BR&ceid=BR:pt-419",
@@ -182,12 +229,31 @@ function extrairTickers(texto: string): string[] {
 }
 
 const REGRAS_CATEGORIA: { categoria: CategoriaNoticia; termos: RegExp }[] = [
-  { categoria: "Fundos Imobiliários", termos: /\bfi{1,2}s?\b|fundo imobili|fiagro|\b[a-z]{4}11\b/i },
-  { categoria: "Câmbio & Cripto", termos: /\bdólar|câmbio|bitcoin|cripto|ethereum|moeda digital|real digital/i },
-  { categoria: "Renda Fixa", termos: /tesouro direto|renda fixa|\bcdb\b|\blci\b|\blca\b|debênture|ipca\+|prefixad|selic/i },
-  { categoria: "Empresas", termos: /balanço|resultado do \d|lucro (líquido|de)|prejuízo|receita líquida|guidance|\b\d[ºo] trimestre\b|\b\dt\d{2}\b/i },
-  { categoria: "Economia", termos: /\bipca\b|inflação|\bpib\b|copom|banco central|fiscal|arcabouço|desemprego|\bcaged\b/i },
-  { categoria: "Internacional", termos: /\bfed\b|wall street|nasdaq|s&p 500|estados unidos|china|europa|payroll|\bbce\b/i },
+  {
+    categoria: "Fundos Imobiliários",
+    termos: /\bfi{1,2}s?\b|fundo imobili|fiagro|\b[a-z]{4}11\b/i,
+  },
+  {
+    categoria: "Câmbio & Cripto",
+    termos: /\bdólar|câmbio|bitcoin|cripto|ethereum|moeda digital|real digital/i,
+  },
+  {
+    categoria: "Renda Fixa",
+    termos: /tesouro direto|renda fixa|\bcdb\b|\blci\b|\blca\b|debênture|ipca\+|prefixad|selic/i,
+  },
+  {
+    categoria: "Empresas",
+    termos:
+      /balanço|resultado do \d|lucro (líquido|de)|prejuízo|receita líquida|guidance|\b\d[ºo] trimestre\b|\b\dt\d{2}\b/i,
+  },
+  {
+    categoria: "Economia",
+    termos: /\bipca\b|inflação|\bpib\b|copom|banco central|fiscal|arcabouço|desemprego|\bcaged\b/i,
+  },
+  {
+    categoria: "Internacional",
+    termos: /\bfed\b|wall street|nasdaq|s&p 500|estados unidos|china|europa|payroll|\bbce\b/i,
+  },
   { categoria: "Ações", termos: /\bações?\b|ibovespa|\b[a-z]{4}[3-6]\b|dividendos|small caps/i },
 ];
 
@@ -199,7 +265,8 @@ function classificar(titulo: string, resumo: string, padrao: CategoriaNoticia): 
   return padrao;
 }
 
-const TERMOS_URGENTE = /\bao vivo\b|\burgente\b|breaking|últim[ao] hora|agora:|decisão do copom|halt|circuit breaker/i;
+const TERMOS_URGENTE =
+  /\bao vivo\b|\burgente\b|breaking|últim[ao] hora|agora:|decisão do copom|halt|circuit breaker/i;
 
 function normalizarTitulo(t: string): string {
   return t
@@ -223,7 +290,8 @@ async function buscarFeed(fonte: FonteRss, timeoutMs = 9000): Promise<Noticia[]>
     const res = await fetch(fonte.url, {
       headers: {
         Accept: "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-        "User-Agent": "Mozilla/5.0 (compatible; ViverDeRenda/1.0; +https://viverderendaem15anos.lovable.app)",
+        "User-Agent":
+          "Mozilla/5.0 (compatible; ViverDeRenda/1.0; +https://viverderendaem15anos.lovable.app)",
       },
       signal: controller.signal,
     });
@@ -241,16 +309,14 @@ async function buscarFeed(fonte: FonteRss, timeoutMs = 9000): Promise<Noticia[]>
   for (const bloco of blocos.slice(0, 25)) {
     const tituloBruto = tag(bloco, "title");
     if (!tituloBruto) continue;
-    const url =
-      tag(bloco, "link") ??
-      atributo(bloco, "link", "href") ??
-      tag(bloco, "guid");
+    const url = tag(bloco, "link") ?? atributo(bloco, "link", "href") ?? tag(bloco, "guid");
     if (!url || !/^https?:\/\//.test(url)) continue;
 
     const titulo = limparTituloGoogle(semTags(tituloBruto), fonte.nome);
     if (!titulo) continue;
 
-    const descricao = tag(bloco, "description") ?? tag(bloco, "summary") ?? tag(bloco, "content") ?? "";
+    const descricao =
+      tag(bloco, "description") ?? tag(bloco, "summary") ?? tag(bloco, "content") ?? "";
     const resumo = resumir(descricao);
     const dataBruta = tag(bloco, "pubDate") ?? tag(bloco, "published") ?? tag(bloco, "updated");
     const publicado = dataBruta ? new Date(dataBruta) : new Date();
@@ -259,6 +325,7 @@ async function buscarFeed(fonte: FonteRss, timeoutMs = 9000): Promise<Noticia[]>
     const categoria = classificar(titulo, resumo, fonte.categoria);
     const horas = (Date.now() - publicado.getTime()) / 3_600_000;
     const urgente = TERMOS_URGENTE.test(titulo) && horas < 6;
+    const imagem = extrairImagem(bloco);
 
     itens.push({
       id: normalizarTitulo(titulo).slice(0, 90),
@@ -269,15 +336,11 @@ async function buscarFeed(fonte: FonteRss, timeoutMs = 9000): Promise<Noticia[]>
       autor: tag(bloco, "dc:creator") ?? tag(bloco, "author"),
       categoria,
       publicadoEm: publicado.toISOString(),
-      imagem: extrairImagem(bloco),
+      imagem,
       tickers: extrairTickers(`${titulo} ${resumo}`),
       urgente,
       // Frescor + peso da fonte + bônus para manchetes com imagem e urgentes.
-      relevancia:
-        fonte.peso +
-        Math.max(0, 24 - horas) / 2 +
-        (urgente ? 12 : 0) +
-        (extrairImagem(bloco) ? 2 : 0),
+      relevancia: fonte.peso + Math.max(0, 24 - horas) / 2 + (urgente ? 12 : 0) + (imagem ? 2 : 0),
     });
   }
 
@@ -289,7 +352,8 @@ export async function agregarNoticias(): Promise<Noticia[]> {
   if (cache && cache.expira > Date.now()) return cache.itens;
   if (emVoo) return emVoo;
 
-  emVoo = (async () => {
+  // Busca completa dos feeds + gravação no cache compartilhado (memória + banco).
+  const buscarEGravar = async () => {
     const lotes = await Promise.all(FONTES.map((f) => buscarFeed(f)));
     const vistos = new Map<string, Noticia>();
 
@@ -303,9 +367,25 @@ export async function agregarNoticias(): Promise<Noticia[]> {
     );
 
     if (itens.length > 0) cache = { expira: Date.now() + TTL_MS, itens };
+    // Persiste fora do bloqueio da resposta: cold starts futuros já nascem quentes.
+    void gravarCacheNoticias(itens).catch(() => undefined);
     return itens;
-  })();
+  };
 
+  // Cache compartilhado no banco: evita re-buscar todos os feeds quando o
+  // processo acabou de iniciar (comum em preview/worker).
+  const persistido = await lerCacheNoticias();
+  if (persistido?.itens.length) {
+    if (!cache) cache = { expira: Date.now() + TTL_MS, itens: persistido.itens };
+    // Serve o feed salvo na hora; só revalida em segundo plano se estiver velho.
+    if (idadeMs(persistido) > FRESCOR_NOTICIAS) {
+      emVoo = buscarEGravar();
+      void emVoo.then(() => (emVoo = null)).catch(() => (emVoo = null));
+    }
+    return persistido.itens;
+  }
+
+  emVoo = buscarEGravar();
   try {
     return await emVoo;
   } finally {

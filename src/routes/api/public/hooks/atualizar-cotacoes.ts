@@ -62,8 +62,6 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-cotacoes")({
           }
         }
 
-
-
         // Grade completa de FIIs: regravar o cache dispara o evento de tempo
         // real (WebSocket) que atualiza preço e variação nos navegadores abertos.
         if (alvo.includes("fiis")) {
@@ -96,8 +94,15 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-cotacoes")({
           }
         }
 
-
-
+        // Aquecimento do feed de notícias: re-busca os RSS e grava no cache
+        // compartilhado, para a página de Notícias abrir sempre instantânea.
+        try {
+          const { agregarNoticias } = await import("@/lib/noticias.server");
+          const itens = await agregarNoticias();
+          resultados.push({ categoria: "noticias", linhas: itens.length, parcial: false });
+        } catch {
+          resultados.push({ categoria: "noticias", linhas: 0, parcial: true });
+        }
 
         return Response.json({
           ok: true,
