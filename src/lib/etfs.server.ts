@@ -435,18 +435,17 @@ export async function gradeEtfsComCache(forcar = false): Promise<RespostaEtfs> {
       });
   }
 
-  if (gradeMemoria) {
+  // SWR real: responde com o último valor conhecido — mesmo desatualizado —
+  // e atualiza em segundo plano. Só espera a montagem quando não há nada salvo.
+  if (gradeMemoria?.valor?.linhas?.length) {
     void emAndamento.catch(() => undefined);
     if (!forcar) return gradeMemoria.valor;
   } else {
     const salvo = await lerBanco<RespostaEtfs>("etfs:grade");
-    if (!forcar && salvo?.valor?.linhas?.length) {
-      const idade = Date.now() - Date.parse(salvo.em);
-      if (idade < frescor) {
-        gradeMemoria = { valor: salvo.valor, em: Date.parse(salvo.em) };
-        void emAndamento.catch(() => undefined);
-        return salvo.valor;
-      }
+    if (salvo?.valor?.linhas?.length) {
+      gradeMemoria = { valor: salvo.valor, em: Date.parse(salvo.em) };
+      void emAndamento.catch(() => undefined);
+      if (!forcar) return salvo.valor;
     }
   }
   return emAndamento;

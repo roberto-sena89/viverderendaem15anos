@@ -256,7 +256,11 @@ async function buscarIbovespa(): Promise<ResumoIbov | null> {
       const data = (await res.json()) as {
         chart?: {
           result?: Array<{
-            meta?: { regularMarketPrice?: number; chartPreviousClose?: number; previousClose?: number };
+            meta?: {
+              regularMarketPrice?: number;
+              chartPreviousClose?: number;
+              previousClose?: number;
+            };
             indicators?: { quote?: Array<{ close?: (number | null)[] }> };
           }>;
         };
@@ -440,18 +444,17 @@ export async function gradeAcoesComCache(forcar = false): Promise<RespostaAcoes>
       });
   }
 
-  if (gradeMemoria) {
+  // SWR real: responde com o último valor conhecido — mesmo desatualizado —
+  // e atualiza em segundo plano. Só espera a montagem quando não há nada salvo.
+  if (gradeMemoria?.valor?.linhas?.length) {
     void emAndamento.catch(() => undefined);
     if (!forcar) return gradeMemoria.valor;
   } else {
     const salvo = await lerBanco<RespostaAcoes>("acoes:grade");
-    if (!forcar && salvo?.valor?.linhas?.length) {
-      const idade = Date.now() - Date.parse(salvo.em);
-      if (idade < frescor) {
-        gradeMemoria = { valor: salvo.valor, em: Date.parse(salvo.em) };
-        void emAndamento.catch(() => undefined);
-        return salvo.valor;
-      }
+    if (salvo?.valor?.linhas?.length) {
+      gradeMemoria = { valor: salvo.valor, em: Date.parse(salvo.em) };
+      void emAndamento.catch(() => undefined);
+      if (!forcar) return salvo.valor;
     }
   }
   return emAndamento;
@@ -536,7 +539,9 @@ async function historicoYahoo(ticker: string): Promise<HistoricoAcao> {
         // Variação de 30 dias: usa o último ponto mensal disponível.
         const penultimo = fechamentos[fechamentos.length - 2];
         const var30d =
-          typeof penultimo === "number" && penultimo > 0 ? ((atual - penultimo) / penultimo) * 100 : null;
+          typeof penultimo === "number" && penultimo > 0
+            ? ((atual - penultimo) / penultimo) * 100
+            : null;
 
         return {
           ticker,

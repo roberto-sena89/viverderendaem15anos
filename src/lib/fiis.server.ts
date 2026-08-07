@@ -170,12 +170,22 @@ async function base(): Promise<{ lista: BaseFii[]; em: string | null }> {
  * Preços ao vivo (lote único na brapi)
  * ------------------------------------------------------------------ */
 
-type PrecoVivo = { preco: number; variacaoPercent: number | null; volume: number | null; logo: string | null };
+type PrecoVivo = {
+  preco: number;
+  variacaoPercent: number | null;
+  volume: number | null;
+  logo: string | null;
+};
 
 async function precosAoVivo(): Promise<Map<string, PrecoVivo>> {
   const mapa = new Map<string, PrecoVivo>();
   const token = process.env.BRAPI_TOKEN;
-  const params = new URLSearchParams({ type: "fund", limit: "1000", sortBy: "volume", sortOrder: "desc" });
+  const params = new URLSearchParams({
+    type: "fund",
+    limit: "1000",
+    sortBy: "volume",
+    sortOrder: "desc",
+  });
   if (token) params.set("token", token);
   try {
     const res = await fetch(`https://brapi.dev/api/quote/list?${params}`, { headers: NAVEGADOR });
@@ -212,15 +222,18 @@ async function precosAoVivo(): Promise<Map<string, PrecoVivo>> {
 async function buscarIfix(): Promise<ResumoIfix | null> {
   for (const host of ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]) {
     try {
-      const res = await fetch(
-        `https://${host}/v8/finance/chart/IFIX.SA?range=1y&interval=1d`,
-        { headers: NAVEGADOR },
-      );
+      const res = await fetch(`https://${host}/v8/finance/chart/IFIX.SA?range=1y&interval=1d`, {
+        headers: NAVEGADOR,
+      });
       if (!res.ok) continue;
       const data = (await res.json()) as {
         chart?: {
           result?: Array<{
-            meta?: { regularMarketPrice?: number; chartPreviousClose?: number; previousClose?: number };
+            meta?: {
+              regularMarketPrice?: number;
+              chartPreviousClose?: number;
+              previousClose?: number;
+            };
             indicators?: { quote?: Array<{ close?: (number | null)[] }> };
           }>;
         };
@@ -348,19 +361,17 @@ export async function gradeFiisComCache(forcar = false): Promise<RespostaFiis> {
       });
   }
 
-  if (gradeMemoria) {
-    // Responde com o último valor e atualiza em segundo plano.
+  // SWR real: responde com o último valor conhecido — mesmo desatualizado —
+  // e atualiza em segundo plano. Só espera a montagem quando não há nada salvo.
+  if (gradeMemoria?.valor?.linhas?.length) {
     void emAndamento.catch(() => undefined);
     if (!forcar) return gradeMemoria.valor;
   } else {
     const salvo = await lerBanco<RespostaFiis>("fiis:grade");
-    if (!forcar && salvo?.valor?.linhas?.length) {
-      const idade = Date.now() - Date.parse(salvo.em);
-      if (idade < frescor) {
-        gradeMemoria = { valor: salvo.valor, em: Date.parse(salvo.em) };
-        void emAndamento.catch(() => undefined);
-        return salvo.valor;
-      }
+    if (salvo?.valor?.linhas?.length) {
+      gradeMemoria = { valor: salvo.valor, em: Date.parse(salvo.em) };
+      void emAndamento.catch(() => undefined);
+      if (!forcar) return salvo.valor;
     }
   }
   return emAndamento;
@@ -421,7 +432,9 @@ async function historicoYahoo(ticker: string): Promise<HistoricoFii> {
         for (let i = 0; i < 5; i++) {
           const fim = agora - i * ano;
           const inicio = fim - ano;
-          const soma = divs.filter((d) => d.data > inicio && d.data <= fim).reduce((s, d) => s + d.valor, 0);
+          const soma = divs
+            .filter((d) => d.data > inicio && d.data <= fim)
+            .reduce((s, d) => s + d.valor, 0);
           if (soma <= 0) continue;
           let referencia: number | null = null;
           for (let k = tempos.length - 1; k >= 0; k--) {
