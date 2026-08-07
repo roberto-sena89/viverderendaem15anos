@@ -50,7 +50,7 @@ export const CLASSES_BARRA_ABAS =
 export const CLASSES_LISTA_ABAS =
   "grid h-auto w-full grid-cols-4 items-stretch gap-1.5 rounded-xl border border-border/60 bg-card/40 p-1.5 sm:flex sm:w-max sm:gap-1 sm:rounded-full sm:border-border/50 sm:p-1";
 export const CLASSES_GATILHO_ABA =
-  "foco-visivel alvo-toque-linha group flex w-full min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 text-center text-[0.625rem] leading-tight font-medium text-muted-foreground transition-colors data-[state=active]:bg-primary/12 data-[state=active]:text-primary data-[state=active]:shadow-none sm:w-auto sm:flex-row sm:gap-1.5 sm:rounded-full sm:px-3.5 sm:py-1.5 sm:text-sm sm:whitespace-nowrap sm:data-[state=active]:bg-primary sm:data-[state=active]:text-primary-foreground";
+  "foco-visivel alvo-toque-linha group flex w-full min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 text-center t-aba text-muted-foreground transition-colors data-[state=active]:bg-primary/12 data-[state=active]:text-primary data-[state=active]:shadow-none sm:w-auto sm:flex-row sm:gap-1.5 sm:rounded-full sm:px-3.5 sm:py-1.5 sm:whitespace-nowrap sm:data-[state=active]:bg-primary sm:data-[state=active]:text-primary-foreground";
 export const CLASSES_ICONE_ABA = "size-4 shrink-0 sm:size-3.5";
 export const CLASSES_ROTULO_ABA = "w-full truncate";
 /** Busca ocupa a largura total, alinhada à grade das abas (mín. 220px no desktop). */
