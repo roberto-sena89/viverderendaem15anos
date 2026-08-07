@@ -480,8 +480,8 @@
     background-color: var(--color-primary);
     color: var(--color-primary-foreground);
     padding: 0.625rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--fs-body-sm);
+    font-weight: var(--fw-semibold);
     transition: transform 150ms ease;
   }
 
@@ -633,8 +633,8 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   gap: 0.5rem;
   padding-left: 0.625rem;
   font-family: var(--font-display);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
@@ -809,8 +809,8 @@ h3 {
   gap: 0.25rem;
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
   color: color-mix(in oklab, var(--color-success) 70%, var(--color-foreground));
   background-color: color-mix(in oklab, var(--color-success) 14%, transparent);
@@ -822,8 +822,8 @@ h3 {
   gap: 0.25rem;
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
   color: color-mix(in oklab, var(--color-destructive) 70%, var(--color-foreground));
   background-color: color-mix(in oklab, var(--color-destructive) 14%, transparent);
@@ -842,8 +842,8 @@ table {
 
 table thead th {
   font-size: var(--fs-table-head);
-  line-height: 1.25;
-  font-weight: 600;
+  line-height: var(--lh-snug);
+  font-weight: var(--fw-semibold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
@@ -854,8 +854,8 @@ table thead th {
 
 table tbody td {
   font-size: var(--fs-table);
-  line-height: 1.4;
-  font-weight: 500;
+  line-height: var(--lh-normal);
+  font-weight: var(--fw-medium);
   font-variant-numeric: tabular-nums;
 }
 
@@ -874,7 +874,7 @@ table tfoot tr {
   z-index: 1;
   border-top: 2px solid color-mix(in oklab, var(--color-border) 100%, transparent);
   background-color: color-mix(in oklab, var(--color-muted) 92%, var(--color-card));
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 
 /* Indicação visual (sombras nas bordas) de que há conteúdo lateral. */
@@ -1074,8 +1074,8 @@ canvas {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
+  font-size: var(--fs-label);
+  line-height: var(--lh-snug);
 }
 
 @utility chip-legenda {
@@ -1086,7 +1086,7 @@ canvas {
   border: 1px solid color-mix(in oklab, currentColor 30%, transparent);
   background: color-mix(in oklab, currentColor 10%, transparent);
   padding: 0.25rem 0.75rem;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
 }
 
@@ -1124,7 +1124,7 @@ canvas {
 }
 
 @utility rotulo-serie {
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
   color: currentColor;
 }
