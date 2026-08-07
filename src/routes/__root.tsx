@@ -15,8 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
-
-
+import { iniciarAnalytics } from "@/lib/analytics";
 
 function NotFoundComponent() {
   return (
@@ -121,10 +120,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
 
-
-
-
-
       { rel: "icon", href: "/favicon.png", type: "image/png" },
       { rel: "icon", href: "/icon-192.png", type: "image/png", sizes: "192x192" },
       { rel: "icon", href: "/icon-512.png", type: "image/png", sizes: "512x512" },
@@ -187,6 +182,7 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    iniciarAnalytics();
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
@@ -205,4 +201,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-

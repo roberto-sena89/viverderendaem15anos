@@ -3,6 +3,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, LineChart, PiggyBank, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
+import { FormularioNewsletter } from "@/components/formulario-newsletter";
+import { CONTEUDOS } from "@/lib/conteudo-publico";
 import logoIcone from "@/assets/logo-icone.webp";
 import heroFundo from "@/assets/hero-mercado-fundo.webp";
 import ogImagem from "@/assets/og-home.jpg.asset.json";
@@ -13,7 +15,6 @@ const DESCRIPTION =
   "Controle a sua carteira de ações, FIIs e renda fixa, acompanhe dividendos, rebalanceie a alocação e projete em quantos anos você vive de renda.";
 const URL = "https://viverderendaem15anos.lovable.app/";
 const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
-
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,7 +30,8 @@ export const Route = createFileRoute("/")({
       { property: "og:image:height", content: "630" },
       {
         property: "og:image:alt",
-        content: "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
+        content:
+          "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
       },
       { property: "og:locale", content: "pt_BR" },
       { property: "og:site_name", content: "Viver de Renda em 15 Anos" },
@@ -39,7 +41,8 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: OG_IMAGE },
       {
         name: "twitter:image:alt",
-        content: "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
+        content:
+          "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
       },
     ],
     links: [
@@ -51,7 +54,6 @@ export const Route = createFileRoute("/")({
         href: "https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap",
       },
     ],
-
 
     scripts: [
       {
@@ -110,9 +112,7 @@ export const Route = createFileRoute("/")({
             {
               "@type": "BreadcrumbList",
               "@id": `${URL}#breadcrumb`,
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Início", item: URL },
-              ],
+              itemListElement: [{ "@type": "ListItem", position: 1, name: "Início", item: URL }],
             },
             {
               "@type": "ItemList",
@@ -137,6 +137,18 @@ export const Route = createFileRoute("/")({
                   name: "O que é renda passiva",
                   url: `${URL}o-que-e-renda-passiva`,
                 },
+                {
+                  "@type": "ListItem",
+                  position: 4,
+                  name: "Quanto rende 100 mil por mês",
+                  url: `${URL}conteudo/quanto-rende-100-mil-por-mes`,
+                },
+                {
+                  "@type": "ListItem",
+                  position: 5,
+                  name: "Quanto preciso investir para viver de renda",
+                  url: `${URL}conteudo/quanto-aportar-para-viver-de-renda`,
+                },
               ],
             },
             {
@@ -152,7 +164,6 @@ export const Route = createFileRoute("/")({
         }),
       },
     ],
-
   }),
   component: HomePage,
 });
@@ -197,7 +208,6 @@ const faq: { q: string; a: string }[] = [
   },
 ];
 
-
 function HomePage() {
   const navigate = useNavigate();
 
@@ -231,11 +241,17 @@ function HomePage() {
 
   return (
     <div className="bg-background text-foreground min-h-dvh overflow-x-hidden">
-      <a href="#conteudo" className="link-pular">Pular para o conteúdo</a>
+      <a href="#conteudo" className="link-pular">
+        Pular para o conteúdo
+      </a>
 
       <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6">
         <div className="border-border/60 bg-background/70 mx-auto flex w-full max-w-3xl items-center justify-between gap-3 rounded-full border py-2 pr-2 pl-2 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl">
-          <Link to="/" aria-label="Viver de Renda em 15 Anos — página inicial" className="flex min-w-0 items-center gap-2.5 rounded-full pr-3">
+          <Link
+            to="/"
+            aria-label="Viver de Renda em 15 Anos — página inicial"
+            className="flex min-w-0 items-center gap-2.5 rounded-full pr-3"
+          >
             <img
               src={logoIcone}
               alt="Logo Viver de Renda em 15 Anos"
@@ -249,10 +265,25 @@ function HomePage() {
               em 15 Anos
             </span>
           </Link>
-          <nav aria-label="Seções" className="hidden items-center gap-7 text-[0.68rem] font-semibold tracking-[0.18em] uppercase md:flex">
-            <a href="#recursos" className="text-muted-foreground hover:text-primary transition-colors">Recursos</a>
-            <a href="#conteudo-gratuito" className="text-muted-foreground hover:text-primary transition-colors">Conteúdo</a>
-            <a href="#faq" className="text-muted-foreground hover:text-primary transition-colors">FAQ</a>
+          <nav
+            aria-label="Seções"
+            className="hidden items-center gap-7 text-[0.68rem] font-semibold tracking-[0.18em] uppercase md:flex"
+          >
+            <a
+              href="#recursos"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              Recursos
+            </a>
+            <a
+              href="#conteudo-gratuito"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              Conteúdo
+            </a>
+            <a href="#faq" className="text-muted-foreground hover:text-primary transition-colors">
+              FAQ
+            </a>
           </nav>
           <div className="flex items-center gap-1">
             <ThemeToggle />
@@ -297,7 +328,11 @@ function HomePage() {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" className="w-full rounded-xl px-8 font-bold shadow-[var(--shadow-lift)] transition-transform hover:-translate-y-0.5 sm:w-auto">
+            <Button
+              asChild
+              size="lg"
+              className="w-full rounded-xl px-8 font-bold shadow-[var(--shadow-lift)] transition-transform hover:-translate-y-0.5 sm:w-auto"
+            >
               <Link to="/auth">
                 Começar agora <ArrowRight className="size-4" />
               </Link>
@@ -318,7 +353,9 @@ function HomePage() {
                 key={n.label}
                 className="border-border/60 bg-card/50 rounded-2xl border p-5 text-left backdrop-blur-sm transition-colors hover:border-primary/40"
               >
-                <dt className="font-hero text-foreground text-2xl font-bold tracking-tight">{n.valor}</dt>
+                <dt className="font-hero text-foreground text-2xl font-bold tracking-tight">
+                  {n.valor}
+                </dt>
                 <dd className="text-muted-foreground mt-1.5 text-[0.68rem] leading-snug font-semibold tracking-wide uppercase text-pretty">
                   {n.label}
                 </dd>
@@ -341,8 +378,12 @@ function HomePage() {
                 <span className="bg-primary/15 text-primary border-primary/30 inline-flex size-12 items-center justify-center rounded-xl border">
                   <r.icon className="size-5" />
                 </span>
-                <h2 className="font-hero mt-6 text-xl font-bold tracking-tight sm:text-2xl">{r.title}</h2>
-                <p className="text-muted-foreground mt-3 max-w-md text-sm leading-relaxed text-pretty">{r.body}</p>
+                <h2 className="font-hero mt-6 text-xl font-bold tracking-tight sm:text-2xl">
+                  {r.title}
+                </h2>
+                <p className="text-muted-foreground mt-3 max-w-md text-sm leading-relaxed text-pretty">
+                  {r.body}
+                </p>
               </div>
               <div
                 aria-hidden
@@ -363,14 +404,30 @@ function HomePage() {
             </h2>
             <ul className="mt-7 grid gap-2">
               {[
-                { to: "/guia-liberdade-financeira", label: "Liberdade financeira: guia passo a passo" },
+                {
+                  to: "/guia-liberdade-financeira",
+                  label: "Liberdade financeira: guia passo a passo",
+                },
                 {
                   to: "/quanto-rende-1-milhao-por-mes",
                   label: "Quanto rende 1 milhão por mês? Poupança x Tesouro Selic x FIIs",
                 },
-                { to: "/o-que-e-renda-passiva", label: "Renda passiva: o que é e quanto investir para viver de renda" },
-                { to: "/calculadora-juros-compostos", label: "Calculadora de juros compostos com aportes mensais" },
-                { to: "/blog/melhores-livros-financas", label: "Melhores livros de finanças e investimentos" },
+                {
+                  to: "/o-que-e-renda-passiva",
+                  label: "Renda passiva: o que é e quanto investir para viver de renda",
+                },
+                {
+                  to: "/calculadora-juros-compostos",
+                  label: "Calculadora de juros compostos com aportes mensais",
+                },
+                {
+                  to: "/blog/melhores-livros-financas",
+                  label: "Melhores livros de finanças e investimentos",
+                },
+                ...CONTEUDOS.map((c) => ({
+                  to: `/conteudo/${c.slug}`,
+                  label: c.titulo,
+                })),
               ].map((l) => (
                 <li key={l.to}>
                   <Link
@@ -387,8 +444,12 @@ function HomePage() {
 
           <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 md:col-span-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
-              <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">Comece hoje</p>
-              <p className="font-hero mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">R$ 0</p>
+              <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">
+                Comece hoje
+              </p>
+              <p className="font-hero mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+                R$ 0
+              </p>
               <p className="text-muted-foreground mt-3 max-w-md text-sm leading-relaxed text-pretty">
                 Crie sua conta e controle carteira, aportes e dividendos sem custo.
               </p>
@@ -399,11 +460,12 @@ function HomePage() {
               </Link>
             </Button>
           </aside>
-
         </section>
 
         <section id="faq" className="mx-auto mt-16 max-w-3xl sm:mt-24">
-          <h2 className="font-hero text-center text-2xl font-bold tracking-tight sm:text-4xl">Perguntas frequentes</h2>
+          <h2 className="font-hero text-center text-2xl font-bold tracking-tight sm:text-4xl">
+            Perguntas frequentes
+          </h2>
           <dl className="mt-10 grid gap-3">
             {faq.map((f) => (
               <div
@@ -411,49 +473,94 @@ function HomePage() {
                 className="bg-card border-border/60 rounded-2xl border p-6 transition-colors hover:border-primary/50"
               >
                 <dt className="font-hero text-base font-bold sm:text-lg">{f.q}</dt>
-                <dd className="text-muted-foreground mt-2 text-sm leading-relaxed text-pretty">{f.a}</dd>
+                <dd className="text-muted-foreground mt-2 text-sm leading-relaxed text-pretty">
+                  {f.a}
+                </dd>
               </div>
             ))}
           </dl>
+        </section>
+
+        <section
+          id="newsletter"
+          className="border-primary/30 from-primary/15 to-card mx-auto mt-16 max-w-3xl rounded-3xl border bg-gradient-to-br p-8 text-left sm:mt-24 sm:p-10"
+        >
+          <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">
+            Conteúdo gratuito no seu e-mail
+          </p>
+          <h2 className="font-hero mt-3 text-2xl font-bold tracking-tight sm:text-3xl">
+            Receba o guia "Viver de Renda em 15 Anos"
+          </h2>
+          <p className="text-muted-foreground mt-3 max-w-xl text-sm leading-relaxed text-pretty">
+            Dicas sobre renda passiva, dividendos e independência financeira, direto na sua caixa de
+            entrada. Sem spam — cancele quando quiser.
+          </p>
+          <FormularioNewsletter origem="landing" />
         </section>
       </main>
 
       <footer className="border-border/60 border-t">
         <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 pt-14 pb-8 sm:px-6 md:flex-row md:justify-between">
           <div className="flex min-w-0 max-w-xs items-start gap-3">
-            <img src={logoIcone} alt="" aria-hidden width={32} height={32} className="size-8 shrink-0 rounded-lg" />
+            <img
+              src={logoIcone}
+              alt=""
+              aria-hidden
+              width={32}
+              height={32}
+              className="size-8 shrink-0 rounded-lg"
+            />
             <p className="text-muted-foreground text-xs leading-relaxed">
               <span className="text-foreground font-hero font-bold">Viver de Renda em 15 Anos</span>
               <br />
               Conteúdo educacional. Não é recomendação de investimento.
             </p>
           </div>
-          <nav aria-label="Links do rodapé" className="grid grid-cols-2 gap-x-12 gap-y-8 sm:grid-cols-2">
+          <nav
+            aria-label="Links do rodapé"
+            className="grid grid-cols-2 gap-x-12 gap-y-8 sm:grid-cols-2"
+          >
             <div>
-              <h3 className="text-foreground/80 mb-4 text-[0.62rem] font-bold tracking-[0.2em] uppercase">Conteúdo</h3>
+              <h3 className="text-foreground/80 mb-4 text-[0.62rem] font-bold tracking-[0.2em] uppercase">
+                Conteúdo
+              </h3>
               <ul className="text-muted-foreground space-y-3 text-xs">
                 <li>
-                  <Link className="hover:text-primary" to="/guia-liberdade-financeira">Guia</Link>
+                  <Link className="hover:text-primary" to="/guia-liberdade-financeira">
+                    Guia
+                  </Link>
                 </li>
                 <li>
-                  <Link className="hover:text-primary" to="/calculadora-juros-compostos">Calculadora</Link>
+                  <Link className="hover:text-primary" to="/calculadora-juros-compostos">
+                    Calculadora
+                  </Link>
                 </li>
                 <li>
-                  <Link className="hover:text-primary" to="/blog/melhores-livros-financas">Blog</Link>
+                  <Link className="hover:text-primary" to="/blog/melhores-livros-financas">
+                    Blog
+                  </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="text-foreground/80 mb-4 text-[0.62rem] font-bold tracking-[0.2em] uppercase">Plataforma</h3>
+              <h3 className="text-foreground/80 mb-4 text-[0.62rem] font-bold tracking-[0.2em] uppercase">
+                Plataforma
+              </h3>
               <ul className="text-muted-foreground space-y-3 text-xs">
                 <li>
-                  <Link className="hover:text-primary" to="/o-que-e-renda-passiva">Renda passiva</Link>
+                  <Link className="hover:text-primary" to="/o-que-e-renda-passiva">
+                    Renda passiva
+                  </Link>
                 </li>
                 <li>
-                  <Link className="hover:text-primary" to="/quanto-rende-1-milhao-por-mes">Simulações</Link>
+                  <Link className="hover:text-primary" to="/quanto-rende-1-milhao-por-mes">
+                    Simulações
+                  </Link>
                 </li>
                 <li>
-                  <Link className="hover:text-primary" to="/auth">Entrar</Link>
+                  <Link className="hover:text-primary" to="/auth">
+                    Entrar
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -466,4 +573,3 @@ function HomePage() {
     </div>
   );
 }
-

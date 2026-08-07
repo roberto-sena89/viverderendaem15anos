@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { CONTEUDOS, caminhoConteudo } from "@/lib/conteudo-publico";
 
 const BASE_URL = "https://viverderendaem15anos.lovable.app";
 
 interface SitemapEntry {
   path: string;
+  lastmod?: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
 }
@@ -36,10 +38,22 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/auth", changefreq: "monthly", priority: "0.5" },
         ];
 
+        // Conteúdo indexável é dirigido pelo registro — basta adicionar uma
+        // entrada em src/lib/conteudo-publico.ts que ela entra no sitemap.
+        for (const conteudo of CONTEUDOS) {
+          entries.push({
+            path: caminhoConteudo(conteudo.slug),
+            lastmod: conteudo.atualizadoEm,
+            changefreq: "monthly",
+            priority: "0.7",
+          });
+        }
+
         const urls = entries.map((e) =>
           [
             `  <url>`,
             `    <loc>${BASE_URL}${e.path}</loc>`,
+            e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,

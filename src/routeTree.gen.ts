@@ -39,8 +39,10 @@ import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_auth
 import { Route as AuthenticatedSeoRouteImport } from './routes/_authenticated/seo'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.melhores-livros-financas'
+import { Route as ConteudoSlugRouteImport } from './routes/conteudo/$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as ApiPublicNewsletterRouteImport } from './routes/api/public/newsletter'
 import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
 import { Route as ApiPublicStreamCotacoesRouteImport } from './routes/api/public/stream/cotacoes'
@@ -201,6 +203,11 @@ const BlogMelhoresLivrosFinancasRoute =
     path: '/blog/melhores-livros-financas',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ConteudoSlugRoute = ConteudoSlugRouteImport.update({
+  id: '/conteudo/$slug',
+  path: '/conteudo/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
@@ -212,6 +219,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicNewsletterRoute = ApiPublicNewsletterRouteImport.update({
+  id: '/api/public/newsletter',
+  path: '/api/public/newsletter',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksAtualizarCotacoesRoute =
   ApiPublicHooksAtualizarCotacoesRouteImport.update({
     id: '/api/public/hooks/atualizar-cotacoes',
@@ -260,8 +272,10 @@ export interface FileRoutesByFullPath {
   '/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
+  '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
@@ -296,8 +310,10 @@ export interface FileRoutesByTo {
   '/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
+  '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
@@ -334,8 +350,10 @@ export interface FileRoutesById {
   '/_authenticated/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
+  '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
@@ -372,8 +390,10 @@ export interface FileRouteTypes {
     | '/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
+    | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/stream/cotacoes'
@@ -408,8 +428,10 @@ export interface FileRouteTypes {
     | '/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
+    | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/stream/cotacoes'
@@ -445,8 +467,10 @@ export interface FileRouteTypes {
     | '/_authenticated/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
+    | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/stream/cotacoes'
@@ -469,8 +493,10 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
   BlogMelhoresLivrosFinancasRoute: typeof BlogMelhoresLivrosFinancasRoute
+  ConteudoSlugRoute: typeof ConteudoSlugRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicNewsletterRoute: typeof ApiPublicNewsletterRoute
   ApiPublicHooksAtualizarCotacoesRoute: typeof ApiPublicHooksAtualizarCotacoesRoute
   ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
   ApiPublicStreamCotacoesRoute: typeof ApiPublicStreamCotacoesRoute
@@ -688,6 +714,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogMelhoresLivrosFinancasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conteudo/$slug': {
+      id: '/conteudo/$slug'
+      path: '/conteudo/$slug'
+      fullPath: '/conteudo/$slug'
+      preLoaderRoute: typeof ConteudoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
       path: '/.lovable/oauth/consent'
@@ -700,6 +733,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/invoke-tool/$tool'
       fullPath: '/.mcp/invoke-tool/$tool'
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/newsletter': {
+      id: '/api/public/newsletter'
+      path: '/api/public/newsletter'
+      fullPath: '/api/public/newsletter'
+      preLoaderRoute: typeof ApiPublicNewsletterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/atualizar-cotacoes': {
@@ -781,8 +821,10 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiChatRoute: ApiChatRoute,
   BlogMelhoresLivrosFinancasRoute: BlogMelhoresLivrosFinancasRoute,
+  ConteudoSlugRoute: ConteudoSlugRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicNewsletterRoute: ApiPublicNewsletterRoute,
   ApiPublicHooksAtualizarCotacoesRoute: ApiPublicHooksAtualizarCotacoesRoute,
   ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
   ApiPublicStreamCotacoesRoute: ApiPublicStreamCotacoesRoute,

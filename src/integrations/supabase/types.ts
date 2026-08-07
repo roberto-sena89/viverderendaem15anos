@@ -317,6 +317,27 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter: {
+        Row: {
+          criado_em: string
+          email: string
+          fonte: string | null
+          id: number
+        }
+        Insert: {
+          criado_em?: string
+          email: string
+          fonte?: string | null
+          id?: number
+        }
+        Update: {
+          criado_em?: string
+          email?: string
+          fonte?: string | null
+          id?: number
+        }
+        Relationships: []
+      }
       preferencias_mercado: {
         Row: {
           created_at: string

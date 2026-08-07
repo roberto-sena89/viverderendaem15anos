@@ -13,6 +13,24 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Cache de borda das páginas públicas (respostas SSR cacheadas na CDN;
+  // revalidação em background, sem impacto para quem navega).
+  //
+  // O wrapper tipa só `preset/output/cloudflare`, mas em runtime ele repassa
+  // o objeto `nitro` inteiro para o plugin — `routeRules` é suportado.
+  nitro: {
+    routeRules: {
+      "/": { swr: 3600 },
+      "/conteudo/**": { swr: 3600 },
+      "/calculadora-juros-compostos": { swr: 3600 },
+      "/quanto-rende-1-milhao-por-mes": { swr: 3600 },
+      "/o-que-e-renda-passiva": { swr: 3600 },
+      "/guia-liberdade-financeira": { swr: 86400 },
+      "/blog/**": { swr: 86400 },
+      "/sitemap.xml": { swr: 300 },
+      "/robots.txt": { swr: 300 },
+    },
+  } as never,
   vite: {
     server: {
       allowedHosts: [".monkeycode-ai.live"],

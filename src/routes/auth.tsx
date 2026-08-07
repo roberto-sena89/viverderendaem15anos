@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemeToggle } from "@/components/theme";
+import { trackEvent } from "@/lib/analytics";
 import investidorImg from "@/assets/investidor-computador.jpg";
 import logoIcone from "@/assets/logo-icone.webp";
 
@@ -185,6 +186,7 @@ function AuthPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
+    trackEvent("sign_in", { method: "email" });
     goTo(destination);
   }
 
@@ -205,6 +207,7 @@ function AuthPage() {
       return;
     }
     if (data.session?.user.email_confirmed_at) {
+      trackEvent("sign_up", { method: "email" });
       goTo(destination);
       return;
     }
@@ -212,8 +215,7 @@ function AuthPage() {
     navigate({ to: "/verificar-email", search: { email }, replace: true });
   }
 
-  const inputCls =
-    "h-11 bg-muted/40 pl-10 transition-colors focus-visible:bg-background";
+  const inputCls = "h-11 bg-muted/40 pl-10 transition-colors focus-visible:bg-background";
 
   return (
     <div className="grid min-h-dvh bg-background lg:grid-cols-2">
@@ -266,9 +268,7 @@ function AuthPage() {
                 className="rounded-xl border border-white/15 bg-white/10 p-3 backdrop-blur-md"
               >
                 <dt className="font-display text-lg font-semibold">{d.titulo}</dt>
-                <dd className="mt-0.5 text-xs leading-snug text-[oklch(0.98_0_0)]/75">
-                  {d.texto}
-                </dd>
+                <dd className="mt-0.5 text-xs leading-snug text-[oklch(0.98_0_0)]/75">{d.texto}</dd>
               </div>
             ))}
           </dl>
@@ -314,7 +314,6 @@ function AuthPage() {
             <span className="min-w-0 truncate">Plataforma premium de investimentos</span>
           </span>
 
-
           <h1 className="font-display mt-4 text-[1.375rem] leading-tight font-semibold tracking-tight text-balance sm:text-3xl">
             Acesse sua conta no Viver de Renda em 15 Anos
           </h1>
@@ -334,7 +333,9 @@ function AuthPage() {
           </Button>
 
           <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground sm:my-7">
-            <span className="h-px flex-1 bg-border" />ou<span className="h-px flex-1 bg-border" />
+            <span className="h-px flex-1 bg-border" />
+            ou
+            <span className="h-px flex-1 bg-border" />
           </div>
 
           <div className="rounded-2xl border border-border bg-card/50 p-3.5 backdrop-blur-sm sm:p-5">
@@ -353,7 +354,6 @@ function AuthPage() {
                   Criar conta
                 </TabsTrigger>
               </TabsList>
-
 
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4 pt-4">
