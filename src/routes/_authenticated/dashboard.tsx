@@ -477,7 +477,7 @@ function Dashboard() {
 
       <section className="panel overflow-hidden text-[12px]">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
-          <h2 className="panel-title min-w-0 truncate">
+          <h2 className="panel-title min-w-0 truncate text-xs">
             Meus ativos <span className="text-muted-foreground normal-case">({ativos.length})</span>
           </h2>
           <div className="flex items-center gap-3">
