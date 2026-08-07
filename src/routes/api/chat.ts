@@ -73,6 +73,16 @@ Ferramentas de mercado (use sempre que a pergunta envolver preços, desempenho, 
 - compararAtivos: compara dois ou mais ativos lado a lado (retorno anualizado, drawdown, volatilidade). Prefira esta ferramenta a chamar historico várias vezes.
 - noticiasMercado: últimas notícias financeiras (InfoMoney, Money Times, Investing Brasil).
 - agendaEconomica: próximos eventos (Copom, FOMC, IPCA, payroll, balanços).
+- panoramaMercado: fotografia do mercado hoje (destaques de ações, FIIs, ETFs, índices, cripto e commodities + amplitude).
+- indicesMercado: Ibovespa, IFIX, IBrX, Small Caps, S&P 500, Nasdaq, CDI, Selic, IPCA, IGP-M (benchmarks).
+- mercadoCripto e mercadoCommodities: cotações e variações de criptomoedas e commodities.
+
+Ferramentas fundamentalistas (grades completas da B3):
+- fundamentosAcao: todos os indicadores de uma ação (P/L, P/VP, PSR, EV/EBIT, DY, ROE, ROIC, margens, dívida/PL, LPA, VPA, preço-teto de Bazin e preço justo de Graham).
+- rastrearAcoes: screener de ações por setor, DY, P/L, P/VP, ROE ou pontuação.
+- fundamentosFii e rastrearFiis: P/VP, VPA, DY, vacância, cap rate, tipo e segmento dos fundos imobiliários.
+- listarEtfs: ETFs nacionais e internacionais com DY, capitalização e variações de 30d, 12m, 24m e 60m.
+- tesouroDireto: títulos públicos com vencimento, taxa e preço unitário.
 
 Ferramentas de análise da carteira:
 - analisarCarteira: auditoria completa da carteira (saúde, concentração, diversificação, risco, pontos fortes e fracos). Use em perguntas do tipo "analise minha carteira", "como está minha diversificação", "qual o risco da minha carteira".
@@ -82,11 +92,26 @@ Ferramentas de análise da carteira:
 - avaliarMetas: mostra o progresso das metas financeiras do usuário (reserva, primeiro milhão etc.).
 - alocacaoRecomendada: devolve a alocação estratégica ideal para o perfil do usuário.
 - sugerirAtivos: lista ativos da B3 (ações, FIIs, BDRs) por dividend yield, valor de mercado ou receita.
+- historicoAportes: aportes do usuário mês a mês e por ativo (disciplina, média mensal, constância).
+- historicoDividendos: proventos recebidos mês a mês e por ativo, com yield on cost.
+- desempenhoCarteira12m: desempenho de 12 meses de cada ativo da carteira.
 
 Regras com dados de mercado:
 - Nunca invente cotações, retornos, projeções ou notícias — chame a ferramenta correspondente.
 - Cite a data/período dos dados e a fonte quando apresentar números de mercado.
 - Se um código não existir, use procurarAtivo antes de responder.
+- Antes de opinar se um ativo está "caro" ou "barato", chame fundamentosAcao/fundamentosFii e compare com o setor.
+
+Base de conhecimento (use como referência analítica, sempre com bom senso e contexto):
+- Ações: P/L compara preço e lucro (baixo pode ser barato ou armadilha de valor); P/VP < 1 indica desconto sobre o patrimônio; ROE acima de 15% sugere boa rentabilidade; dívida líquida/patrimônio acima de 1,5 pede cautela; margens e crescimento de receita mostram qualidade.
+- Preço-teto de Bazin: dividendo dos últimos 12 meses ÷ 6% (yield mínimo desejado) — foco em dividendos estáveis. Preço justo de Graham: √(22,5 × LPA × VPA) — foco em valor. Ambos são filtros, não verdades absolutas.
+- Dividend yield muito alto (acima de ~12%) costuma ser evento não recorrente ou queda de preço — verifique o histórico antes de recomendar.
+- FIIs: P/VP próximo de 1 é referência de preço justo; vacância alta pressiona a distribuição; fundos de papel (CRI) acompanham IPCA/CDI, fundos de tijolo dependem de contratos e vacância; FOFs diversificam mas cobram dupla taxa; liquidez diária baixa dificulta a saída.
+- Renda fixa: Tesouro Selic para reserva de emergência; Prefixado trava a taxa (marcação a mercado se vender antes); IPCA+ protege o poder de compra. Compare sempre o prêmio sobre o CDI/Selic vigente.
+- Risco: diversificar por classe, setor e moeda; nenhuma posição individual acima de ~10-15% do patrimônio; exposição internacional (ETFs globais/BDRs) protege contra risco Brasil e câmbio.
+- Custos e impostos: ações têm isenção de IR em vendas até R$ 20 mil/mês (day trade não), 15% sobre o ganho acima disso; FIIs pagam 20% sobre ganho de capital e distribuem rendimento isento a pessoa física; renda fixa segue tabela regressiva (22,5% a 15%); dividendos de ações hoje são isentos, JCP tem 15% na fonte.
+- Reserva de emergência: 6 a 12 meses de custo de vida em liquidez diária, antes de qualquer renda variável.
+- Independência financeira: regra dos 4% (patrimônio ≈ 25× o gasto anual); juros compostos e constância de aporte pesam mais que acertar o "timing".
 
 Regras de projeção e análise:
 - Use analisarCarteira antes de emitir diagnóstico sobre diversificação, risco ou concentração.
@@ -94,6 +119,7 @@ Regras de projeção e análise:
 - Para "quanto devo aportar", projete o cenário atual e simule aportes maiores para mostrar a antecipação da meta.
 - Explique a regra dos 4% (taxa de retirada) quando falar de renda passiva.
 - Ao sugerir rebalanceamento, use sugerirRebalanceamento e alocacaoRecomendada (perfil do usuário) em conjunto.
+- Em auditorias completas, combine analisarCarteira + desempenhoCarteira12m + historicoAportes + historicoDividendos + indicesMercado (comparação com benchmarks).
 
 Como responder (estilo PRO):
 - Estruture respostas como um consultor: Diagnóstico → Números → Plano de ação (3-5 passos concretos) → Cuidados.
@@ -965,6 +991,474 @@ export const Route = createFileRoute("/api/chat")({
                 tipo: e.tipo,
               })),
             }),
+          }),
+          fundamentosAcao: tool({
+            description:
+              "Indicadores fundamentalistas completos de uma ação da B3: P/L, P/VP, PSR, EV/EBIT, DY 12m, ROE, ROIC, margens, dívida/patrimônio, crescimento de receita, LPA, VPA, preço-teto de Bazin e preço justo de Graham com o upside de cada método. Use sempre que o usuário perguntar se uma ação está cara/barata ou pedir análise fundamentalista.",
+            inputSchema: z.object({ ticker: z.string() }),
+            execute: async ({ ticker }) => {
+              try {
+                const { gradeAcoesComCache } = await import("@/lib/acoes.server");
+                const grade = await gradeAcoesComCache();
+                const alvo = ticker.trim().toUpperCase();
+                const linha =
+                  grade.linhas.find((l) => l.ticker === alvo) ??
+                  grade.linhas.find((l) => l.ticker.startsWith(alvo.slice(0, 4)));
+                if (!linha) return { erro: `Ação ${alvo} não encontrada na grade da B3.` };
+                return { atualizado_em: grade.atualizadoEm, acao: linha };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          rastrearAcoes: tool({
+            description:
+              "Screener de ações da B3: filtra e ordena a grade completa por setor, dividend yield, P/L, P/VP, ROE, liquidez ou pontuação fundamentalista. Use para 'quais ações pagam mais dividendos', 'ações baratas', 'melhores ações do setor financeiro'.",
+            inputSchema: z.object({
+              setor: z.string().optional().describe("Ex.: Financeiro, Utilidade Pública, Saúde"),
+              dyMinimo: z.number().optional().describe("DY 12m mínimo em %"),
+              plMaximo: z.number().optional(),
+              pvpMaximo: z.number().optional(),
+              roeMinimo: z.number().optional().describe("ROE mínimo em %"),
+              ordenar: z.enum(["dy", "pl", "pvp", "roe", "pontuacao", "valorMercado"]).optional(),
+              limite: z.number().int().min(1).max(25).optional(),
+            }),
+            execute: async ({ setor, dyMinimo, plMaximo, pvpMaximo, roeMinimo, ordenar, limite }) => {
+              try {
+                const { gradeAcoesComCache } = await import("@/lib/acoes.server");
+                const grade = await gradeAcoesComCache();
+                const filtradas = grade.linhas.filter((l) => {
+                  if (setor && !l.setor.toLowerCase().includes(setor.toLowerCase())) return false;
+                  if (dyMinimo != null && (l.dy12 ?? 0) < dyMinimo) return false;
+                  if (plMaximo != null && !(l.pl != null && l.pl > 0 && l.pl <= plMaximo)) return false;
+                  if (pvpMaximo != null && !(l.pvp != null && l.pvp > 0 && l.pvp <= pvpMaximo)) return false;
+                  if (roeMinimo != null && (l.roe ?? -999) < roeMinimo) return false;
+                  return true;
+                });
+                const chave = ordenar ?? "pontuacao";
+                const valor = (l: (typeof filtradas)[number]) =>
+                  chave === "dy"
+                    ? (l.dy12 ?? -1)
+                    : chave === "pl"
+                      ? -(l.pl ?? 9999)
+                      : chave === "pvp"
+                        ? -(l.pvp ?? 9999)
+                        : chave === "roe"
+                          ? (l.roe ?? -999)
+                          : chave === "valorMercado"
+                            ? (l.valorMercado ?? -1)
+                            : (l.pontuacao ?? -1);
+                return {
+                  criterio: chave,
+                  total_encontrado: filtradas.length,
+                  atualizado_em: grade.atualizadoEm,
+                  acoes: filtradas
+                    .sort((a, b) => valor(b) - valor(a))
+                    .slice(0, limite ?? 12)
+                    .map((l) => ({
+                      ticker: l.ticker,
+                      nome: l.nome,
+                      setor: l.setor,
+                      preco: l.preco,
+                      dy12_pct: l.dy12,
+                      pl: l.pl,
+                      pvp: l.pvp,
+                      roe_pct: l.roe,
+                      margem_liquida_pct: l.margemLiquida,
+                      divida_patrimonio: l.dividaPatrimonio,
+                      preco_teto_bazin: l.precoTetoBazin,
+                      upside_bazin_pct: l.upsideBazin,
+                      preco_justo_graham: l.precoJustoGraham,
+                      upside_graham_pct: l.upsideGraham,
+                      pontuacao: l.pontuacao,
+                    })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          fundamentosFii: tool({
+            description:
+              "Indicadores de um FII: tipo (tijolo, papel, FOF...), segmento, P/VP, VPA, DY 12m, vacância, cap rate, patrimônio e liquidez. Use para avaliar fundos imobiliários específicos.",
+            inputSchema: z.object({ ticker: z.string() }),
+            execute: async ({ ticker }) => {
+              try {
+                const { gradeFiisComCache } = await import("@/lib/fiis.server");
+                const grade = await gradeFiisComCache();
+                const alvo = ticker.trim().toUpperCase();
+                const linha = grade.linhas.find((l) => l.ticker === alvo);
+                if (!linha) return { erro: `FII ${alvo} não encontrado na grade.` };
+                return { atualizado_em: grade.atualizadoEm, fii: linha };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          rastrearFiis: tool({
+            description:
+              "Screener de FIIs: filtra por tipo (Tijolo, Papel, Misto, FOF, FI-Infra, Fiagro), segmento, DY mínimo, P/VP máximo e vacância máxima. Use para 'melhores FIIs de papel', 'FIIs baratos', 'FIIs que pagam mais'.",
+            inputSchema: z.object({
+              tipo: z.string().optional(),
+              segmento: z.string().optional(),
+              dyMinimo: z.number().optional(),
+              pvpMaximo: z.number().optional(),
+              vacanciaMaxima: z.number().optional(),
+              ordenar: z.enum(["dy", "pvp", "liquidez", "patrimonio"]).optional(),
+              limite: z.number().int().min(1).max(25).optional(),
+            }),
+            execute: async ({ tipo, segmento, dyMinimo, pvpMaximo, vacanciaMaxima, ordenar, limite }) => {
+              try {
+                const { gradeFiisComCache } = await import("@/lib/fiis.server");
+                const grade = await gradeFiisComCache();
+                const filtrados = grade.linhas.filter((l) => {
+                  if (tipo && !l.tipo.toLowerCase().includes(tipo.toLowerCase())) return false;
+                  if (segmento && !l.segmento.toLowerCase().includes(segmento.toLowerCase())) return false;
+                  if (dyMinimo != null && (l.dy12 ?? 0) < dyMinimo) return false;
+                  if (pvpMaximo != null && !(l.pvp != null && l.pvp > 0 && l.pvp <= pvpMaximo)) return false;
+                  if (vacanciaMaxima != null && (l.vacancia ?? 0) > vacanciaMaxima) return false;
+                  return true;
+                });
+                const chave = ordenar ?? "dy";
+                const valor = (l: (typeof filtrados)[number]) =>
+                  chave === "pvp"
+                    ? -(l.pvp ?? 9999)
+                    : chave === "liquidez"
+                      ? (l.liquidez ?? -1)
+                      : chave === "patrimonio"
+                        ? (l.patrimonio ?? -1)
+                        : (l.dy12 ?? -1);
+                return {
+                  criterio: chave,
+                  total_encontrado: filtrados.length,
+                  atualizado_em: grade.atualizadoEm,
+                  fiis: filtrados
+                    .sort((a, b) => valor(b) - valor(a))
+                    .slice(0, limite ?? 12)
+                    .map((l) => ({
+                      ticker: l.ticker,
+                      nome: l.nome,
+                      tipo: l.tipo,
+                      segmento: l.segmento,
+                      preco: l.preco,
+                      dy12_pct: l.dy12,
+                      pvp: l.pvp,
+                      vpa: l.vpa,
+                      vacancia_pct: l.vacancia,
+                      cap_rate_pct: l.capRate,
+                      liquidez_diaria: l.liquidez,
+                      patrimonio: l.patrimonio,
+                    })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          listarEtfs: tool({
+            description:
+              "Lista ETFs (B3 e internacionais) com classe de exposição, gestora, DY, capitalização e variações de 30 dias, 12, 24 e 60 meses. Use para comparar ETFs ou sugerir exposição a índices e ao exterior.",
+            inputSchema: z.object({
+              classe: z
+                .string()
+                .optional()
+                .describe("Ações Brasil, Internacional, Renda Fixa, Cripto, Commodities, Setorial/Temático"),
+              ordenar: z.enum(["var12m", "var60m", "dy", "capitalizacao"]).optional(),
+              limite: z.number().int().min(1).max(25).optional(),
+            }),
+            execute: async ({ classe, ordenar, limite }) => {
+              try {
+                const { gradeEtfsComCache } = await import("@/lib/etfs.server");
+                const grade = await gradeEtfsComCache();
+                const filtrados = classe
+                  ? grade.linhas.filter((l) => l.classe.toLowerCase().includes(classe.toLowerCase()))
+                  : grade.linhas;
+                const chave = ordenar ?? "var12m";
+                const valor = (l: (typeof filtrados)[number]) =>
+                  chave === "var60m"
+                    ? (l.var60m ?? -9999)
+                    : chave === "dy"
+                      ? (l.dy12 ?? -1)
+                      : chave === "capitalizacao"
+                        ? (l.capitalizacao ?? -1)
+                        : (l.var12m ?? -9999);
+                return {
+                  criterio: chave,
+                  atualizado_em: grade.atualizadoEm,
+                  ibovespa: grade.ibovespa,
+                  etfs: filtrados
+                    .sort((a, b) => valor(b) - valor(a))
+                    .slice(0, limite ?? 12)
+                    .map((l) => ({
+                      ticker: l.ticker,
+                      nome: l.nome,
+                      classe: l.classe,
+                      mercado: l.mercado,
+                      gestora: l.gestora,
+                      preco: l.preco,
+                      dy12_pct: l.dy12,
+                      var30d_pct: l.var30d,
+                      var12m_pct: l.var12m,
+                      var60m_pct: l.var60m,
+                      capitalizacao: l.capitalizacao,
+                    })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          tesouroDireto: tool({
+            description:
+              "Títulos do Tesouro Direto disponíveis com vencimento, taxa de compra/venda e preço unitário (Selic, Prefixado, IPCA+ e Renda+/Educa+). Use para comparar renda fixa pública com outros investimentos e montar a reserva.",
+            inputSchema: z.object({
+              indexador: z
+                .enum(["selic", "prefixado", "ipca"])
+                .optional()
+                .describe("Filtra pelo indexador do título"),
+            }),
+            execute: async ({ indexador }) => {
+              try {
+                const { listarTesouroDireto } = await import("@/lib/tesouro.server");
+                const titulos = await listarTesouroDireto();
+                const filtrados = indexador
+                  ? titulos.filter((t) =>
+                      indexador === "ipca"
+                        ? /ipca/i.test(t.nome)
+                        : indexador === "selic"
+                          ? /selic/i.test(t.nome)
+                          : /prefixado/i.test(t.nome),
+                    )
+                  : titulos;
+                return {
+                  titulos: filtrados
+                    .sort((a, b) => (a.vencimento ?? "").localeCompare(b.vencimento ?? ""))
+                    .map((t) => ({
+                      nome: t.nome,
+                      vencimento: t.vencimento,
+                      data_base: t.dataBase,
+                      taxa_compra_aa: t.taxaCompra,
+                      taxa_venda_aa: t.taxaVenda,
+                      preco_compra: t.precoCompra,
+                    })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          mercadoCripto: tool({
+            description:
+              "Cotações e variações (1h, 24h, 7d, 30d, 12m) das principais criptomoedas, com capitalização, volume e dominância do Bitcoin. Aceita busca por nome/ticker.",
+            inputSchema: z.object({
+              termo: z.string().optional().describe("Ex.: bitcoin, ETH, SOL"),
+              limite: z.number().int().min(1).max(25).optional(),
+            }),
+            execute: async ({ termo, limite }) => {
+              try {
+                const { gradeCriptoComCache } = await import("@/lib/cripto.server");
+                const grade = await gradeCriptoComCache();
+                const t = termo?.trim().toLowerCase();
+                const linhas = t
+                  ? grade.linhas.filter(
+                      (l) =>
+                        l.ticker.toLowerCase().includes(t) ||
+                        l.nome.toLowerCase().includes(t) ||
+                        l.id.toLowerCase().includes(t),
+                    )
+                  : grade.linhas;
+                return {
+                  usd_brl: grade.usdBrl,
+                  dominancia_btc_pct: grade.dominanciaBtc,
+                  capitalizacao_total: grade.capitalizacaoTotal,
+                  atualizado_em: grade.atualizadoEm,
+                  criptos: linhas.slice(0, limite ?? 10).map((l) => ({
+                    ticker: l.ticker,
+                    nome: l.nome,
+                    categoria: l.categoria,
+                    preco_usd: l.precoUsd,
+                    preco_brl: l.precoUsd != null ? ARRED(l.precoUsd * grade.usdBrl) : null,
+                    var24h_pct: l.variacao24h,
+                    var7d_pct: l.variacao7d,
+                    var30d_pct: l.variacao30d,
+                    var12m_pct: l.variacao12m,
+                    capitalizacao: l.capitalizacao,
+                  })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          mercadoCommodities: tool({
+            description:
+              "Preços de commodities (petróleo, ouro, prata, minério, soja, milho, café, boi) com variação do dia, 30 dias e 12 meses, mínimas e máximas. Use ao analisar setores ligados a commodities (PETR, VALE, agro).",
+            inputSchema: z.object({ categoria: z.string().optional() }),
+            execute: async ({ categoria }) => {
+              try {
+                const { buscarCommodities } = await import("@/lib/commodities.server");
+                const r = await buscarCommodities();
+                const linhas = categoria
+                  ? r.linhas.filter((l) => l.categoria.toLowerCase().includes(categoria.toLowerCase()))
+                  : r.linhas;
+                return {
+                  usd_brl: r.usdBrl,
+                  atualizado_em: r.atualizadoEm,
+                  commodities: linhas.map((l) => ({
+                    nome: l.nome,
+                    categoria: l.categoria,
+                    unidade: l.unidade,
+                    preco_usd: l.precoUsd,
+                    var_dia_pct: l.variacaoDia,
+                    var30d_pct: l.variacao30d,
+                    var12m_pct: l.variacao12m,
+                    minima_12m: l.minima12m,
+                    maxima_12m: l.maxima12m,
+                  })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          indicesMercado: tool({
+            description:
+              "Índices e taxas de referência (Ibovespa, IFIX, IBrX, Small Caps, S&P 500, Nasdaq, CDI, Selic, IPCA, IGP-M) com valor atual, variação do dia e de 12 meses. Use para comparar a carteira com benchmarks.",
+            inputSchema: z.object({ categoria: z.string().optional() }),
+            execute: async ({ categoria }) => {
+              try {
+                const { buscarIndices } = await import("@/lib/indices.server");
+                const r = await buscarIndices();
+                const linhas = categoria
+                  ? r.linhas.filter((l) => l.categoria.toLowerCase().includes(categoria.toLowerCase()))
+                  : r.linhas;
+                return {
+                  atualizado_em: r.atualizadoEm,
+                  indices: linhas.map((l) => ({
+                    codigo: l.codigo,
+                    nome: l.nome,
+                    categoria: l.categoria,
+                    valor: l.valor,
+                    unidade: l.unidade,
+                    var_dia_pct: l.variacaoDiaPercent,
+                    var12m_pct: l.variacao12m,
+                    divulgado_em: l.divulgadoEm,
+                  })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          panoramaMercado: tool({
+            description:
+              "Panorama consolidado do mercado hoje: destaques de ações, FIIs, ETFs, índices, cripto e commodities, com amplitude (altas x baixas) e termômetro geral. Use para 'como está o mercado hoje'.",
+            inputSchema: z.object({}),
+            execute: async () => {
+              try {
+                const { buscarPanorama } = await import("@/lib/panorama-mercado.server");
+                return await buscarPanorama();
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          historicoAportes: tool({
+            description:
+              "Histórico completo de aportes do usuário agregado por mês e por ativo: quanto foi investido em cada mês, média mensal, constância e maiores posições construídas. Use para avaliar disciplina de aportes e evolução do investimento.",
+            inputSchema: z.object({
+              desde: z.string().optional().describe("Data inicial AAAA-MM-DD"),
+            }),
+            execute: async ({ desde }) => {
+              let q = supabase.from("aportes").select("data, ticker, quantidade, preco");
+              if (desde) q = q.gte("data", desde);
+              const { data, error } = await q.order("data", { ascending: true });
+              if (error) return { erro: error.message };
+              const linhas = (data ?? []).map((a) => ({
+                data: a.data,
+                ticker: a.ticker,
+                valor: Number(a.quantidade) * Number(a.preco),
+              }));
+              const porMes = new Map<string, number>();
+              const porTicker = new Map<string, number>();
+              for (const l of linhas) {
+                const mes = l.data.slice(0, 7);
+                porMes.set(mes, (porMes.get(mes) ?? 0) + l.valor);
+                porTicker.set(l.ticker, (porTicker.get(l.ticker) ?? 0) + l.valor);
+              }
+              const meses = [...porMes.entries()].map(([mes, valor]) => ({
+                mes,
+                total_aportado: Math.round(valor),
+              }));
+              const total = linhas.reduce((s, l) => s + l.valor, 0);
+              return {
+                total_aportado: Math.round(total),
+                numero_aportes: linhas.length,
+                media_mensal: meses.length ? Math.round(total / meses.length) : 0,
+                meses_com_aporte: meses.length,
+                primeiro_aporte: linhas[0]?.data ?? null,
+                ultimo_aporte: linhas[linhas.length - 1]?.data ?? null,
+                por_mes: meses,
+                por_ativo: [...porTicker.entries()]
+                  .map(([ticker, valor]) => ({ ticker, total_aportado: Math.round(valor) }))
+                  .sort((a, b) => b.total_aportado - a.total_aportado),
+              };
+            },
+          }),
+          historicoDividendos: tool({
+            description:
+              "Histórico completo de proventos recebidos pelo usuário, agregado por mês e por ativo, com média mensal e yield on cost. Use em perguntas sobre renda passiva já recebida, consistência dos dividendos e quais ativos mais pagam.",
+            inputSchema: z.object({
+              desde: z.string().optional().describe("Data inicial AAAA-MM-DD"),
+            }),
+            execute: async ({ desde }) => {
+              let q = supabase.from("dividendos").select("data, ticker, valor");
+              if (desde) q = q.gte("data", desde);
+              const { data, error } = await q.order("data", { ascending: true });
+              if (error) return { erro: error.message };
+              const linhas = (data ?? []).map((d) => ({
+                data: d.data,
+                ticker: d.ticker,
+                valor: Number(d.valor),
+              }));
+              const porMes = new Map<string, number>();
+              const porTicker = new Map<string, number>();
+              for (const l of linhas) {
+                porMes.set(l.data.slice(0, 7), (porMes.get(l.data.slice(0, 7)) ?? 0) + l.valor);
+                porTicker.set(l.ticker, (porTicker.get(l.ticker) ?? 0) + l.valor);
+              }
+              const total = linhas.reduce((s, l) => s + l.valor, 0);
+              const meses = [...porMes.entries()].map(([mes, valor]) => ({
+                mes,
+                total_recebido: ARRED(valor),
+              }));
+              const investido = ativosLinha.reduce((s, a) => s + a.quantidade * a.preco_medio, 0);
+              const ultimos12 = meses.slice(-12).reduce((s, m) => s + m.total_recebido, 0);
+              return {
+                total_recebido: ARRED(total),
+                media_mensal: meses.length ? ARRED(total / meses.length) : 0,
+                recebido_ultimos_12_meses: ARRED(ultimos12),
+                yield_on_cost_pct: investido > 0 ? ARRED((ultimos12 / investido) * 100) : 0,
+                por_mes: meses,
+                por_ativo: [...porTicker.entries()]
+                  .map(([ticker, valor]) => ({ ticker, total_recebido: ARRED(valor) }))
+                  .sort((a, b) => b.total_recebido - a.total_recebido),
+              };
+            },
+          }),
+          desempenhoCarteira12m: tool({
+            description:
+              "Desempenho de 12 meses de cada ativo da carteira do usuário, para identificar os que mais e menos contribuíram e comparar com benchmarks (Ibovespa, IFIX, CDI).",
+            inputSchema: z.object({}),
+            execute: async () => {
+              try {
+                if (ativosLinha.length === 0) return { ativos: [], aviso: "Carteira vazia." };
+                const { desempenho12mLote } = await import("@/lib/desempenho-12m.server");
+                return await desempenho12mLote(ativosLinha.map((a) => a.ticker));
+              } catch (e) {
+                return erro(e);
+              }
+            },
           }),
         };
 
