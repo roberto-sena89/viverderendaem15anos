@@ -424,7 +424,7 @@ function HomePage() {
                   to: "/blog/melhores-livros-financas",
                   label: "Melhores livros de finanças e investimentos",
                 },
-                ...CONTEUDOS.map((c) => ({
+                ...CONTEUDOS.slice(0, 6).map((c) => ({
                   to: `/conteudo/${c.slug}`,
                   label: c.titulo,
                 })),
