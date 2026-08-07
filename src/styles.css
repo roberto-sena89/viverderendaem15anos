@@ -272,10 +272,7 @@
   --leading-normal-ds: var(--lh-normal);
   --leading-relaxed-ds: var(--lh-relaxed);
 
-  --tracking-display: var(--tracking-display);
-  --tracking-heading: var(--tracking-heading);
-  --tracking-body: var(--tracking-body);
-  --tracking-label: var(--tracking-label);
+
 }
 
 
