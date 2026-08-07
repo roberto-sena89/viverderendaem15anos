@@ -190,7 +190,7 @@ function TickEixoX({
   payload?: { value?: string };
   angulo: number;
   ancora: "end" | "middle";
-  serie: Array<{ rotulo?: string; rotuloCompleto?: string; patrimonio?: number; aportadoAcum?: number }>;
+  serie: Array<{ rotulo?: string; titulo?: string; patrimonio?: number; aportadoAcum?: number }>;
 }) {
   const [focado, setFocado] = useState(false);
   const rotulo = String(payload?.value ?? "");
@@ -198,7 +198,7 @@ function TickEixoX({
   const patrimonio = Number(ponto?.patrimonio ?? 0);
   const investido = Number(ponto?.aportadoAcum ?? 0);
   const descricao = ponto
-    ? `${ponto.rotuloCompleto ?? rotulo}. Patrimônio: ${brl(patrimonio, 2)}. Total investido: ${brl(investido, 2)}. Ganho de capital: ${brl(patrimonio - investido, 2)}.`
+    ? `${ponto.titulo ?? rotulo}. Patrimônio: ${brl(patrimonio, 2)}. Total investido: ${brl(investido, 2)}. Ganho de capital: ${brl(patrimonio - investido, 2)}.`
     : rotulo;
   const titulo = descricao.replace(/\. /g, "\n");
   const largura = Math.max(36, rotulo.length * 7 + 12);
@@ -918,7 +918,7 @@ export function EvolucaoPatrimonio() {
           <tbody>
             {dadosGrafico.map((p) => (
               <tr key={p.id ?? p.rotulo}>
-                <th scope="row">{p.rotuloCompleto ?? p.rotulo}</th>
+                <th scope="row">{p.titulo ?? p.rotulo}</th>
                 <td>{brl(Number(p.patrimonio ?? 0), 2)}</td>
                 <td>{brl(Number(p.aportadoAcum ?? 0), 2)}</td>
                 <td>{brl(Number(p.patrimonio ?? 0) - Number(p.aportadoAcum ?? 0), 2)}</td>
