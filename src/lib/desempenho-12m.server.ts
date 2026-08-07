@@ -25,8 +25,8 @@ export type Desempenho12m = {
 const TTL_MS = 6 * 60 * 60 * 1000;
 const HOSTS = ["https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com"];
 
-const cache = new Map<string, { em: number; valor: Desempenho12m }>();
-const emVoo = new Map<string, Promise<Desempenho12m>>();
+const cache = new Map<string, { em: number; closes: number[] }>();
+const emVoo = new Map<string, Promise<number[] | null>>();
 
 type ChartResp = {
   chart?: {
@@ -48,7 +48,8 @@ const vazio = (ticker: string): Desempenho12m => ({
   drawdown12m: null,
 });
 
-async function buscarSerie(ticker: string): Promise<Desempenho12m> {
+/** Busca os fechamentos mensais ajustados de 12 meses; null quando indisponível. */
+async function buscarCloses(ticker: string): Promise<number[] | null> {
   const simbolo = normalizarSimbolo(ticker);
   for (const host of HOSTS) {
     let res: Response;
@@ -68,47 +69,55 @@ async function buscarSerie(ticker: string): Promise<Desempenho12m> {
       (v): v is number => typeof v === "number" && Number.isFinite(v) && v > 0,
     );
     if (serie.length < 2) continue;
-
-    const primeiro = serie[0];
-    const ultimo = serie[serie.length - 1];
-    let pico = -Infinity;
-    let drawdown = 0;
-    for (const v of serie) {
-      pico = Math.max(pico, v);
-      drawdown = Math.min(drawdown, (v - pico) / pico);
-    }
-    return {
-      ticker: ticker.toUpperCase(),
-      retorno12m: ((ultimo - primeiro) / primeiro) * 100,
-      primeiroPreco: primeiro,
-      ultimoPreco: ultimo,
-      drawdown12m: drawdown * 100,
-    };
+    return serie;
   }
-  return vazio(ticker.toUpperCase());
+  return null;
+}
+
+async function comCacheCloses(ticker: string): Promise<number[] | null> {
+  const chave = ticker.trim().toUpperCase();
+  if (!chave) return null;
+  const agora = Date.now();
+  const salvo = cache.get(chave);
+  if (salvo && agora - salvo.em < TTL_MS) return salvo.closes;
+
+  const voando = emVoo.get(chave);
+  if (voando) return voando;
+
+  const promessa = buscarCloses(chave)
+    .then((closes) => {
+      // Só guarda resultados úteis; falhas ficam de fora para tentar de novo.
+      if (closes && closes.length >= 2) cache.set(chave, { em: Date.now(), closes });
+      return closes;
+    })
+    .catch(() => salvo?.closes ?? null)
+    .finally(() => emVoo.delete(chave));
+
+  emVoo.set(chave, promessa);
+  return promessa;
 }
 
 async function comCache(ticker: string): Promise<Desempenho12m> {
   const chave = ticker.trim().toUpperCase();
   if (!chave) return vazio(chave);
-  const agora = Date.now();
-  const salvo = cache.get(chave);
-  if (salvo && agora - salvo.em < TTL_MS) return salvo.valor;
+  const serie = await comCacheCloses(chave);
+  if (!serie || serie.length < 2) return vazio(chave);
 
-  const voando = emVoo.get(chave);
-  if (voando) return voando;
-
-  const promessa = buscarSerie(chave)
-    .then((valor) => {
-      // Só guarda resultados úteis; falhas ficam de fora para tentar de novo.
-      if (valor.retorno12m !== null) cache.set(chave, { em: Date.now(), valor });
-      return valor;
-    })
-    .catch(() => salvo?.valor ?? vazio(chave))
-    .finally(() => emVoo.delete(chave));
-
-  emVoo.set(chave, promessa);
-  return promessa;
+  const primeiro = serie[0];
+  const ultimo = serie[serie.length - 1];
+  let pico = -Infinity;
+  let drawdown = 0;
+  for (const v of serie) {
+    pico = Math.max(pico, v);
+    drawdown = Math.min(drawdown, (v - pico) / pico);
+  }
+  return {
+    ticker: chave,
+    retorno12m: ((ultimo - primeiro) / primeiro) * 100,
+    primeiroPreco: primeiro,
+    ultimoPreco: ultimo,
+    drawdown12m: drawdown * 100,
+  };
 }
 
 /** Desempenho de 12m dos tickers pedidos + benchmark Ibovespa. */
@@ -228,4 +237,28 @@ export async function benchmarkCarteira(
     benchmarks,
     comparativo,
   };
+}
+
+/**
+ * Séries mensais de 12 meses (fechamentos ajustados) dos tickers + série do
+ * Ibovespa. Usada para métricas de risco e séries comparativas da carteira.
+ */
+export async function seriesMensais12m(tickers: string[]): Promise<{
+  porTicker: Map<string, number[]>;
+  ibov: number[] | null;
+}> {
+  const unicos = [...new Set(tickers.map((t) => t.trim().toUpperCase()).filter(Boolean))].slice(
+    0,
+    80,
+  );
+  const [series, ibov] = await Promise.all([
+    Promise.all(unicos.map((t) => comCacheCloses(t))),
+    comCacheCloses("^BVSP"),
+  ]);
+  const porTicker = new Map<string, number[]>();
+  unicos.forEach((t, i) => {
+    const closes = series[i];
+    if (closes && closes.length >= 2) porTicker.set(t, closes);
+  });
+  return { porTicker, ibov };
 }

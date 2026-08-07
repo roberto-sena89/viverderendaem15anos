@@ -16,16 +16,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { useAtivos, useCriarMeta, useExcluir, useMetas } from "@/lib/data";
-import { brl, metasPadrao, pct, resumoCarteira } from "@/lib/portfolio";
+import { useAtivos, useCriarMeta, useExcluir, useMetas, usePlano } from "@/lib/data";
+import { anosAteMeta, brl, metasPadrao, pct, resumoCarteira } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/metas")({
   head: () => ({
     meta: [
       { title: "Metas · Investidor em 15 Anos" },
-      { name: "description", content: "Da reserva de emergência aos 3 milhões: acompanhe o progresso de cada meta patrimonial." },
+      {
+        name: "description",
+        content:
+          "Da reserva de emergência aos 3 milhões: acompanhe o progresso de cada meta patrimonial.",
+      },
       { property: "og:title", content: "Metas · Investidor em 15 Anos" },
-      { property: "og:description", content: "Timeline de objetivos patrimoniais com barras de progresso e prazo estimado." },
+      {
+        property: "og:description",
+        content: "Timeline de objetivos patrimoniais com barras de progresso e prazo estimado.",
+      },
       { name: "robots", content: "noindex, follow" },
     ],
     links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/metas" }],
@@ -41,12 +48,17 @@ function MetasPage() {
 
   const { data: carteira = [] } = useAtivos();
   const { data: metas = [], isLoading } = useMetas();
+  const { data: plano } = usePlano();
   const criar = useCriarMeta();
   const excluir = useExcluir("metas");
   const { totalAtual } = resumoCarteira(carteira);
 
   const anosPara = (alvo: number) =>
-    totalAtual > 0 ? Math.max(0, Math.log(alvo / totalAtual) / Math.log(CRESCIMENTO)) : 0;
+    plano && totalAtual > 0
+      ? anosAteMeta(totalAtual, alvo, plano)
+      : totalAtual > 0
+        ? Math.max(0, Math.log(alvo / totalAtual) / Math.log(CRESCIMENTO))
+        : null;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -113,7 +125,8 @@ function MetasPage() {
         <div className="surface-card flex flex-col items-center gap-3 p-12 text-center">
           <p className="font-medium">Você ainda não definiu metas</p>
           <p className="max-w-md text-sm text-muted-foreground">
-            Crie a sua primeira meta ou comece com a trilha sugerida: reserva de emergência, 100 mil, 250 mil… até 3 milhões.
+            Crie a sua primeira meta ou comece com a trilha sugerida: reserva de emergência, 100
+            mil, 250 mil… até 3 milhões.
           </p>
           <Button variant="secondary" onClick={criarPadrao} disabled={criar.isPending}>
             Usar metas sugeridas
@@ -156,7 +169,11 @@ function MetasPage() {
               <div className="mt-3 flex items-center justify-between text-xs">
                 <span className="font-medium text-primary">{pct(progresso)}</span>
                 <span className="text-muted-foreground">
-                  {concluida ? "Concluída" : `~${anos.toFixed(1)} anos · ${anoAtual + Math.ceil(anos)}`}
+                  {concluida
+                    ? "Concluída"
+                    : anos === null
+                      ? "Meta fora do horizonte"
+                      : `~${anos.toFixed(1)} anos · ${anoAtual + Math.ceil(anos)}`}
                 </span>
               </div>
             </div>
@@ -180,7 +197,7 @@ function MetasPage() {
                   />
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <p className="text-sm font-medium">
-                      {anoAtual + Math.ceil(anos)} · {m.nome}
+                      {anos === null ? "Hoje" : `${anoAtual + Math.ceil(anos)}`} · {m.nome}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {brl(m.alvo)} · {pct(progresso)}

@@ -18,7 +18,7 @@ import { AppShell } from "@/components/app-shell";
 import { StatusCotacoes } from "@/components/status-cotacoes";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
-
+import { PainelAnaliseRisco } from "@/components/painel-analise-risco";
 import { DetalheEvolucaoMensal } from "@/components/detalhe-evolucao-mensal";
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
@@ -203,6 +203,8 @@ function Dashboard() {
       <ResumoKpis />
 
       <SaudeCarteira carteira={ativos} />
+
+      <PainelAnaliseRisco carteira={ativos} aportes={aportes} />
 
       <div className="grid gap-4 text-[12px] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel

@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  FileText,
   Pencil,
   PiggyBank,
   Search,
@@ -18,14 +19,23 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { Panel } from "@/components/panel";
+import { PainelTributacao } from "@/components/painel-tributacao";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes, useAtivos, useExcluirAporte } from "@/lib/data";
-import { brl, type Aporte } from "@/lib/portfolio";
+import { brl, resumoCarteira, type Aporte } from "@/lib/portfolio";
+import { gerarRelatorioCarteira } from "@/lib/relatorio-carteira";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/historico-aportes")({
@@ -44,7 +54,9 @@ export const Route = createFileRoute("/_authenticated/historico-aportes")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/historico-aportes" }],
+    links: [
+      { rel: "canonical", href: "https://viverderendaem15anos.lovable.app/historico-aportes" },
+    ],
   }),
   component: HistoricoAportesPage,
 });
@@ -76,12 +88,12 @@ const ANOS_OPCOES = (atual: string, existentes: string[]) => {
   const lista = new Set<string>([atual, ...existentes]);
   for (let y = base - 5; y <= base + 2; y++) lista.add(String(y));
   return [...lista].sort((x, y) => Number(y) - Number(x)).slice(0, 12);
-
 };
 const num = (v: number, casas = 2) =>
   v.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: casas });
 
-type Coluna = "data" | "ticker" | "categoria" | "corretora" | "quantidade" | "preco" | "taxas" | "valor";
+type Coluna =
+  "data" | "ticker" | "categoria" | "corretora" | "quantidade" | "preco" | "taxas" | "valor";
 
 function baixarCsv(nome: string, linhas: (string | number)[][]) {
   const csv = linhas
@@ -181,7 +193,8 @@ function HistoricoAportesPage() {
   const somaFiltrada = filtrados.reduce((s, a) => s + total(a), 0);
   const somaQtd = filtrados.reduce((s, a) => s + a.quantidade, 0);
   const somaTaxas = filtrados.reduce((s, a) => s + a.taxas, 0);
-  const pmPonderado = somaQtd > 0 ? filtrados.reduce((s, a) => s + a.quantidade * a.preco, 0) / somaQtd : 0;
+  const pmPonderado =
+    somaQtd > 0 ? filtrados.reduce((s, a) => s + a.quantidade * a.preco, 0) / somaQtd : 0;
   const ativosDistintos = new Set(filtrados.map((a) => a.ticker)).size;
 
   // Meta implícita do mês: maior aporte mensal já feito (referência de progresso).
@@ -204,7 +217,8 @@ function HistoricoAportesPage() {
   const totalAnoAnterior = aportes
     .filter((a) => a.data.startsWith(String(Number(ano) - 1)))
     .reduce((s, a) => s + total(a), 0);
-  const variacaoAno = totalAnoAnterior > 0 ? ((totalPeriodo - totalAnoAnterior) / totalAnoAnterior) * 100 : null;
+  const variacaoAno =
+    totalAnoAnterior > 0 ? ((totalPeriodo - totalAnoAnterior) / totalAnoAnterior) * 100 : null;
 
   const navegar = (passo: number) => {
     if (modo === "anual") {
@@ -228,7 +242,17 @@ function HistoricoAportesPage() {
       return;
     }
     baixarCsv(`Aportes_${periodo}.csv`, [
-      ["Data", "Ativo", "Nome", "Categoria", "Corretora", "Quantidade", "Preço médio", "Taxas", "Valor"],
+      [
+        "Data",
+        "Ativo",
+        "Nome",
+        "Categoria",
+        "Corretora",
+        "Quantidade",
+        "Preço médio",
+        "Taxas",
+        "Valor",
+      ],
       ...filtrados.map((a) => [
         a.data.split("-").reverse().join("/"),
         a.ticker,
@@ -240,15 +264,51 @@ function HistoricoAportesPage() {
         num(a.taxas),
         num(total(a)),
       ]),
-      ["", "", "", "", "TOTAL", num(somaQtd, 8), num(pmPonderado), num(somaTaxas), num(somaFiltrada)],
+      [
+        "",
+        "",
+        "",
+        "",
+        "TOTAL",
+        num(somaQtd, 8),
+        num(pmPonderado),
+        num(somaTaxas),
+        num(somaFiltrada),
+      ],
     ]);
     toast.success("Arquivo CSV gerado.");
+  };
+
+  const baixarPdf = async () => {
+    const { totalInvestido, dividendosEstimados12m } = resumoCarteira(ativos);
+    if (ativos.length === 0) {
+      toast.error("Cadastre ativos na carteira antes de gerar o PDF.");
+      return;
+    }
+    try {
+      await gerarRelatorioCarteira({
+        ativos,
+        custoTotal: totalInvestido,
+        dividendoTotal12m: dividendosEstimados12m,
+      });
+      toast.success("Relatório PDF da carteira gerado.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível gerar o PDF.");
+    }
   };
 
   const ordenar = (col: Coluna) =>
     setOrdem((o) => ({ col, asc: o.col === col ? !o.asc : col === "data" ? true : false }));
 
-  const Cabecalho = ({ col, children, className }: { col: Coluna; children: React.ReactNode; className?: string }) => (
+  const Cabecalho = ({
+    col,
+    children,
+    className,
+  }: {
+    col: Coluna;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
     <TableHead className={className}>
       <button
         type="button"
@@ -288,8 +348,13 @@ function HistoricoAportesPage() {
             />
           </div>
           <div className="flex w-full items-center justify-between gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-auto sm:justify-start">
-            <Button variant="ghost" size="icon" className="size-8 shrink-0" onClick={() => navegar(-1)} aria-label="Período anterior">
-
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 shrink-0"
+              onClick={() => navegar(-1)}
+              aria-label="Período anterior"
+            >
               <ChevronLeft className="size-4" />
             </Button>
             <Popover>
@@ -299,7 +364,6 @@ function HistoricoAportesPage() {
                   aria-label="Selecionar período"
                   className="inline-flex min-w-0 flex-1 items-center justify-center gap-2 truncate rounded-md px-2 py-1 text-sm font-semibold text-foreground transition-colors hover:bg-muted/60 sm:min-w-[11rem] sm:flex-none"
                 >
-
                   <CalendarDays className="size-4 text-primary" />
                   {modo === "mensal"
                     ? diaSel
@@ -333,7 +397,9 @@ function HistoricoAportesPage() {
                     className="flex items-center gap-1 rounded-md border border-border bg-background px-3 py-1 text-sm font-semibold outline-none hover:bg-muted"
                   >
                     {modo === "mensal" ? mes.slice(0, 4) : ano}
-                    <ChevronDown className={cn("size-3.5 transition-transform", anosAberto && "rotate-180")} />
+                    <ChevronDown
+                      className={cn("size-3.5 transition-transform", anosAberto && "rotate-180")}
+                    />
                   </button>
 
                   <Button
@@ -367,7 +433,9 @@ function HistoricoAportesPage() {
                             }}
                             className={cn(
                               "rounded-md px-1 py-1.5 text-xs font-medium transition-colors",
-                              ativo ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted",
+                              ativo
+                                ? "bg-primary text-primary-foreground"
+                                : "text-foreground hover:bg-muted",
                             )}
                           >
                             {y}
@@ -380,7 +448,6 @@ function HistoricoAportesPage() {
 
                 {/* Meses */}
                 <div className="mt-3 grid grid-cols-4 gap-1">
-
                   {MESES.map((nome, i) => {
                     const chave = `${mes.slice(0, 4)}-${String(i + 1).padStart(2, "0")}`;
                     const ativo = modo === "mensal" && chave === mes;
@@ -413,7 +480,13 @@ function HistoricoAportesPage() {
                   <>
                     <div className="mt-3 grid grid-cols-7 gap-1">
                       {Array.from(
-                        { length: new Date(Number(mes.slice(0, 4)), Number(mes.slice(5, 7)), 0).getDate() },
+                        {
+                          length: new Date(
+                            Number(mes.slice(0, 4)),
+                            Number(mes.slice(5, 7)),
+                            0,
+                          ).getDate(),
+                        },
                         (_, i) => String(i + 1).padStart(2, "0"),
                       ).map((d) => {
                         const temAporte = aportes.some((a) => a.data === `${mes}-${d}`);
@@ -451,7 +524,13 @@ function HistoricoAportesPage() {
                 ) : null}
               </PopoverContent>
             </Popover>
-            <Button variant="ghost" size="icon" className="size-8 shrink-0" onClick={() => navegar(1)} aria-label="Próximo período">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 shrink-0"
+              onClick={() => navegar(1)}
+              aria-label="Próximo período"
+            >
               <ChevronRight className="size-4" />
             </Button>
           </div>
@@ -466,20 +545,24 @@ function HistoricoAportesPage() {
                 onClick={() => setModo(m)}
                 className={cn(
                   "rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors",
-                  modo === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                  modo === m
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {m}
               </button>
             ))}
           </div>
+          <Button variant="outline" size="sm" className="shrink-0" onClick={baixarPdf}>
+            <FileText className="size-4" />
+            <span className="hidden sm:inline">Relatório </span>PDF
+          </Button>
           <Button variant="outline" size="sm" className="shrink-0" onClick={exportar}>
             <Download className="size-4" />
             <span className="hidden sm:inline">Exportar </span>CSV
           </Button>
-
         </div>
-
       </div>
 
       {/* Cabeçalho do período */}
@@ -498,7 +581,8 @@ function HistoricoAportesPage() {
               </h2>
             </button>
             <p className="mt-1 text-xs text-muted-foreground">
-              {filtrados.length} lançamento{filtrados.length === 1 ? "" : "s"} · {ativosDistintos} ativo
+              {filtrados.length} lançamento{filtrados.length === 1 ? "" : "s"} · {ativosDistintos}{" "}
+              ativo
               {ativosDistintos === 1 ? "" : "s"}
               {modo === "anual" && variacaoAno !== null
                 ? ` · ${variacaoAno >= 0 ? "+" : ""}${variacaoAno.toFixed(1)}% vs ${Number(ano) - 1}`
@@ -515,7 +599,9 @@ function HistoricoAportesPage() {
             <p className="text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">
               Total aportado
             </p>
-            <p className="font-display text-2xl font-bold text-primary sm:text-3xl">{brl(totalPeriodo)}</p>
+            <p className="font-display text-2xl font-bold text-primary sm:text-3xl">
+              {brl(totalPeriodo)}
+            </p>
           </div>
         </div>
 
@@ -548,15 +634,26 @@ function HistoricoAportesPage() {
         )}
       </Panel>
 
+      <PainelTributacao aportes={aportes} />
+
       {/* Visão anual */}
       {modo === "anual" && aberto && (
         <Panel title={`Evolução mensal · ${ano}`}>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={graficoAno}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
                 <XAxis dataKey="mes" stroke="var(--color-muted-foreground)" fontSize={12} />
-                <YAxis stroke="var(--color-muted-foreground)" fontSize={12} tickFormatter={(v) => brl(Number(v))} width={80} />
+                <YAxis
+                  stroke="var(--color-muted-foreground)"
+                  fontSize={12}
+                  tickFormatter={(v) => brl(Number(v))}
+                  width={80}
+                />
                 <Tooltip
                   formatter={(v) => brl(Number(v))}
                   contentStyle={{
@@ -586,7 +683,8 @@ function HistoricoAportesPage() {
               <PiggyBank className="size-10 text-muted-foreground" />
               <p className="font-display text-base font-semibold">Nenhum aporte neste período</p>
               <p className="max-w-sm text-sm text-muted-foreground">
-                Registre seu primeiro lançamento para acompanhar a evolução do seu patrimônio mês a mês.
+                Registre seu primeiro lançamento para acompanhar a evolução do seu patrimônio mês a
+                mês.
               </p>
             </div>
           ) : (
@@ -596,14 +694,28 @@ function HistoricoAportesPage() {
                 <Table className="table-fixed">
                   <TableHeader>
                     <TableRow>
-                      <Cabecalho col="data" className="w-[86px]">Data</Cabecalho>
+                      <Cabecalho col="data" className="w-[86px]">
+                        Data
+                      </Cabecalho>
                       <Cabecalho col="ticker">Ativo</Cabecalho>
-                      <Cabecalho col="categoria" className="w-[150px]">Categoria</Cabecalho>
-                      <Cabecalho col="corretora" className="w-[150px]">Corretora</Cabecalho>
-                      <Cabecalho col="quantidade" className="w-[90px] text-right">Qtd.</Cabecalho>
-                      <Cabecalho col="preco" className="w-[120px] text-right">Preço médio</Cabecalho>
-                      <Cabecalho col="taxas" className="w-[100px] text-right">Taxas</Cabecalho>
-                      <Cabecalho col="valor" className="w-[120px] text-right">Valor</Cabecalho>
+                      <Cabecalho col="categoria" className="w-[150px]">
+                        Categoria
+                      </Cabecalho>
+                      <Cabecalho col="corretora" className="w-[150px]">
+                        Corretora
+                      </Cabecalho>
+                      <Cabecalho col="quantidade" className="w-[90px] text-right">
+                        Qtd.
+                      </Cabecalho>
+                      <Cabecalho col="preco" className="w-[120px] text-right">
+                        Preço médio
+                      </Cabecalho>
+                      <Cabecalho col="taxas" className="w-[100px] text-right">
+                        Taxas
+                      </Cabecalho>
+                      <Cabecalho col="valor" className="w-[120px] text-right">
+                        Valor
+                      </Cabecalho>
                       <TableHead className="w-[92px] text-right">Editar</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -627,18 +739,33 @@ function HistoricoAportesPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="truncate text-xs text-muted-foreground">{a.categoria}</TableCell>
-                        <TableCell className="truncate text-xs text-muted-foreground">{a.corretora || "—"}</TableCell>
-                        <TableCell className="text-right text-sm tabular-nums">{num(a.quantidade, 8)}</TableCell>
-                        <TableCell className="text-right text-sm tabular-nums">{brl(a.preco, 2)}</TableCell>
+                        <TableCell className="truncate text-xs text-muted-foreground">
+                          {a.categoria}
+                        </TableCell>
+                        <TableCell className="truncate text-xs text-muted-foreground">
+                          {a.corretora || "—"}
+                        </TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">
+                          {num(a.quantidade, 8)}
+                        </TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">
+                          {brl(a.preco, 2)}
+                        </TableCell>
                         <TableCell className="text-right text-sm tabular-nums text-muted-foreground">
                           {brl(a.taxas, 2)}
                         </TableCell>
-                        <TableCell className="text-right text-sm font-semibold tabular-nums">{brl(total(a))}</TableCell>
+                        <TableCell className="text-right text-sm font-semibold tabular-nums">
+                          {brl(total(a))}
+                        </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
                             <DialogTransacao aporte={a}>
-                              <Button variant="ghost" size="icon" className="size-8" aria-label={`Editar ${a.ticker}`}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-8"
+                                aria-label={`Editar ${a.ticker}`}
+                              >
                                 <Pencil className="size-4" />
                               </Button>
                             </DialogTransacao>
@@ -674,7 +801,6 @@ function HistoricoAportesPage() {
                         </span>
                       </TableCell>
                     </TableRow>
-
                   </TableBody>
                 </Table>
               </div>

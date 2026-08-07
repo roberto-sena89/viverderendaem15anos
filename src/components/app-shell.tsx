@@ -11,9 +11,8 @@ import {
   Trophy,
   BarChart3,
   ListOrdered,
+  FileUp,
   Newspaper,
-
-
   Bot,
   LogOut,
 } from "lucide-react";
@@ -21,11 +20,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
 import { NavMobile } from "@/components/nav-mobile";
 
-
 import { ThemeToggle } from "@/components/theme";
-
-
-
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -33,13 +28,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { SECOES, secaoPorRota } from "@/lib/navegacao";
 import logoIcone from "@/assets/logo-icone.webp";
 
-
-
 const ICONES: Record<string, typeof LayoutDashboard> = {
   "/dashboard": LayoutDashboard,
   "/carteira": Wallet,
   "/aportes": PiggyBank,
   "/historico-aportes": ListOrdered,
+  "/importar": FileUp,
   "/dividendos": Coins,
   "/rebalanceamento": Scale,
   "/cotacoes": BarChart3,
@@ -60,9 +54,6 @@ const grupos = ["Carteira", "MERCADO", "Planejamento"].map((titulo) => ({
 }));
 
 const nav = grupos.flatMap((g) => g.itens);
-
-
-
 
 export function AppShell({
   title,
@@ -127,7 +118,6 @@ export function AppShell({
   // O h1 sempre reflete o rótulo da aba selecionada.
   const tituloPagina = secaoAtual?.rotulo ?? title;
 
-
   const initials = (user?.name ?? "IN")
 
     .split(" ")
@@ -141,7 +131,6 @@ export function AppShell({
         Pular para o conteúdo
       </a>
       <aside className="sticky top-0 z-30 hidden h-dvh w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
-
         <Link to="/" className="mb-7 flex items-center gap-3 px-1">
           <img
             src={logoIcone}
@@ -159,7 +148,6 @@ export function AppShell({
             </span>
           </span>
         </Link>
-
 
         <nav className="flex flex-1 flex-col gap-6 overflow-y-auto pr-1">
           {grupos.map((grupo, i) => (
@@ -196,8 +184,6 @@ export function AppShell({
           ))}
         </nav>
 
-
-
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-sidebar-border p-3">
           <Avatar className="size-9">
             {user?.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
@@ -224,15 +210,11 @@ export function AppShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-
-
         <header
           ref={cabecalhoRef}
           className="sticky top-0 z-30 border-b border-border bg-background/70 backdrop-blur-xl"
         >
-
           <div className="container-app grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-3 sm:gap-4 sm:py-5 lg:grid-cols-[minmax(0,1fr)_auto]">
-
             <div className="lg:hidden">
               <NavMobile grupos={grupos} usuario={user} onSair={handleSignOut} />
             </div>
@@ -266,7 +248,6 @@ export function AppShell({
                   {description}
                 </p>
               ) : null}
-
             </div>
 
             <div className="flex shrink-0 items-center gap-1 self-center">
@@ -276,12 +257,10 @@ export function AppShell({
           </div>
         </header>
 
-
         <main
           id="conteudo"
           className="animate-rise container-app min-w-0 flex-1 space-y-6 py-6 sm:space-y-8 sm:py-8"
         >
-
           {children}
         </main>
       </div>

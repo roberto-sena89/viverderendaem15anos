@@ -1,5 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Coins, LayoutDashboard, ListOrdered, PiggyBank, Scale, Wallet } from "lucide-react";
+import {
+  Coins,
+  FileUp,
+  LayoutDashboard,
+  ListOrdered,
+  PiggyBank,
+  Scale,
+  Wallet,
+} from "lucide-react";
 import { ABAS_CARTEIRA, secaoPorRota } from "@/lib/navegacao";
 
 const ICONES: Record<string, typeof LayoutDashboard> = {
@@ -9,15 +17,13 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/aportes": PiggyBank,
   "/rebalanceamento": Scale,
   "/historico-aportes": ListOrdered,
+  "/importar": FileUp,
 };
 
 /** Barra de abas da carteira, no padrão Investidor 10. */
 export function AbasCarteira() {
   return (
-    <nav
-      aria-label="Seções da carteira"
-      className="border-b border-border"
-    >
+    <nav aria-label="Seções da carteira" className="border-b border-border">
       <ul className="grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:items-center">
         {ABAS_CARTEIRA.map((to) => {
           const Icone = ICONES[to] ?? LayoutDashboard;

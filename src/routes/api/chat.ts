@@ -20,6 +20,13 @@ import {
   type AtivoLinha,
 } from "@/lib/auditoria";
 import { agregarNoticias } from "@/lib/noticias.server";
+import {
+  diversificacao,
+  exposicaoPorMoeda,
+  metricasDeSerieMensal,
+  montarBenchmarkGlobal,
+  retornoPonderado12m,
+} from "@/lib/analise-carteira";
 import type { Database } from "@/integrations/supabase/types";
 
 interface PlanoLinha {
@@ -68,6 +75,8 @@ Ferramentas de análise da carteira:
 - historicoDividendos: proventos recebidos mês a mês e por ativo, com yield on cost.
 - desempenhoCarteira12m: desempenho de 12 meses de cada ativo da carteira.
 - benchmarkCarteira: retorno de 12 meses da carteira comparado aos benchmarks Ibovespa, IFIX, CDI acumulado e S&P 500 (excedente em pontos percentuais). Use em perguntas de desempenho da carteira frente ao mercado.
+- compararBenchmark: retorno ponderado de 12 meses da carteira vs Ibovespa e IVVB11 (proxy global) com notas 0-10, excedente (alpha), cobertura dos dados e exposição por moeda (BRL/USD/cripto). Use em perguntas do tipo "minha carteira bate o mercado?", "meu desempenho vs Ibovespa".
+- metricasRiscoCarteira: métricas de risco da carteira em 12 meses — volatilidade anual, drawdown máximo, Índice de Sharpe, melhor/pior mês — mais diversificação efetiva (HHI/nº de ativos efetivos) e exposição por moeda. Use em perguntas do tipo "qual o risco da minha carteira", "minha carteira é diversificada".
 - educacaoPush: detecta lacunas (gaps) entre carteira/plano e a estratégia ideal (reserva de emergência, renda fixa, concentração, diversificação, metas, plano, disciplina de aportes) e devolve conteúdo educativo + ações do plano. Use ao final de auditorias e sempre que detectar um gap no diagnóstico.
 - calcularTributos: estima a tributação da carteira (dividendos isentos, JCP 15%, renda fixa regressiva, ganho de capital em ações/FIIs/ETFs). Use em perguntas sobre imposto de renda, DARF, planejamento tributário.
 
@@ -1425,6 +1434,132 @@ export const Route = createFileRoute("/api/chat")({
                 if (ativosLinha.length === 0) return { ativos: [], aviso: "Carteira vazia." };
                 const { desempenho12mLote } = await import("@/lib/desempenho-12m.server");
                 return await desempenho12mLote(ativosLinha.map((a) => a.ticker));
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          compararBenchmark: tool({
+            description:
+              "Compara o retorno de 12 meses da carteira do usuário com o Ibovespa (mercado brasileiro) e com o IVVB11 (proxy do exterior/S&P 500). Gera nota 0-10 para cada benchmark, o excedente (alpha) vs cada um, a cobertura dos dados e a exposição por moeda. Use para responder 'minha carteira bate o mercado?', 'meu desempenho vs Ibovespa'.",
+            inputSchema: z.object({}),
+            execute: async () => {
+              if (ativosLinha.length === 0) {
+                return {
+                  carteira_vazia: true,
+                  aviso: "Cadastre ativos na carteira para comparar o desempenho.",
+                };
+              }
+              try {
+                const { desempenho12mLote } = await import("@/lib/desempenho-12m.server");
+                const [lote, ivvbLote] = await Promise.all([
+                  desempenho12mLote(ativosLinha.map((a) => a.ticker)),
+                  desempenho12mLote(["IVVB11"]),
+                ]);
+                const retornos = new Map<string, number | null>();
+                for (const a of lote.ativos) retornos.set(a.ticker, a.retorno12m);
+                const modelo = ativosParaModelo(ativosLinha);
+                const carteira = retornoPonderado12m(modelo, retornos);
+                const ivvb = ivvbLote.ativos[0]?.retorno12m ?? null;
+                const global = montarBenchmarkGlobal(carteira.retornoPct, lote.benchmark, ivvb);
+                const moedas = exposicaoPorMoeda(modelo);
+                return {
+                  periodo: "12 meses",
+                  cobertura_dados_pct: ARRED(carteira.coberturaPct * 100),
+                  retorno_carteira_pct: global.retornoCarteiraPct,
+                  benchmark_ibovespa_pct: global.retornoIbovPct,
+                  benchmark_ivvb11_global_pct: global.retornoGlobalPct,
+                  excedente_vs_ibovespa_pct: global.excedenteIbovPct,
+                  excedente_vs_global_pct: global.excedenteGlobalPct,
+                  nota_vs_ibovespa: global.notaIbov,
+                  nota_vs_global: global.notaGlobal,
+                  exposicao_por_moeda: moedas.map((m) => ({
+                    moeda: m.rotulo,
+                    pct: ARRED(m.pct * 100),
+                    valor: Math.round(m.valor),
+                  })),
+                  por_ativo: lote.ativos.map((a) => ({
+                    ticker: a.ticker,
+                    retorno_12m_pct: a.retorno12m,
+                    drawdown_12m_pct: a.drawdown12m,
+                  })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          metricasRiscoCarteira: tool({
+            description:
+              "Métricas de risco da carteira nos últimos 12 meses: volatilidade anualizada, drawdown máximo, Índice de Sharpe, melhor e pior mês, além da diversificação efetiva (HHI e nº de ativos equivalentes) e da exposição por moeda. Use para perguntas sobre risco, volatilidade, drawdown ou diversificação da carteira.",
+            inputSchema: z.object({
+              retornoLivreRiscoAnualPct: z
+                .number()
+                .optional()
+                .describe("Taxa livre de risco anual em % para o Sharpe (padrão: 11, ~CDI)"),
+            }),
+            execute: async ({ retornoLivreRiscoAnualPct }) => {
+              if (ativosLinha.length === 0) {
+                return {
+                  carteira_vazia: true,
+                  aviso: "Cadastre ativos na carteira para calcular o risco.",
+                };
+              }
+              try {
+                const { seriesMensais12m } = await import("@/lib/desempenho-12m.server");
+                const { porTicker } = await seriesMensais12m(ativosLinha.map((a) => a.ticker));
+
+                const totalAtual = ativosLinha.reduce(
+                  (s, a) => s + a.quantidade * a.preco_atual,
+                  0,
+                );
+                const tamanho = Math.max(0, ...[...porTicker.values()].map((c) => c.length));
+                if (tamanho === 0) {
+                  return {
+                    sem_historico: true,
+                    aviso: "Sem histórico mensal suficiente para os ativos da carteira.",
+                  };
+                }
+
+                const serieR$: number[] = [];
+                let cobertura = 0;
+                for (let i = 0; i < tamanho; i++) {
+                  let soma = 0;
+                  for (const a of ativosLinha) {
+                    const closes = porTicker.get(a.ticker.toUpperCase());
+                    if (!closes || closes.length < tamanho) continue;
+                    const atual = a.quantidade * a.preco_atual;
+                    soma += (atual / closes[tamanho - 1]) * closes[i];
+                    if (i === 0) cobertura += atual;
+                  }
+                  serieR$.push(soma);
+                }
+
+                const risco = metricasDeSerieMensal(serieR$, retornoLivreRiscoAnualPct ?? 11);
+                const div = diversificacao(ativosParaModelo(ativosLinha));
+                const moedas = exposicaoPorMoeda(ativosParaModelo(ativosLinha));
+                return {
+                  periodo_em_meses: risco.meses,
+                  cobertura_dados_pct: totalAtual > 0 ? ARRED((cobertura / totalAtual) * 100) : 0,
+                  volatilidade_anual_pct:
+                    risco.volatilidadeAnualPct == null ? null : ARRED(risco.volatilidadeAnualPct),
+                  drawdown_maximo_12m_pct:
+                    risco.drawdownMaximoPct == null ? null : ARRED(risco.drawdownMaximoPct),
+                  sharpe: risco.sharpe == null ? null : ARRED(risco.sharpe),
+                  retorno_anualizado_pct:
+                    risco.retornoAnualizadoPct == null ? null : ARRED(risco.retornoAnualizadoPct),
+                  melhor_mes_pct: risco.melhorMesPct == null ? null : ARRED(risco.melhorMesPct),
+                  pior_mes_pct: risco.piorMesPct == null ? null : ARRED(risco.piorMesPct),
+                  diversificacao: {
+                    indice: div.indice,
+                    ativos_efetivos: ARRED(div.numEficaz),
+                    hhi: ARRED(div.hhi),
+                  },
+                  exposicao_por_moeda: moedas.map((m) => ({
+                    moeda: m.rotulo,
+                    pct: ARRED(m.pct * 100),
+                  })),
+                };
               } catch (e) {
                 return erro(e);
               }

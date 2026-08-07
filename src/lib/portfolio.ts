@@ -19,7 +19,7 @@ export type Categoria =
 export const categorias: Categoria[] = [
   "Ações",
   "Fundos Imobiliários",
-  
+
   "BDR",
   "ETF Brasil",
   "ETF (Global)",
@@ -94,7 +94,7 @@ export const alocacaoIdeal: Record<string, number> = {
   "ETFs - Brasil": 20,
   "ETFs - Global": 20,
   FIIs: 10,
-  "Ações": 0,
+  Ações: 0,
   BDRs: 0,
   "Fundos de Investimentos": 0,
   Criptomoedas: 0,
@@ -138,7 +138,6 @@ export const classeDoAtivo = (a: Ativo): string => {
       return CLASSE_POS_FIXADO;
   }
 };
-
 
 export const valorAtual = (a: Ativo) => a.quantidade * a.precoAtual;
 export const valorInvestido = (a: Ativo) => a.quantidade * a.precoMedio;
@@ -211,7 +210,12 @@ export function evolucaoPatrimonio(aportes: Aporte[], totalAtual: number) {
 
   return aportesPorMes.map((m) => {
     patrimonio += m.aportes;
-    return { mes: m.mes, chave: m.chave, patrimonio: Math.round(patrimonio), aportes: Math.round(m.aportes) };
+    return {
+      mes: m.mes,
+      chave: m.chave,
+      patrimonio: Math.round(patrimonio),
+      aportes: Math.round(m.aportes),
+    };
   });
 }
 
@@ -280,9 +284,38 @@ export const metasPadrao = [
   { nome: "3 milhões", alvo: 3000000 },
 ];
 
+/**
+ * Estimativa de quantos anos faltam para atingir uma meta patrimonial,
+ * considerando o plano: rentabilidade anual, aporte mensal (com aumento anual)
+ * e inflação (o alvo é corrigido). Usa a mesma dinâmica de projetar().
+ * Retorna null quando o crescimento líquido não supera o aporte/inflação.
+ */
+export function anosAteMeta(
+  patrimonioAtual: number,
+  alvo: number,
+  plano: PlanoConfig,
+  tetoAnos = 100,
+): number | null {
+  if (alvo <= patrimonioAtual) return 0;
+  const taxaRealAnual = Math.max(0, plano.rentabilidadeAnual - plano.inflacaoAnual) / 100;
+  const taxaMensal = Math.pow(1 + taxaRealAnual, 1 / 12) - 1;
+  const aumentoMensal = Math.pow(1 + plano.aumentoAnual / 100, 1 / 12) - 1;
+
+  let patrimonio = patrimonioAtual;
+  let aporte = plano.aporteMensal;
+  const alvoProjetado = alvo * Math.pow(1 + plano.inflacaoAnual / 100, 0);
+
+  for (let i = 1; i <= tetoAnos * 12; i++) {
+    if (patrimonio >= alvoProjetado) return (i - 1) / 12;
+    patrimonio = patrimonio * (1 + taxaMensal) + aporte;
+    aporte = aporte * (1 + aumentoMensal);
+  }
+  return null;
+}
+
 /** Rótulos exibidos para cada categoria, alinhados às classes da carteira. */
 export const rotuloCategoria: Record<string, string> = {
-  "Ações": "Ações",
+  Ações: "Ações",
   "Fundos Imobiliários": "FIIs (Fundos Imobiliários)",
   "Tesouro Direto": "Tesouro Direto (Renda Fixa)",
   BDR: "BDRs",

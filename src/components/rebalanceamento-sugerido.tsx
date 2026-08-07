@@ -2,7 +2,14 @@ import { useMemo } from "react";
 import { ArrowDownRight, ArrowUpRight, CheckCircle2, Sparkles } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { brl, classeDoAtivo, pct, valorAtual } from "@/lib/portfolio";
@@ -37,8 +44,13 @@ function distribuirNaClasse(ativos: Ativo[], valor: number) {
  * Plano de rebalanceamento: compara alocação atual x alvo e sugere
  * as ordens necessárias, considerando um novo aporte opcional.
  */
-export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
-  const aporte = 0;
+export function RebalanceamentoSugerido({
+  carteira,
+  aporte = 0,
+}: {
+  carteira: Ativo[];
+  aporte?: number;
+}) {
   const { alvo: alocacaoIdeal } = useAlocacaoAlvo();
 
   const { ordens, totalAtual, totalFuturo, semVenda } = useMemo(() => {
@@ -115,14 +127,16 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
             <span>
               {aporte > 0 ? (
                 <>
-                  Aportando <strong className="text-foreground">{brl(aporte, 2)}</strong>, a carteira passa a{" "}
-                  <strong className="text-foreground">{brl(totalFuturo, 2)}</strong>. As ordens abaixo direcionam o
-                  novo dinheiro para as classes abaixo do alvo — {semVenda ? "sem precisar vender nada" : "sem vendas"}.
+                  Aportando <strong className="text-foreground">{brl(aporte, 2)}</strong>, a
+                  carteira passa a{" "}
+                  <strong className="text-foreground">{brl(totalFuturo, 2)}</strong>. As ordens
+                  abaixo direcionam o novo dinheiro para as classes abaixo do alvo —{" "}
+                  {semVenda ? "sem precisar vender nada" : "sem vendas"}.
                 </>
               ) : (
                 <>
-                  Sem aporte novo, o equilíbrio exige realocar entre classes. Informe um valor de aporte ao lado para
-                  ver um plano só de compras.
+                  Sem aporte novo, o equilíbrio exige realocar entre classes. Informe um valor de
+                  aporte ao lado para ver um plano só de compras.
                 </>
               )}
             </span>
@@ -130,7 +144,8 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
 
           {equilibrada ? (
             <p className="flex items-center justify-center gap-2 py-8 text-sm text-success">
-              <CheckCircle2 className="size-8!" /> Carteira dentro do alvo — nenhuma ordem necessária.
+              <CheckCircle2 className="size-8!" /> Carteira dentro do alvo — nenhuma ordem
+              necessária.
             </p>
           ) : (
             <div className="overflow-x-auto">
@@ -151,7 +166,10 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
                       <TableRow key={o.classe}>
                         <TableCell className="font-medium whitespace-pre-line">
                           <span className="inline-flex items-center gap-2">
-                            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: corClasse(o.classe) }} />
+                            <span
+                              className="size-2.5 shrink-0 rounded-full"
+                              style={{ backgroundColor: corClasse(o.classe) }}
+                            />
                             {o.classe}
                           </span>
                         </TableCell>
@@ -176,7 +194,9 @@ export function RebalanceamentoSugerido({ carteira }: { carteira: Ativo[] }) {
                         >
                           {pct(o.desvio)}
                         </TableCell>
-                        <TableCell className="num text-right font-semibold">{brl(o.valor, 2)}</TableCell>
+                        <TableCell className="num text-right font-semibold">
+                          {brl(o.valor, 2)}
+                        </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
                           {o.ativos.length > 0
                             ? o.ativos.map((a) => `${a.ticker} ${brl(a.valor, 2)}`).join(" · ")
