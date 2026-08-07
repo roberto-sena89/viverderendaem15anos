@@ -705,6 +705,14 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
 }
 
 /* Rótulo em caixa alta (KPIs, cabeçalhos de bloco, legendas). */
+/* Aba de navegação: mesmo tamanho e peso em todos os breakpoints. */
+@utility t-aba {
+  font-size: var(--fs-label);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-body);
+  font-weight: var(--fw-medium);
+}
+
 @utility t-label {
   font-size: var(--fs-label);
   line-height: var(--lh-snug);
@@ -758,23 +766,26 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
 }
 
 /* Padrões globais coerentes com a escala */
-h1 {
-  font-size: var(--fs-h1);
-  line-height: var(--lh-tight);
-  font-weight: var(--fw-semibold);
+@layer base {
+  h1 {
+    font-size: var(--fs-h1);
+    line-height: var(--lh-tight);
+    font-weight: var(--fw-semibold);
+  }
+
+  h2 {
+    font-size: var(--fs-h2);
+    line-height: var(--lh-snug);
+    font-weight: var(--fw-semibold);
+  }
+
+  h3 {
+    font-size: var(--fs-h3);
+    line-height: var(--lh-snug);
+    font-weight: var(--fw-semibold);
+  }
 }
 
-h2 {
-  font-size: var(--fs-h2);
-  line-height: var(--lh-snug);
-  font-weight: var(--fw-semibold);
-}
-
-h3 {
-  font-size: var(--fs-h3);
-  line-height: var(--lh-snug);
-  font-weight: var(--fw-semibold);
-}
 
 /* Tooltips e popovers: corpo compacto e números tabulares. */
 [data-slot="tooltip-content"],
