@@ -133,7 +133,7 @@ const capitalParaRenda = (alvoMensal: number, dyPct: number) => (alvoMensal * 12
 const formatarReais = (valor: number) => reais.format(valor);
 
 /** Renda passiva de exemplo com dividend yields atuais do mercado. */
-function BlocoRendaHoje({ atualizadoEm }: { atualizadoEm: string | null }) {
+function BlocoRendaHoje() {
   const { data } = useQuery({
     queryKey: ["dados-vivos-conteudo"],
     queryFn: () => dadosVivosConteudo(),
@@ -172,10 +172,10 @@ function BlocoRendaHoje({ atualizadoEm }: { atualizadoEm: string | null }) {
           </div>
         ))}
       </div>
-      {atualizadoEm && (
+      {data?.atualizadoEm && (
         <p className="mt-4 text-xs text-muted-foreground">
-          Dividend yields médios do mercado em {dataCurta(atualizadoEm)}. Rendimentos passados não
-          garantem resultados futuros.
+          Dividend yields médios do mercado em {dataCurta(data.atualizadoEm)}. Rendimentos passados
+          não garantem resultados futuros.
         </p>
       )}
     </section>
@@ -229,7 +229,7 @@ function ConteudoPage() {
           </p>
           <p className="mt-5 text-lg text-muted-foreground">{conteudo.intro}</p>
 
-          <BlocoRendaHoje atualizadoEm={conteudo.atualizadoEm} />
+          <BlocoRendaHoje />
 
           <section className="mt-10 space-y-10">
             {conteudo.secoes.map((secao) => (
