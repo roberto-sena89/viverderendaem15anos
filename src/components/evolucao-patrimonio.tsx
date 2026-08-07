@@ -779,15 +779,20 @@ export function EvolucaoPatrimonio() {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="rotulo"
-                tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                tick={
+                  <TickEixoX
+                    angulo={granularidade === "mensal" && dadosGrafico.length > 10 ? -35 : 0}
+                    ancora={granularidade === "mensal" && dadosGrafico.length > 10 ? "end" : "middle"}
+                    serie={dadosGrafico}
+                  />
+                }
                 tickLine={false}
                 axisLine={{ stroke: "var(--color-border)" }}
                 interval={0}
-                angle={granularidade === "mensal" && dadosGrafico.length > 10 ? -35 : 0}
-                textAnchor={granularidade === "mensal" && dadosGrafico.length > 10 ? "end" : "middle"}
                 height={granularidade === "mensal" && dadosGrafico.length > 10 ? 48 : 28}
                 tickMargin={8}
               />
+
 
               <YAxis
                 tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
