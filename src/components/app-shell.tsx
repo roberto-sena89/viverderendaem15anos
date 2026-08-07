@@ -15,6 +15,7 @@ import {
   Newspaper,
   Bot,
   LogOut,
+  Search,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
@@ -42,6 +43,7 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/planejador": LineChart,
   "/metas": Target,
   "/chat": Bot,
+  "/seo": Search,
 };
 
 const grupos = ["Carteira", "MERCADO", "Planejamento"].map((titulo) => ({
