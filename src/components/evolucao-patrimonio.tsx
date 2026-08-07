@@ -901,6 +901,34 @@ export function EvolucaoPatrimonio() {
           </div>
         </div>
 
+        {/* Alternativa textual do gráfico para leitores de tela: todos os valores,
+            inclusive quando os rótulos das barras estão ocultos. */}
+        <table className="sr-only">
+          <caption>
+            Evolução de patrimônio: valores de patrimônio, total investido e ganho de capital por período.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Período</th>
+              <th scope="col">Patrimônio</th>
+              <th scope="col">Total investido</th>
+              <th scope="col">Ganho de capital</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dadosGrafico.map((p) => (
+              <tr key={p.id ?? p.rotulo}>
+                <th scope="row">{p.rotuloCompleto ?? p.rotulo}</th>
+                <td>{brl(Number(p.patrimonio ?? 0), 2)}</td>
+                <td>{brl(Number(p.aportadoAcum ?? 0), 2)}</td>
+                <td>{brl(Number(p.patrimonio ?? 0) - Number(p.aportadoAcum ?? 0), 2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+
+
 
 
       </Panel>
