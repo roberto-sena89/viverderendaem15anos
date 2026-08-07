@@ -173,8 +173,9 @@ function TooltipCategoria({ active, payload }: { active?: boolean; payload?: any
 
 
 /**
- * Tick do eixo X com tooltip nativo (<title>): mostra o rótulo completo e os
- * valores das barras daquele período, mesmo quando os rótulos estão ocultos.
+ * Tick do eixo X acessível: tooltip nativo (<title>) no mouse, foco por teclado
+ * (Tab) com anel visível e rótulo ARIA com todos os valores do período — mesmo
+ * quando os rótulos das barras estão ocultos por excesso de períodos.
  */
 function TickEixoX({
   x,
@@ -189,26 +190,49 @@ function TickEixoX({
   payload?: { value?: string };
   angulo: number;
   ancora: "end" | "middle";
-  serie: Array<{ rotulo?: string; rotuloCompleto?: string; patrimonio?: number; aportadoAcum?: number }>;
+  serie: Array<{ rotulo?: string; titulo?: string; patrimonio?: number; aportadoAcum?: number }>;
 }) {
+  const [focado, setFocado] = useState(false);
   const rotulo = String(payload?.value ?? "");
   const ponto = serie.find((p) => p.rotulo === rotulo);
   const patrimonio = Number(ponto?.patrimonio ?? 0);
   const investido = Number(ponto?.aportadoAcum ?? 0);
-  const titulo = ponto
-    ? `${ponto.rotuloCompleto ?? rotulo}\nPatrimônio: ${brl(patrimonio, 2)}\nTotal investido: ${brl(investido, 2)}\nGanho de capital: ${brl(patrimonio - investido, 2)}`
+  const descricao = ponto
+    ? `${ponto.titulo ?? rotulo}. Patrimônio: ${brl(patrimonio, 2)}. Total investido: ${brl(investido, 2)}. Ganho de capital: ${brl(patrimonio - investido, 2)}.`
     : rotulo;
+  const titulo = descricao.replace(/\. /g, "\n");
+  const largura = Math.max(36, rotulo.length * 7 + 12);
 
   return (
-    <g transform={`translate(${x ?? 0},${y ?? 0})`}>
+    <g
+      transform={`translate(${x ?? 0},${y ?? 0})`}
+      tabIndex={0}
+      role="img"
+      aria-label={descricao}
+      onFocus={() => setFocado(true)}
+      onBlur={() => setFocado(false)}
+      style={{ outline: "none" }}
+    >
       <title>{titulo}</title>
+      {focado ? (
+        <rect
+          x={ancora === "end" ? -largura : -largura / 2}
+          y={2}
+          width={largura}
+          height={18}
+          rx={4}
+          fill="var(--color-muted)"
+          stroke="var(--color-ring)"
+          strokeWidth={2}
+        />
+      ) : null}
       <text
         x={0}
         y={0}
         dy={12}
         textAnchor={ancora}
         transform={`rotate(${angulo})`}
-        fill="var(--color-muted-foreground)"
+        fill={focado ? "var(--color-foreground)" : "var(--color-muted-foreground)"}
         fontSize={11}
       >
         {rotulo}
@@ -216,6 +240,7 @@ function TickEixoX({
     </g>
   );
 }
+
 
 /** Tooltip com destaque da série sob o cursor, variação mês a mês e ganho acumulado. */
 
@@ -875,6 +900,34 @@ export function EvolucaoPatrimonio() {
           </ResponsiveContainer>
           </div>
         </div>
+
+        {/* Alternativa textual do gráfico para leitores de tela: todos os valores,
+            inclusive quando os rótulos das barras estão ocultos. */}
+        <table className="sr-only">
+          <caption>
+            Evolução de patrimônio: valores de patrimônio, total investido e ganho de capital por período.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Período</th>
+              <th scope="col">Patrimônio</th>
+              <th scope="col">Total investido</th>
+              <th scope="col">Ganho de capital</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dadosGrafico.map((p) => (
+              <tr key={p.id ?? p.rotulo}>
+                <th scope="row">{p.titulo ?? p.rotulo}</th>
+                <td>{brl(Number(p.patrimonio ?? 0), 2)}</td>
+                <td>{brl(Number(p.aportadoAcum ?? 0), 2)}</td>
+                <td>{brl(Number(p.patrimonio ?? 0) - Number(p.aportadoAcum ?? 0), 2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+
 
 
 
