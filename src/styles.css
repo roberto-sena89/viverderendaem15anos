@@ -11,8 +11,11 @@
   font-style: normal;
   font-display: swap;
   font-weight: 200 800;
-  src: url("@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
@@ -20,8 +23,11 @@
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
@@ -29,10 +35,12 @@
   font-style: normal;
   font-display: swap;
   font-weight: 400 800;
-  src: url("@fontsource-variable/rethink-sans/files/rethink-sans-latin-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("@fontsource-variable/rethink-sans/files/rethink-sans-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-
 
 @custom-variant dark (&:is(.dark *));
 
@@ -73,10 +81,11 @@
   --text-base--line-height: 1.55rem;
 
   --font-sans: "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Manrope Variable", "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-brand: "Rethink Sans Variable", "Rethink Sans", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    "Manrope Variable", "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-brand:
+    "Rethink Sans Variable", "Rethink Sans", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-hero: "Sora", "Manrope Variable", "Manrope", ui-sans-serif, system-ui, sans-serif;
-
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -149,7 +158,6 @@
   --color-positive: var(--success);
   --color-negative: var(--destructive);
 }
-
 
 :root {
   --radius: 0.875rem;
@@ -271,12 +279,7 @@
   --leading-snug-ds: var(--lh-snug);
   --leading-normal-ds: var(--lh-normal);
   --leading-relaxed-ds: var(--lh-relaxed);
-
-
 }
-
-
-
 
 /* Escala de gutter/tipografia por breakpoint: 320 → 1920 */
 @media (min-width: 641px) {
@@ -308,9 +311,7 @@
   }
 }
 
-
 :root {
-
   --background: oklch(0.995 0.002 145);
   --foreground: oklch(0.16 0.012 160);
   --card: oklch(1 0 0);
@@ -378,8 +379,10 @@
     color-mix(in oklab, var(--primary) 6%, transparent),
     transparent
   );
-  --shadow-soft: 0 1px 2px oklch(0.16 0.012 160 / 0.04), 0 8px 24px -12px oklch(0.16 0.012 160 / 0.16);
-  --shadow-lift: 0 2px 4px oklch(0.16 0.012 160 / 0.05), 0 24px 48px -24px oklch(0.16 0.012 160 / 0.28);
+  --shadow-soft:
+    0 1px 2px oklch(0.16 0.012 160 / 0.04), 0 8px 24px -12px oklch(0.16 0.012 160 / 0.16);
+  --shadow-lift:
+    0 2px 4px oklch(0.16 0.012 160 / 0.05), 0 24px 48px -24px oklch(0.16 0.012 160 / 0.28);
   --transition-smooth: 220ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -489,7 +492,6 @@
     transform: translateY(0);
   }
 
-
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -536,8 +538,6 @@
   white-space: nowrap;
 }
 
-
-
 /* Layout padrão das abas: sem overflow horizontal e cartões de altura uniforme */
 main#conteudo > * {
   min-width: 0;
@@ -556,7 +556,6 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
     display: none;
   }
 }
-
 
 @utility text-gradient-brand {
   background-image: var(--gradient-brand);
@@ -608,10 +607,6 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
     animation: none;
   }
 }
-
-
-
-
 
 /* ---------------------------------------------------------------
  * Camada "terminal de dados" — densidade e legibilidade numérica
@@ -786,7 +781,6 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   }
 }
 
-
 /* Tooltips e popovers: corpo compacto e números tabulares. */
 [data-slot="tooltip-content"],
 [data-slot="popover-content"],
@@ -812,7 +806,6 @@ main#conteudo :where([class*="grid-cols"]) > :where(.surface-card, .panel, [data
   font-size: var(--fs-body-sm);
   line-height: var(--lh-normal);
 }
-
 
 @utility chip-pos {
   display: inline-flex;
@@ -894,11 +887,12 @@ table tfoot tr {
   background:
     linear-gradient(to right, var(--color-card) 30%, transparent) left center / 32px 100% no-repeat,
     linear-gradient(to left, var(--color-card) 30%, transparent) right center / 32px 100% no-repeat,
-    radial-gradient(farthest-side at 0 50%, oklch(0 0 0 / 0.22), transparent) left center / 16px 100% no-repeat,
-    radial-gradient(farthest-side at 100% 50%, oklch(0 0 0 / 0.22), transparent) right center / 16px 100% no-repeat;
+    radial-gradient(farthest-side at 0 50%, oklch(0 0 0 / 0.22), transparent) left center / 16px
+      100% no-repeat,
+    radial-gradient(farthest-side at 100% 50%, oklch(0 0 0 / 0.22), transparent) right center / 16px
+      100% no-repeat;
   background-attachment: local, local, scroll, scroll;
 }
-
 
 /* Slider de alocação (input[type=range]) — arraste suave e alvo de toque maior */
 .range-alocacao {
@@ -947,7 +941,9 @@ table tfoot tr {
   background: var(--color-primary);
   border: 2px solid var(--color-background);
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .range-alocacao::-moz-range-thumb {
@@ -957,7 +953,9 @@ table tfoot tr {
   background: var(--color-primary);
   border: 2px solid var(--color-background);
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .range-alocacao:hover::-webkit-slider-thumb,
