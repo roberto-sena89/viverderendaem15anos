@@ -37,7 +37,6 @@ import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authentic
 import { Route as AuthenticatedRadarRouteImport } from './routes/_authenticated/radar'
 import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
-import { Route as AuthenticatedSeoRouteImport } from './routes/_authenticated/seo'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.melhores-livros-financas'
 import { Route as ConteudoSlugRouteImport } from './routes/conteudo/$slug'
@@ -193,11 +192,6 @@ const AuthenticatedRebalanceamentoRoute =
     path: '/rebalanceamento',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedSeoRoute = AuthenticatedSeoRouteImport.update({
-  id: '/seo',
-  path: '/seo',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -276,7 +270,6 @@ export interface FileRoutesByFullPath {
   '/radar': typeof AuthenticatedRadarRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
-  '/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
@@ -315,7 +308,6 @@ export interface FileRoutesByTo {
   '/radar': typeof AuthenticatedRadarRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
-  '/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
@@ -356,7 +348,6 @@ export interface FileRoutesById {
   '/_authenticated/radar': typeof AuthenticatedRadarRoute
   '/_authenticated/rankings': typeof AuthenticatedRankingsRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
-  '/_authenticated/seo': typeof AuthenticatedSeoRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
@@ -397,7 +388,6 @@ export interface FileRouteTypes {
     | '/radar'
     | '/rankings'
     | '/rebalanceamento'
-    | '/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
     | '/conteudo/$slug'
@@ -436,7 +426,6 @@ export interface FileRouteTypes {
     | '/radar'
     | '/rankings'
     | '/rebalanceamento'
-    | '/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
     | '/conteudo/$slug'
@@ -476,7 +465,6 @@ export interface FileRouteTypes {
     | '/_authenticated/radar'
     | '/_authenticated/rankings'
     | '/_authenticated/rebalanceamento'
-    | '/_authenticated/seo'
     | '/api/chat'
     | '/blog/melhores-livros-financas'
     | '/conteudo/$slug'
@@ -712,13 +700,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRebalanceamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/seo': {
-      id: '/_authenticated/seo'
-      path: '/seo'
-      fullPath: '/seo'
-      preLoaderRoute: typeof AuthenticatedSeoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -800,7 +781,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRadarRoute: typeof AuthenticatedRadarRoute
   AuthenticatedRankingsRoute: typeof AuthenticatedRankingsRoute
   AuthenticatedRebalanceamentoRoute: typeof AuthenticatedRebalanceamentoRoute
-  AuthenticatedSeoRoute: typeof AuthenticatedSeoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -818,7 +798,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRadarRoute: AuthenticatedRadarRoute,
   AuthenticatedRankingsRoute: AuthenticatedRankingsRoute,
   AuthenticatedRebalanceamentoRoute: AuthenticatedRebalanceamentoRoute,
-  AuthenticatedSeoRoute: AuthenticatedSeoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
