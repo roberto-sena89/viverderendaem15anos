@@ -60,10 +60,16 @@ function BarraPercentil({ percentil }: { percentil: number | null }) {
 
 /** Distância até a mínima de 52 semanas: 0% = na mínima (oportunidade). */
 function Distancia52s({ pct }: { pct: number | null }) {
-  if (pct === null) return <span className="text-xs text-muted-foreground">—</span>;
+  if (pct === null)
+    return <span className="block text-center text-xs text-muted-foreground">—</span>;
   const cor = pct <= 5 ? "text-emerald-600" : pct <= 20 ? "text-sky-600" : "text-muted-foreground";
-  return <span className={`text-xs tabular-nums ${cor}`}>−{pct.toFixed(1)}%</span>;
+  return (
+    <span className={`block text-center text-xs tabular-nums ${cor}`}>
+      −{pct.toFixed(1).replace(".", ",")}%
+    </span>
+  );
 }
+
 
 /** Noticiário recente do ativo: chip com contagem e título das últimas manchetes. */
 function NoticiasChip({ noticias }: { noticias: NoticiaResumo[] }) {
@@ -115,7 +121,10 @@ export function TabelaRadar({
             <TableHead className="w-[8%] whitespace-nowrap text-right">DY 12m</TableHead>
             <TableHead className="w-[8%] whitespace-nowrap text-right">P/VPA</TableHead>
             <TableHead className="w-[14%]">Histórico</TableHead>
-            <TableHead className="hidden w-[8%] whitespace-nowrap xl:table-cell">Mín. 52s</TableHead>
+            <TableHead className="hidden w-[8%] whitespace-nowrap text-center xl:table-cell">
+              Mín. 52s
+            </TableHead>
+
             <TableHead className="hidden w-[8%] lg:table-cell">Notícias</TableHead>
             <TableHead className="w-[10%] pr-4">Sinal</TableHead>
           </TableRow>
@@ -166,7 +175,7 @@ export function TabelaRadar({
                   ) : null}
                 </div>
               </TableCell>
-              <TableCell className="hidden xl:table-cell">
+              <TableCell className="hidden text-center xl:table-cell">
                 <Distancia52s pct={l.posicao?.distMinima52sPct ?? null} />
               </TableCell>
               <TableCell className="hidden lg:table-cell">
