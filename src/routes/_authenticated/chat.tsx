@@ -36,6 +36,7 @@ import { gerarRelatorioAuditoria } from "@/lib/relatorio.functions";
 import { gerarPdfRelatorioAuditoria } from "@/lib/relatorio-auditoria-pdf";
 import { PERFIS, usePerfilInvestidor, type PerfilInvestidor } from "@/lib/perfil-investidor";
 import logoIA from "@/assets/tecnico-ia.png";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/chat")({
   component: ChatPage,
@@ -57,7 +58,7 @@ export const Route = createFileRoute("/_authenticated/chat")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/chat" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/chat") }],
   }),
 });
 

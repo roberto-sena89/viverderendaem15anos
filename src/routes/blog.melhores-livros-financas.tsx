@@ -11,12 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import ogImagem from "@/assets/og-blog-livros.jpg.asset.json";
+import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 
 const TITLE = "Os Melhores Livros de Finanças e Investimentos para 2026";
 const DESCRIPTION =
   "Comparativo dos melhores livros de finanças e investimentos: comportamento, renda passiva, análise fundamentalista e técnica, para todos os níveis.";
-const URL = "https://viverderendaem15anos.lovable.app/blog/melhores-livros-financas";
-const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
+const URL = urlAbsoluta("/blog/melhores-livros-financas");
+const OG_IMAGE = `${SITE_URL}${ogImagem.url}`;
 
 interface Livro {
   titulo: string;
@@ -254,7 +255,7 @@ export const Route = createFileRoute("/blog/melhores-livros-financas")({
               "@type": "ListItem",
               position: 1,
               name: "Início",
-              item: "https://viverderendaem15anos.lovable.app/",
+              item: urlAbsoluta("/"),
             },
             { "@type": "ListItem", position: 2, name: "Melhores livros de finanças", item: URL },
           ],

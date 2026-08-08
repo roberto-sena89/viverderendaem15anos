@@ -38,6 +38,7 @@ import {
   resumoCarteira,
   type ProjecaoInput,
 } from "@/lib/portfolio";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/planejador")({
   head: () => ({
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/_authenticated/planejador")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/planejador" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/planejador") }],
   }),
   component: Planejador,
 });

@@ -11,10 +11,10 @@ import {
   conteudosRelacionados,
   type ConteudoPublico,
 } from "@/lib/conteudo-publico";
+import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 import ogImagem from "@/assets/og-home.jpg.asset.json";
 
-const SITE = "https://viverderendaem15anos.lovable.app";
-const OG_IMAGE = `${SITE}${ogImagem.url}`;
+const OG_IMAGE = `${SITE_URL}${ogImagem.url}`;
 
 export const Route = createFileRoute("/conteudo/$slug")({
   loader: async ({ params, context }): Promise<ConteudoPublico> => {
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/conteudo/$slug")({
   head: ({ loaderData }) => {
     const conteudo = loaderData;
     if (!conteudo) return {};
-    const url = `${SITE}${caminhoConteudo(conteudo.slug)}`;
+    const url = urlAbsoluta(caminhoConteudo(conteudo.slug));
     return {
       meta: [
         { title: conteudo.titulo },
@@ -93,13 +93,13 @@ export const Route = createFileRoute("/conteudo/$slug")({
                 "@type": "ListItem",
                 position: 1,
                 name: "Início",
-                item: `${SITE}/`,
+                item: `${SITE_URL}/`,
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Conteúdo",
-                item: `${SITE}/#conteudo`,
+                item: `${SITE_URL}/#conteudo`,
               },
               {
                 "@type": "ListItem",

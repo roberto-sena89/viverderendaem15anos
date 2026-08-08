@@ -16,6 +16,7 @@ import { PainelPanoramaMercado } from "@/components/painel-panorama-mercado";
 import { Button } from "@/components/ui/button";
 import { rankingsAtivos } from "@/lib/market.functions";
 import type { ItemRanking, TipoRanking } from "@/lib/market.server";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/rankings")({
   component: RankingsPage,
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/rankings")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/rankings" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/rankings") }],
   }),
 });
 

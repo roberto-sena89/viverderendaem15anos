@@ -56,6 +56,7 @@ import {
   resumoCarteira,
   valorInvestido,
 } from "@/lib/portfolio";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/dividendos")({
   head: () => ({
@@ -73,7 +74,7 @@ export const Route = createFileRoute("/_authenticated/dividendos")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/dividendos" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/dividendos") }],
   }),
   component: DividendosPage,
 });

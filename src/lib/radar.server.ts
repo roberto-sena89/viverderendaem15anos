@@ -14,6 +14,7 @@
 import { buscarHistorico, type Historico } from "@/lib/market.server";
 import { posicaoPercentil, type SinalRadar } from "@/lib/radar-base";
 import type { Json } from "@/integrations/supabase/types";
+import { SITE_URL } from "@/lib/seo";
 
 export type PosicaoHistorica = {
   ticker: string;
@@ -381,8 +382,7 @@ export async function buscarFatosExternos(ticker: string, nome: string): Promise
     const res = await fetch(url, {
       headers: {
         Accept: "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-        "User-Agent":
-          "Mozilla/5.0 (compatible; ViverDeRenda/1.0; +https://viverderendaem15anos.lovable.app)",
+        "User-Agent": `Mozilla/5.0 (compatible; ViverDeRenda/1.0; +${SITE_URL})`,
       },
       signal: controller.signal,
     });

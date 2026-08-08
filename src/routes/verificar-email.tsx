@@ -4,6 +4,7 @@ import { MailCheck, Loader2, RefreshCw, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/verificar-email")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/verificar-email")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/verificar-email" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/verificar-email") }],
   }),
   component: VerifyEmailPage,
 });

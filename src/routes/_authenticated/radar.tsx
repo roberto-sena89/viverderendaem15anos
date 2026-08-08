@@ -33,6 +33,7 @@ import {
   Search,
   SlidersHorizontal,
 } from "lucide-react";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/radar")({
   head: () => ({
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/_authenticated/radar")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/radar" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/radar") }],
   }),
   component: PaginaRadar,
 });

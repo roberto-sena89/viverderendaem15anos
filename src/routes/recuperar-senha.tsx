@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/recuperar-senha")({
   head: () => ({
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/recuperar-senha")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/recuperar-senha" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/recuperar-senha") }],
   }),
   component: RecuperarSenhaPage,
 });

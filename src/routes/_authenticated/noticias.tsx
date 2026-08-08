@@ -62,6 +62,7 @@ import {
   permissaoPush,
   registrarAlerta,
 } from "@/lib/alertas-historico";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/noticias")({
   head: () => ({
@@ -82,7 +83,7 @@ export const Route = createFileRoute("/_authenticated/noticias")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/noticias" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/noticias") }],
   }),
   component: PaginaNoticias,
 });

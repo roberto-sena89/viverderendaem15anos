@@ -37,6 +37,7 @@ import { useAportes, useAtivos, useExcluirAporte } from "@/lib/data";
 import { brl, resumoCarteira, type Aporte } from "@/lib/portfolio";
 import { gerarRelatorioCarteira } from "@/lib/relatorio-carteira";
 import { cn } from "@/lib/utils";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/historico-aportes")({
   head: () => ({
@@ -54,9 +55,7 @@ export const Route = createFileRoute("/_authenticated/historico-aportes")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [
-      { rel: "canonical", href: "https://viverderendaem15anos.lovable.app/historico-aportes" },
-    ],
+    links: [{ rel: "canonical", href: urlAbsoluta("/historico-aportes") }],
   }),
   component: HistoricoAportesPage,
 });

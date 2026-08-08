@@ -6,14 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/theme";
 import ogImagem from "@/assets/og-quanto-rende-1-milhao.jpg.asset.json";
+import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 
 const TITLE = "Quanto Rende 1 Milhão por Mês? Poupança x Tesouro Selic x FIIs";
 const OG_TITLE = "Quanto rende 1 milhão por mês? Veja a comparação";
 
 const DESCRIPTION =
   "Quanto rende R$ 1 milhão por mês na poupança, no Tesouro Selic e em FIIs: compare a renda passiva líquida e a taxa de retirada segura.";
-const URL = "https://viverderendaem15anos.lovable.app/quanto-rende-1-milhao-por-mes";
-const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
+const URL = urlAbsoluta("/quanto-rende-1-milhao-por-mes");
+const OG_IMAGE = `${SITE_URL}${ogImagem.url}`;
 
 const faqs = [
   {
@@ -94,7 +95,7 @@ export const Route = createFileRoute("/quanto-rende-1-milhao-por-mes")({
               "@type": "ListItem",
               position: 1,
               name: "Início",
-              item: "https://viverderendaem15anos.lovable.app/",
+              item: urlAbsoluta("/"),
             },
             { "@type": "ListItem", position: 2, name: "Quanto rende 1 milhão por mês", item: URL },
           ],

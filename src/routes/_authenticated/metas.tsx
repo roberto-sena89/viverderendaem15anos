@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useAtivos, useCriarMeta, useExcluir, useMetas, usePlano } from "@/lib/data";
 import { anosAteMeta, brl, metasPadrao, pct, resumoCarteira } from "@/lib/portfolio";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/metas")({
   head: () => ({
@@ -35,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/metas")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/metas" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/metas") }],
   }),
   component: MetasPage,
 });

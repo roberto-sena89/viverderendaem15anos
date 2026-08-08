@@ -20,6 +20,7 @@ import type { DiagnosticoB3, ResultadoB3 } from "@/lib/b3-import";
 import { useImportarB3 } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/importar")({
   head: () => ({
@@ -32,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/importar")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/importar" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/importar") }],
   }),
   component: ImportarPage,
 });

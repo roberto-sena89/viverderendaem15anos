@@ -26,6 +26,7 @@ import {
   idadeMs,
   lerCacheNoticias,
 } from "@/lib/noticias-cache.server";
+import { SITE_URL } from "@/lib/seo";
 
 export const CATEGORIAS_NOTICIA: CategoriaNoticia[] = [
   "Mercados",
@@ -290,8 +291,7 @@ async function buscarFeed(fonte: FonteRss, timeoutMs = 9000): Promise<Noticia[]>
     const res = await fetch(fonte.url, {
       headers: {
         Accept: "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-        "User-Agent":
-          "Mozilla/5.0 (compatible; ViverDeRenda/1.0; +https://viverderendaem15anos.lovable.app)",
+        "User-Agent": `Mozilla/5.0 (compatible; ViverDeRenda/1.0; +${SITE_URL})`,
       },
       signal: controller.signal,
     });

@@ -3,12 +3,13 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
 import ogImagem from "@/assets/og-guia-liberdade.jpg.asset.json";
+import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 
 const TITLE = "Liberdade Financeira: Guia Passo a Passo (2026)";
 const DESCRIPTION =
   "Guia de liberdade financeira: quanto acumular, alocação de ativos, renda passiva com dividendos e o passo a passo para viver de renda.";
-const URL = "https://viverderendaem15anos.lovable.app/guia-liberdade-financeira";
-const OG_IMAGE = `https://viverderendaem15anos.lovable.app${ogImagem.url}`;
+const URL = urlAbsoluta("/guia-liberdade-financeira");
+const OG_IMAGE = `${SITE_URL}${ogImagem.url}`;
 
 export const Route = createFileRoute("/guia-liberdade-financeira")({
   head: () => ({

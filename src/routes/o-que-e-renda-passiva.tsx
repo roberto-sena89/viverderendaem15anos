@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/theme";
+import { urlAbsoluta } from "@/lib/seo";
 
 const TITLE = "Renda Passiva: O Que É, Como Funciona e Quanto Investir";
 const OG_TITLE = "Renda passiva: o que é e quanto você precisa investir";
 const DESCRIPTION =
   "O que é renda passiva, quais ativos geram renda mensal (FIIs, dividendos, Tesouro) e quanto você precisa investir para viver de renda. Com simulador.";
-const URL = "https://viverderendaem15anos.lovable.app/o-que-e-renda-passiva";
+const URL = urlAbsoluta("/o-que-e-renda-passiva");
 
 const faqs = [
   {
@@ -86,7 +87,7 @@ export const Route = createFileRoute("/o-que-e-renda-passiva")({
               "@type": "ListItem",
               position: 1,
               name: "Início",
-              item: "https://viverderendaem15anos.lovable.app/",
+              item: urlAbsoluta("/"),
             },
             { "@type": "ListItem", position: 2, name: "O que é renda passiva", item: URL },
           ],

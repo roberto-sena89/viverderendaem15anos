@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { iniciarAnalytics } from "@/lib/analytics";
+import { SITE_URL } from "@/lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -136,25 +137,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@graph": [
             {
               "@type": "Organization",
-              "@id": "https://viverderendaem15anos.lovable.app/#organization",
+              "@id": `${SITE_URL}/#organization`,
               name: "Viver de Renda em 15 Anos",
-              url: "https://viverderendaem15anos.lovable.app/",
+              url: `${SITE_URL}/`,
               logo: {
                 "@type": "ImageObject",
-                url: `https://viverderendaem15anos.lovable.app${logoIcone}`,
+                url: `${SITE_URL}${logoIcone}`,
               },
               description:
                 "Plataforma de controle de investimentos, dividendos e planejamento da independência financeira: carteira consolidada, dividendos, rebalanceamento e projeção.",
             },
             {
               "@type": "WebSite",
-              "@id": "https://viverderendaem15anos.lovable.app/#website",
+              "@id": `${SITE_URL}/#website`,
               name: "Viver de Renda em 15 Anos",
-              url: "https://viverderendaem15anos.lovable.app/",
+              url: `${SITE_URL}/`,
               inLanguage: "pt-BR",
               description:
                 "Controle de carteira, aportes e dividendos, simulador de aposentadoria e planejador da independência financeira com dados de mercado em tempo real.",
-              publisher: { "@id": "https://viverderendaem15anos.lovable.app/#organization" },
+              publisher: { "@id": `${SITE_URL}/#organization` },
             },
           ],
         }),

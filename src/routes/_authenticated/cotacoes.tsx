@@ -29,6 +29,7 @@ import {
 } from "@/lib/cotacoes-abas";
 import type { CategoriaMercado } from "@/lib/grade-mercado.functions";
 import { panoramaMercado } from "@/lib/panorama-mercado.functions";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/cotacoes")({
   // Pré-busca o panorama da aba "Visão geral" antes da pintura: na primeira
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/_authenticated/cotacoes")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/cotacoes" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/cotacoes") }],
   }),
   component: Cotacoes,
 });

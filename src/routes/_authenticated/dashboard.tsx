@@ -43,6 +43,7 @@ import {
   resumoCarteira,
   valorAtual,
 } from "@/lib/portfolio";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -59,7 +60,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/dashboard" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/dashboard") }],
   }),
   component: Dashboard,
 });

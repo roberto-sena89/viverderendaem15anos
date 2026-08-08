@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemeToggle } from "@/components/theme";
 import { trackEvent } from "@/lib/analytics";
+import { urlAbsoluta } from "@/lib/seo";
 import investidorImg from "@/assets/investidor-computador.jpg";
 import logoIcone from "@/assets/logo-icone.webp";
 
@@ -52,9 +53,9 @@ export const Route = createFileRoute("/auth")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:url", content: "https://viverderendaem15anos.lovable.app/auth" },
+      { property: "og:url", content: urlAbsoluta("/auth") },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/auth" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/auth") }],
   }),
   component: AuthPage,
 });

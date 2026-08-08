@@ -4,6 +4,7 @@ import { EvolucaoPatrimonio } from "@/components/evolucao-patrimonio";
 import { AppShell } from "@/components/app-shell";
 import { useAportes } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
+import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/aportes")({
   head: () => ({
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/aportes")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/aportes" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/aportes") }],
   }),
   component: AportesPage,
 });

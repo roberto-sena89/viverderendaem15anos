@@ -23,6 +23,7 @@ import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { formatarNumeroBR, numeroBR } from "@/lib/formato-numero";
 import { brl, classeDoAtivo, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
+import { urlAbsoluta } from "@/lib/seo";
 
 const ATALHOS_APORTE = [500, 1000, 2000, 5000];
 const MAX_APORTE = 10_000_000;
@@ -43,7 +44,7 @@ export const Route = createFileRoute("/_authenticated/rebalanceamento")({
       },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/rebalanceamento" }],
+    links: [{ rel: "canonical", href: urlAbsoluta("/rebalanceamento") }],
   }),
   component: Rebalanceamento,
 });
