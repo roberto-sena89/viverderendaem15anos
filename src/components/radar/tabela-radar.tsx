@@ -179,11 +179,13 @@ export function TabelaRadar({
           ))}
         </TableBody>
       </Table>
+      </div>
       {carregandoPosicoes && (
         <p className="border-t px-4 py-2 text-xs text-muted-foreground">
           Buscando histórico dos ativos visíveis…
         </p>
       )}
     </div>
+
   );
 }
