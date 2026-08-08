@@ -48,7 +48,7 @@ function BarraPercentil({ percentil }: { percentil: number | null }) {
           ? "bg-amber-500"
           : "bg-red-500";
   return (
-    <div className="flex w-28 flex-col gap-1">
+    <div className="flex w-16 shrink-0 flex-col gap-1 sm:w-24">
       <div className="h-1.5 overflow-hidden rounded-full bg-muted">
         <div className={`h-full rounded-full ${cor}`} style={{ width: `${percentil}%` }} />
       </div>
@@ -56,6 +56,7 @@ function BarraPercentil({ percentil }: { percentil: number | null }) {
     </div>
   );
 }
+
 
 /** Distância até a mínima de 52 semanas: 0% = na mínima (oportunidade). */
 function Distancia52s({ pct }: { pct: number | null }) {
