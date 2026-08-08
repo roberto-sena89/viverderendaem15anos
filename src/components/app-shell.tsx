@@ -18,7 +18,6 @@ import {
   LogOut,
   PanelLeftOpen,
   PanelLeftClose,
-
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SinoAlertas } from "@/components/sino-alertas";
@@ -130,7 +129,6 @@ export function AppShell({
     navigate({ to: "/auth", replace: true, search: { redirect: undefined } });
   }
 
-
   const secaoAtual = secaoPorRota(pathname);
   const grupoAtual = secaoAtual?.grupo ?? "Investidor em 15 anos";
   // O h1 sempre reflete o rótulo da aba selecionada.
@@ -186,11 +184,7 @@ export function AppShell({
           title={recolhida ? "Expandir menu" : "Recolher menu"}
           className={`mb-2 size-8 shrink-0 text-muted-foreground ${recolhida ? "self-center" : "self-end"}`}
         >
-          {recolhida ? (
-            <PanelLeftOpen className="size-4" />
-          ) : (
-            <PanelLeftClose className="size-4" />
-          )}
+          {recolhida ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </Button>
 
         <nav className="scrollbar-none flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain">
@@ -263,7 +257,6 @@ export function AppShell({
           </Button>
         </div>
       </aside>
-
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header

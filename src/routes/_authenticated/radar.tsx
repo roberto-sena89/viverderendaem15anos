@@ -26,7 +26,13 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
 import type { LinhaRadarBase } from "@/lib/radar.server";
-import { ArrowDownWideNarrow, ArrowUpNarrowWide, Radar, Search, SlidersHorizontal } from "lucide-react";
+import {
+  ArrowDownWideNarrow,
+  ArrowUpNarrowWide,
+  Radar,
+  Search,
+  SlidersHorizontal,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/radar")({
   head: () => ({
@@ -156,7 +162,6 @@ function PaginaRadar() {
         });
     }
   }, [linhasCompletas, ordem, direcao]);
-
 
   /** Foco de compra: melhores relações preço/história do universo inteiro. */
   const focoCompra = useMemo(() => {
@@ -433,16 +438,17 @@ function PaginaRadar() {
                 </label>
                 <p className="ml-auto inline-flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
                   <Radar className="size-3.5 shrink-0" aria-hidden />
-                  <span className="truncate">Percentil 0 = menor preço histórico · 100 = maior</span>
+                  <span className="truncate">
+                    Percentil 0 = menor preço histórico · 100 = maior
+                  </span>
                 </p>
               </div>
             </div>
           </section>
 
-
           <TabelaRadar
             linhas={ordenadas}
-            
+
             carregandoPosicoes={carregando}
             aoSelecionar={setSelecionado}
           />
