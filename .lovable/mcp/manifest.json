@@ -5,7 +5,9 @@
   "auth": {
     "type": "oauth",
     "issuer": "https://huyaffyqgrrsgznduwll.supabase.co/auth/v1",
-    "accepted_audiences": ["authenticated"]
+    "accepted_audiences": [
+      "authenticated"
+    ]
   },
   "mcp": {
     "server": {
@@ -133,7 +135,12 @@
               "type": "string"
             }
           },
-          "required": ["ticker", "categoria", "quantidade", "preco"]
+          "required": [
+            "ticker",
+            "categoria",
+            "quantidade",
+            "preco"
+          ]
         },
         "outputSchema": null
       }
