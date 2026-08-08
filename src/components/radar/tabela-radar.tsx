@@ -48,7 +48,7 @@ function BarraPercentil({ percentil }: { percentil: number | null }) {
           ? "bg-amber-500"
           : "bg-red-500";
   return (
-    <div className="flex w-28 flex-col gap-1">
+    <div className="flex w-16 shrink-0 flex-col gap-1 sm:w-24">
       <div className="h-1.5 overflow-hidden rounded-full bg-muted">
         <div className={`h-full rounded-full ${cor}`} style={{ width: `${percentil}%` }} />
       </div>
@@ -56,6 +56,7 @@ function BarraPercentil({ percentil }: { percentil: number | null }) {
     </div>
   );
 }
+
 
 /** Distância até a mínima de 52 semanas: 0% = na mínima (oportunidade). */
 function Distancia52s({ pct }: { pct: number | null }) {
@@ -102,22 +103,24 @@ export function TabelaRadar({
   }
 
   return (
-    <div className="rounded-xl border bg-card">
-      <Table>
+    <div className="w-full max-w-full overflow-hidden rounded-xl border bg-card">
+      <div className="w-full overflow-x-auto">
+      <Table className="w-full min-w-[720px] table-fixed">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="pl-4">Ativo</TableHead>
-            <TableHead className="hidden lg:table-cell">Setor / Tipo</TableHead>
-            <TableHead className="text-right">Preço</TableHead>
-            <TableHead className="text-right">Variação</TableHead>
-            <TableHead className="text-right">DY 12m</TableHead>
-            <TableHead className="text-right">P/VPA</TableHead>
-            <TableHead>Histórico (posição)</TableHead>
-            <TableHead className="hidden xl:table-cell">Mín. 52s</TableHead>
-            <TableHead className="hidden lg:table-cell">Notícias</TableHead>
-            <TableHead className="pr-4">Sinal</TableHead>
+            <TableHead className="w-[26%] min-w-[150px] pl-4">Ativo</TableHead>
+            <TableHead className="hidden w-[14%] lg:table-cell">Setor / Tipo</TableHead>
+            <TableHead className="w-[10%] whitespace-nowrap text-right">Preço</TableHead>
+            <TableHead className="w-[9%] whitespace-nowrap text-right">Variação</TableHead>
+            <TableHead className="w-[8%] whitespace-nowrap text-right">DY 12m</TableHead>
+            <TableHead className="w-[8%] whitespace-nowrap text-right">P/VPA</TableHead>
+            <TableHead className="w-[14%]">Histórico</TableHead>
+            <TableHead className="hidden w-[8%] whitespace-nowrap xl:table-cell">Mín. 52s</TableHead>
+            <TableHead className="hidden w-[8%] lg:table-cell">Notícias</TableHead>
+            <TableHead className="w-[10%] pr-4">Sinal</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {linhas.map((l) => (
             <TableRow key={l.ticker} onClick={() => aoSelecionar(l)} className="cursor-pointer">
@@ -138,8 +141,9 @@ export function TabelaRadar({
                 </div>
               </TableCell>
               <TableCell className="hidden lg:table-cell">
-                <span className="text-xs text-muted-foreground">{l.setor ?? "—"}</span>
+                <span className="block truncate text-xs text-muted-foreground">{l.setor ?? "—"}</span>
               </TableCell>
+
               <TableCell className="text-right tabular-nums">
                 {l.preco !== null ? fmtPreco(l.preco, "BRL") : "—"}
               </TableCell>
@@ -175,11 +179,13 @@ export function TabelaRadar({
           ))}
         </TableBody>
       </Table>
+      </div>
       {carregandoPosicoes && (
         <p className="border-t px-4 py-2 text-xs text-muted-foreground">
           Buscando histórico dos ativos visíveis…
         </p>
       )}
     </div>
+
   );
 }
