@@ -47,6 +47,7 @@ import {
   Download,
   Loader2,
   Radar,
+  RefreshCw,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -134,7 +135,7 @@ function PaginaRadar() {
 
   const analisar = useServerFn(radarAnaliseIA);
 
-  const { data: visao, isPending, isError, refetch } = useRadarVisao(categoria);
+  const { data: visao, isPending, isError, isFetching, refetch } = useRadarVisao(categoria);
   const { data: ativos = [] } = useAtivos();
   const carteiraPorTicker = useMemo(
     () =>
@@ -306,51 +307,79 @@ function PaginaRadar() {
       title="Radar de Oportunidades"
       description="Todas as ações e FIIs da B3 comparados com a própria história — mínimas indicam oportunidade, choques exigem cautela."
     >
-      <Tabs
-        value={categoria}
-        onValueChange={(v) => {
-          setCategoria(v as "acao" | "fii");
-          setFiltroSetor("todos");
-        }}
-      >
-        <TabsList>
-          <TabsTrigger value="acao">Ações</TabsTrigger>
-          <TabsTrigger value="fii">FIIs</TabsTrigger>
-        </TabsList>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Download className="mr-1 size-4 shrink-0" aria-hidden />
-              Exportar
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuLabel>Visão atual (até {ordenadas.length})</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => void exportarVisao("csv")}>CSV</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void exportarVisao("xlsx")}>
-              Excel (XLSX)
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void exportarVisao("pdf")}>PDF</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => void analisarLote()}
-          disabled={lote?.ativo ?? false}
-          title="Analisa o top 20 pelo score do Técnico IA (usado também para o histórico de cada ativo)."
-        >
-          {lote?.ativo ? (
-            <Loader2 className="mr-1 size-4 animate-spin" aria-hidden />
-          ) : (
-            <Sparkles className="mr-1 size-4" aria-hidden />
-          )}
-          {lote?.ativo
-            ? `${lote.atual || "…"} ${lote.processados}/${lote.total}`
-            : "Analisar top 20 com IA"}
-        </Button>
-      </Tabs>
+      <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <Tabs
+            value={categoria}
+            onValueChange={(v) => {
+              setCategoria(v as "acao" | "fii");
+              setFiltroSetor("todos");
+            }}
+          >
+            <TabsList>
+              <TabsTrigger value="acao">Ações</TabsTrigger>
+              <TabsTrigger value="fii">FIIs</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          {visao ? (
+            <Badge variant="secondary" className="h-7 gap-1.5 px-2.5 text-xs font-normal">
+              {visao.contagem.total.toLocaleString("pt-BR")}
+              <span className="text-muted-foreground">
+                {categoria === "acao" ? "ações" : "FIIs"} comparados
+              </span>
+            </Badge>
+          ) : null}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            aria-label="Atualizar dados do radar"
+            title="Atualizar dados do radar"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} aria-hidden />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-9 gap-2">
+                <Download className="size-4 shrink-0" aria-hidden />
+                Exportar
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Visão atual (até {ordenadas.length})</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => void exportarVisao("csv")}>CSV</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void exportarVisao("xlsx")}>
+                Excel (XLSX)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void exportarVisao("pdf")}>PDF</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-2"
+            onClick={() => void analisarLote()}
+            disabled={lote?.ativo ?? false}
+            title="Analisa o top 20 pelo score do Técnico IA (usado também para o histórico de cada ativo)."
+          >
+            {lote?.ativo ? (
+              <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />
+            ) : (
+              <Sparkles className="size-4 shrink-0" aria-hidden />
+            )}
+            {lote?.ativo
+              ? `${lote.atual || "…"} ${lote.processados}/${lote.total}`
+              : "Analisar top 20 com IA"}
+          </Button>
+        </div>
+      </header>
 
       {isPending ? (
         <div className="space-y-3">
