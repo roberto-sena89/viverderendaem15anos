@@ -26,7 +26,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
 import type { LinhaRadarBase } from "@/lib/radar.server";
-import { ArrowDownWideNarrow, ArrowUpNarrowWide, Radar } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUpNarrowWide, Radar, Search, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/radar")({
   head: () => ({
