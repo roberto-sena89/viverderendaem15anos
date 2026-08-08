@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import manropeLatin from "@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url";
+import logoIcone from "@/assets/logo-icone.webp";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -136,15 +137,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "Organization",
               "@id": "https://viverderendaem15anos.lovable.app/#organization",
-              name: "Investidor em 15 Anos",
+              name: "Viver de Renda em 15 Anos",
               url: "https://viverderendaem15anos.lovable.app/",
+              logo: {
+                "@type": "ImageObject",
+                url: `https://viverderendaem15anos.lovable.app${logoIcone}`,
+              },
               description:
-                "Plataforma de controle de investimentos e planejamento financeiro: carteira consolidada, dividendos, rebalanceamento e projeção da independência financeira.",
+                "Plataforma de controle de investimentos, dividendos e planejamento da independência financeira: carteira consolidada, dividendos, rebalanceamento e projeção.",
             },
             {
               "@type": "WebSite",
               "@id": "https://viverderendaem15anos.lovable.app/#website",
-              name: "Investidor em 15 Anos",
+              name: "Viver de Renda em 15 Anos",
               url: "https://viverderendaem15anos.lovable.app/",
               inLanguage: "pt-BR",
               description:
