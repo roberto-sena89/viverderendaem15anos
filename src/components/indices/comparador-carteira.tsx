@@ -1,7 +1,13 @@
 import { useMemo, useState } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { Panel } from "@/components/panel";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { corVariacao, fmtNum } from "@/components/indices/card-indice";
 import type { LinhaIndice } from "@/lib/indices-base";
@@ -14,10 +20,7 @@ import { cn } from "@/lib/utils";
  */
 export function ComparadorCarteira({ linhas }: { linhas: LinhaIndice[] }) {
   const { data: ativos } = useAtivos();
-  const referencias = useMemo(
-    () => linhas.filter((l) => l.variacao12m !== null),
-    [linhas],
-  );
+  const referencias = useMemo(() => linhas.filter((l) => l.variacao12m !== null), [linhas]);
   const [codigo, setCodigo] = useState("IBOV");
   const indice = referencias.find((l) => l.codigo === codigo) ?? referencias[0] ?? null;
 
@@ -63,7 +66,11 @@ export function ComparadorCarteira({ linhas }: { linhas: LinhaIndice[] }) {
         <div className="space-y-3">
           {[
             { rotulo: "Sua carteira", valor: carteira, cor: "bg-primary" },
-            { rotulo: indice ? `${indice.codigo} (12m)` : "Índice", valor: referencia, cor: "bg-muted-foreground/60" },
+            {
+              rotulo: indice ? `${indice.codigo} (12m)` : "Índice",
+              valor: referencia,
+              cor: "bg-muted-foreground/60",
+            },
           ].map((item) => (
             <div key={item.rotulo}>
               <div className="flex items-center justify-between text-sm">
@@ -87,10 +94,16 @@ export function ComparadorCarteira({ linhas }: { linhas: LinhaIndice[] }) {
                 Registre aportes na carteira para comparar sua rentabilidade com o índice.
               </span>
             ) : (
-              <span className={cn("inline-flex items-center gap-1 font-medium", corVariacao(diferenca))}>
-                {diferenca >= 0 ? <ArrowUpRight className="size-4" /> : <ArrowDownRight className="size-4" />}
-                {diferenca >= 0 ? "Sua carteira está à frente" : "Sua carteira está atrás"} do {indice?.codigo} em{" "}
-                {fmtNum(Math.abs(diferenca))} p.p.
+              <span
+                className={cn("inline-flex items-center gap-1 font-medium", corVariacao(diferenca))}
+              >
+                {diferenca >= 0 ? (
+                  <ArrowUpRight className="size-4" />
+                ) : (
+                  <ArrowDownRight className="size-4" />
+                )}
+                {diferenca >= 0 ? "Sua carteira está à frente" : "Sua carteira está atrás"} do{" "}
+                {indice?.codigo} em {fmtNum(Math.abs(diferenca))} p.p.
               </span>
             )}
           </p>

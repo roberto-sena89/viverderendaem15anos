@@ -12,8 +12,6 @@ function LayoutAutenticado() {
   );
 }
 
-
-
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {

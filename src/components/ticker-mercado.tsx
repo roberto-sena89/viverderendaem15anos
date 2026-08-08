@@ -93,7 +93,9 @@ export function TickerMercado() {
         onClick={() => void refetch()}
         aria-live="polite"
         aria-label="Atualizar cotações"
-        title={degradado ? "Sem conexão com a fonte — exibindo últimos dados" : "Atualizar cotações"}
+        title={
+          degradado ? "Sem conexão com a fonte — exibindo últimos dados" : "Atualizar cotações"
+        }
         className="flex shrink-0 items-center gap-1.5 border-l border-border px-3 py-1.5 text-[0.78rem] text-muted-foreground transition-colors hover:bg-sidebar-accent/60"
       >
         {degradado ? (

@@ -42,13 +42,16 @@ export const corVar = (v: number | null | undefined) =>
 /** Nome curto e legível a partir da razão social completa do fundo. */
 export function nomeCurto(l: LinhaFii) {
   const bruto = l.nome
-    .replace(/\s*-?\s*(FUNDO DE INVESTIMENTO IMOBILI[ÁA]RIO|FII|FIAGRO|FUNDO DE INVESTIMENTO)\b.*$/i, "")
+    .replace(
+      /\s*-?\s*(FUNDO DE INVESTIMENTO IMOBILI[ÁA]RIO|FII|FIAGRO|FUNDO DE INVESTIMENTO)\b.*$/i,
+      "",
+    )
     .replace(/\s*-\s*RESPONSABILIDADE LIMITADA.*$/i, "")
     .replace(/\s+/g, " ")
     .trim();
   const texto = bruto || l.nome;
   return texto
     .toLowerCase()
-    .replace(/(^|\s|\/)([a-zà-ú])/g, (_, a, b) => a + b.toUpperCase())
+    .replace(/(^|\s|\/)([a-zà-ú])/g, (_, a: string, b: string) => a + b.toUpperCase())
     .slice(0, 42);
 }

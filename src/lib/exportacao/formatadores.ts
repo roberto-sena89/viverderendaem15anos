@@ -30,6 +30,6 @@ export const baixarArquivo = (blob: Blob, nome: string): void => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 
-export const FORMATO_MOEDA = 'R$ #,##0.00;[Red]-R$ #,##0.00';
+export const FORMATO_MOEDA = "R$ #,##0.00;[Red]-R$ #,##0.00";
 export const FORMATO_PERCENTUAL = '0.00"%"';
 export const FORMATO_QUANTIDADE = "#,##0.########";

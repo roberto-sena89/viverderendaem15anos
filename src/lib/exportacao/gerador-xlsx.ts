@@ -1,10 +1,6 @@
 import writeXlsxFile, { type Row, type Cell, type CellObject } from "write-excel-file/browser";
 
-import {
-  FORMATO_MOEDA,
-  FORMATO_PERCENTUAL,
-  FORMATO_QUANTIDADE,
-} from "./formatadores";
+import { FORMATO_MOEDA, FORMATO_PERCENTUAL, FORMATO_QUANTIDADE } from "./formatadores";
 import type { DadosExportacao, LinhaCarteira } from "./tipos";
 
 interface DefColuna {
@@ -26,7 +22,13 @@ const COLUNAS: DefColuna[] = [
   { header: "Valor Investido", key: "valorInvestido", width: 17, formato: FORMATO_MOEDA },
   { header: "Valor Atual", key: "valorAtual", width: 17, formato: FORMATO_MOEDA },
   { header: "Lucro/Prejuízo (R$)", key: "lucro", width: 19, formato: FORMATO_MOEDA, sinal: true },
-  { header: "Lucro/Prejuízo (%)", key: "lucroPercentual", width: 18, formato: FORMATO_PERCENTUAL, sinal: true },
+  {
+    header: "Lucro/Prejuízo (%)",
+    key: "lucroPercentual",
+    width: 18,
+    formato: FORMATO_PERCENTUAL,
+    sinal: true,
+  },
   { header: "Dividend Yield (%)", key: "dividendYield", width: 18, formato: FORMATO_PERCENTUAL },
   { header: "Dividendos Recebidos", key: "dividendosRecebidos", width: 20, formato: FORMATO_MOEDA },
   { header: "Setor", key: "setor", width: 26 },
@@ -92,8 +94,19 @@ export async function gerarXlsxCarteira({ linhas, resumo }: DadosExportacao): Pr
       celulaNumero(valor, formato, sinal),
     ]),
     [],
-    [{ type: String, value: "Distribuição por classe de ativos", fontWeight: "bold", fontSize: 12 }],
-    [celulaCabecalho("Classe"), celulaCabecalho("Valor atual"), celulaCabecalho("Participação (%)")],
+    [
+      {
+        type: String,
+        value: "Distribuição por classe de ativos",
+        fontWeight: "bold",
+        fontSize: 12,
+      },
+    ],
+    [
+      celulaCabecalho("Classe"),
+      celulaCabecalho("Valor atual"),
+      celulaCabecalho("Participação (%)"),
+    ],
     ...resumo.distribuicao.map((d): Row => [
       { type: String, value: d.classe },
       celulaNumero(d.valor, FORMATO_MOEDA),

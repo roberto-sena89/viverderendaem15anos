@@ -167,7 +167,9 @@ async function buscar(): Promise<RespostaCripto> {
   const capitalizacaoTotal = linhas.reduce((s, l) => s + (l.capitalizacao ?? 0), 0);
   const btc = linhas.find((l) => l.id === "bitcoin");
   const dominanciaBtc =
-    btc?.capitalizacao && capitalizacaoTotal > 0 ? (btc.capitalizacao / capitalizacaoTotal) * 100 : null;
+    btc?.capitalizacao && capitalizacaoTotal > 0
+      ? (btc.capitalizacao / capitalizacaoTotal) * 100
+      : null;
 
   return {
     linhas,

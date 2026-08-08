@@ -1,11 +1,35 @@
 import { useMemo, useState } from "react";
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { ChevronDown, ChevronUp, FileDown, GitCompareArrows, Plus, Trash2, Trophy } from "lucide-react";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  ChevronDown,
+  ChevronUp,
+  FileDown,
+  GitCompareArrows,
+  Plus,
+  Trash2,
+  Trophy,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { brl, pct, type ProjecaoInput } from "@/lib/portfolio";
 import {
   CORES_CENARIO,
@@ -35,7 +59,13 @@ function corDelta(v: number | null) {
   return v > 0 ? "text-primary" : "text-destructive";
 }
 
-export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoInput; objetivoRenda: number }) {
+export function ComparadorCenarios({
+  input,
+  objetivoRenda,
+}: {
+  input: ProjecaoInput;
+  objetivoRenda: number;
+}) {
   const [cenarios, setCenarios] = useState<Cenario[]>(() => listarCenarios());
   const [nome, setNome] = useState("");
   const [gerando, setGerando] = useState(false);
@@ -82,10 +112,18 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
     return resumos.map((r, i) => {
       const diff = comparando && numero && i > 0 ? variacao(numero(i), numero(0)) : null;
       return (
-        <TableCell key={r.cenario.id} className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}>
+        <TableCell
+          key={r.cenario.id}
+          className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}
+        >
           <span className="font-medium">{valor(i)}</span>
           {comparando && numero ? (
-            <span className={cn("block text-[13px] font-semibold", i === 0 ? "text-muted-foreground" : corDelta(diff))}>
+            <span
+              className={cn(
+                "block text-[13px] font-semibold",
+                i === 0 ? "text-muted-foreground" : corDelta(diff),
+              )}
+            >
               {i === 0 ? "base" : delta(diff)}
             </span>
           ) : null}
@@ -105,7 +143,12 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
             Salve a simulação atual e compare até {LIMITE_CENARIOS} casos lado a lado.
           </p>
         </div>
-        <Button variant="outline" className="h-9" onClick={exportar} disabled={!resumos.length || gerando}>
+        <Button
+          variant="outline"
+          className="h-9"
+          onClick={exportar}
+          disabled={!resumos.length || gerando}
+        >
           <FileDown className="size-4!" /> Exportar resumo em PDF
         </Button>
       </div>
@@ -137,9 +180,7 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
             <div className="flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
               <Trophy className="size-5! text-primary" aria-hidden />
               <div className="text-sm">
-                <p className="font-semibold">
-                  Melhor cenário: {resumos[vencedor].cenario.nome}
-                </p>
+                <p className="font-semibold">Melhor cenário: {resumos[vencedor].cenario.nome}</p>
                 <p className="text-xs text-muted-foreground">
                   {resumos[vencedor].anoIndependencia
                     ? `Independência em ${resumos[vencedor].anoIndependencia} (${resumos[vencedor].idadeIndependencia} anos)`
@@ -155,8 +196,18 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={serie}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="ano" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="ano"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={13}
+                  stroke="var(--color-muted-foreground)"
+                />
                 <YAxis
                   tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}M`}
                   tickLine={false}
@@ -219,23 +270,45 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="text-xs uppercase text-muted-foreground">Patrimônio projetado</TableCell>
-                  {celulas((i) => brl(resumos[i].patrimonioFinal), (i) => resumos[i].patrimonioFinal)}
+                  <TableCell className="text-xs uppercase text-muted-foreground">
+                    Patrimônio projetado
+                  </TableCell>
+                  {celulas(
+                    (i) => brl(resumos[i].patrimonioFinal),
+                    (i) => resumos[i].patrimonioFinal,
+                  )}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="text-xs uppercase text-muted-foreground">Em valor de hoje</TableCell>
-                  {celulas((i) => brl(resumos[i].patrimonioReal), (i) => resumos[i].patrimonioReal)}
+                  <TableCell className="text-xs uppercase text-muted-foreground">
+                    Em valor de hoje
+                  </TableCell>
+                  {celulas(
+                    (i) => brl(resumos[i].patrimonioReal),
+                    (i) => resumos[i].patrimonioReal,
+                  )}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="text-xs uppercase text-muted-foreground">Renda passiva/mês</TableCell>
-                  {celulas((i) => brl(resumos[i].rendaPassiva), (i) => resumos[i].rendaPassiva)}
+                  <TableCell className="text-xs uppercase text-muted-foreground">
+                    Renda passiva/mês
+                  </TableCell>
+                  {celulas(
+                    (i) => brl(resumos[i].rendaPassiva),
+                    (i) => resumos[i].rendaPassiva,
+                  )}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="text-xs uppercase text-muted-foreground">Total aportado</TableCell>
-                  {celulas((i) => brl(resumos[i].totalAportado), (i) => resumos[i].totalAportado)}
+                  <TableCell className="text-xs uppercase text-muted-foreground">
+                    Total aportado
+                  </TableCell>
+                  {celulas(
+                    (i) => brl(resumos[i].totalAportado),
+                    (i) => resumos[i].totalAportado,
+                  )}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="text-xs uppercase text-muted-foreground">Independência</TableCell>
+                  <TableCell className="text-xs uppercase text-muted-foreground">
+                    Independência
+                  </TableCell>
                   {celulas((i) =>
                     resumos[i].anoIndependencia
                       ? `${resumos[i].anoIndependencia} · ${resumos[i].idadeIndependencia} anos`
@@ -243,18 +316,28 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="text-xs uppercase text-muted-foreground">Progresso da meta</TableCell>
-                  {celulas((i) => pct(resumos[i].progresso), (i) => resumos[i].progresso)}
+                  <TableCell className="text-xs uppercase text-muted-foreground">
+                    Progresso da meta
+                  </TableCell>
+                  {celulas(
+                    (i) => pct(resumos[i].progresso),
+                    (i) => resumos[i].progresso,
+                  )}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="text-xs uppercase text-muted-foreground">Aporte mensal</TableCell>
+                  <TableCell className="text-xs uppercase text-muted-foreground">
+                    Aporte mensal
+                  </TableCell>
                   {celulas(
-                    (i) => `${brl(resumos[i].cenario.input.aporteMensal)} (+${pct(resumos[i].cenario.input.aumentoAnual)}/ano)`,
+                    (i) =>
+                      `${brl(resumos[i].cenario.input.aporteMensal)} (+${pct(resumos[i].cenario.input.aumentoAnual)}/ano)`,
                     (i) => resumos[i].cenario.input.aporteMensal,
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell className="text-xs uppercase text-muted-foreground">Rentabilidade / inflação</TableCell>
+                  <TableCell className="text-xs uppercase text-muted-foreground">
+                    Rentabilidade / inflação
+                  </TableCell>
                   {celulas(
                     (i) =>
                       `${pct(resumos[i].cenario.input.rentabilidadeAnual)} / ${pct(resumos[i].cenario.input.inflacaoAnual)}`,
@@ -263,7 +346,10 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                 <TableRow>
                   <TableCell className="text-xs uppercase text-muted-foreground">Ações</TableCell>
                   {resumos.map((r, i) => (
-                    <TableCell key={r.cenario.id} className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}>
+                    <TableCell
+                      key={r.cenario.id}
+                      className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}
+                    >
                       <Button
                         variant="ghost"
                         size="sm"
@@ -289,8 +375,17 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                     : "Patrimônio por ano e crescimento sobre o ano anterior."}
                 </p>
               </div>
-              <Button variant="outline" size="sm" className="h-9" onClick={() => setMostrarAnos((v) => !v)}>
-                {mostrarAnos ? <ChevronUp className="size-4!" /> : <ChevronDown className="size-4!" />}
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9"
+                onClick={() => setMostrarAnos((v) => !v)}
+              >
+                {mostrarAnos ? (
+                  <ChevronUp className="size-4!" />
+                ) : (
+                  <ChevronDown className="size-4!" />
+                )}
                 {mostrarAnos ? "Ocultar" : "Ver detalhes"}
               </Button>
             </div>
@@ -304,7 +399,10 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                       {resumos.map((r, i) => (
                         <TableHead
                           key={r.cenario.id}
-                          className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}
+                          className={cn(
+                            "text-right",
+                            i === vencedor && comparando && "bg-primary/5",
+                          )}
                         >
                           {r.cenario.nome}
                         </TableHead>
@@ -321,12 +419,22 @@ export function ComparadorCenarios({ input, objetivoRenda }: { input: ProjecaoIn
                         {linha.valores.map((v, i) => (
                           <TableCell
                             key={v.id}
-                            className={cn("text-right", i === vencedor && comparando && "bg-primary/5")}
+                            className={cn(
+                              "text-right",
+                              i === vencedor && comparando && "bg-primary/5",
+                            )}
                           >
-                            <span className="font-medium">{v.patrimonio === null ? "—" : brl(v.patrimonio)}</span>
+                            <span className="font-medium">
+                              {v.patrimonio === null ? "—" : brl(v.patrimonio)}
+                            </span>
                             <span className="block text-[13px]">
                               {comparando ? (
-                                <span className={cn("font-semibold", i === 0 ? "text-muted-foreground" : corDelta(v.variacao))}>
+                                <span
+                                  className={cn(
+                                    "font-semibold",
+                                    i === 0 ? "text-muted-foreground" : corDelta(v.variacao),
+                                  )}
+                                >
                                   {i === 0 ? "base" : delta(v.variacao)}
                                 </span>
                               ) : null}

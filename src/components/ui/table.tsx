@@ -8,7 +8,6 @@ const Table = React.forwardRef<
 >(({ className, wrapperClassName, ...props }, ref) => (
   <div className={cn("rolagem-lateral relative w-full", wrapperClassName)}>
     <table ref={ref} className={cn("w-full caption-bottom", className)} {...props} />
-
   </div>
 ));
 Table.displayName = "Table";
@@ -84,7 +83,6 @@ const TableCell = React.forwardRef<
   />
 ));
 TableCell.displayName = "TableCell";
-
 
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,

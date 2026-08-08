@@ -77,10 +77,16 @@ export function ResumoTesouro({ dados }: { dados: RespostaTesouro | undefined })
         <div key={c.rotulo} className="min-w-0 rounded-xl border border-border bg-card p-cartao">
           <div className="flex items-center gap-2 t-label">
             <c.icone className="size-3.5 shrink-0" aria-hidden />
-            <TextoTruncado as="span" className="truncate" passivo>{c.rotulo}</TextoTruncado>
+            <TextoTruncado as="span" className="truncate" passivo>
+              {c.rotulo}
+            </TextoTruncado>
           </div>
-          <TextoTruncado as="p" className="t-num mt-1.5 block font-semibold">{c.valor}</TextoTruncado>
-          <TextoTruncado as="p" className="t-caption mt-0.5 block">{c.detalhe}</TextoTruncado>
+          <TextoTruncado as="p" className="t-num mt-1.5 block font-semibold">
+            {c.valor}
+          </TextoTruncado>
+          <TextoTruncado as="p" className="t-caption mt-0.5 block">
+            {c.detalhe}
+          </TextoTruncado>
         </div>
       ))}
     </div>

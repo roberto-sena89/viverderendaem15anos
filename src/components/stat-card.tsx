@@ -22,7 +22,11 @@ export function StatCard({
   delta?: number;
 }) {
   const toneClass =
-    tone === "positive" ? "text-success" : tone === "negative" ? "text-destructive" : "text-foreground";
+    tone === "positive"
+      ? "text-success"
+      : tone === "negative"
+        ? "text-destructive"
+        : "text-foreground";
 
   return (
     <div className="panel group relative p-4 transition-colors duration-200 hover:border-primary/40">
@@ -38,7 +42,6 @@ export function StatCard({
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {typeof delta === "number" ? <DeltaChip value={delta} /> : null}
         {hint ? <p className="t-caption">{hint}</p> : null}
-
       </div>
     </div>
   );

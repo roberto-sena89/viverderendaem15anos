@@ -4,7 +4,6 @@ import {
   ChevronDown,
   CircleCheck,
   CircleSlash,
-  MoreHorizontal,
   Pencil,
   Settings2,
   Trash2,
@@ -20,21 +19,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 import { useSubAlocacaoAlvo } from "@/lib/subalocacao-alvo";
 import { corClasse } from "@/lib/cores-ativos";
 import { chaveTicker, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 import { chaveBrapi, usePrecosBrapiCarteira } from "@/lib/carteira-brapi";
-import {
-  chavePreco,
-  usePersistirPrecos,
-  useUltimosPrecosSalvos,
-  
-} from "@/lib/precos-ultimos";
+import { chavePreco, usePersistirPrecos, useUltimosPrecosSalvos } from "@/lib/precos-ultimos";
 
-import { brl, classeDoAtivo, pct, valorAtual, valorInvestido, CLASSE_POS_FIXADO, type Ativo } from "@/lib/portfolio";
+import {
+  brl,
+  classeDoAtivo,
+  pct,
+  valorAtual,
+  valorInvestido,
+  CLASSE_POS_FIXADO,
+  type Ativo,
+} from "@/lib/portfolio";
 import { useSalvarAtivo } from "@/lib/data";
 import { Input } from "@/components/ui/input";
 import { formatarNumeroBR, numeroBR } from "@/lib/formato-numero";
@@ -75,8 +84,6 @@ const horaCotacao = (iso?: string) => {
     : d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 };
 
-
-
 interface Grupo {
   classe: string;
   ativos: Ativo[];
@@ -99,7 +106,10 @@ const num = (v: number, d = 2) =>
 function numeroSeguro(v: unknown): number {
   if (typeof v === "number") return Number.isFinite(v) ? v : 0;
   if (typeof v === "string") {
-    const limpo = v.replace(/\s|R\$/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
+    const limpo = v
+      .replace(/\s|R\$/g, "")
+      .replace(/\.(?=\d{3}(\D|$))/g, "")
+      .replace(",", ".");
     const n = Number(limpo);
     return Number.isFinite(n) ? n : 0;
   }
@@ -121,7 +131,8 @@ function variacaoAtivo(a: Ativo): number {
 function Variacao({ value, suffix = "%" }: { value: number; suffix?: string }) {
   const arredondado = Math.round((Number.isFinite(value) ? value : 0) * 100) / 100;
   const seguro = Object.is(arredondado, -0) ? 0 : arredondado;
-  const cor = seguro > 0 ? "text-success" : seguro < 0 ? "text-destructive" : "text-muted-foreground";
+  const cor =
+    seguro > 0 ? "text-success" : seguro < 0 ? "text-destructive" : "text-muted-foreground";
   const sinal = seguro > 0 ? "+" : seguro < 0 ? "−" : "";
   const corpo = suffix === "%" ? `${num(Math.abs(seguro))}%` : brl(Math.abs(seguro), 2);
   return (
@@ -249,10 +260,6 @@ export function CarteiraGrupos({
       }),
     [ativosBase, brapi, cotacoes, salvos, manuais],
   );
-
-
-
-
 
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
   const colunas = PADRAO;
@@ -400,7 +407,10 @@ export function CarteiraGrupos({
                   >
                     <span
                       className={`grid shrink-0 place-items-center rounded-xl ${compacto ? "size-8" : "size-10"}`}
-                      style={{ backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`, color: cor }}
+                      style={{
+                        backgroundColor: `color-mix(in oklab, ${cor} 16%, transparent)`,
+                        color: cor,
+                      }}
                     >
                       <BarChart3 className={compacto ? "size-4" : "size-5"} />
                     </span>
@@ -436,13 +446,13 @@ export function CarteiraGrupos({
                     </span>
                   </button>
 
-
                   <div className="flex shrink-0 flex-col items-end leading-tight">
-                    <span className="text-sm font-bold tabular-nums sm:text-base lg:text-lg">{brl(g.total, 2)}</span>
+                    <span className="text-sm font-bold tabular-nums sm:text-base lg:text-lg">
+                      {brl(g.total, 2)}
+                    </span>
                     <span className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Saldo atual
                     </span>
-
                   </div>
                 </div>
 
@@ -493,7 +503,8 @@ export function CarteiraGrupos({
                       % na carteira
                     </dt>
                     <dd className="text-sm font-semibold tabular-nums">
-                      {pct(g.participacao)} <span className="text-muted-foreground">/ {pct(g.ideal)}</span>
+                      {pct(g.participacao)}{" "}
+                      <span className="text-muted-foreground">/ {pct(g.ideal)}</span>
                     </dd>
                   </div>
                 </dl>
@@ -524,8 +535,13 @@ export function CarteiraGrupos({
                       <li key={a.id} className="rounded-xl border bg-card p-3">
                         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
                           <div className="min-w-0">
-                            <p className="truncate font-display text-sm leading-tight font-bold">{a.ticker}</p>
-                            <p className="truncate text-[0.7rem] text-muted-foreground" title={a.nome || a.categoria}>
+                            <p className="truncate font-display text-sm leading-tight font-bold">
+                              {a.ticker}
+                            </p>
+                            <p
+                              className="truncate text-[0.7rem] text-muted-foreground"
+                              title={a.nome || a.categoria}
+                            >
                               {a.nome || a.categoria}
                             </p>
                           </div>
@@ -616,7 +632,11 @@ export function CarteiraGrupos({
                               Var. dia
                             </dt>
                             <dd className="text-[0.8rem]">
-                              {varDia != null ? <Variacao value={varDia} /> : <span className="text-muted-foreground">—</span>}
+                              {varDia != null ? (
+                                <Variacao value={varDia} />
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
                             </dd>
                           </div>
                           <div className="min-w-0">
@@ -644,7 +664,11 @@ export function CarteiraGrupos({
                               % Cart. / Ideal
                             </dt>
                             <dd className="text-[0.8rem] tabular-nums">
-                              <span className={participacao >= idealLinha ? "text-success" : "text-destructive"}>
+                              <span
+                                className={
+                                  participacao >= idealLinha ? "text-success" : "text-destructive"
+                                }
+                              >
                                 {pct(participacao)}
                               </span>{" "}
                               <span className="text-muted-foreground">/ {pct(idealLinha)}</span>
@@ -657,39 +681,74 @@ export function CarteiraGrupos({
                 </ul>
 
                 <div className="hidden border-t md:block">
-                <Table
-                  wrapperClassName="w-full max-w-full overflow-x-auto overscroll-x-contain scrollbar-none"
-                  className="w-full min-w-0 table-auto text-[0.8rem] sm:text-sm [&_th]:px-1.5 [&_td]:px-1.5 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.62rem] sm:[&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
-                >
+                  <Table
+                    wrapperClassName="w-full max-w-full overflow-x-auto overscroll-x-contain scrollbar-none"
+                    className="w-full min-w-0 table-auto text-[0.8rem] sm:text-sm [&_th]:px-1.5 [&_td]:px-1.5 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.62rem] sm:[&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
+                  >
                     <TableHeader>
                       <TableRow className="bg-muted/40">
                         {/* Coluna elástica: absorve todo o espaço livre para as colunas numéricas ficarem coladas à direita. */}
-                        <TableHead className="w-full min-w-[6rem] sm:min-w-[10rem]">Ticker / Ativo</TableHead>
+                        <TableHead className="w-full min-w-[6rem] sm:min-w-[10rem]">
+                          Ticker / Ativo
+                        </TableHead>
 
                         {colunas.quantidade && (
-                          <TableHead className={`min-w-[4rem] text-right ${colSm}`}>Quant.</TableHead>
+                          <TableHead className={`min-w-[4rem] text-right ${colSm}`}>
+                            Quant.
+                          </TableHead>
                         )}
-                        {colunas.precoMedio && <TableHead className={`min-w-[5rem] text-right ${colMd}`}>P. médio</TableHead>}
+                        {colunas.precoMedio && (
+                          <TableHead className={`min-w-[5rem] text-right ${colMd}`}>
+                            P. médio
+                          </TableHead>
+                        )}
                         {colunas.precoAtual && (
-                          <TableHead className="min-w-[4.5rem] text-right sm:min-w-[5.75rem]">P. atual</TableHead>
+                          <TableHead className="min-w-[4.5rem] text-right sm:min-w-[5.75rem]">
+                            P. atual
+                          </TableHead>
                         )}
                         {colunas.variacaoDia && (
-                          <TableHead className={`min-w-[4.25rem] text-right sm:min-w-[5rem] ${colSm}`} title="Variação do dia vinda das cotações ao vivo">
+                          <TableHead
+                            className={`min-w-[4.25rem] text-right sm:min-w-[5rem] ${colSm}`}
+                            title="Variação do dia vinda das cotações ao vivo"
+                          >
                             Var. dia
                           </TableHead>
                         )}
-                        {colunas.variacao && <TableHead className={`min-w-[4.5rem] text-right ${colLg}`}>Var. (%)</TableHead>}
-                        {colunas.rentabilidade && <TableHead className={`min-w-[5.5rem] text-right ${colMd}`}>Rent. (R$)</TableHead>}
+                        {colunas.variacao && (
+                          <TableHead className={`min-w-[4.5rem] text-right ${colLg}`}>
+                            Var. (%)
+                          </TableHead>
+                        )}
+                        {colunas.rentabilidade && (
+                          <TableHead className={`min-w-[5.5rem] text-right ${colMd}`}>
+                            Rent. (R$)
+                          </TableHead>
+                        )}
                         {colunas.saldo && (
-                          <TableHead className="min-w-[5.25rem] text-right sm:min-w-[6.25rem]">Saldo</TableHead>
+                          <TableHead className="min-w-[5.25rem] text-right sm:min-w-[6.25rem]">
+                            Saldo
+                          </TableHead>
                         )}
                         {colunas.participacao && (
-                          <TableHead className={`min-w-[4.25rem] text-right ${colSm}`}>% Cart.</TableHead>
+                          <TableHead className={`min-w-[4.25rem] text-right ${colSm}`}>
+                            % Cart.
+                          </TableHead>
                         )}
-                        {colunas.ideal && <TableHead className={`min-w-[4.25rem] text-right ${colLg}`}>% Ideal</TableHead>}
-                        {colunas.comprar && <TableHead className={`min-w-[4.5rem] text-center ${colLg}`}>Comprar</TableHead>}
+                        {colunas.ideal && (
+                          <TableHead className={`min-w-[4.25rem] text-right ${colLg}`}>
+                            % Ideal
+                          </TableHead>
+                        )}
+                        {colunas.comprar && (
+                          <TableHead className={`min-w-[4.5rem] text-center ${colLg}`}>
+                            Comprar
+                          </TableHead>
+                        )}
 
-                        {onEditar && onExcluir ? <TableHead className="w-px pr-2 text-center sm:pr-3">Opções</TableHead> : null}
+                        {onEditar && onExcluir ? (
+                          <TableHead className="w-px pr-2 text-center sm:pr-3">Opções</TableHead>
+                        ) : null}
                       </TableRow>
                     </TableHeader>
 
@@ -699,21 +758,24 @@ export function CarteiraGrupos({
                         const saldo = valorAtual(a);
                         const investido = valorInvestido(a);
                         const variacao = variacaoAtivo(a);
-                        const rent = investido > 0 ? ((saldo - investido) / investido) * 100 : 0;
                         const participacao = totalCarteira > 0 ? (saldo / totalCarteira) * 100 : 0;
                         const idealLinha = idealDe(a);
                         const comprar = participacao < idealLinha;
                         return (
                           <TableRow key={a.id}>
                             <TableCell className={cel}>
-                              <div className={`flex min-w-0 items-center ${compacto ? "gap-2" : "gap-2 sm:gap-3"}`}>
+                              <div
+                                className={`flex min-w-0 items-center ${compacto ? "gap-2" : "gap-2 sm:gap-3"}`}
+                              >
                                 {compacto ? null : (
                                   <span className="hidden shrink-0 sm:inline-flex">
                                     <TickerMark ticker={a.ticker} />
                                   </span>
                                 )}
                                 <div className="min-w-0">
-                                  <p className="truncate font-display leading-tight font-bold">{a.ticker}</p>
+                                  <p className="truncate font-display leading-tight font-bold">
+                                    {a.ticker}
+                                  </p>
                                   <p
                                     className={`truncate text-[0.7rem] text-muted-foreground sm:text-xs ${compacto ? "max-w-32 sm:max-w-40" : "max-w-36 sm:max-w-56"}`}
                                     title={a.nome || a.categoria}
@@ -724,10 +786,14 @@ export function CarteiraGrupos({
                               </div>
                             </TableCell>
                             {colunas.quantidade && (
-                              <TableCell className={`text-right tabular-nums ${colSm} ${cel}`}>{num(a.quantidade)}</TableCell>
+                              <TableCell className={`text-right tabular-nums ${colSm} ${cel}`}>
+                                {num(a.quantidade)}
+                              </TableCell>
                             )}
                             {colunas.precoMedio && (
-                              <TableCell className={`text-right tabular-nums ${colMd} ${cel}`}>{brl(a.precoMedio, 2)}</TableCell>
+                              <TableCell className={`text-right tabular-nums ${colMd} ${cel}`}>
+                                {brl(a.precoMedio, 2)}
+                              </TableCell>
                             )}
                             {colunas.precoAtual && (
                               <TableCell
@@ -805,14 +871,20 @@ export function CarteiraGrupos({
                               </TableCell>
                             )}
                             {colunas.saldo && (
-                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>{brl(saldo, 2)}</TableCell>
+                              <TableCell className={`text-right font-semibold tabular-nums ${cel}`}>
+                                {brl(saldo, 2)}
+                              </TableCell>
                             )}
 
                             {colunas.participacao && (
-                              <TableCell className={`text-right tabular-nums ${colSm} ${cel}`}>{pct(participacao)}</TableCell>
+                              <TableCell className={`text-right tabular-nums ${colSm} ${cel}`}>
+                                {pct(participacao)}
+                              </TableCell>
                             )}
                             {colunas.ideal && (
-                              <TableCell className={`text-right text-muted-foreground tabular-nums ${colLg} ${cel}`}>
+                              <TableCell
+                                className={`text-right text-muted-foreground tabular-nums ${colLg} ${cel}`}
+                              >
                                 {pct(idealLinha)}
                               </TableCell>
                             )}
@@ -827,7 +899,11 @@ export function CarteiraGrupos({
                                       : "border-destructive/40 bg-destructive/10 text-destructive"
                                   }`}
                                 >
-                                  {comprar ? <CircleCheck className="size-3.5" /> : <CircleSlash className="size-3.5" />}
+                                  {comprar ? (
+                                    <CircleCheck className="size-3.5" />
+                                  ) : (
+                                    <CircleSlash className="size-3.5" />
+                                  )}
                                   {comprar ? "Sim" : "Não"}
                                 </span>
                               </TableCell>
@@ -860,7 +936,9 @@ export function CarteiraGrupos({
                                       <Pencil className="size-4" /> Editar preço atual
                                     </DropdownMenuItem>
                                     {manuais[chavePreco(a.ticker)] !== undefined && (
-                                      <DropdownMenuItem onSelect={() => voltarAoAutomatico(a.ticker)}>
+                                      <DropdownMenuItem
+                                        onSelect={() => voltarAoAutomatico(a.ticker)}
+                                      >
                                         <CircleCheck className="size-4" /> Voltar preço automático
                                       </DropdownMenuItem>
                                     )}
@@ -876,18 +954,17 @@ export function CarteiraGrupos({
                                 </DropdownMenu>
                               </TableCell>
                             ) : null}
-
-
                           </TableRow>
                         );
                       })}
-                </TableBody>
-                </Table>
+                    </TableBody>
+                  </Table>
                 </div>
 
                 <footer className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/30 px-4 py-3 sm:px-6">
                   <p className="text-xs text-muted-foreground">
-                    {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} · {brl(g.total, 2)} ·{" "}
+                    {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} ·{" "}
+                    {brl(g.total, 2)} ·{" "}
                     {g.participacao >= g.ideal
                       ? "acima ou no alvo desta classe"
                       : `faltam ${pct(g.ideal - g.participacao)} para o alvo`}

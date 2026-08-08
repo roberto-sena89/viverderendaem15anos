@@ -22,7 +22,10 @@ export const Route = createFileRoute("/guia-liberdade-financeira")({
       { property: "og:image", content: OG_IMAGE },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Guia da liberdade financeira: viver de renda em 15 anos" },
+      {
+        property: "og:image:alt",
+        content: "Guia da liberdade financeira: viver de renda em 15 anos",
+      },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: OG_IMAGE },
     ],
@@ -110,7 +113,9 @@ const faqs = [
 function GuiaPage() {
   return (
     <div className="min-h-dvh bg-background">
-      <a href="#conteudo" className="link-pular">Pular para o conteúdo</a>
+      <a href="#conteudo" className="link-pular">
+        Pular para o conteúdo
+      </a>
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
@@ -138,8 +143,8 @@ function GuiaPage() {
           </h1>
           <p className="mt-5 text-lg text-muted-foreground">
             Independência financeira não é sorte nem um ativo mágico: é a combinação de taxa de
-            poupança, alocação de ativos coerente e reinvestimento disciplinado de proventos ao longo
-            de anos. Abaixo está o caminho completo, na ordem em que ele deve ser executado.
+            poupança, alocação de ativos coerente e reinvestimento disciplinado de proventos ao
+            longo de anos. Abaixo está o caminho completo, na ordem em que ele deve ser executado.
           </p>
 
           <section className="mt-10 space-y-8">
@@ -159,9 +164,9 @@ function GuiaPage() {
               A alocação define o risco que você aceita correr; a renda passiva define quando você
               pode parar. Uma carteira concentrada em poucos ativos pode entregar dividendos altos
               hoje e cortar tudo no ciclo seguinte. Uma carteira alocada por classes — renda fixa,
-              ações, FIIs e exterior — produz um fluxo de proventos mais estável, e é justamente essa
-              estabilidade que permite calcular com confiança o ano em que a renda dos investimentos
-              cobre o seu custo de vida.
+              ações, FIIs e exterior — produz um fluxo de proventos mais estável, e é justamente
+              essa estabilidade que permite calcular com confiança o ano em que a renda dos
+              investimentos cobre o seu custo de vida.
             </p>
           </section>
 

@@ -12,7 +12,10 @@ export type NotaDesempenho = {
 };
 
 /** Classificação textual da nota, no padrão de casas de análise. */
-export function classificarNota(nota: number, temHistorico: boolean): NotaDesempenho["classificacao"] {
+export function classificarNota(
+  nota: number,
+  temHistorico: boolean,
+): NotaDesempenho["classificacao"] {
   if (!temHistorico) return "Sem histórico";
   if (nota >= 8.5) return "Excelente";
   if (nota >= 7) return "Bom";
@@ -26,7 +29,10 @@ export function classificarNota(nota: number, temHistorico: boolean): NotaDesemp
  * base 5 (igual ao Ibovespa) +/- 0,25 ponto por ponto percentual de excedente,
  * limitada a 0–10. Sem benchmark, usa o retorno absoluto como referência.
  */
-export function notaPorDesempenho(retorno12m: number | null, benchmark: number | null): NotaDesempenho {
+export function notaPorDesempenho(
+  retorno12m: number | null,
+  benchmark: number | null,
+): NotaDesempenho {
   if (retorno12m === null || !Number.isFinite(retorno12m)) {
     return { nota: 5, retorno12m: null, excedente: null, classificacao: "Sem histórico" };
   }

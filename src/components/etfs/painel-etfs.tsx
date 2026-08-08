@@ -188,7 +188,10 @@ export function PainelEtfs({ intervaloMs, busca }: Props) {
       if (mercado !== "todos" && l.mercado !== mercado) return false;
       if (gestora !== GESTORA_TODAS && l.gestora !== gestora) return false;
       if (minPatrimonio > 0 && (l.capitalizacao ?? 0) < minPatrimonio) return false;
-      if (l.dy12 !== null && (l.dy12 < faixas.dy[0] || (faixas.dy[1] < 20 && l.dy12 > faixas.dy[1])))
+      if (
+        l.dy12 !== null &&
+        (l.dy12 < faixas.dy[0] || (faixas.dy[1] < 20 && l.dy12 > faixas.dy[1]))
+      )
         return false;
       if (
         l.var12m !== null &&
@@ -463,7 +466,6 @@ export function PainelEtfs({ intervaloMs, busca }: Props) {
                       : aoVivo.intervaloPolling > 0
                         ? `Atualiza ${Math.round(aoVivo.intervaloPolling / 1000)}s`
                         : "Manual"}
-
               </span>
 
               <Button
@@ -565,7 +567,11 @@ export function PainelEtfs({ intervaloMs, busca }: Props) {
               <span className="text-muted-foreground">{selecionados.join(", ")}</span>
             </span>
             <div className="ml-auto flex items-center gap-2">
-              <Button size="sm" onClick={() => setComparando(true)} disabled={selecionados.length < 2}>
+              <Button
+                size="sm"
+                onClick={() => setComparando(true)}
+                disabled={selecionados.length < 2}
+              >
                 <GitCompare className="size-4" />
                 Comparar
               </Button>

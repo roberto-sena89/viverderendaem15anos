@@ -2,7 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { Newspaper } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sparkline } from "@/components/cotacoes/sparkline";
-import { corCategoria, mercadoCategoria, rotuloCategoria, CORRELACOES } from "@/lib/commodities-base";
+import {
+  corCategoria,
+  mercadoCategoria,
+  rotuloCategoria,
+  CORRELACOES,
+} from "@/lib/commodities-base";
 import type { LinhaCommodity } from "@/lib/commodities-base";
 import { corVar, fmtDinheiro, fmtVar, type Moeda } from "@/components/commodities/card-commodity";
 import { cn } from "@/lib/utils";
@@ -58,7 +63,9 @@ export function ModalCommodity({
             <div className="min-w-0">
               <p className="font-display text-3xl tabular-nums">
                 {moeda === "brl" ? fmtDinheiro(brl, "R$") : fmtDinheiro(linha.precoUsd, "US$")}
-                <span className="ml-1.5 text-sm font-normal text-muted-foreground">/ {linha.unidade}</span>
+                <span className="ml-1.5 text-sm font-normal text-muted-foreground">
+                  / {linha.unidade}
+                </span>
               </p>
               <p className="text-xs text-muted-foreground">
                 {moeda === "brl"
@@ -110,7 +117,8 @@ export function ModalCommodity({
 
           {correlacao ? (
             <p className="t-caption">
-              Ativos correlacionados na B3: <strong>{correlacao.tickers.join(", ")}</strong> — {correlacao.frase}.
+              Ativos correlacionados na B3: <strong>{correlacao.tickers.join(", ")}</strong> —{" "}
+              {correlacao.frase}.
             </p>
           ) : null}
 

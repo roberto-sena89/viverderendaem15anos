@@ -27,10 +27,7 @@ function cabecalhos() {
   };
 }
 
-async function chamar<T>(
-  caminho: string,
-  init?: { method?: string; body?: unknown },
-): Promise<T> {
+async function chamar<T>(caminho: string, init?: { method?: string; body?: unknown }): Promise<T> {
   const resposta = await fetch(`${GATEWAY}${caminho}`, {
     method: init?.method ?? "GET",
     headers: { ...cabecalhos(), ...(init?.body ? { "Content-Type": "application/json" } : {}) },
@@ -249,7 +246,12 @@ export async function carregarPainelSeo(selecionado?: string) {
 
   const [serieLinhas, anteriores, consultas, paginas, sitemaps, indexacao] = await Promise.all([
     consultar(siteUrl, { ...base, dimensions: ["date"], rowLimit: 60 }),
-    consultar(siteUrl, { startDate: inicioAnterior, endDate: fimAnterior, dimensions: ["date"], rowLimit: 60 }),
+    consultar(siteUrl, {
+      startDate: inicioAnterior,
+      endDate: fimAnterior,
+      dimensions: ["date"],
+      rowLimit: 60,
+    }),
     consultar(siteUrl, { ...base, dimensions: ["query"], rowLimit: 15 }),
     consultar(siteUrl, { ...base, dimensions: ["page"], rowLimit: 15 }),
     lerSitemaps(siteUrl),

@@ -16,7 +16,9 @@ export const cotacoesCarteira = createServerFn({ method: "POST" })
     itens: (Array.isArray(d?.itens) ? d.itens : [])
       .slice(0, 200)
       .map((i) => ({
-        ticker: String(i.ticker ?? "").trim().slice(0, 40),
+        ticker: String(i.ticker ?? "")
+          .trim()
+          .slice(0, 40),
         categoria: String(i.categoria ?? "").slice(0, 40),
       }))
       .filter((i) => i.ticker.length > 0),

@@ -1,5 +1,14 @@
 import { useMemo } from "react";
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { LinhaCommodity } from "@/lib/commodities-base";
 import { corVar, fmtDinheiro, fmtVar } from "@/components/commodities/card-commodity";
@@ -48,12 +57,23 @@ export function ComparadorCommodities({
 
         <div className="pilha-secao">
           <div className="panel p-cartao">
-            <p className="panel-title mb-2">Performance normalizada (30 pregões, % desde o início)</p>
+            <p className="panel-title mb-2">
+              Performance normalizada (30 pregões, % desde o início)
+            </p>
             <div className="h-[260px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={serie} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                  <XAxis dataKey="dia" tick={{ fontSize: 10 }} stroke="var(--color-muted-foreground)" minTickGap={24} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="var(--color-border)"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="dia"
+                    tick={{ fontSize: 10 }}
+                    stroke="var(--color-muted-foreground)"
+                    minTickGap={24}
+                  />
                   <YAxis
                     tick={{ fontSize: 10 }}
                     stroke="var(--color-muted-foreground)"
@@ -94,11 +114,15 @@ export function ComparadorCommodities({
                     style={{ background: CORES[i % CORES.length] }}
                     aria-hidden
                   />
-                  <TextoTruncado as="span" className="t-ticker min-w-0" texto={l.nome}>{l.nome}</TextoTruncado>
+                  <TextoTruncado as="span" className="t-ticker min-w-0" texto={l.nome}>
+                    {l.nome}
+                  </TextoTruncado>
                 </p>
                 <p className="font-display mt-1 text-base tabular-nums">
                   {fmtDinheiro(l.precoUsd, "US$")}
-                  <span className="ml-1 text-[0.7rem] font-normal text-muted-foreground">/ {l.unidade}</span>
+                  <span className="ml-1 text-[0.7rem] font-normal text-muted-foreground">
+                    / {l.unidade}
+                  </span>
                 </p>
                 <p className="t-num-sm text-muted-foreground">
                   {fmtDinheiro(l.precoUsd === null ? null : l.precoUsd * usdBrl, "R$")}

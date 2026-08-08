@@ -1,4 +1,9 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Panel } from "@/components/panel";
 
 const TOPICOS = [
@@ -32,7 +37,10 @@ const TOPICOS = [
 /** Conteúdo educativo do rodapé da grade de ações. */
 export function RodapeEducativoAcoes() {
   return (
-    <Panel title="Entenda as ações" hint="Conteúdo educacional — não é recomendação de investimento.">
+    <Panel
+      title="Entenda as ações"
+      hint="Conteúdo educacional — não é recomendação de investimento."
+    >
       <Accordion type="single" collapsible className="w-full">
         {TOPICOS.map((t) => (
           <AccordionItem key={t.titulo} value={t.titulo}>
@@ -44,9 +52,10 @@ export function RodapeEducativoAcoes() {
         ))}
       </Accordion>
       <p className="t-caption mt-secao leading-relaxed">
-        Os dados desta página vêm de fontes públicas de mercado e podem sofrer atraso ou divergência. Indicadores
-        fundamentalistas são sincronizados diariamente, a partir dos balanços das companhias; preços e variações
-        acompanham o pregão da B3. Nada aqui constitui recomendação de compra ou venda.
+        Os dados desta página vêm de fontes públicas de mercado e podem sofrer atraso ou
+        divergência. Indicadores fundamentalistas são sincronizados diariamente, a partir dos
+        balanços das companhias; preços e variações acompanham o pregão da B3. Nada aqui constitui
+        recomendação de compra ou venda.
       </p>
     </Panel>
   );

@@ -101,7 +101,9 @@ export function usePrefsNoticias() {
     const existe = atual.salvas.some((s) => s.id === n.id);
     gravar({
       ...atual,
-      salvas: existe ? atual.salvas.filter((s) => s.id !== n.id) : [n, ...atual.salvas].slice(0, 80),
+      salvas: existe
+        ? atual.salvas.filter((s) => s.id !== n.id)
+        : [n, ...atual.salvas].slice(0, 80),
     });
   }, []);
 

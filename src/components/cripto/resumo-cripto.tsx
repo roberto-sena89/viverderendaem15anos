@@ -44,7 +44,8 @@ export function ResumoCripto({
   const eth = linhas.find((l) => l.id === "ethereum") ?? null;
 
   const relevantes = linhas.filter(
-    (l) => l.categoria !== "stablecoin" && (l.capitalizacao ?? 0) > 50_000_000 && l.variacao24h !== null,
+    (l) =>
+      l.categoria !== "stablecoin" && (l.capitalizacao ?? 0) > 50_000_000 && l.variacao24h !== null,
   );
   const maiorAlta = relevantes.reduce<LinhaCripto | null>(
     (m, l) => (!m || (l.variacao24h ?? 0) > (m.variacao24h ?? 0) ? l : m),
@@ -120,10 +121,13 @@ export function ResumoCripto({
           </Tooltip>
         </p>
         <p className="t-metric-sm mt-1">
-          {dominanciaBtc === null ? "—" : `${dominanciaBtc.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
+          {dominanciaBtc === null
+            ? "—"
+            : `${dominanciaBtc.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
         </p>
         <p className="t-num-sm text-muted-foreground">
-          Dólar: R$ {usdBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          Dólar: R${" "}
+          {usdBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </p>
       </Card>
 
@@ -131,9 +135,7 @@ export function ResumoCripto({
       <Mini titulo="Maior baixa 24h" l={maiorBaixa} icone={<TrendingDown className="size-3" />} />
 
       <Card>
-        <p className="t-label">
-          Capitalização total
-        </p>
+        <p className="t-label">Capitalização total</p>
         <p className="t-metric-sm mt-1">{fmtCompacto(capitalizacaoTotal)}</p>
         <p className="t-num-sm text-muted-foreground">
           {fmtCompacto(capitalizacaoTotal * usdBrl, "R$")}

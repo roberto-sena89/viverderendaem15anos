@@ -9,13 +9,7 @@
 export type IndexadorTitulo = "PRE" | "SELIC" | "IPCA";
 
 export type TipoTitulo =
-  | "PREFIXADO"
-  | "PREFIXADO_JS"
-  | "SELIC"
-  | "IPCA"
-  | "IPCA_JS"
-  | "RENDA"
-  | "EDUCA";
+  "PREFIXADO" | "PREFIXADO_JS" | "SELIC" | "IPCA" | "IPCA_JS" | "RENDA" | "EDUCA";
 
 export type PontoPreco = { data: string; preco: number; taxa: number | null };
 
@@ -168,11 +162,13 @@ export function textoTaxa(l: Pick<LinhaTesouro, "indexador" | "taxaCompra">) {
   return t;
 }
 
-export const faixaPrazo = (anos: number) =>
-  anos <= 2 ? "curto" : anos <= 10 ? "medio" : "longo";
+export const faixaPrazo = (anos: number) => (anos <= 2 ? "curto" : anos <= 10 ? "medio" : "longo");
 
 export const anosEntre = (iso: string, base = new Date()) =>
-  Math.max(0, (new Date(`${iso}T12:00:00`).getTime() - base.getTime()) / (365.25 * 24 * 3600 * 1000));
+  Math.max(
+    0,
+    (new Date(`${iso}T12:00:00`).getTime() - base.getTime()) / (365.25 * 24 * 3600 * 1000),
+  );
 
 /* ------------------------------------------------------------------ *
  * Tributação e custos
@@ -234,7 +230,7 @@ export function simular(opcoes: {
   const rendimentoBruto = valorBruto - valorInvestido;
 
   const base = opcoes.isentoCustodia
-    ? Math.max(0, ((valorInvestido + valorBruto) / 2) - ISENCAO_CUSTODIA_SELIC)
+    ? Math.max(0, (valorInvestido + valorBruto) / 2 - ISENCAO_CUSTODIA_SELIC)
     : (valorInvestido + valorBruto) / 2;
   const custodia = Math.max(0, base) * CUSTODIA_B3 * anos;
 
@@ -260,8 +256,7 @@ export function simular(opcoes: {
     valorLiquido,
     rendimentoLiquido,
     rentabilidadeLiquidaAnual,
-    percentualCdi:
-      opcoes.cdi && opcoes.cdi > 0 ? (opcoes.taxaAnual / opcoes.cdi) * 100 : null,
+    percentualCdi: opcoes.cdi && opcoes.cdi > 0 ? (opcoes.taxaAnual / opcoes.cdi) * 100 : null,
     aliquotaIr: aliq,
   };
 }

@@ -54,7 +54,6 @@ export function SkeletonLinhasCripto({ quantidade }: { quantidade: number }) {
               <Skeleton className="h-7 rounded-lg" />
               <Skeleton className="h-7 rounded-lg" />
             </div>
-
           </div>
         ))}
       </div>

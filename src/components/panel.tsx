@@ -24,11 +24,14 @@ export function Panel({
         <div className="flex flex-col gap-2 border-b border-border bg-muted/30 px-3 py-3 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3 sm:px-4">
           <div className="min-w-0">
             <p className="panel-title break-words sm:truncate">{title}</p>
-            {hint ? <p className="mt-1 text-xs text-muted-foreground whitespace-pre-line sm:pl-2.5">{hint}</p> : null}
+            {hint ? (
+              <p className="mt-1 text-xs text-muted-foreground whitespace-pre-line sm:pl-2.5">
+                {hint}
+              </p>
+            ) : null}
           </div>
           {action ? <div className="min-w-0 sm:shrink-0">{action}</div> : null}
         </div>
-
       ) : null}
       <div className={cn("flex-1", bodyClassName ?? "p-4 sm:p-5")}>{children}</div>
     </div>

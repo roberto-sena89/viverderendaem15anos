@@ -358,7 +358,7 @@ const SGS: Record<string, { codigo: number; nome: string; unidade: string }> = {
   poupanca: { codigo: 195, nome: "Poupança", unidade: "% a.m." },
 };
 
-export async function buscarIndicador(indicador: keyof typeof SGS | string, ultimos = 12) {
+export async function buscarIndicador(indicador: keyof typeof SGS, ultimos = 12) {
   const chave = indicador.toLowerCase().replace("ó", "o").replace("â", "a");
   const meta = SGS[chave];
   if (!meta) throw new Error(`Indicador desconhecido. Use: ${Object.keys(SGS).join(", ")}.`);
@@ -873,7 +873,7 @@ export async function buscarRankingsB3(tipo: TipoRanking = "acoes"): Promise<Ran
 
   const topo = (chave: "dy" | "valorMercado" | "receita") =>
     itens
-      .filter((a) => typeof a[chave] === "number" && (a[chave] as number) > 0)
+      .filter((a) => typeof a[chave] === "number" && a[chave] > 0)
       .sort((a, b) => (b[chave] as number) - (a[chave] as number))
       .slice(0, TOPO);
 

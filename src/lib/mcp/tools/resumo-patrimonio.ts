@@ -4,7 +4,8 @@ import { errorResult, requireAuth, supabaseForUser, textResult } from "../supaba
 export default defineTool({
   name: "resumo_patrimonio",
   title: "Resumo do patrimônio",
-  description: "Retorna patrimônio total, custo investido, lucro/prejuízo, alocação por categoria e dividendos recebidos nos últimos 12 meses.",
+  description:
+    "Retorna patrimônio total, custo investido, lucro/prejuízo, alocação por categoria e dividendos recebidos nos últimos 12 meses.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_input, ctx) => {
@@ -24,10 +25,16 @@ export default defineTool({
       .select("valor, data")
       .gte("data", desde.toISOString().slice(0, 10));
 
+    const ativosTipados = (ativos ?? []) as {
+      categoria: string;
+      quantidade: number;
+      preco_atual: number;
+      preco_medio: number;
+    }[];
     let patrimonio = 0;
     let custo = 0;
     const porCategoria: Record<string, number> = {};
-    for (const a of ativos ?? []) {
+    for (const a of ativosTipados) {
       const valor = Number(a.quantidade) * Number(a.preco_atual);
       patrimonio += valor;
       custo += Number(a.quantidade) * Number(a.preco_medio);
@@ -39,7 +46,10 @@ export default defineTool({
       lucro: patrimonio - custo,
       rentabilidade_pct: custo > 0 ? ((patrimonio - custo) / custo) * 100 : 0,
       alocacao_por_categoria: Object.fromEntries(
-        Object.entries(porCategoria).map(([k, v]) => [k, { valor: v, pct: patrimonio > 0 ? (v / patrimonio) * 100 : 0 }]),
+        Object.entries(porCategoria).map(([k, v]) => [
+          k,
+          { valor: v, pct: patrimonio > 0 ? (v / patrimonio) * 100 : 0 },
+        ]),
       ),
       dividendos_12m: (dividendos ?? []).reduce((s, d) => s + Number(d.valor), 0),
       total_ativos: ativos?.length ?? 0,

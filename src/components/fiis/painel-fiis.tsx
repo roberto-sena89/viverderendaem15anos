@@ -37,7 +37,13 @@ import {
   type FaixasFii,
   type Ranking,
 } from "@/components/fiis/filtros-fiis";
-import { COLUNAS, TabelaFiis, type ColunaId, type Ordem, type OrdemColuna } from "@/components/fiis/tabela-fiis";
+import {
+  COLUNAS,
+  TabelaFiis,
+  type ColunaId,
+  type Ordem,
+  type OrdemColuna,
+} from "@/components/fiis/tabela-fiis";
 import { ComparadorFiis } from "@/components/fiis/comparador-fiis";
 import { ModalFii } from "@/components/fiis/modal-fii";
 import { RodapeEducativoFiis } from "@/components/fiis/rodape-educativo-fiis";
@@ -51,7 +57,15 @@ import { useValorAtrasado } from "@/lib/fiis-virtualizacao";
 import { EstadoVazio } from "@/components/estado-vazio";
 
 const CHAVE_COLUNAS = "fiis:colunas";
-const COLUNAS_PADRAO: ColunaId[] = ["patrimonio", "pvp", "dy12", "liquidez", "tipo", "var12m", "segmento"];
+const COLUNAS_PADRAO: ColunaId[] = [
+  "patrimonio",
+  "pvp",
+  "dy12",
+  "liquidez",
+  "tipo",
+  "var12m",
+  "segmento",
+];
 const TAMANHOS = [25, 50, 100];
 
 const ORDEM_RANKING: Record<Ranking, Ordem> = {
@@ -63,7 +77,11 @@ const ORDEM_RANKING: Record<Ranking, Ordem> = {
   var12m: { coluna: "var12m", desc: true },
 };
 
-function valorOrdem(l: LinhaFii, h: HistoricoFii | undefined, c: OrdemColuna): number | string | null {
+function valorOrdem(
+  l: LinhaFii,
+  h: HistoricoFii | undefined,
+  c: OrdemColuna,
+): number | string | null {
   switch (c) {
     case "ticker":
       return l.ticker;
@@ -151,7 +169,6 @@ export function PainelFiis({ intervaloMs, busca }: Props) {
     [grade.data, aoVivo.precos],
   );
 
-
   const posicoes = useMemo(() => {
     const mapa = new Map<string, { precoMedio: number; quantidade: number }>();
     for (const a of ativos) {
@@ -170,10 +187,16 @@ export function PainelFiis({ intervaloMs, busca }: Props) {
       if (termo && !`${l.ticker} ${l.nome}`.toLowerCase().includes(termo)) return false;
       if (tipos.length && !tipos.includes(l.tipo)) return false;
       if (segmento !== "todos" && l.segmento !== segmento) return false;
-      if (l.dy12 !== null && (l.dy12 < faixas.dy[0] || (faixas.dy[1] < 30 && l.dy12 > faixas.dy[1]))) return false;
-      if (l.pvp !== null && (l.pvp < faixas.pvp[0] || (faixas.pvp[1] < 3 && l.pvp > faixas.pvp[1]))) return false;
+      if (
+        l.dy12 !== null &&
+        (l.dy12 < faixas.dy[0] || (faixas.dy[1] < 30 && l.dy12 > faixas.dy[1]))
+      )
+        return false;
+      if (l.pvp !== null && (l.pvp < faixas.pvp[0] || (faixas.pvp[1] < 3 && l.pvp > faixas.pvp[1])))
+        return false;
       const liqMi = (l.liquidez ?? 0) / 1e6;
-      if (liqMi < faixas.liquidez[0] || (faixas.liquidez[1] < 20 && liqMi > faixas.liquidez[1])) return false;
+      if (liqMi < faixas.liquidez[0] || (faixas.liquidez[1] < 20 && liqMi > faixas.liquidez[1]))
+        return false;
       return true;
     });
   }, [linhas, favoritos, termo, tipos, segmento, faixas]);
@@ -243,13 +266,14 @@ export function PainelFiis({ intervaloMs, busca }: Props) {
     });
   }, [historicoQuery.data]);
 
-
   useEffect(() => {
     setPagina(0);
   }, [termo, tipos, segmento, faixas, porPagina, ranking]);
 
   const aoOrdenar = useCallback((c: OrdemColuna) => {
-    setOrdem((atual) => (atual.coluna === c ? { coluna: c, desc: !atual.desc } : { coluna: c, desc: true }));
+    setOrdem((atual) =>
+      atual.coluna === c ? { coluna: c, desc: !atual.desc } : { coluna: c, desc: true },
+    );
   }, []);
 
   const aoSelecionar = useCallback((t: string) => {
@@ -295,7 +319,9 @@ export function PainelFiis({ intervaloMs, busca }: Props) {
       ranking={ranking}
       aoTrocarRanking={trocarRanking}
       tipos={tipos}
-      aoAlternarTipo={(t) => setTipos((a) => (a.includes(t) ? a.filter((x) => x !== t) : [...a, t]))}
+      aoAlternarTipo={(t) =>
+        setTipos((a) => (a.includes(t) ? a.filter((x) => x !== t) : [...a, t]))
+      }
       segmento={segmento}
       aoTrocarSegmento={setSegmento}
       faixas={faixas}
@@ -307,276 +333,289 @@ export function PainelFiis({ intervaloMs, busca }: Props) {
 
   return (
     <TooltipProvider delayDuration={150}>
-    <div className="pilha-secao pb-20">
-      <ResumoFiis
-        ifix={grade.data?.ifix ?? null}
-        maiorAlta={maiorAlta}
-        maiorBaixa={maiorBaixa}
-        maiorDy={maiorDy}
-        aoSelecionar={setDetalhe}
-      />
-
-      <Panel
-        title="Fundos imobiliários listados na B3"
-        hint={
-          grade.data
-            ? `${linhas.length.toLocaleString("pt-BR")} fundos monitorados · preços ${
-                pregao.aberto ? "ao vivo durante o pregão" : "do último fechamento"
-              }${grade.data.parcial ? " · alguns indicadores indisponíveis no momento" : ""}`
-            : "Carregando a base completa de fundos…"
-        }
-        bodyClassName="p-0"
-        action={
-          <div className="flex flex-wrap items-center gap-bloco">
-            <div className="relative">
-              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={buscaLocal}
-                onChange={(e) => setBuscaLocal(e.target.value)}
-                placeholder="Filtrar por ticker, nome…"
-                aria-label="Buscar fundo imobiliário"
-                className="h-9 w-[210px] pl-8 text-sm"
-              />
-            </div>
-
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="lg:hidden">
-                  <SlidersHorizontal className="size-4" />
-                  Filtros
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>Filtrar fundos</SheetTitle>
-                </SheetHeader>
-                <div className="p-4 pt-0">{painelFiltros}</div>
-              </SheetContent>
-            </Sheet>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Columns3 className="size-4" />
-                  Colunas
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                sideOffset={8}
-                className="w-[min(94vw,42rem)] overflow-hidden p-0"
-              >
-                <div className="flex items-center justify-between gap-3 px-4 pt-3 pb-2">
-                  <DropdownMenuLabel className="p-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                    Indicadores · {colunas.length}/{COLUNAS.length}
-                  </DropdownMenuLabel>
-                  <div className="flex shrink-0 gap-3 text-xs">
-                    <button
-                      type="button"
-                      className="text-muted-foreground transition-colors hover:text-foreground"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setColunas(COLUNAS_PADRAO);
-                      }}
-                    >
-                      Padrão
-                    </button>
-                    <button
-                      type="button"
-                      className="text-muted-foreground transition-colors hover:text-foreground"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setColunas([]);
-                      }}
-                    >
-                      Limpar
-                    </button>
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-1.5 px-4 pt-1 pb-4">
-                  {COLUNAS.map((c) => {
-                    const on = colunas.includes(c.id);
-                    return (
-                      <button
-                        key={c.id}
-                        type="button"
-                        aria-pressed={on}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          alternarColuna(c.id);
-                        }}
-                        className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                          on
-                            ? "border-primary/40 bg-primary/15 text-primary"
-                            : "border-border text-muted-foreground hover:bg-muted"
-                        }`}
-                      >
-                        {c.rotulo}
-                      </button>
-                    );
-                  })}
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <span
-              title={
-                aoVivo.canal === "websocket"
-                  ? "Preços recebidos por WebSocket, sem recarregar a página"
-                  : aoVivo.canal === "conectando"
-                    ? "Conectando ao canal em tempo real…"
-                    : `Atualização periódica a cada ${Math.round(aoVivo.intervaloPolling / 1000)}s`
-              }
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
-                aoVivo.canal === "websocket"
-                  ? "border-primary/30 bg-primary/10 text-primary"
-                  : "border-border bg-muted text-muted-foreground"
-              }`}
-            >
-              <span
-                className={`size-1.5 rounded-full ${
-                  aoVivo.canal === "websocket" ? "animate-pulse bg-primary" : "bg-muted-foreground"
-                }`}
-                aria-hidden
-              />
-              {aoVivo.canal === "websocket"
-                ? "Tempo real"
-                : aoVivo.canal === "conectando"
-                  ? "Conectando…"
-                  : aoVivo.intervaloPolling > 0
-                    ? `Atualiza ${Math.round(aoVivo.intervaloPolling / 1000)}s`
-                    : "Manual"}
-            </span>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => grade.refetch()}
-              disabled={grade.isFetching}
-              aria-label="Atualizar cotações dos FIIs"
-            >
-              <RefreshCw className={`size-4 ${grade.isFetching ? "animate-spin" : ""}`} />
-              Atualizar
-            </Button>
-
-          </div>
-        }
-      >
-        <div className="hidden border-b border-border p-cartao lg:block">{painelFiltros}</div>
-
-        <TabelaFiis
-          linhas={visiveis}
-          historico={historico}
-          colunas={colunas}
-          ordem={ordem}
-          aoOrdenar={aoOrdenar}
-          favoritos={favoritos}
-          aoFavoritar={alternar}
-          posicoes={posicoes}
-          selecionados={selecionados}
-          aoSelecionar={aoSelecionar}
-          aoAbrir={setDetalhe}
-          carregando={grade.isLoading}
-          inicioRanking={inicio}
-          aoVisiveis={aoVisiveis}
+      <div className="pilha-secao pb-20">
+        <ResumoFiis
+          ifix={grade.data?.ifix ?? null}
+          maiorAlta={maiorAlta}
+          maiorBaixa={maiorBaixa}
+          maiorDy={maiorDy}
+          aoSelecionar={setDetalhe}
         />
 
-        {!grade.isLoading && !visiveis.length ? (
-          <EstadoVazio
-            icone={Building2}
-            titulo="Nenhum FII encontrado"
-            descricao="Nenhum fundo corresponde aos filtros aplicados. Ajuste os critérios ou limpe os filtros."
-            acao={
-              <Button variant="outline" size="sm" onClick={limpar}>
-                Limpar filtros
+        <Panel
+          title="Fundos imobiliários listados na B3"
+          hint={
+            grade.data
+              ? `${linhas.length.toLocaleString("pt-BR")} fundos monitorados · preços ${
+                  pregao.aberto ? "ao vivo durante o pregão" : "do último fechamento"
+                }${grade.data.parcial ? " · alguns indicadores indisponíveis no momento" : ""}`
+              : "Carregando a base completa de fundos…"
+          }
+          bodyClassName="p-0"
+          action={
+            <div className="flex flex-wrap items-center gap-bloco">
+              <div className="relative">
+                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={buscaLocal}
+                  onChange={(e) => setBuscaLocal(e.target.value)}
+                  placeholder="Filtrar por ticker, nome…"
+                  aria-label="Buscar fundo imobiliário"
+                  className="h-9 w-[210px] pl-8 text-sm"
+                />
+              </div>
+
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm" className="lg:hidden">
+                    <SlidersHorizontal className="size-4" />
+                    Filtros
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>Filtrar fundos</SheetTitle>
+                  </SheetHeader>
+                  <div className="p-4 pt-0">{painelFiltros}</div>
+                </SheetContent>
+              </Sheet>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Columns3 className="size-4" />
+                    Colunas
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={8}
+                  className="w-[min(94vw,42rem)] overflow-hidden p-0"
+                >
+                  <div className="flex items-center justify-between gap-3 px-4 pt-3 pb-2">
+                    <DropdownMenuLabel className="p-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                      Indicadores · {colunas.length}/{COLUNAS.length}
+                    </DropdownMenuLabel>
+                    <div className="flex shrink-0 gap-3 text-xs">
+                      <button
+                        type="button"
+                        className="text-muted-foreground transition-colors hover:text-foreground"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setColunas(COLUNAS_PADRAO);
+                        }}
+                      >
+                        Padrão
+                      </button>
+                      <button
+                        type="button"
+                        className="text-muted-foreground transition-colors hover:text-foreground"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setColunas([]);
+                        }}
+                      >
+                        Limpar
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5 px-4 pt-1 pb-4">
+                    {COLUNAS.map((c) => {
+                      const on = colunas.includes(c.id);
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          aria-pressed={on}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            alternarColuna(c.id);
+                          }}
+                          className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                            on
+                              ? "border-primary/40 bg-primary/15 text-primary"
+                              : "border-border text-muted-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {c.rotulo}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <span
+                title={
+                  aoVivo.canal === "websocket"
+                    ? "Preços recebidos por WebSocket, sem recarregar a página"
+                    : aoVivo.canal === "conectando"
+                      ? "Conectando ao canal em tempo real…"
+                      : `Atualização periódica a cada ${Math.round(aoVivo.intervaloPolling / 1000)}s`
+                }
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
+                  aoVivo.canal === "websocket"
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : "border-border bg-muted text-muted-foreground"
+                }`}
+              >
+                <span
+                  className={`size-1.5 rounded-full ${
+                    aoVivo.canal === "websocket"
+                      ? "animate-pulse bg-primary"
+                      : "bg-muted-foreground"
+                  }`}
+                  aria-hidden
+                />
+                {aoVivo.canal === "websocket"
+                  ? "Tempo real"
+                  : aoVivo.canal === "conectando"
+                    ? "Conectando…"
+                    : aoVivo.intervaloPolling > 0
+                      ? `Atualiza ${Math.round(aoVivo.intervaloPolling / 1000)}s`
+                      : "Manual"}
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => grade.refetch()}
+                disabled={grade.isFetching}
+                aria-label="Atualizar cotações dos FIIs"
+              >
+                <RefreshCw className={`size-4 ${grade.isFetching ? "animate-spin" : ""}`} />
+                Atualizar
               </Button>
-            }
+            </div>
+          }
+        >
+          <div className="hidden border-b border-border p-cartao lg:block">{painelFiltros}</div>
+
+          <TabelaFiis
+            linhas={visiveis}
+            historico={historico}
+            colunas={colunas}
+            ordem={ordem}
+            aoOrdenar={aoOrdenar}
+            favoritos={favoritos}
+            aoFavoritar={alternar}
+            posicoes={posicoes}
+            selecionados={selecionados}
+            aoSelecionar={aoSelecionar}
+            aoAbrir={setDetalhe}
+            carregando={grade.isLoading}
+            inicioRanking={inicio}
+            aoVisiveis={aoVisiveis}
           />
+
+          {!grade.isLoading && !visiveis.length ? (
+            <EstadoVazio
+              icone={Building2}
+              titulo="Nenhum FII encontrado"
+              descricao="Nenhum fundo corresponde aos filtros aplicados. Ajuste os critérios ou limpe os filtros."
+              acao={
+                <Button variant="outline" size="sm" onClick={limpar}>
+                  Limpar filtros
+                </Button>
+              }
+            />
+          ) : null}
+
+          <div className="flex flex-wrap items-center justify-between gap-bloco border-t border-border p-bloco text-sm">
+            <span className="text-muted-foreground">
+              Exibindo{" "}
+              <strong className="text-foreground tabular-nums">
+                {ordenadasBase.length ? inicio + 1 : 0}–
+                {Math.min(inicio + porPagina, ordenadasBase.length)}
+              </strong>{" "}
+              de <strong className="text-foreground tabular-nums">{ordenadasBase.length}</strong>{" "}
+              fundos
+            </span>
+            <div className="flex items-center gap-2">
+              <Select value={String(porPagina)} onValueChange={(v) => setPorPagina(Number(v))}>
+                <SelectTrigger className="h-8 w-[110px] text-xs" aria-label="Fundos por página">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TAMANHOS.map((t) => (
+                    <SelectItem key={t} value={String(t)}>
+                      {t} por página
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                variant="outline"
+                size="icon"
+                className="size-8"
+                onClick={() => setPagina((p) => Math.max(0, p - 1))}
+                disabled={paginaAtual === 0}
+                aria-label="Página anterior"
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {paginaAtual + 1} / {totalPaginas}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="size-8"
+                onClick={() => setPagina((p) => Math.min(totalPaginas - 1, p + 1))}
+                disabled={paginaAtual >= totalPaginas - 1}
+                aria-label="Próxima página"
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          </div>
+        </Panel>
+
+        <RodapeEducativoFiis />
+
+        {selecionados.length ? (
+          <div className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[min(560px,calc(100%-2rem))] flex-wrap items-center gap-bloco rounded-xl border border-border bg-card/95 p-cartao shadow-lg backdrop-blur">
+            <Star className="size-4 text-primary" aria-hidden />
+            <span className="text-sm">
+              <strong className="tabular-nums">{selecionados.length}</strong> selecionados:{" "}
+              <span className="text-muted-foreground">{selecionados.join(", ")}</span>
+            </span>
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => setComparando(true)}
+                disabled={selecionados.length < 2}
+              >
+                <GitCompare className="size-4" />
+                Comparar
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                onClick={() => setSelecionados([])}
+                aria-label="Limpar seleção"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center justify-between gap-bloco border-t border-border p-bloco text-sm">
-          <span className="text-muted-foreground">
-            Exibindo{" "}
-            <strong className="text-foreground tabular-nums">
-              {ordenadasBase.length ? inicio + 1 : 0}–{Math.min(inicio + porPagina, ordenadasBase.length)}
-            </strong>{" "}
-            de <strong className="text-foreground tabular-nums">{ordenadasBase.length}</strong> fundos
-          </span>
-          <div className="flex items-center gap-2">
-            <Select value={String(porPagina)} onValueChange={(v) => setPorPagina(Number(v))}>
-              <SelectTrigger className="h-8 w-[110px] text-xs" aria-label="Fundos por página">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TAMANHOS.map((t) => (
-                  <SelectItem key={t} value={String(t)}>
-                    {t} por página
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant="outline"
-              size="icon"
-              className="size-8"
-              onClick={() => setPagina((p) => Math.max(0, p - 1))}
-              disabled={paginaAtual === 0}
-              aria-label="Página anterior"
-            >
-              <ChevronLeft className="size-4" />
-            </Button>
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {paginaAtual + 1} / {totalPaginas}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="size-8"
-              onClick={() => setPagina((p) => Math.min(totalPaginas - 1, p + 1))}
-              disabled={paginaAtual >= totalPaginas - 1}
-              aria-label="Próxima página"
-            >
-              <ChevronRight className="size-4" />
-            </Button>
-          </div>
-        </div>
-      </Panel>
+        <ComparadorFiis
+          linhas={linhasComparadas}
+          historico={historico}
+          aberto={comparando}
+          aoFechar={() => setComparando(false)}
+        />
 
-      <RodapeEducativoFiis />
-
-      {selecionados.length ? (
-        <div className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[min(560px,calc(100%-2rem))] flex-wrap items-center gap-bloco rounded-xl border border-border bg-card/95 p-cartao shadow-lg backdrop-blur">
-          <Star className="size-4 text-primary" aria-hidden />
-          <span className="text-sm">
-            <strong className="tabular-nums">{selecionados.length}</strong> selecionados:{" "}
-            <span className="text-muted-foreground">{selecionados.join(", ")}</span>
-          </span>
-          <div className="ml-auto flex items-center gap-2">
-            <Button size="sm" onClick={() => setComparando(true)} disabled={selecionados.length < 2}>
-              <GitCompare className="size-4" />
-              Comparar
-            </Button>
-            <Button variant="ghost" size="icon" className="size-8" onClick={() => setSelecionados([])} aria-label="Limpar seleção">
-              <X className="size-4" />
-            </Button>
-          </div>
-        </div>
-      ) : null}
-
-      <ComparadorFiis
-        linhas={linhasComparadas}
-        historico={historico}
-        aberto={comparando}
-        aoFechar={() => setComparando(false)}
-      />
-
-      <ModalFii
-        linha={detalhe}
-        historico={detalhe ? historico.get(detalhe.ticker) : undefined}
-        aberto={Boolean(detalhe)}
-        aoFechar={() => setDetalhe(null)}
-      />
-    </div>
+        <ModalFii
+          linha={detalhe}
+          historico={detalhe ? historico.get(detalhe.ticker) : undefined}
+          aberto={Boolean(detalhe)}
+          aoFechar={() => setDetalhe(null)}
+        />
+      </div>
     </TooltipProvider>
   );
 }

@@ -26,7 +26,8 @@ function Indicador({
   tom?: "default" | "positive" | "negative";
   serie?: "patrimonio" | "investido";
 }) {
-  const classeSerie = serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
+  const classeSerie =
+    serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
   const cor = serie
     ? classeSerie
     : tom === "positive"
@@ -71,12 +72,8 @@ function CartaoResumo({
           {titulo}
         </p>
 
-        <span className="hidden shrink-0 text-[0.8rem] text-foreground sm:inline">
-          detalhes
-        </span>
+        <span className="hidden shrink-0 text-[0.8rem] text-foreground sm:inline">detalhes</span>
       </div>
-
-
 
       <div className="mt-3">{children}</div>
     </button>
@@ -124,7 +121,9 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
                     </p>
                   </div>
                   {l.formula && (
-                    <p className="num mt-1 text-[0.82rem] break-words text-muted-foreground">{l.formula}</p>
+                    <p className="num mt-1 text-[0.82rem] break-words text-muted-foreground">
+                      {l.formula}
+                    </p>
                   )}
                 </div>
               ))}
@@ -147,7 +146,9 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
   const totalProventos = proventos.reduce((s, d) => s + d.valor, 0);
   const yieldOnCost = resumo.totalInvestido > 0 ? (recebidos12m / resumo.totalInvestido) * 100 : 0;
   const rentComProventos =
-    resumo.totalInvestido > 0 ? ((resumo.lucroTotal + totalProventos) / resumo.totalInvestido) * 100 : 0;
+    resumo.totalInvestido > 0
+      ? ((resumo.lucroTotal + totalProventos) / resumo.totalInvestido) * 100
+      : 0;
 
   const detalhePatrimonio: Detalhe = {
     titulo: "Patrimônio total",
@@ -169,7 +170,11 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         formula: "valor de mercado − valor investido",
         tom: resumo.lucroTotal >= 0 ? "positive" : "negative",
       },
-      { rotulo: "Ativos na carteira", valor: String(ativos.length), formula: "contagem de posições ativas" },
+      {
+        rotulo: "Ativos na carteira",
+        valor: String(ativos.length),
+        formula: "contagem de posições ativas",
+      },
       {
         rotulo: "Maior posição",
         valor: ativos.length
@@ -222,8 +227,16 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         valor: brl(recebidos12m, 2),
         formula: "Σ proventos com data dentro dos 12 meses corridos",
       },
-      { rotulo: "Total histórico", valor: brl(totalProventos, 2), formula: "Σ de todos os proventos" },
-      { rotulo: "Média mensal (12M)", valor: brl(recebidos12m / 12, 2), formula: "recebido 12M ÷ 12" },
+      {
+        rotulo: "Total histórico",
+        valor: brl(totalProventos, 2),
+        formula: "Σ de todos os proventos",
+      },
+      {
+        rotulo: "Média mensal (12M)",
+        valor: brl(recebidos12m / 12, 2),
+        formula: "recebido 12M ÷ 12",
+      },
       {
         rotulo: "Yield on cost (12M)",
         valor: pct(yieldOnCost, 2),
@@ -234,7 +247,11 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         valor: brl(resumo.dividendosEstimados12m, 2),
         formula: "Σ (valor de mercado do ativo × DY ÷ 100)",
       },
-      { rotulo: "Lançamentos", valor: String(proventos.length), formula: "quantidade de proventos registrados" },
+      {
+        rotulo: "Lançamentos",
+        valor: String(proventos.length),
+        formula: "quantidade de proventos registrados",
+      },
     ],
   };
 
@@ -284,7 +301,6 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       )}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-
         <CartaoResumo
           titulo="Patrimônio total"
           icone={Wallet}
@@ -298,11 +314,19 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
             <DeltaChip value={resumo.rentabilidade} />
           </div>
           <div className="mt-3">
-            <Indicador rotulo="Valor investido" valor={brl(resumo.totalInvestido, 2)} serie="investido" />
+            <Indicador
+              rotulo="Valor investido"
+              valor={brl(resumo.totalInvestido, 2)}
+              serie="investido"
+            />
           </div>
         </CartaoResumo>
 
-        <CartaoResumo titulo="Lucro total" icone={PiggyBank} onClick={() => setAberto(detalheLucro)}>
+        <CartaoResumo
+          titulo="Lucro total"
+          icone={PiggyBank}
+          onClick={() => setAberto(detalheLucro)}
+        >
           <p
             className={`num font-display text-[1.6rem] leading-none font-bold ${
               resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
@@ -325,7 +349,9 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={Coins}
           onClick={() => setAberto(detalheProventos)}
         >
-          <p className="num font-display text-[1.6rem] leading-none font-bold">{brl(recebidos12m, 2)}</p>
+          <p className="num font-display text-[1.6rem] leading-none font-bold">
+            {brl(recebidos12m, 2)}
+          </p>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <Indicador rotulo="Total" valor={brl(totalProventos, 2)} />
             <Indicador rotulo="Média mensal" valor={brl(recebidos12m / 12, 2)} />

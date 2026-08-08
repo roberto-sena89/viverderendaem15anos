@@ -23,7 +23,7 @@ export function useMarketQuote(symbol: string | null): UseMarketQuote {
 
   const q = useQuery({
     queryKey: ["brapi-quote", symbol],
-    queryFn: () => buscar({ data: { symbol: symbol as string } }),
+    queryFn: () => buscar({ data: { symbol: symbol } }),
     enabled: ativo,
     refetchInterval: INTERVALO_BRAPI_MS,
     refetchIntervalInBackground: false,
@@ -37,7 +37,7 @@ export function useMarketQuote(symbol: string | null): UseMarketQuote {
 
   return {
     loading: ativo && q.isLoading,
-    error: q.error ? (q.error as Error).message : null,
+    error: q.error ? q.error.message : null,
     quote: q.data ?? null,
     refresh,
   };

@@ -9,7 +9,6 @@ import { Switch } from "@/components/ui/switch";
 import { pedirPermissaoPush, permissaoPush } from "@/lib/alertas-historico";
 import { useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 
-
 /** Tempo relativo curto ("há 12s", "às 14:32"). */
 export function tempoRelativo(ts: number | null): string {
   if (!ts) return "—";
@@ -33,7 +32,6 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
     streaming,
   } = useCotacoesTempoReal();
 
-
   // Re-renderiza a cada 10s para manter o "há Xs" vivo.
   const [, setTick] = useState(0);
   useEffect(() => {
@@ -41,10 +39,10 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
     return () => window.clearInterval(id);
   }, []);
 
-  const [permissao, setPermissao] = useState<NotificationPermission | "indisponivel">("indisponivel");
+  const [permissao, setPermissao] = useState<NotificationPermission | "indisponivel">(
+    "indisponivel",
+  );
   useEffect(() => setPermissao(permissaoPush()), []);
-
-
 
   const rotulo =
     status === "atualizando"
@@ -71,7 +69,9 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
       <span className="flex min-w-0 items-center gap-2">
         <span className="relative flex size-2.5 shrink-0">
           {status === "ao-vivo" ? (
-            <span className={`absolute inline-flex size-full animate-ping rounded-full ${cor} opacity-60`} />
+            <span
+              className={`absolute inline-flex size-full animate-ping rounded-full ${cor} opacity-60`}
+            />
           ) : null}
           <span className={`relative inline-flex size-2.5 rounded-full ${cor}`} />
         </span>
@@ -102,7 +102,6 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
           Streaming internacional
         </span>
       ) : null}
-
 
       <span className="ml-auto flex items-center gap-1.5">
         <Button
@@ -141,7 +140,6 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
                 onCheckedChange={(v) => salvarConfig({ automatico: v })}
               />
             </div>
-
 
             <div className="space-y-2 border-t border-border pt-3">
               <div className="flex items-center justify-between gap-3">
@@ -202,7 +200,6 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
                     : "Avisos do sistema quando um ativo passar do limite. O histórico fica no sino do cabeçalho."}
               </p>
             </div>
-
           </PopoverContent>
         </Popover>
       </span>

@@ -58,9 +58,24 @@ export const COLUNAS_ACAO: {
   grupo: GrupoColuna;
   ajuda: string;
 }[] = [
-  { id: "var30d", rotulo: "Var. 30d", grupo: "Preço", ajuda: "Rentabilidade do papel nos últimos 30 dias." },
-  { id: "var12m", rotulo: "Var. 12m", grupo: "Preço", ajuda: "Rentabilidade do papel nos últimos 12 meses." },
-  { id: "var60m", rotulo: "Var. 5 anos", grupo: "Preço", ajuda: "Rentabilidade do papel nos últimos cinco anos." },
+  {
+    id: "var30d",
+    rotulo: "Var. 30d",
+    grupo: "Preço",
+    ajuda: "Rentabilidade do papel nos últimos 30 dias.",
+  },
+  {
+    id: "var12m",
+    rotulo: "Var. 12m",
+    grupo: "Preço",
+    ajuda: "Rentabilidade do papel nos últimos 12 meses.",
+  },
+  {
+    id: "var60m",
+    rotulo: "Var. 5 anos",
+    grupo: "Preço",
+    ajuda: "Rentabilidade do papel nos últimos cinco anos.",
+  },
   {
     id: "valorMercado",
     rotulo: "Valor de mercado",
@@ -71,19 +86,22 @@ export const COLUNAS_ACAO: {
     id: "pl",
     rotulo: "P/L",
     grupo: "Valuation",
-    ajuda: "Preço sobre Lucro: quantos anos de lucro atual seriam necessários para pagar o preço da ação. Negativo indica prejuízo.",
+    ajuda:
+      "Preço sobre Lucro: quantos anos de lucro atual seriam necessários para pagar o preço da ação. Negativo indica prejuízo.",
   },
   {
     id: "pvp",
     rotulo: "P/VP",
     grupo: "Valuation",
-    ajuda: "Preço sobre Valor Patrimonial. Abaixo de 1,00 a ação é negociada por menos do que o patrimônio contábil.",
+    ajuda:
+      "Preço sobre Valor Patrimonial. Abaixo de 1,00 a ação é negociada por menos do que o patrimônio contábil.",
   },
   {
     id: "bazin",
     rotulo: "Preço-teto Bazin",
     grupo: "Valuation",
-    ajuda: "Método Bazin: dividendo anual por ação dividido por um yield mínimo exigido de 6% ao ano.",
+    ajuda:
+      "Método Bazin: dividendo anual por ação dividido por um yield mínimo exigido de 6% ao ano.",
   },
   {
     id: "upsideBazin",
@@ -119,13 +137,15 @@ export const COLUNAS_ACAO: {
     id: "roe",
     rotulo: "ROE",
     grupo: "Rentabilidade",
-    ajuda: "Retorno sobre o Patrimônio Líquido: quanto de lucro a empresa gera sobre o capital dos acionistas.",
+    ajuda:
+      "Retorno sobre o Patrimônio Líquido: quanto de lucro a empresa gera sobre o capital dos acionistas.",
   },
   {
     id: "margemLiquida",
     rotulo: "Margem líquida",
     grupo: "Rentabilidade",
-    ajuda: "Percentual do faturamento que sobra como lucro depois de todos os custos, despesas e impostos.",
+    ajuda:
+      "Percentual do faturamento que sobra como lucro depois de todos os custos, despesas e impostos.",
   },
   {
     id: "patrimonio",
@@ -133,8 +153,18 @@ export const COLUNAS_ACAO: {
     grupo: "Fundamentos",
     ajuda: "Valor contábil dos ativos menos as obrigações da empresa.",
   },
-  { id: "lucro", rotulo: "Lucro", grupo: "Fundamentos", ajuda: "Lucro líquido dos últimos 12 meses." },
-  { id: "receita", rotulo: "Receita", grupo: "Fundamentos", ajuda: "Receita líquida dos últimos 12 meses." },
+  {
+    id: "lucro",
+    rotulo: "Lucro",
+    grupo: "Fundamentos",
+    ajuda: "Lucro líquido dos últimos 12 meses.",
+  },
+  {
+    id: "receita",
+    rotulo: "Receita",
+    grupo: "Fundamentos",
+    ajuda: "Receita líquida dos últimos 12 meses.",
+  },
   {
     id: "crescReceita5a",
     rotulo: "Cresc. receita 5a",
@@ -145,7 +175,8 @@ export const COLUNAS_ACAO: {
     id: "dividaPatrimonio",
     rotulo: "Dívida/Patrimônio",
     grupo: "Estrutura de capital",
-    ajuda: "Dívida líquida dividida pelo patrimônio líquido. Quanto menor, menos alavancada é a empresa.",
+    ajuda:
+      "Dívida líquida dividida pelo patrimônio líquido. Quanto menor, menos alavancada é a empresa.",
   },
   {
     id: "liquidez",
@@ -157,11 +188,27 @@ export const COLUNAS_ACAO: {
     id: "pontuacao",
     rotulo: "Pontuação B&H",
     grupo: "Qualitativo",
-    ajuda: "Score de 0 a 100 que combina dividendos, ROE, margem líquida, endividamento, crescimento, valuation e liquidez.",
+    ajuda:
+      "Score de 0 a 100 que combina dividendos, ROE, margem líquida, endividamento, crescimento, valuation e liquidez.",
   },
-  { id: "setor", rotulo: "Setor", grupo: "Classificação", ajuda: "Setor macro de atuação da empresa." },
-  { id: "subsetor", rotulo: "Subsetor", grupo: "Classificação", ajuda: "Refinamento do setor de atuação." },
-  { id: "segmento", rotulo: "Segmento", grupo: "Classificação", ajuda: "Segmento específico dentro do subsetor." },
+  {
+    id: "setor",
+    rotulo: "Setor",
+    grupo: "Classificação",
+    ajuda: "Setor macro de atuação da empresa.",
+  },
+  {
+    id: "subsetor",
+    rotulo: "Subsetor",
+    grupo: "Classificação",
+    ajuda: "Refinamento do setor de atuação.",
+  },
+  {
+    id: "segmento",
+    rotulo: "Segmento",
+    grupo: "Classificação",
+    ajuda: "Segmento específico dentro do subsetor.",
+  },
 ];
 
 export const GRUPOS_COLUNA: GrupoColuna[] = [
@@ -245,7 +292,6 @@ function Cabecalho({
       <span
         className={`inline-flex max-w-full items-center gap-1 ${alinhamento === "right" ? "flex-row-reverse" : ""}`}
       >
-
         <button
           type="button"
           onClick={() => aoOrdenar(coluna)}
@@ -265,7 +311,11 @@ function Cabecalho({
         </button>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button type="button" aria-label={`O que é ${rotulo}`} className="text-muted-foreground/70">
+            <button
+              type="button"
+              aria-label={`O que é ${rotulo}`}
+              className="text-muted-foreground/70"
+            >
               <Info className="size-3" aria-hidden />
             </button>
           </TooltipTrigger>
@@ -276,7 +326,15 @@ function Cabecalho({
   );
 }
 
-function Estrela({ ativo, aoClicar, ticker }: { ativo: boolean; aoClicar: () => void; ticker: string }) {
+function Estrela({
+  ativo,
+  aoClicar,
+  ticker,
+}: {
+  ativo: boolean;
+  aoClicar: () => void;
+  ticker: string;
+}) {
   return (
     <button
       type="button"
@@ -306,7 +364,6 @@ export function BadgeSetor({ linha }: { linha: LinhaAcao }) {
   );
 }
 
-
 function BadgeNeutro({ texto }: { texto: string | null }) {
   if (!texto) return <span className="text-muted-foreground">—</span>;
   return (
@@ -331,11 +388,17 @@ function Num({ valor, texto, casas }: { valor: number | null; texto?: string; ca
 export function celulaAcao(id: ColunaAcaoId, l: LinhaAcao, h: HistoricoAcao | undefined) {
   switch (id) {
     case "var30d":
-      return <span className={`tabular-nums ${corVar(h?.var30d)}`}>{fmtPct(h?.var30d ?? null)}</span>;
+      return (
+        <span className={`tabular-nums ${corVar(h?.var30d)}`}>{fmtPct(h?.var30d ?? null)}</span>
+      );
     case "var12m":
-      return <span className={`tabular-nums ${corVar(h?.var12m)}`}>{fmtPct(h?.var12m ?? null)}</span>;
+      return (
+        <span className={`tabular-nums ${corVar(h?.var12m)}`}>{fmtPct(h?.var12m ?? null)}</span>
+      );
     case "var60m":
-      return <span className={`tabular-nums ${corVar(h?.var60m)}`}>{fmtPct(h?.var60m ?? null)}</span>;
+      return (
+        <span className={`tabular-nums ${corVar(h?.var60m)}`}>{fmtPct(h?.var60m ?? null)}</span>
+      );
     case "valorMercado":
       return <Num valor={l.valorMercado} texto={fmtCompacto(l.valorMercado)} />;
     case "pl":
@@ -345,11 +408,15 @@ export function celulaAcao(id: ColunaAcaoId, l: LinhaAcao, h: HistoricoAcao | un
     case "bazin":
       return <Num valor={l.precoTetoBazin} texto={fmtMoeda(l.precoTetoBazin)} />;
     case "upsideBazin":
-      return <span className={`tabular-nums ${corVar(l.upsideBazin)}`}>{fmtPct(l.upsideBazin)}</span>;
+      return (
+        <span className={`tabular-nums ${corVar(l.upsideBazin)}`}>{fmtPct(l.upsideBazin)}</span>
+      );
     case "graham":
       return <Num valor={l.precoJustoGraham} texto={fmtMoeda(l.precoJustoGraham)} />;
     case "upsideGraham":
-      return <span className={`tabular-nums ${corVar(l.upsideGraham)}`}>{fmtPct(l.upsideGraham)}</span>;
+      return (
+        <span className={`tabular-nums ${corVar(l.upsideGraham)}`}>{fmtPct(l.upsideGraham)}</span>
+      );
     case "dy12":
       return <Num valor={l.dy12} texto={fmtPctSimples(l.dy12, 2)} />;
     case "dy5a":
@@ -410,7 +477,11 @@ export function TabelaAcoes({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const ehMobile = useEhMobile();
-  const janela = useJanelaVirtual(containerRef, linhas.length, ehMobile ? ALTURA_CARD : ALTURA_LINHA);
+  const janela = useJanelaVirtual(
+    containerRef,
+    linhas.length,
+    ehMobile ? ALTURA_CARD : ALTURA_LINHA,
+  );
 
   const naJanela = useMemo(
     () => linhas.slice(janela.inicio, janela.fim),
@@ -456,7 +527,10 @@ export function TabelaAcoes({
             <table className="w-full table-fixed border-collapse text-sm">
               <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
                 <tr className="border-b border-border">
-                  <th scope="col" className="w-8 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="w-8 px-1 py-2 text-right text-[0.7rem] text-muted-foreground"
+                  >
                     #
                   </th>
 
@@ -498,7 +572,6 @@ export function TabelaAcoes({
                       largura={ALINHA_ESQUERDA.includes(c.id) ? "w-[14%]" : undefined}
                     />
                   ))}
-
                 </tr>
               </thead>
               <tbody>
@@ -560,7 +633,6 @@ export function TabelaAcoes({
                         </div>
                       </td>
                       <td className="truncate px-2 py-2 text-right">
-
                         <span
                           key={`${l.ticker}-${l.preco}`}
                           className={`inline-flex items-center gap-1 rounded px-1 font-medium tabular-nums ${
@@ -575,7 +647,8 @@ export function TabelaAcoes({
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent className="text-xs">
-                                Sincronização ao vivo indisponível para este papel — exibindo o último fechamento.
+                                Sincronização ao vivo indisponível para este papel — exibindo o
+                                último fechamento.
                               </TooltipContent>
                             </Tooltip>
                           ) : null}
@@ -587,7 +660,9 @@ export function TabelaAcoes({
                           </span>
                         ) : null}
                       </td>
-                      <td className={`truncate px-2 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
+                      <td
+                        className={`truncate px-2 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}
+                      >
                         <span className="block font-medium">{fmtPct(l.variacaoPercent)}</span>
                         <span className="block text-[0.68rem]">
                           {l.variacao === null ? "" : fmtMoeda(l.variacao)}
@@ -603,7 +678,6 @@ export function TabelaAcoes({
                           {celulaAcao(c.id, l, h)}
                         </td>
                       ))}
-
                     </tr>
                   );
                 })}
@@ -646,7 +720,9 @@ export function TabelaAcoes({
                           </span>
                           {l.ticker}
                         </span>
-                        <span className="block truncate text-xs text-muted-foreground">{nomeEmpresa(l)}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {nomeEmpresa(l)}
+                        </span>
                       </span>
                     </div>
                     <div className="text-right">
@@ -658,7 +734,9 @@ export function TabelaAcoes({
                       >
                         {fmtMoeda(l.preco)}
                       </span>
-                      <span className={`block text-xs font-medium tabular-nums ${corVar(l.variacaoPercent)}`}>
+                      <span
+                        className={`block text-xs font-medium tabular-nums ${corVar(l.variacaoPercent)}`}
+                      >
                         {fmtPct(l.variacaoPercent)}
                       </span>
                     </div>
@@ -669,7 +747,11 @@ export function TabelaAcoes({
                     <Info2 rotulo="P/VP" valor={fmtNumero(l.pvp, 2)} />
                     <Info2 rotulo="ROE" valor={fmtPctSimples(l.roe, 1)} />
                     <Info2 rotulo="Valor de mercado" valor={fmtCompacto(l.valorMercado)} />
-                    <Info2 rotulo="Var. 12m" valor={fmtPct(h?.var12m ?? null)} cor={corVar(h?.var12m)} />
+                    <Info2
+                      rotulo="Var. 12m"
+                      valor={fmtPct(h?.var12m ?? null)}
+                      cor={corVar(h?.var12m)}
+                    />
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-1.5">
                     <BadgeSetor linha={l} />

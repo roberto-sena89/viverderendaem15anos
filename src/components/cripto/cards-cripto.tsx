@@ -38,7 +38,9 @@ export function CardsCripto({
         const favorito = favoritos.includes(l.ticker);
         const posicao = posicoes.get(l.ticker);
         const rentabilidade =
-          posicao && posicao.precoMedio > 0 && brl !== null ? (brl / posicao.precoMedio - 1) * 100 : null;
+          posicao && posicao.precoMedio > 0 && brl !== null
+            ? (brl / posicao.precoMedio - 1) * 100
+            : null;
 
         return (
           <li key={l.id}>
@@ -55,7 +57,9 @@ export function CardsCripto({
                 <div className="flex min-w-0 items-center gap-2">
                   <button
                     type="button"
-                    aria-label={favorito ? `Remover ${l.ticker} dos favoritos` : `Favoritar ${l.ticker}`}
+                    aria-label={
+                      favorito ? `Remover ${l.ticker} dos favoritos` : `Favoritar ${l.ticker}`
+                    }
                     aria-pressed={favorito}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -70,13 +74,22 @@ export function CardsCripto({
                     />
                   </button>
                   {l.imagem ? (
-                    <img src={l.imagem} alt="" className="size-7 shrink-0 rounded-full" loading="lazy" />
+                    <img
+                      src={l.imagem}
+                      alt=""
+                      className="size-7 shrink-0 rounded-full"
+                      loading="lazy"
+                    />
                   ) : null}
                   <div className="min-w-0">
                     <TextoTruncado as="p" className="t-ticker block" texto={l.nome}>
                       <RealceTermo texto={l.nome} termo={termoBusca} />
                     </TextoTruncado>
-                    <TextoTruncado as="p" className="t-subtexto block" texto={`#${l.rank ?? "—"} · ${l.ticker}`}>
+                    <TextoTruncado
+                      as="p"
+                      className="t-subtexto block"
+                      texto={`#${l.rank ?? "—"} · ${l.ticker}`}
+                    >
                       #{l.rank ?? "—"} · <RealceTermo texto={l.ticker} termo={termoBusca} />
                     </TextoTruncado>
                   </div>
@@ -84,7 +97,11 @@ export function CardsCripto({
                 <div className="shrink-0 text-right">
                   <p
                     className={`t-num font-semibold ${
-                      flash[l.id] === "alta" ? "flash-alta" : flash[l.id] === "baixa" ? "flash-baixa" : ""
+                      flash[l.id] === "alta"
+                        ? "flash-alta"
+                        : flash[l.id] === "baixa"
+                          ? "flash-baixa"
+                          : ""
                     }`}
                   >
                     {fmtPreco(brl, "R$")}
@@ -142,7 +159,6 @@ export function CardsCripto({
                   <p className="t-num-sm truncate">{fmtPreco(l.precoUsd, "US$")}</p>
                 </div>
               </div>
-
 
               <div className="mt-bloco flex items-center justify-between gap-2">
                 <BadgeCategoria categoria={l.categoria} rede={l.rede} />

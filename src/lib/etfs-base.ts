@@ -34,7 +34,8 @@ export function classificarEtf(ticker: string, nome: string): ClasseEtf {
   const t = ticker.toUpperCase();
   const n = `${t} ${nome}`.toLowerCase();
 
-  if (/bitcoin|ethereum|cripto|crypto|blockchain|solana|web3|digital asset/.test(n)) return "Cripto";
+  if (/bitcoin|ethereum|cripto|crypto|blockchain|solana|web3|digital asset/.test(n))
+    return "Cripto";
   if (
     /tesouro|selic|ima-b|imab|irf-m|irfm|ipca|prefixad|debentur|renda fixa|cdi|juros|treasury|bond|inflaç/.test(
       n,
@@ -42,7 +43,8 @@ export function classificarEtf(ticker: string, nome: string): ClasseEtf {
   ) {
     return "Renda Fixa";
   }
-  if (/ouro|gold|prata|silver|commodit|petróleo|petroleo|agro commodities/.test(n)) return "Commodities";
+  if (/ouro|gold|prata|silver|commodit|petróleo|petroleo|agro commodities/.test(n))
+    return "Commodities";
   if (
     /s&p|sp 500|sp500|nasdaq|msci|world|global|eua|estados unidos|china|europa|japão|japao|emerg|internacional|dólar|dolar|bdr|latam|índia|india|reit/.test(
       n,

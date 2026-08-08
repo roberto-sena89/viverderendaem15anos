@@ -28,7 +28,9 @@ export function DialogAlocacaoAlvo() {
   const [valores, setValores] = useState<Record<string, string>>({});
   const [subValores, setSubValores] = useState<Record<string, string>>({});
   /** Snapshot do estado salvo ao abrir, usado para desfazer se o usuário fechar sem salvar. */
-  const original = useRef<{ alvo: Record<string, number>; sub: Record<string, number> } | null>(null);
+  const original = useRef<{ alvo: Record<string, number>; sub: Record<string, number> } | null>(
+    null,
+  );
   const confirmado = useRef(false);
 
   useEffect(() => {
@@ -37,13 +39,16 @@ export function DialogAlocacaoAlvo() {
     // atualiza os alvos enquanto o diálogo está aberto.
     original.current = { alvo: { ...alvo }, sub: { ...subAlvo } };
     confirmado.current = false;
-    setValores(Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])));
+    setValores(
+      Object.fromEntries(Object.entries(alvo).map(([c, v]) => [c, String(v).replace(".", ",")])),
+    );
     setSubValores(
-      Object.fromEntries(SUBS_RENDA_FIXA.map((s) => [s, String(subAlvo[s] ?? 0).replace(".", ",")])),
+      Object.fromEntries(
+        SUBS_RENDA_FIXA.map((s) => [s, String(subAlvo[s] ?? 0).replace(".", ",")]),
+      ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aberto]);
-
 
   /** Mantém apenas dígitos e um separador decimal, com no máximo 2 casas. */
   const sanitizar = (bruto: string) => {
@@ -129,10 +134,13 @@ export function DialogAlocacaoAlvo() {
 
   /** Setas ajustam 0,01 (Shift = 1,00; PageUp/PageDown = 5,00), respeitando 0–100. */
   const aoTeclar = (classe: string) => (e: KeyboardEvent<HTMLInputElement>) => {
-    const passo =
-      e.key === "PageUp" || e.key === "PageDown" ? 5 : e.shiftKey ? 1 : 0.01;
+    const passo = e.key === "PageUp" || e.key === "PageDown" ? 5 : e.shiftKey ? 1 : 0.01;
     const sinal =
-      e.key === "ArrowUp" || e.key === "PageUp" ? 1 : e.key === "ArrowDown" || e.key === "PageDown" ? -1 : 0;
+      e.key === "ArrowUp" || e.key === "PageUp"
+        ? 1
+        : e.key === "ArrowDown" || e.key === "PageDown"
+          ? -1
+          : 0;
     if (sinal === 0) return;
     e.preventDefault();
     const atual = paraNumero(valores[classe] ?? "") || 0;
@@ -151,7 +159,9 @@ export function DialogAlocacaoAlvo() {
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Alocação ideal por classe</DialogTitle>
-          <DialogDescription>Defina o percentual-alvo de cada classe. A soma precisa ser 100%.</DialogDescription>
+          <DialogDescription>
+            Defina o percentual-alvo de cada classe. A soma precisa ser 100%.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
@@ -175,8 +185,9 @@ export function DialogAlocacaoAlvo() {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-64 text-xs">
-                        A Renda Fixa é calculada automaticamente como a soma de Tesouro SELIC, Tesouro IPCA+, Tesouro
-                        Prefixado e CDB. Por isso o campo fica somente leitura — ajuste as sub-classes abaixo.
+                        A Renda Fixa é calculada automaticamente como a soma de Tesouro SELIC,
+                        Tesouro IPCA+, Tesouro Prefixado e CDB. Por isso o campo fica somente
+                        leitura — ajuste as sub-classes abaixo.
                       </TooltipContent>
                     </Tooltip>
                   </Label>
@@ -209,7 +220,10 @@ export function DialogAlocacaoAlvo() {
                   const id = `alvo-sub-${sub.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
                   return (
                     <div key={sub} className="flex items-center justify-between gap-3">
-                      <Label htmlFor={id} className="min-w-0 truncate text-xs font-normal text-muted-foreground">
+                      <Label
+                        htmlFor={id}
+                        className="min-w-0 truncate text-xs font-normal text-muted-foreground"
+                      >
                         ↳ {sub}
                       </Label>
                       <div className="flex shrink-0 items-center gap-1.5">
@@ -218,7 +232,9 @@ export function DialogAlocacaoAlvo() {
                           inputMode="decimal"
                           aria-invalid={subsInvalidos.has(sub)}
                           value={subValores[sub] ?? ""}
-                          onChange={(e) => setSubValores((v) => ({ ...v, [sub]: sanitizar(e.target.value) }))}
+                          onChange={(e) =>
+                            setSubValores((v) => ({ ...v, [sub]: sanitizar(e.target.value) }))
+                          }
                           className="h-9 w-20 text-right text-sm tabular-nums"
                         />
                         <span className="text-xs text-muted-foreground">%</span>
@@ -227,8 +243,11 @@ export function DialogAlocacaoAlvo() {
                   );
                 })}
               </div>
-              <p className={`mt-2 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}>
-                Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% = total da Renda Fixa.
+              <p
+                className={`mt-2 text-[11px] ${subInvalido ? "text-destructive" : "text-muted-foreground"}`}
+              >
+                Soma das sub-classes: {somaSubs.toFixed(1).replace(".", ",")}% = total da Renda
+                Fixa.
               </p>
             </div>
           )}
@@ -241,7 +260,10 @@ export function DialogAlocacaoAlvo() {
                   key={classe}
                   className="flex items-center justify-between gap-3 rounded-md border border-border/60 bg-muted/20 px-3 py-2"
                 >
-                  <Label htmlFor={`alvo-${classe}`} className="min-w-0 truncate text-xs font-medium">
+                  <Label
+                    htmlFor={`alvo-${classe}`}
+                    className="min-w-0 truncate text-xs font-medium"
+                  >
                     {classe}
                   </Label>
                   <div className="flex shrink-0 items-center gap-1.5">
@@ -251,7 +273,9 @@ export function DialogAlocacaoAlvo() {
                       aria-invalid={camposInvalidos.has(classe)}
                       value={valores[classe] ?? ""}
                       onKeyDown={aoTeclar(classe)}
-                      onChange={(e) => setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))}
+                      onChange={(e) =>
+                        setValores((v) => ({ ...v, [classe]: sanitizar(e.target.value) }))
+                      }
                       className="h-9 w-20 text-right text-sm tabular-nums"
                     />
                     <span className="text-xs text-muted-foreground">%</span>
@@ -260,7 +284,6 @@ export function DialogAlocacaoAlvo() {
               ))}
           </div>
         </div>
-
 
         <div className="space-y-2 rounded-md border border-border/60 bg-muted/30 px-3 py-2.5">
           <div className="flex items-center justify-between text-xs font-semibold">
@@ -277,19 +300,21 @@ export function DialogAlocacaoAlvo() {
           </div>
           {!somaOk && !tudoZerado && (
             <p className="text-xs text-destructive">
-              {restante > 0 ? "Faltam" : "Excedem"} {Math.abs(restante).toFixed(1).replace(".", ",")} pontos para
-              fechar 100%.
+              {restante > 0 ? "Faltam" : "Excedem"}{" "}
+              {Math.abs(restante).toFixed(1).replace(".", ",")} pontos para fechar 100%.
             </p>
           )}
           {tudoZerado && (
-            <p className="text-xs text-muted-foreground">Tudo zerado — você pode salvar assim mesmo.</p>
+            <p className="text-xs text-muted-foreground">
+              Tudo zerado — você pode salvar assim mesmo.
+            </p>
           )}
           {camposInvalidos.size > 0 && (
-            <p className="text-xs text-destructive">Informe um número entre 0 e 100 em cada classe.</p>
+            <p className="text-xs text-destructive">
+              Informe um número entre 0 e 100 em cada classe.
+            </p>
           )}
         </div>
-
-
 
         <DialogFooter className="gap-2 sm:justify-between">
           <Button

@@ -47,7 +47,7 @@ export type EstadoTempoRealFiis = {
 function extrairPrecos(payload: unknown): { precos: Map<string, PrecoAoVivo>; em: string | null } {
   const precos = new Map<string, PrecoAoVivo>();
   const grade = payload as Partial<RespostaFiis> | null;
-  const linhas = Array.isArray(grade?.linhas) ? (grade!.linhas as LinhaFii[]) : [];
+  const linhas = Array.isArray(grade?.linhas) ? grade.linhas : [];
   for (const l of linhas) {
     if (!l?.ticker) continue;
     precos.set(l.ticker, {

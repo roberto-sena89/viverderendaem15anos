@@ -91,7 +91,9 @@ export function ComparadorAcoes({
                 </th>
                 {linhas.map((l) => (
                   <th key={l.ticker} scope="col" className="min-w-0 px-3 py-2 text-right">
-                    <TextoTruncado as="span" className="t-ticker block font-display">{l.ticker}</TextoTruncado>
+                    <TextoTruncado as="span" className="t-ticker block font-display">
+                      {l.ticker}
+                    </TextoTruncado>
                     <TextoTruncado as="span" className="t-subtexto block font-normal">
                       {nomeEmpresa(l)}
                     </TextoTruncado>
@@ -107,7 +109,10 @@ export function ComparadorAcoes({
             <tbody>
               {INDICADORES.map((ind) => (
                 <tr key={ind.rotulo} className="border-b border-border/60">
-                  <th scope="row" className="py-2 text-left text-xs font-medium text-muted-foreground">
+                  <th
+                    scope="row"
+                    className="py-2 text-left text-xs font-medium text-muted-foreground"
+                  >
                     {ind.rotulo}
                   </th>
                   {linhas.map((l) => {
@@ -124,15 +129,25 @@ export function ComparadorAcoes({
                 </tr>
               ))}
               <tr>
-                <th scope="row" className="py-3 text-left text-xs font-medium text-muted-foreground">
+                <th
+                  scope="row"
+                  className="py-3 text-left text-xs font-medium text-muted-foreground"
+                >
                   Performance (5a · 12m · 30d)
                 </th>
                 {linhas.map((l) => {
                   const h = historico.get(l.ticker);
-                  const serie = [0, h?.var60m ?? 0, h?.var12m ?? 0, h?.var30d ?? 0].map((v) => v / maxima);
+                  const serie = [0, h?.var60m ?? 0, h?.var12m ?? 0, h?.var30d ?? 0].map(
+                    (v) => v / maxima,
+                  );
                   return (
                     <td key={l.ticker} className="px-3 py-3 text-right">
-                      <Sparkline serie={serie} positivo={(h?.var12m ?? 0) >= 0} largura={110} altura={34} />
+                      <Sparkline
+                        serie={serie}
+                        positivo={(h?.var12m ?? 0) >= 0}
+                        largura={110}
+                        altura={34}
+                      />
                     </td>
                   );
                 })}

@@ -8,7 +8,12 @@ function quando(ts: number) {
   const hoje = new Date().toDateString() === d.toDateString();
   return hoje
     ? d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-    : d.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+    : d.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 }
 
 /** Sino do cabeçalho com o histórico dos alertas de variação disparados. */
@@ -67,7 +72,11 @@ export function SinoAlertas() {
                       alta ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
                     }`}
                   >
-                    {alta ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
+                    {alta ? (
+                      <TrendingUp className="size-3.5" />
+                    ) : (
+                      <TrendingDown className="size-3.5" />
+                    )}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">
@@ -79,7 +88,9 @@ export function SinoAlertas() {
                     </p>
                     <p className="text-xs text-muted-foreground">
                       Limite de {a.limite}%
-                      {a.preco ? ` · ${a.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}` : ""}
+                      {a.preco
+                        ? ` · ${a.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`
+                        : ""}
                     </p>
                     <p className="text-[0.7rem] text-muted-foreground">
                       {quando(a.em)} · {a.canais.join(" + ")}

@@ -85,7 +85,9 @@ export function ModalCripto({
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2 text-left">
-            {linha.imagem ? <img src={linha.imagem} alt="" className="size-6 rounded-full" /> : null}
+            {linha.imagem ? (
+              <img src={linha.imagem} alt="" className="size-6 rounded-full" />
+            ) : null}
             <span className="font-display text-xl">{linha.nome}</span>
             <span className="text-sm text-muted-foreground">{linha.ticker}</span>
             <BadgeCategoria categoria={linha.categoria} rede={linha.rede} />
@@ -97,7 +99,9 @@ export function ModalCripto({
               aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
               onClick={() => alternar(linha.ticker)}
             >
-              <Star className={`size-4 ${favorito ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+              <Star
+                className={`size-4 ${favorito ? "fill-primary text-primary" : "text-muted-foreground"}`}
+              />
             </Button>
           </DialogTitle>
           <DialogDescription className="text-left">
@@ -108,8 +112,12 @@ export function ModalCripto({
         <div className="pilha-secao">
           <div className="flex flex-wrap items-end gap-x-4 gap-y-1">
             <p className="font-display text-3xl tabular-nums">{fmtPreco(brl, "R$")}</p>
-            <p className="text-sm text-muted-foreground tabular-nums">{fmtPreco(linha.precoUsd, "US$")}</p>
-            <p className={`text-sm font-semibold tabular-nums ${corVar(linha.variacao24h, stable)}`}>
+            <p className="text-sm text-muted-foreground tabular-nums">
+              {fmtPreco(linha.precoUsd, "US$")}
+            </p>
+            <p
+              className={`text-sm font-semibold tabular-nums ${corVar(linha.variacao24h, stable)}`}
+            >
               {fmtPct(linha.variacao24h)} em 24h
             </p>
           </div>
@@ -149,7 +157,10 @@ export function ModalCripto({
                     <XAxis
                       dataKey="t"
                       tickFormatter={(t: number) =>
-                        new Date(t).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+                        new Date(t).toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                        })
                       }
                       tick={{ fontSize: 11 }}
                       minTickGap={28}
@@ -191,9 +202,21 @@ export function ModalCripto({
             <Item rotulo="Máxima 24h" valor={fmtPreco(linha.maximo24h, "US$")} />
             <Item rotulo="Mínima 24h" valor={fmtPreco(linha.minimo24h, "US$")} />
             <Item rotulo="Fornecimento" valor={fmtQuantidade(linha.fornecimento)} />
-            <Item rotulo="Var. 7 dias" valor={fmtPct(linha.variacao7d)} cor={corVar(linha.variacao7d, stable)} />
-            <Item rotulo="Var. 30 dias" valor={fmtPct(linha.variacao30d)} cor={corVar(linha.variacao30d, stable)} />
-            <Item rotulo="Var. 12 meses" valor={fmtPct(linha.variacao12m)} cor={corVar(linha.variacao12m, stable)} />
+            <Item
+              rotulo="Var. 7 dias"
+              valor={fmtPct(linha.variacao7d)}
+              cor={corVar(linha.variacao7d, stable)}
+            />
+            <Item
+              rotulo="Var. 30 dias"
+              valor={fmtPct(linha.variacao30d)}
+              cor={corVar(linha.variacao30d, stable)}
+            />
+            <Item
+              rotulo="Var. 12 meses"
+              valor={fmtPct(linha.variacao12m)}
+              cor={corVar(linha.variacao12m, stable)}
+            />
           </div>
 
           {posicao ? (

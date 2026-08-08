@@ -37,7 +37,6 @@ export type LayoutB3 = "negociacao" | "movimentacao" | "posicao" | "corretora" |
 
 export type OrigemArquivo = "b3" | "agora" | "generico";
 
-
 export interface MapeamentoCampo {
   campo: string;
   coluna: string | null;
@@ -112,7 +111,15 @@ const CAMPOS: Record<string, string[]> = {
     "Compra/Venda",
     "C/V",
   ],
-  quantidade: ["Quantidade", "Qtde", "Qtd", "Quantidade Executada", "Quantidade Negociada", "Qtd. Negociada", "Q Compra"],
+  quantidade: [
+    "Quantidade",
+    "Qtde",
+    "Qtd",
+    "Quantidade Executada",
+    "Quantidade Negociada",
+    "Qtd. Negociada",
+    "Q Compra",
+  ],
   preco: [
     "Preço",
     "Preco",
@@ -144,7 +151,6 @@ const CAMPOS: Record<string, string[]> = {
 
 const OBRIGATORIOS = ["ticker", "data"];
 
-
 function acharColuna(cabecalhos: string[], sinonimos: string[]): string | null {
   const normalizados = cabecalhos.map((c) => ({ original: c, norm: semAcento(c) }));
   for (const s of sinonimos) {
@@ -163,7 +169,10 @@ function acharColuna(cabecalhos: string[], sinonimos: string[]): string | null {
 function detectarLayout(cabecalhos: string[]): { layout: LayoutB3; rotulo: string } {
   const set = cabecalhos.map(semAcento);
   const tem = (t: string) => set.some((c) => c.includes(t));
-  if (tem("data do negocio") || (tem("codigo de negociacao") && tem("preco") && tem("quantidade") && !tem("entrada/saida")))
+  if (
+    tem("data do negocio") ||
+    (tem("codigo de negociacao") && tem("preco") && tem("quantidade") && !tem("entrada/saida"))
+  )
     return { layout: "negociacao", rotulo: "Extrato de Negociação (B3)" };
   if (tem("entrada/saida") || tem("movimentacao"))
     return { layout: "movimentacao", rotulo: "Extrato de Movimentação (B3)" };
@@ -171,20 +180,28 @@ function detectarLayout(cabecalhos: string[]): { layout: LayoutB3; rotulo: strin
     return { layout: "posicao", rotulo: "Relatório de Posição" };
   if (
     (tem("papel") || tem("titulo") || tem("especificacao")) &&
-    (tem("preco/ajuste") || tem("tipo negocio") || tem("data pregao") || tem("corretagem") || tem("valor liquido"))
+    (tem("preco/ajuste") ||
+      tem("tipo negocio") ||
+      tem("data pregao") ||
+      tem("corretagem") ||
+      tem("valor liquido"))
   )
     return { layout: "corretora", rotulo: "Relatório de corretora (nota/negócios)" };
   return { layout: "desconhecido", rotulo: "Layout não identificado" };
 }
 
 /** Identifica a origem do arquivo pelo nome e pelo conteúdo das colunas/instituição. */
-function detectarOrigem(nomeArquivo: string, textoAmostra: string): { origem: OrigemArquivo; rotulo: string } {
+function detectarOrigem(
+  nomeArquivo: string,
+  textoAmostra: string,
+): { origem: OrigemArquivo; rotulo: string } {
   const alvo = semAcento(`${nomeArquivo} ${textoAmostra}`);
-  if (alvo.includes("agora") || alvo.includes("bradesco")) return { origem: "agora", rotulo: "Ágora Investimentos" };
-  if (alvo.includes("b3") || alvo.includes("investidor")) return { origem: "b3", rotulo: "B3 — Área do Investidor" };
+  if (alvo.includes("agora") || alvo.includes("bradesco"))
+    return { origem: "agora", rotulo: "Ágora Investimentos" };
+  if (alvo.includes("b3") || alvo.includes("investidor"))
+    return { origem: "b3", rotulo: "B3 — Área do Investidor" };
   return { origem: "generico", rotulo: "Origem não identificada" };
 }
-
 
 export function numeroBR(valor: string): number {
   if (!valor) return 0;
@@ -215,7 +232,10 @@ export function dataISO(valor: string): string | null {
 
 /** Extrai o código de negociação de "PETR4 - PETROLEO BRASILEIRO" ou "MXRF11". */
 export function extrairTicker(produto: string): string {
-  const bruto = produto.split(/\s+-\s+/)[0].trim().toUpperCase();
+  const bruto = produto
+    .split(/\s+-\s+/)[0]
+    .trim()
+    .toUpperCase();
   const m = bruto.match(/[A-Z]{4}\d{1,2}[A-Z]?/);
   return (m?.[0] ?? bruto.split(/\s/)[0] ?? "").toUpperCase();
 }
@@ -246,7 +266,11 @@ async function lerAbas(arquivo: File): Promise<Aba[]> {
   const wb = XLSX.read(buffer, { type: "array", raw: false, cellDates: false });
   const abas: Aba[] = [];
   for (const nome of wb.SheetNames) {
-    const matriz = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets[nome], { header: 1, defval: "", raw: false });
+    const matriz = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets[nome], {
+      header: 1,
+      defval: "",
+      raw: false,
+    });
     // localiza a linha de cabeçalho real (arquivos da B3 podem ter preâmbulo)
     let idx = -1;
     for (let i = 0; i < Math.min(matriz.length, 15); i++) {
@@ -312,8 +336,10 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
     .flatMap((a) => a.linhas.slice(0, 20).map((l) => Object.values(l).join(" ")))
     .join(" ")
     .slice(0, 4000);
-  const { origem, rotulo: origemRotulo } = detectarOrigem(arquivo.name, `${cabecalhosGerais.join(" ")} ${amostraTexto}`);
-
+  const { origem, rotulo: origemRotulo } = detectarOrigem(
+    arquivo.name,
+    `${cabecalhosGerais.join(" ")} ${amostraTexto}`,
+  );
 
   const mapeamento: MapeamentoCampo[] = Object.entries(CAMPOS).map(([campo, sinonimos]) => ({
     campo,
@@ -430,11 +456,12 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
           dividendos.push({
             data,
             ticker,
-            tipo: movimento.includes("juros") || movimento.includes("jcp")
-              ? "JCP"
-              : movimento.includes("rendimento")
-                ? "Rendimento"
-                : "Dividendo",
+            tipo:
+              movimento.includes("juros") || movimento.includes("jcp")
+                ? "JCP"
+                : movimento.includes("rendimento")
+                  ? "Rendimento"
+                  : "Dividendo",
             valor,
           });
         } else {
@@ -445,9 +472,15 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
       }
 
       const compra =
-        movimento.includes("compra") || movimento.includes("credito") || movimento.includes("entrada") || movimento === "c";
+        movimento.includes("compra") ||
+        movimento.includes("credito") ||
+        movimento.includes("entrada") ||
+        movimento === "c";
       const venda =
-        movimento.includes("venda") || movimento.includes("debito") || movimento.includes("saida") || movimento === "v";
+        movimento.includes("venda") ||
+        movimento.includes("debito") ||
+        movimento.includes("saida") ||
+        movimento === "v";
       if (venda) {
         vendas++;
         continue;
@@ -476,7 +509,6 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
           taxas: numeroBR(valorDe(linha, "taxas")),
           observacoes: origem === "agora" ? "Importado da Ágora" : "Importado da B3",
         });
-
       } else {
         linhasSemValor.push(nLinha);
         ignoradas++;
@@ -488,15 +520,31 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
     if (linhas.length)
       diagnosticos.push({ severidade: "aviso", titulo, detalhe, linhas: linhas.slice(0, 20) });
   };
-  aviso(`${linhasSemTicker.length} linha(s) sem ativo`, "Linhas sem código de negociação foram ignoradas.", linhasSemTicker);
-  aviso(`${linhasSemData.length} linha(s) com data inválida`, "Não conseguimos interpretar a data dessas linhas.", linhasSemData);
+  aviso(
+    `${linhasSemTicker.length} linha(s) sem ativo`,
+    "Linhas sem código de negociação foram ignoradas.",
+    linhasSemTicker,
+  );
+  aviso(
+    `${linhasSemData.length} linha(s) com data inválida`,
+    "Não conseguimos interpretar a data dessas linhas.",
+    linhasSemData,
+  );
   aviso(
     `${linhasSemValor.length} linha(s) sem quantidade ou preço`,
     "Sem quantidade e preço válidos não é possível gerar o aporte.",
     linhasSemValor,
   );
-  aviso(`${duplicadas.length} possível(is) duplicata(s)`, "Mesma data, ativo, quantidade e preço aparecem mais de uma vez.", duplicadas);
-  aviso(`${futuras.length} linha(s) com data futura`, "Confira se a data de liquidação está correta.", futuras);
+  aviso(
+    `${duplicadas.length} possível(is) duplicata(s)`,
+    "Mesma data, ativo, quantidade e preço aparecem mais de uma vez.",
+    duplicadas,
+  );
+  aviso(
+    `${futuras.length} linha(s) com data futura`,
+    "Confira se a data de liquidação está correta.",
+    futuras,
+  );
   if (tickersEstranhos.size)
     diagnosticos.push({
       severidade: "aviso",
@@ -536,6 +584,8 @@ export async function lerArquivoB3(arquivo: File): Promise<ResultadoB3> {
     totalLinhas,
     mapeamento,
     diagnosticos,
-    podeImportar: !diagnosticos.some((d) => d.severidade === "erro") && (aportes.length > 0 || dividendos.length > 0),
+    podeImportar:
+      !diagnosticos.some((d) => d.severidade === "erro") &&
+      (aportes.length > 0 || dividendos.length > 0),
   };
 }

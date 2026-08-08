@@ -183,9 +183,12 @@ function RendaPassivaPage() {
           </h1>
           <p className="text-muted-foreground mt-5 text-lg leading-relaxed">
             Renda passiva é o dinheiro que a sua carteira paga sem depender do seu trabalho:{" "}
-            <strong className="text-foreground">dividendos, proventos de FIIs, juros e aluguéis</strong>. Quando
-            essa renda cobre o seu custo de vida, você vive de renda. Abaixo você calcula de quanto precisa,
-            compara as fontes de renda disponíveis no Brasil e vê como acompanhar isso mês a mês.
+            <strong className="text-foreground">
+              dividendos, proventos de FIIs, juros e aluguéis
+            </strong>
+            . Quando essa renda cobre o seu custo de vida, você vive de renda. Abaixo você calcula
+            de quanto precisa, compara as fontes de renda disponíveis no Brasil e vê como acompanhar
+            isso mês a mês.
           </p>
 
           <section className="mt-10">
@@ -225,14 +228,15 @@ function RendaPassivaPage() {
                 </div>
               </div>
               <p className="mt-5 text-sm leading-relaxed">
-                Para receber <strong>{brl(custoMensal)}</strong> por mês a um yield de {yieldAno}% ao ano, você
-                precisa de aproximadamente{" "}
-                <strong className="text-primary num text-lg">{brl(patrimonioNecessario)}</strong> investidos.
+                Para receber <strong>{brl(custoMensal)}</strong> por mês a um yield de {yieldAno}%
+                ao ano, você precisa de aproximadamente{" "}
+                <strong className="text-primary num text-lg">{brl(patrimonioNecessario)}</strong>{" "}
+                investidos.
               </p>
               <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-                Pela regra conservadora dos 4% ao ano — que já reserva parte do rendimento para repor a inflação —
-                o patrimônio-alvo sobe para {brl(patrimonio4)}. Use o número maior como meta e o menor como
-                cenário otimista.
+                Pela regra conservadora dos 4% ao ano — que já reserva parte do rendimento para
+                repor a inflação — o patrimônio-alvo sobe para {brl(patrimonio4)}. Use o número
+                maior como meta e o menor como cenário otimista.
               </p>
             </div>
           </section>
@@ -246,7 +250,9 @@ function RendaPassivaPage() {
                     <h3 className="text-base font-semibold">{f.nome}</h3>
                     <p className="text-primary num text-lg font-bold">
                       {(f.yield * 100).toFixed(1)}%
-                      <span className="text-muted-foreground ml-1 text-xs font-normal">ao ano (estimado)</span>
+                      <span className="text-muted-foreground ml-1 text-xs font-normal">
+                        ao ano (estimado)
+                      </span>
                     </p>
                   </div>
                   <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{f.detalhe}</p>
@@ -259,23 +265,25 @@ function RendaPassivaPage() {
           </section>
 
           <section className="mt-12">
-            <h2 className="text-xl font-semibold tracking-tight">Como construir a sua em 4 passos</h2>
+            <h2 className="text-xl font-semibold tracking-tight">
+              Como construir a sua em 4 passos
+            </h2>
             <ol className="text-muted-foreground mt-4 grid list-decimal gap-3 pl-5 text-sm leading-relaxed">
               <li>
-                Descubra o seu número: custo de vida mensal × 300. É ele que define a meta, não um valor redondo
-                de mercado.
+                Descubra o seu número: custo de vida mensal × 300. É ele que define a meta, não um
+                valor redondo de mercado.
               </li>
               <li>
-                Defina uma alocação-alvo por classe (renda fixa, FIIs, ações, exterior) e cumpra-a com aportes
-                mensais, sem tentar acertar o momento do mercado.
+                Defina uma alocação-alvo por classe (renda fixa, FIIs, ações, exterior) e cumpra-a
+                com aportes mensais, sem tentar acertar o momento do mercado.
               </li>
               <li>
-                Reinvista 100% dos proventos na fase de acumulação — é o reinvestimento, e não o yield, que
-                encurta o prazo até a independência.
+                Reinvista 100% dos proventos na fase de acumulação — é o reinvestimento, e não o
+                yield, que encurta o prazo até a independência.
               </li>
               <li>
-                Meça o yield on cost real recebido mês a mês e rebalanceie direcionando o próximo aporte para a
-                classe abaixo do alvo.
+                Meça o yield on cost real recebido mês a mês e rebalanceie direcionando o próximo
+                aporte para a classe abaixo do alvo.
               </li>
             </ol>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -324,8 +332,8 @@ function RendaPassivaPage() {
           </section>
 
           <p className="text-muted-foreground mt-10 text-xs leading-relaxed">
-            Conteúdo educativo. Os yields citados são estimativas de mercado e variam com a Selic, a inflação e os
-            proventos efetivamente distribuídos. Não é recomendação de investimento.
+            Conteúdo educativo. Os yields citados são estimativas de mercado e variam com a Selic, a
+            inflação e os proventos efetivamente distribuídos. Não é recomendação de investimento.
           </p>
         </article>
       </main>

@@ -55,7 +55,7 @@ export function createLovableAiGatewayProvider(
       "Lovable-API-Key": lovableApiKey,
       "X-Lovable-AIG-SDK": "vercel-ai-sdk",
     },
-    fetch: runIdFetch.fetch as typeof fetch,
+    fetch: runIdFetch.fetch,
   });
 
   return Object.assign(provider, {

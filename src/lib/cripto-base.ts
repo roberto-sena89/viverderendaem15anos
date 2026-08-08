@@ -7,14 +7,7 @@
  */
 
 export type CategoriaCripto =
-  | "reserva"
-  | "smart-contract"
-  | "stablecoin"
-  | "staking"
-  | "wrapped"
-  | "meme"
-  | "defi"
-  | "outros";
+  "reserva" | "smart-contract" | "stablecoin" | "staking" | "wrapped" | "meme" | "defi" | "outros";
 
 export type LinhaCripto = {
   id: string;
@@ -77,7 +70,8 @@ export const COR_CATEGORIA: Record<CategoriaCripto, string> = {
 export const EXPLICACAO_CATEGORIA: Record<CategoriaCripto, string> = {
   reserva: "Ativos usados como reserva de valor, com emissão limitada.",
   "smart-contract": "Plataformas que executam contratos inteligentes e aplicações.",
-  stablecoin: "Token atrelado a uma moeda (normalmente o dólar). Oscilações de centavos são normais.",
+  stablecoin:
+    "Token atrelado a uma moeda (normalmente o dólar). Oscilações de centavos são normais.",
   staking: "Token que representa uma posição em staking, resgatável e negociável.",
   wrapped: "Token que representa outro ativo em uma rede diferente, lastreado 1:1.",
   meme: "Ativos movidos por comunidade e narrativa, com volatilidade extrema.",
@@ -151,11 +145,15 @@ export function classificarCripto(
   const n = `${nome} ${ticker}`.toLowerCase();
   const idn = id.toLowerCase();
 
-  const wrapped = /wrapped|^w[a-z]{2,4}$|\bbridged\b|\bbinance-peg\b/.test(idn) || /wrapped|bridged/.test(n);
-  const staking = /staked|steth|reth|cbeth|wsteth|meth|ezeth|weeth|jitosol|msol/.test(`${idn} ${ticker.toLowerCase()}`);
+  const wrapped =
+    /wrapped|^w[a-z]{2,4}$|\bbridged\b|\bbinance-peg\b/.test(idn) || /wrapped|bridged/.test(n);
+  const staking = /staked|steth|reth|cbeth|wsteth|meth|ezeth|weeth|jitosol|msol/.test(
+    `${idn} ${ticker.toLowerCase()}`,
+  );
   const stable =
-    /tether|usd-coin|dai|first-digital|usde|frax|true-usd|paypal-usd|usds|pyusd|usdt|usdc/.test(idn) ||
-    /\busd\b|dollar/.test(n);
+    /tether|usd-coin|dai|first-digital|usde|frax|true-usd|paypal-usd|usds|pyusd|usdt|usdc/.test(
+      idn,
+    ) || /\busd\b|dollar/.test(n);
 
   let categoria: CategoriaCripto = "outros";
   if (stable && !wrapped) categoria = "stablecoin";

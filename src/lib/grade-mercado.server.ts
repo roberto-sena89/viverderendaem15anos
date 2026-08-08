@@ -29,14 +29,7 @@ export type LinhaCotacao = {
 };
 
 export type CategoriaMercado =
-  | "acoes"
-  | "fiis"
-  | "futuros"
-  | "commodities"
-  | "etfs"
-  | "cripto"
-  | "cambio"
-  | "indices";
+  "acoes" | "fiis" | "futuros" | "commodities" | "etfs" | "cripto" | "cambio" | "indices";
 
 export type RespostaGrade = {
   categoria: CategoriaMercado;
@@ -253,7 +246,6 @@ const CRIPTO_IDS = [
   ["polygon-ecosystem-token", "POL", "Polygon"],
 ] as const;
 
-
 /* ------------------------------------------------------------------ *
  * Infra de rede
  * ------------------------------------------------------------------ */
@@ -290,7 +282,6 @@ async function json<T>(
     memoria.set(url, { valor, expira: Date.now() + ttl });
     return valor;
   } catch {
-
     return (cache?.valor as T) ?? null;
   } finally {
     clearTimeout(timer);
@@ -392,8 +383,6 @@ async function brapiPagina(
   return "ok";
 }
 
-
-
 async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<LinhaCotacao[]> {
   const token = process.env.BRAPI_TOKEN;
   if (!limiteBrapi) limiteBrapi = token ? 20 : 2;
@@ -416,9 +405,6 @@ async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<Linh
   if (await buscar(limiteBrapi)) {
     if (await buscar(limiteBrapi)) await buscar(limiteBrapi);
   }
-
-
-
 
   const linhas = defs.map((d) => {
     const r = mapa.get(d.ticker.toUpperCase());
@@ -444,9 +430,7 @@ async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<Linh
   });
 
   // Fallback: ativos sem retorno da brapi são buscados no Yahoo (TICKER.SA).
-  const faltantes = linhas
-    .map((l, i) => ({ l, i }))
-    .filter(({ l }) => l.preco === null);
+  const faltantes = linhas.map((l, i) => ({ l, i })).filter(({ l }) => l.preco === null);
   if (faltantes.length) {
     const resolvidos = await emLotes(faltantes, 4, async ({ l, i }) => ({
       i,
@@ -460,7 +444,6 @@ async function brapiLote(defs: Def[], categoria: CategoriaMercado): Promise<Linh
 
   return linhas;
 }
-
 
 /* ------------------------------------------------------------------ *
  * Yahoo — índices, câmbio, commodities e futuros
@@ -731,9 +714,7 @@ export async function buscarVisaoGeral() {
   const todos = [...acoes.linhas, ...fiis.linhas, ...criptos.linhas].filter(
     (l) => l.variacaoPercent !== null,
   );
-  const ordenado = [...todos].sort(
-    (a, b) => (b.variacaoPercent ?? 0) - (a.variacaoPercent ?? 0),
-  );
+  const ordenado = [...todos].sort((a, b) => (b.variacaoPercent ?? 0) - (a.variacaoPercent ?? 0));
 
   return {
     indices: indices.linhas,

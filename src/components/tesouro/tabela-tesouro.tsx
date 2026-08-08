@@ -74,7 +74,9 @@ export function TabelaTesouro({
                         }}
                         className="shrink-0 text-muted-foreground transition-colors hover:text-amber-400"
                       >
-                        <Star className={cn("size-4", favorito && "fill-amber-400 text-amber-400")} />
+                        <Star
+                          className={cn("size-4", favorito && "fill-amber-400 text-amber-400")}
+                        />
                       </button>
                       <span
                         className={cn(
@@ -84,7 +86,9 @@ export function TabelaTesouro({
                       >
                         {rotuloIndexador(l.indexador)}
                       </span>
-                      <TextoTruncado as="span" className="truncate font-medium">{l.nome}</TextoTruncado>
+                      <TextoTruncado as="span" className="truncate font-medium">
+                        {l.nome}
+                      </TextoTruncado>
                       {l.jurosSemestrais ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -102,7 +106,9 @@ export function TabelaTesouro({
                       ) : null}
                     </div>
                   </td>
-                  <td className="px-3 py-2.5 text-right font-semibold tabular-nums">{textoTaxa(l)}</td>
+                  <td className="px-3 py-2.5 text-right font-semibold tabular-nums">
+                    {textoTaxa(l)}
+                  </td>
                   <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">
                     <span className="block">{fmtData(l.vencimento)}</span>
                     <span className="block text-[11px]">{anos(l.anosAteVencimento)}</span>
@@ -142,7 +148,9 @@ export function TabelaTesouro({
                   >
                     {rotuloIndexador(l.indexador)}
                   </span>
-                  <TextoTruncado as="p" className="mt-1 truncate text-sm font-medium block">{l.nome}</TextoTruncado>
+                  <TextoTruncado as="p" className="mt-1 truncate text-sm font-medium block">
+                    {l.nome}
+                  </TextoTruncado>
                   <p className="t-caption">
                     Vence em {fmtData(l.vencimento)} · {anos(l.anosAteVencimento)}
                   </p>

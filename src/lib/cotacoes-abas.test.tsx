@@ -71,12 +71,12 @@ describe("Navegação da grade de Cotações", () => {
   it("troca de painel ao clicar em cada aba restante", () => {
     render(<GradeAbas />);
     for (const aba of ABAS_COTACOES) {
-      fireEvent.mouseDown(screen.getByRole("tab", { name: aba.rotulo }), { button: 0, ctrlKey: false });
+      fireEvent.mouseDown(screen.getByRole("tab", { name: aba.rotulo }), {
+        button: 0,
+        ctrlKey: false,
+      });
       expect(screen.getByText(`painel-${aba.id}`)).toBeTruthy();
-      expect(screen.getByRole("tab", { name: aba.rotulo })).toHaveProperty(
-        "ariaSelected",
-        "true",
-      );
+      expect(screen.getByRole("tab", { name: aba.rotulo })).toHaveProperty("ariaSelected", "true");
     }
   });
 });

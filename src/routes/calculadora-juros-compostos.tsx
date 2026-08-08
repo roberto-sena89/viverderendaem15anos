@@ -53,7 +53,10 @@ export const Route = createFileRoute("/calculadora-juros-compostos")({
       { property: "og:image", content: OG_IMAGE },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Calculadora de juros compostos com gráfico de crescimento do patrimônio" },
+      {
+        property: "og:image:alt",
+        content: "Calculadora de juros compostos com gráfico de crescimento do patrimônio",
+      },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: OG_IMAGE },
     ],
@@ -124,7 +127,9 @@ function CalculadoraPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <a href="#conteudo" className="link-pular">Pular para o conteúdo</a>
+      <a href="#conteudo" className="link-pular">
+        Pular para o conteúdo
+      </a>
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
@@ -278,10 +283,18 @@ function CalculadoraPage() {
                 <caption className="sr-only">Projeção ano a ano dos juros compostos</caption>
                 <thead className="bg-muted/50 text-xs text-muted-foreground uppercase">
                   <tr>
-                    <th scope="col" className="px-4 py-2 text-left">Ano</th>
-                    <th scope="col" className="px-4 py-2 text-right">Investido</th>
-                    <th scope="col" className="px-4 py-2 text-right">Juros</th>
-                    <th scope="col" className="px-4 py-2 text-right">Patrimônio</th>
+                    <th scope="col" className="px-4 py-2 text-left">
+                      Ano
+                    </th>
+                    <th scope="col" className="px-4 py-2 text-right">
+                      Investido
+                    </th>
+                    <th scope="col" className="px-4 py-2 text-right">
+                      Juros
+                    </th>
+                    <th scope="col" className="px-4 py-2 text-right">
+                      Patrimônio
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -322,8 +335,8 @@ function CalculadoraPage() {
           <div className="mt-12 rounded-2xl border border-border bg-card p-6">
             <h2 className="text-lg font-semibold">Da simulação para a carteira real</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Acompanhe aportes, dividendos, rentabilidade e metas da sua carteira de ações e FIIs em
-              um só lugar.
+              Acompanhe aportes, dividendos, rentabilidade e metas da sua carteira de ações e FIIs
+              em um só lugar.
             </p>
             <Button asChild className="mt-4">
               <Link to="/auth">

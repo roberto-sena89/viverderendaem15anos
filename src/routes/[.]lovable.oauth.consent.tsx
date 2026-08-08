@@ -57,15 +57,14 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
   errorComponent: ({ error }) => (
     <main className="grid min-h-dvh place-items-center p-6 text-center">
       <p className="text-sm text-muted-foreground">
-        Não foi possível carregar esta solicitação de acesso:{" "}
-        {String((error as Error)?.message ?? error)}
+        Não foi possível carregar esta solicitação de acesso: {String(error?.message ?? error)}
       </p>
     </main>
   ),
 });
 
 function Consent() {
-  const details = Route.useLoaderData() as OAuthDetails;
+  const details = Route.useLoaderData();
   const { authorization_id } = Route.useSearch();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

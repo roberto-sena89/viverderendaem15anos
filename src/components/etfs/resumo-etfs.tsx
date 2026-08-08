@@ -1,7 +1,13 @@
 import { ArrowDownRight, ArrowUpRight, Coins, Layers } from "lucide-react";
 import { TextoTruncado } from "@/components/texto-truncado";
 import { Sparkline } from "@/components/cotacoes/sparkline";
-import { corVar, fmtCompacto, fmtMoeda, fmtPct, fmtPctSimples } from "@/components/etfs/formatos-etf";
+import {
+  corVar,
+  fmtCompacto,
+  fmtMoeda,
+  fmtPct,
+  fmtPctSimples,
+} from "@/components/etfs/formatos-etf";
 import type { LinhaEtf, ResumoIbovEtf } from "@/lib/etfs-base";
 
 function Card({
@@ -15,7 +21,9 @@ function Card({
 }) {
   const conteudo = (
     <>
-      <TextoTruncado as="p" className="t-label block" passivo>{titulo}</TextoTruncado>
+      <TextoTruncado as="p" className="t-label block" passivo>
+        {titulo}
+      </TextoTruncado>
       <div className="mt-bloco">{children}</div>
     </>
   );
@@ -44,8 +52,12 @@ function Destaque({
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="min-w-0">
-        <TextoTruncado as="p" className="t-ticker font-display block">{linha.ticker}</TextoTruncado>
-        <TextoTruncado as="p" className="t-subtexto block">{fmtMoeda(linha.preco)}</TextoTruncado>
+        <TextoTruncado as="p" className="t-ticker font-display block">
+          {linha.ticker}
+        </TextoTruncado>
+        <TextoTruncado as="p" className="t-subtexto block">
+          {fmtMoeda(linha.preco)}
+        </TextoTruncado>
       </div>
       <span className="t-num inline-flex shrink-0 items-center gap-1 font-semibold">
         {icone}
@@ -78,10 +90,14 @@ export function ResumoEtfs({
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="font-display text-xl leading-none tabular-nums">
-              {ibovespa?.valor ? ibovespa.valor.toLocaleString("pt-BR", { maximumFractionDigits: 0 }) : "—"}
+              {ibovespa?.valor
+                ? ibovespa.valor.toLocaleString("pt-BR", { maximumFractionDigits: 0 })
+                : "—"}
             </p>
             <p className="mt-1 flex items-center gap-2 text-xs">
-              <span className={`font-semibold tabular-nums ${corVar(ibovespa?.variacaoPercent ?? null)}`}>
+              <span
+                className={`font-semibold tabular-nums ${corVar(ibovespa?.variacaoPercent ?? null)}`}
+              >
                 {fmtPct(ibovespa?.variacaoPercent ?? null)}
               </span>
               <span className="text-muted-foreground">
@@ -96,7 +112,10 @@ export function ResumoEtfs({
         </div>
       </Card>
 
-      <Card titulo="Maior alta do dia" aoClicar={maiorAlta ? () => aoSelecionar(maiorAlta) : undefined}>
+      <Card
+        titulo="Maior alta do dia"
+        aoClicar={maiorAlta ? () => aoSelecionar(maiorAlta) : undefined}
+      >
         <Destaque
           linha={maiorAlta}
           valor={fmtPct(maiorAlta?.variacaoPercent ?? null)}
@@ -104,7 +123,10 @@ export function ResumoEtfs({
         />
       </Card>
 
-      <Card titulo="Maior baixa do dia" aoClicar={maiorBaixa ? () => aoSelecionar(maiorBaixa) : undefined}>
+      <Card
+        titulo="Maior baixa do dia"
+        aoClicar={maiorBaixa ? () => aoSelecionar(maiorBaixa) : undefined}
+      >
         <Destaque
           linha={maiorBaixa}
           valor={fmtPct(maiorBaixa?.variacaoPercent ?? null)}
@@ -123,7 +145,10 @@ export function ResumoEtfs({
         />
       </Card>
 
-      <Card titulo="Maior dividend yield" aoClicar={maiorDy ? () => aoSelecionar(maiorDy) : undefined}>
+      <Card
+        titulo="Maior dividend yield"
+        aoClicar={maiorDy ? () => aoSelecionar(maiorDy) : undefined}
+      >
         <Destaque
           linha={maiorDy}
           valor={fmtPctSimples(maiorDy?.dy12 ?? null, 2)}

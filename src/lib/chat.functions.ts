@@ -19,9 +19,13 @@ export const listarMensagens = createServerFn({ method: "GET" })
     return (data ?? []).map((row) => {
       const parts = Array.isArray(row.parts) ? row.parts : [];
       const texto = parts
-        .map((p) => (p && typeof p === "object" && "text" in p ? String((p as { text?: string }).text ?? "") : ""))
+        .map((p) =>
+          p && typeof p === "object" && "text" in p
+            ? String((p as { text?: string }).text ?? "")
+            : "",
+        )
         .join("");
-      return { id: row.id as string, role: row.role as "user" | "assistant", texto };
+      return { id: row.id, role: row.role as "user" | "assistant", texto };
     });
   });
 

@@ -97,7 +97,10 @@ async function brapiLote(tickers: string[]): Promise<Map<string, CotacaoLive>> {
 
 const provedorB3: Provedor = {
   id: "b3",
-  aceita: (p) => !CATEGORIAS_TESOURO.includes(p.categoria) && !CATEGORIAS_EXTERIOR.includes(p.categoria) && p.categoria !== "Criptomoedas",
+  aceita: (p) =>
+    !CATEGORIAS_TESOURO.includes(p.categoria) &&
+    !CATEGORIAS_EXTERIOR.includes(p.categoria) &&
+    p.categoria !== "Criptomoedas",
   cotar: async (pedidos) => {
     const mercado = await import("@/lib/market.server");
     const chaves = [...new Set(pedidos.map((p) => tickerB3(p.ticker)))];
@@ -160,8 +163,7 @@ const provedorGlobal: Provedor = {
     const saida: CotacaoLive[] = [];
     for (const p of pedidos) {
       const base = p.ticker.trim().toUpperCase();
-      const simbolo =
-        p.categoria === "Criptomoedas" && !base.includes("-") ? `${base}-BRL` : base;
+      const simbolo = p.categoria === "Criptomoedas" && !base.includes("-") ? `${base}-BRL` : base;
       try {
         const c = await mercado.buscarCotacao(simbolo);
         const moeda = (c.moeda ?? "USD").toUpperCase();
@@ -216,7 +218,8 @@ const provedorTesouro: Provedor = {
         }
       }
     } catch {
-      for (const p of pedidos) saida.push(falha(p.ticker.toUpperCase(), "Tesouro Transparente", "Fonte indisponível."));
+      for (const p of pedidos)
+        saida.push(falha(p.ticker.toUpperCase(), "Tesouro Transparente", "Fonte indisponível."));
     }
     return saida;
   },
@@ -244,7 +247,9 @@ export async function cotarCarteira(pedidos: PedidoCotacao[]): Promise<CotacaoLi
       try {
         return await g.prov.cotar(g.itens);
       } catch {
-        return g.itens.map((p) => falha(p.ticker.toUpperCase(), g.prov.id, "Provedor indisponível."));
+        return g.itens.map((p) =>
+          falha(p.ticker.toUpperCase(), g.prov.id, "Provedor indisponível."),
+        );
       }
     }),
   );

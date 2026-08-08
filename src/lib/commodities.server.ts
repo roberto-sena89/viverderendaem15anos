@@ -9,7 +9,12 @@
  * cotações, para que a conversão em reais acompanhe o dólar do momento.
  */
 
-import { COMMODITIES, type DefCommodity, type LinhaCommodity, type RespostaCommodities } from "@/lib/commodities-base";
+import {
+  COMMODITIES,
+  type DefCommodity,
+  type LinhaCommodity,
+  type RespostaCommodities,
+} from "@/lib/commodities-base";
 
 const PADRAO: Record<string, string> = { Accept: "application/json" };
 const NAVEGADOR: Record<string, string> = {
@@ -22,7 +27,11 @@ const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const memoria = new Map<string, { expira: number; valor: unknown }>();
 
-async function json<T>(url: string, ttlMs: number, headers: Record<string, string>): Promise<T | null> {
+async function json<T>(
+  url: string,
+  ttlMs: number,
+  headers: Record<string, string>,
+): Promise<T | null> {
   const cache = memoria.get(url);
   if (cache && cache.expira > Date.now()) return cache.valor as T;
   const controller = new AbortController();
@@ -86,7 +95,10 @@ async function usdBrl(): Promise<number> {
     cambio = { valor: bid, expira: Date.now() + 30_000 };
     return bid;
   }
-  const y = await yahoo("https://query1.finance.yahoo.com/v8/finance/chart/BRL=X?range=1d&interval=1d", PADRAO);
+  const y = await yahoo(
+    "https://query1.finance.yahoo.com/v8/finance/chart/BRL=X?range=1d&interval=1d",
+    PADRAO,
+  );
   const preco = y?.chart?.result?.[0]?.meta?.regularMarketPrice;
   if (typeof preco === "number" && preco > 0) {
     cambio = { valor: preco, expira: Date.now() + 30_000 };
@@ -141,10 +153,10 @@ async function commodity(def: DefCommodity): Promise<LinhaCommodity> {
       if (typeof bruto !== "number" || bruto === 0) continue;
 
       const preco = bruto * fator;
-      const anterior = (serie.length > 1 ? serie.at(-2)! : (r?.meta?.previousClose ?? null)) as number | null;
+      const anterior = serie.length > 1 ? serie.at(-2)! : (r?.meta?.previousClose ?? null);
       const anteriorConv = anterior === null ? null : anterior * fator;
-      const primeiro = serie.length ? serie[0]! * fator : null;
-      const trintaAtras = serie.length > 21 ? serie[serie.length - 22]! * fator : null;
+      const primeiro = serie.length ? serie[0] * fator : null;
+      const trintaAtras = serie.length > 21 ? serie[serie.length - 22] * fator : null;
       const convertida = serie.map((v) => v * fator);
 
       return {
@@ -153,9 +165,12 @@ async function commodity(def: DefCommodity): Promise<LinhaCommodity> {
         fechamentoAnterior: anteriorConv,
         // Contratos pouco líquidos têm falhas na série diária: uma "variação"
         // absurda indica ponto anterior inválido, não movimento real de preço.
-        variacaoDia: sanear(anteriorConv && anteriorConv > 0 ? ((preco - anteriorConv) / anteriorConv) * 100 : null),
+        variacaoDia: sanear(
+          anteriorConv && anteriorConv > 0 ? ((preco - anteriorConv) / anteriorConv) * 100 : null,
+        ),
         variacao12m: primeiro && primeiro > 0 ? ((preco - primeiro) / primeiro) * 100 : null,
-        variacao30d: trintaAtras && trintaAtras > 0 ? ((preco - trintaAtras) / trintaAtras) * 100 : null,
+        variacao30d:
+          trintaAtras && trintaAtras > 0 ? ((preco - trintaAtras) / trintaAtras) * 100 : null,
         minima12m: convertida.length ? Math.min(...convertida) : null,
         maxima12m: convertida.length ? Math.max(...convertida) : null,
         spark: convertida.slice(-30),

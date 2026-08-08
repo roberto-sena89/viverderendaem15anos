@@ -1,4 +1,8 @@
-import type { DetalhePanorama, JanelaPerformance, PontoSerie } from "@/lib/detalhe-panorama.functions";
+import type {
+  DetalhePanorama,
+  JanelaPerformance,
+  PontoSerie,
+} from "@/lib/detalhe-panorama.functions";
 
 const TTL = 30 * 60_000;
 const memoria = new Map<string, { valor: DetalhePanorama; em: number }>();
@@ -16,7 +20,10 @@ function janela(serie: PontoSerie[], dias: number, rotulo: string): JanelaPerfor
   if (!base || base.fechamento <= 0 || base.data === ultimo.data) {
     return { rotulo, variacaoPercent: null };
   }
-  return { rotulo, variacaoPercent: ((ultimo.fechamento - base.fechamento) / base.fechamento) * 100 };
+  return {
+    rotulo,
+    variacaoPercent: ((ultimo.fechamento - base.fechamento) / base.fechamento) * 100,
+  };
 }
 
 export async function montarDetalhe(simbolo: string): Promise<DetalhePanorama> {

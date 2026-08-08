@@ -5,7 +5,13 @@ import { ChevronDown, RefreshCw, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Panel } from "@/components/panel";
-import { CardIndice, CardIndiceSkeleton, corVariacao, fmtValor, fmtVariacao } from "@/components/indices/card-indice";
+import {
+  CardIndice,
+  CardIndiceSkeleton,
+  corVariacao,
+  fmtValor,
+  fmtVariacao,
+} from "@/components/indices/card-indice";
 import { ModalIndice } from "@/components/indices/modal-indice";
 import { ComparadorCarteira } from "@/components/indices/comparador-carteira";
 import { gradeIndices } from "@/lib/indices.functions";
@@ -32,13 +38,7 @@ const ORDENS: { id: Ordem; rotulo: string }[] = [
 const chaveFavorito = (codigo: string) => `IDX:${codigo}`;
 
 /** Grade completa de índices e taxas de referência, em cards por categoria. */
-export function PainelIndices({
-  intervaloMs,
-  busca,
-}: {
-  intervaloMs: number;
-  busca: string;
-}) {
+export function PainelIndices({ intervaloMs, busca }: { intervaloMs: number; busca: string }) {
   const buscarIndices = useServerFn(gradeIndices);
   const pregao = estadoPregao();
   const { favoritos, alternar } = useFavoritos();
@@ -67,7 +67,9 @@ export function PainelIndices({
     });
 
     if (ordem === "maior12m") {
-      lista = [...lista].sort((a, b) => (b.variacao12m ?? -Infinity) - (a.variacao12m ?? -Infinity));
+      lista = [...lista].sort(
+        (a, b) => (b.variacao12m ?? -Infinity) - (a.variacao12m ?? -Infinity),
+      );
     } else if (ordem === "menor12m") {
       lista = [...lista].sort((a, b) => (a.variacao12m ?? Infinity) - (b.variacao12m ?? Infinity));
     } else {
@@ -107,9 +109,19 @@ export function PainelIndices({
                   <p className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                     {l.codigo} · {l.tipo === "taxa" ? "taxa de referência" : "índice"}
                   </p>
-                  <p className="font-display mt-1 text-2xl leading-none tabular-nums">{fmtValor(l)}</p>
-                  <p className={cn("mt-1 text-xs font-semibold tabular-nums", corVariacao(l.tipo === "taxa" ? l.variacao12m : l.variacaoDiaPercent))}>
-                    {fmtVariacao(l.tipo === "taxa" ? l.variacao12m : l.variacaoDiaPercent, l.tipo === "taxa" ? " p.p." : "%")}{" "}
+                  <p className="font-display mt-1 text-2xl leading-none tabular-nums">
+                    {fmtValor(l)}
+                  </p>
+                  <p
+                    className={cn(
+                      "mt-1 text-xs font-semibold tabular-nums",
+                      corVariacao(l.tipo === "taxa" ? l.variacao12m : l.variacaoDiaPercent),
+                    )}
+                  >
+                    {fmtVariacao(
+                      l.tipo === "taxa" ? l.variacao12m : l.variacaoDiaPercent,
+                      l.tipo === "taxa" ? " p.p." : "%",
+                    )}{" "}
                     <span className="font-normal text-muted-foreground">
                       {l.tipo === "taxa" ? "em 12m" : "no dia"}
                     </span>
@@ -156,7 +168,7 @@ export function PainelIndices({
               <button
                 key={c.id}
                 type="button"
-                onClick={() => setCategoria(c.id as CategoriaIndice | "todas")}
+                onClick={() => setCategoria(c.id)}
                 aria-pressed={categoria === c.id}
                 className={cn(
                   "rounded-full border px-3 py-1 text-xs transition-colors",
@@ -196,7 +208,9 @@ export function PainelIndices({
                     <span className="panel-title">{s.rotulo}</span>
                     <span className="flex items-center gap-2 text-xs text-muted-foreground">
                       {s.itens.length}
-                      <ChevronDown className={cn("size-4 transition-transform", !aberta && "-rotate-90")} />
+                      <ChevronDown
+                        className={cn("size-4 transition-transform", !aberta && "-rotate-90")}
+                      />
                     </span>
                   </button>
                   {aberta ? (
@@ -220,12 +234,16 @@ export function PainelIndices({
 
           <p className="flex items-center gap-1.5 border-t border-border pt-3 text-xs text-muted-foreground">
             <Star className="size-3.5" />
-            Índices de bolsa via Yahoo Finance (último fechamento fora do pregão) · CDI, Selic e IPCA via Banco
-            Central (SGS) e IBGE.
+            Índices de bolsa via Yahoo Finance (último fechamento fora do pregão) · CDI, Selic e
+            IPCA via Banco Central (SGS) e IBGE.
           </p>
         </Panel>
 
-        <ModalIndice linha={selecionado} aberto={Boolean(selecionado)} aoFechar={() => setSelecionado(null)} />
+        <ModalIndice
+          linha={selecionado}
+          aberto={Boolean(selecionado)}
+          aoFechar={() => setSelecionado(null)}
+        />
       </div>
     </TooltipProvider>
   );

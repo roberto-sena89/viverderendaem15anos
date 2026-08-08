@@ -20,11 +20,17 @@ interface Props {
   className?: string;
 }
 
-const OPCOES: { formato: FormatoExportacao; titulo: string; descricao: string; icone: typeof FileSpreadsheet }[] = [
+const OPCOES: {
+  formato: FormatoExportacao;
+  titulo: string;
+  descricao: string;
+  icone: typeof FileSpreadsheet;
+}[] = [
   {
     formato: "xlsx",
     titulo: "Exportar para Excel (.xlsx)",
-    descricao: "Planilha formatada com abas Carteira e Resumo, filtros e destaque de lucro/prejuízo.",
+    descricao:
+      "Planilha formatada com abas Carteira e Resumo, filtros e destaque de lucro/prejuízo.",
     icone: FileSpreadsheet,
   },
   {
@@ -72,7 +78,8 @@ export function BotaoExportarCarteira({ ativos, dividendos = [], className }: Pr
         <DialogHeader>
           <DialogTitle>Exportar Carteira</DialogTitle>
           <DialogDescription>
-            {ativos.length} ativo{ativos.length === 1 ? "" : "s"} serão exportados com os dados atuais da carteira.
+            {ativos.length} ativo{ativos.length === 1 ? "" : "s"} serão exportados com os dados
+            atuais da carteira.
           </DialogDescription>
         </DialogHeader>
 
@@ -88,7 +95,10 @@ export function BotaoExportarCarteira({ ativos, dividendos = [], className }: Pr
                 className="flex min-h-14 w-full items-start gap-3 rounded-lg border border-border bg-card px-3 py-3 text-left transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {carregando === formato ? (
-                  <Loader2 className="mt-0.5 size-5 shrink-0 animate-spin text-primary" aria-hidden="true" />
+                  <Loader2
+                    className="mt-0.5 size-5 shrink-0 animate-spin text-primary"
+                    aria-hidden="true"
+                  />
                 ) : (
                   <Icone className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
                 )}

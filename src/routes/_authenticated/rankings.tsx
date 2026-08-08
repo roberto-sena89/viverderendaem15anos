@@ -2,7 +2,14 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BarChart3, ChevronLeft, ChevronRight, CircleDollarSign, Landmark, RefreshCw } from "lucide-react";
+import {
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
+  CircleDollarSign,
+  Landmark,
+  RefreshCw,
+} from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Panel, TickerMark } from "@/components/panel";
 import { PainelPanoramaMercado } from "@/components/painel-panorama-mercado";
@@ -23,7 +30,8 @@ export const Route = createFileRoute("/_authenticated/rankings")({
       { property: "og:title", content: "Ranking de Ativos da B3" },
       {
         property: "og:description",
-        content: "Maiores dividend yield, valor de mercado e receitas da B3, atualizados com dados de mercado.",
+        content:
+          "Maiores dividend yield, valor de mercado e receitas da B3, atualizados com dados de mercado.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -69,10 +77,7 @@ function ListaRanking({
   const totalPaginas = Math.max(1, Math.ceil(itens.length / POR_PAGINA));
   const paginaAtual = Math.min(pagina, totalPaginas);
   const inicio = completo ? (paginaAtual - 1) * POR_PAGINA : 0;
-  const visiveis = completo
-    ? itens.slice(inicio, inicio + POR_PAGINA)
-    : itens.slice(0, VISIVEIS);
-
+  const visiveis = completo ? itens.slice(inicio, inicio + POR_PAGINA) : itens.slice(0, VISIVEIS);
 
   return (
     <Panel className="overflow-hidden" bodyClassName="p-0">
@@ -119,9 +124,13 @@ function ListaRanking({
                   )}
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold">{item.ticker}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{item.nome}</span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {item.nome}
+                    </span>
                   </span>
-                  <span className="num shrink-0 text-sm font-semibold tabular-nums">{valor(item)}</span>
+                  <span className="num shrink-0 text-sm font-semibold tabular-nums">
+                    {valor(item)}
+                  </span>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </li>
@@ -189,7 +198,6 @@ function ListaRanking({
               {completo ? "Ver menos" : `Ver Rankings (${itens.length})`}
             </Button>
           </div>
-
         </>
       )}
     </Panel>
@@ -281,8 +289,8 @@ function RankingsPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Dados públicos de mercado da B3 (brapi.dev). Dividend yield calculado sobre os proventos pagos
-        nos últimos 12 meses; receitas referentes ao último exercício divulgado.
+        Dados públicos de mercado da B3 (brapi.dev). Dividend yield calculado sobre os proventos
+        pagos nos últimos 12 meses; receitas referentes ao último exercício divulgado.
       </p>
     </AppShell>
   );

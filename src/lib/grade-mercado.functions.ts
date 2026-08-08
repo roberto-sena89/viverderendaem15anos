@@ -33,4 +33,3 @@ export const visaoGeralMercado = createServerFn({ method: "GET" }).handler(async
   const { buscarVisaoGeral } = await import("@/lib/grade-mercado.server");
   return buscarVisaoGeral();
 });
-

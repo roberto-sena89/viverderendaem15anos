@@ -40,18 +40,6 @@ export function agruparCategorias(ativos: Ativo[]): LinhaCategoria[] {
   return [...mapa.values()].sort((x, y) => y.valor - x.valor);
 }
 
-function linhaTexto(
-  doc: import("jspdf").jsPDF,
-  texto: string,
-  x: number,
-  y: number,
-  cor: [number, number, number] = [50, 50, 50],
-) {
-  doc.setFontSize(9);
-  doc.setTextColor(...cor);
-  doc.text(texto, x, y);
-}
-
 export async function gerarRelatorioCarteira(dados: DadosRelatorioCarteira) {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "pt", format: "a4" });

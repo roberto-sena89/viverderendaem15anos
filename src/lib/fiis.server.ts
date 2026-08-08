@@ -439,7 +439,7 @@ async function historicoYahoo(ticker: string): Promise<HistoricoFii> {
           let referencia: number | null = null;
           for (let k = tempos.length - 1; k >= 0; k--) {
             if (tempos[k] * 1000 <= inicio && typeof fechamentos[k] === "number") {
-              referencia = fechamentos[k] as number;
+              referencia = fechamentos[k];
               break;
             }
           }

@@ -55,13 +55,18 @@ export function ComparadorEtfs({
         </DialogHeader>
 
         {linhas.length < 2 ? (
-          <p className="text-sm text-muted-foreground">Selecione ao menos dois ETFs para comparar.</p>
+          <p className="text-sm text-muted-foreground">
+            Selecione ao menos dois ETFs para comparar.
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th scope="col" className="px-2 py-2 text-left text-xs text-muted-foreground uppercase">
+                  <th
+                    scope="col"
+                    className="px-2 py-2 text-left text-xs text-muted-foreground uppercase"
+                  >
                     Indicador
                   </th>
                   {linhas.map((l) => (
@@ -82,7 +87,10 @@ export function ComparadorEtfs({
               <tbody>
                 {INDICADORES.map((ind) => (
                   <tr key={ind.rotulo} className="border-b border-border/60">
-                    <th scope="row" className="px-2 py-2 text-left font-normal text-muted-foreground">
+                    <th
+                      scope="row"
+                      className="px-2 py-2 text-left font-normal text-muted-foreground"
+                    >
                       {ind.rotulo}
                     </th>
                     {linhas.map((l) => (

@@ -4,7 +4,8 @@ import { errorResult, requireAuth, supabaseForUser, textResult } from "../supaba
 export default defineTool({
   name: "listar_carteira",
   title: "Listar carteira",
-  description: "Lista todos os ativos da carteira do usuário (ticker, categoria, quantidade, preço médio, preço atual e DY).",
+  description:
+    "Lista todos os ativos da carteira do usuário (ticker, categoria, quantidade, preço médio, preço atual e DY).",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_input, ctx) => {

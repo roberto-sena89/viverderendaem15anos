@@ -54,7 +54,6 @@ async function buscarBloco(tickers: string[]): Promise<PrecoBrapiEtf[]> {
         volume: num(r.regularMarketVolume),
         atualizadoEm: (r.regularMarketTime as string) ?? new Date().toISOString(),
         moeda: typeof r.currency === "string" ? r.currency.toUpperCase() : null,
-
       }))
       .filter((p) => p.ticker);
   } catch {
@@ -117,7 +116,6 @@ export async function precosBrapiEtfs(tickers: string[]): Promise<PrecoBrapiEtf[
       emVoo.set(t, promessa);
       aguardar.push(promessa);
     }
-
   }
 
   const resolvidos = await Promise.all(aguardar);
@@ -126,4 +124,3 @@ export async function precosBrapiEtfs(tickers: string[]): Promise<PrecoBrapiEtf[
   const vistos = new Set<string>();
   return prontos.filter((p) => (vistos.has(p.ticker) ? false : (vistos.add(p.ticker), true)));
 }
-

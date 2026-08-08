@@ -61,7 +61,9 @@ export function ModalFii({
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2 text-left">
             <span className="font-display text-xl">{linha.ticker}</span>
-            <span className={`rounded-full border px-2 py-0.5 text-[0.68rem] font-medium ${COR_TIPO[linha.tipo]}`}>
+            <span
+              className={`rounded-full border px-2 py-0.5 text-[0.68rem] font-medium ${COR_TIPO[linha.tipo]}`}
+            >
               {ROTULO_TIPO[linha.tipo]}
             </span>
             <Button
@@ -72,7 +74,9 @@ export function ModalFii({
               aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
               onClick={() => alternar(linha.ticker)}
             >
-              <Star className={`size-4 ${favorito ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+              <Star
+                className={`size-4 ${favorito ? "fill-primary text-primary" : "text-muted-foreground"}`}
+              />
             </Button>
           </DialogTitle>
           <DialogDescription className="text-left">
@@ -122,8 +126,10 @@ export function ModalFii({
             <div className="rounded-lg border border-primary/30 bg-primary-soft/40 p-bloco text-sm">
               <p className="font-semibold">Sua posição</p>
               <p className="mt-1 text-muted-foreground">
-                {posicao.quantidade.toLocaleString("pt-BR")} cotas · preço médio {fmtMoeda(posicao.precoMedio)} ·{" "}
-                <span className={corVar(rentabilidade)}>{fmtPct(rentabilidade)}</span> de rentabilidade
+                {posicao.quantidade.toLocaleString("pt-BR")} cotas · preço médio{" "}
+                {fmtMoeda(posicao.precoMedio)} ·{" "}
+                <span className={corVar(rentabilidade)}>{fmtPct(rentabilidade)}</span> de
+                rentabilidade
               </p>
             </div>
           ) : null}

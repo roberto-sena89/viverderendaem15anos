@@ -16,10 +16,14 @@ export const fmtPct = (v: number | null, casas = 2) =>
 export const fmtCompacto = (v: number | null, simbolo = "US$") => {
   if (v === null || !Number.isFinite(v) || v === 0) return "—";
   const abs = Math.abs(v);
-  if (abs >= 1e12) return `${simbolo} ${(v / 1e12).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} T`;
-  if (abs >= 1e9) return `${simbolo} ${(v / 1e9).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} B`;
-  if (abs >= 1e6) return `${simbolo} ${(v / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} M`;
-  if (abs >= 1e3) return `${simbolo} ${(v / 1e3).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil`;
+  if (abs >= 1e12)
+    return `${simbolo} ${(v / 1e12).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} T`;
+  if (abs >= 1e9)
+    return `${simbolo} ${(v / 1e9).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} B`;
+  if (abs >= 1e6)
+    return `${simbolo} ${(v / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} M`;
+  if (abs >= 1e3)
+    return `${simbolo} ${(v / 1e3).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil`;
   return `${simbolo} ${v.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`;
 };
 

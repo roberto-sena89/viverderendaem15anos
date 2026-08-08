@@ -8,7 +8,11 @@ import { Sparkline } from "@/components/cotacoes/sparkline";
 import { GradeCotacoes } from "@/components/cotacoes/grade-cotacoes";
 import { corVar, fmtPercent, fmtPreco, fmtVolume } from "@/components/cotacoes/formatos";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
-import { gradeMercado, type CategoriaMercado, type LinhaCotacao } from "@/lib/grade-mercado.functions";
+import {
+  gradeMercado,
+  type CategoriaMercado,
+  type LinhaCotacao,
+} from "@/lib/grade-mercado.functions";
 import { TextoTruncado } from "@/components/texto-truncado";
 
 function Card({ titulo, children }: { titulo: string; children: React.ReactNode }) {
@@ -33,8 +37,12 @@ function Destaque({
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="min-w-0">
-        <TextoTruncado as="p" className="t-ticker font-display" texto={linha.ticker}>{linha.ticker}</TextoTruncado>
-        <TextoTruncado as="p" className="t-subtexto" texto={fmtPreco(linha.preco, linha.moeda)}>{fmtPreco(linha.preco, linha.moeda)}</TextoTruncado>
+        <TextoTruncado as="p" className="t-ticker font-display" texto={linha.ticker}>
+          {linha.ticker}
+        </TextoTruncado>
+        <TextoTruncado as="p" className="t-subtexto" texto={fmtPreco(linha.preco, linha.moeda)}>
+          {fmtPreco(linha.preco, linha.moeda)}
+        </TextoTruncado>
       </div>
       <span className="t-num inline-flex shrink-0 items-center gap-1 font-semibold">
         {icone}
@@ -105,9 +113,7 @@ export function PainelCategoria({
         <Card titulo={`Panorama · ${titulo}`}>
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
-              <p className={`t-metric-sm ${corVar(media)}`}>
-                {fmtPercent(media)}
-              </p>
+              <p className={`t-metric-sm ${corVar(media)}`}>{fmtPercent(media)}</p>
               <p className="t-num-sm mt-1 text-muted-foreground">
                 <span className="text-positive">{altas} em alta</span> ·{" "}
                 <span className="text-negative">{baixas} em baixa</span>
@@ -178,7 +184,9 @@ export function PainelCategoria({
               variant="outline"
               size="sm"
               disabled={isFetching}
-              onClick={() => queryClient.invalidateQueries({ queryKey: ["grade-mercado", categoria] })}
+              onClick={() =>
+                queryClient.invalidateQueries({ queryKey: ["grade-mercado", categoria] })
+              }
               aria-label={`Atualizar cotações de ${titulo}`}
             >
               <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />

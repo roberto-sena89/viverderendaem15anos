@@ -78,10 +78,14 @@ export function ResumoAcoes({
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="font-display text-xl leading-none tabular-nums">
-              {ibovespa?.valor ? ibovespa.valor.toLocaleString("pt-BR", { maximumFractionDigits: 0 }) : "—"}
+              {ibovespa?.valor
+                ? ibovespa.valor.toLocaleString("pt-BR", { maximumFractionDigits: 0 })
+                : "—"}
             </p>
             <p className="mt-1 flex items-center gap-2 text-xs">
-              <span className={`font-semibold tabular-nums ${corVar(ibovespa?.variacaoPercent ?? null)}`}>
+              <span
+                className={`font-semibold tabular-nums ${corVar(ibovespa?.variacaoPercent ?? null)}`}
+              >
                 {fmtPct(ibovespa?.variacaoPercent ?? null)}
               </span>
               <span className="text-muted-foreground">
@@ -96,7 +100,10 @@ export function ResumoAcoes({
         </div>
       </Card>
 
-      <Card titulo="Maior alta do dia" aoClicar={maiorAlta ? () => aoSelecionar(maiorAlta) : undefined}>
+      <Card
+        titulo="Maior alta do dia"
+        aoClicar={maiorAlta ? () => aoSelecionar(maiorAlta) : undefined}
+      >
         <Destaque
           linha={maiorAlta}
           valor={fmtPct(maiorAlta?.variacaoPercent ?? null)}
@@ -104,7 +111,10 @@ export function ResumoAcoes({
         />
       </Card>
 
-      <Card titulo="Maior baixa do dia" aoClicar={maiorBaixa ? () => aoSelecionar(maiorBaixa) : undefined}>
+      <Card
+        titulo="Maior baixa do dia"
+        aoClicar={maiorBaixa ? () => aoSelecionar(maiorBaixa) : undefined}
+      >
         <Destaque
           linha={maiorBaixa}
           valor={fmtPct(maiorBaixa?.variacaoPercent ?? null)}
@@ -112,7 +122,10 @@ export function ResumoAcoes({
         />
       </Card>
 
-      <Card titulo="Maior dividend yield" aoClicar={maiorDy ? () => aoSelecionar(maiorDy) : undefined}>
+      <Card
+        titulo="Maior dividend yield"
+        aoClicar={maiorDy ? () => aoSelecionar(maiorDy) : undefined}
+      >
         <Destaque
           linha={maiorDy}
           valor={fmtPctSimples(maiorDy?.dy12 ?? null, 1)}

@@ -31,12 +31,9 @@ async function sincronizarCarteira(
 ) {
   emitirCarteiraAlterada(chaves);
   await Promise.all(
-    chaves.map((queryKey) =>
-      qc.invalidateQueries({ queryKey, refetchType: "all" }),
-    ),
+    chaves.map((queryKey) => qc.invalidateQueries({ queryKey, refetchType: "all" })),
   );
 }
-
 
 export function useAtivos() {
   return useQuery({
@@ -112,11 +109,7 @@ export function useMetas() {
   return useQuery({
     queryKey: qk.metas,
     queryFn: async (): Promise<Meta[]> => {
-      const { data, error } = await supabase
-        .from("metas")
-        .select("*")
-        .order("ordem")
-        .order("alvo");
+      const { data, error } = await supabase.from("metas").select("*").order("ordem").order("alvo");
       if (error) throw error;
       return (data ?? []).map((r) => ({
         id: r.id,
@@ -214,13 +207,9 @@ export function useExcluir(tabela: "ativos" | "aportes" | "dividendos" | "metas"
       if (error) throw error;
     },
     onSuccess: () =>
-      sincronizarCarteira(
-        qc,
-        tabela === "aportes" ? [qk.aportes, qk.ativos] : [[tabela] as const],
-      ),
+      sincronizarCarteira(qc, tabela === "aportes" ? [qk.aportes, qk.ativos] : [[tabela] as const]),
   });
 }
-
 
 /**
  * Recalcula quantidade e preço médio do ativo a partir de TODO o histórico de
@@ -274,7 +263,6 @@ async function recalcularAtivo(ticker: string) {
     .eq("id", ativo.id);
   if (upErr) throw upErr;
 }
-
 
 export interface AporteInput {
   data: string;
@@ -342,7 +330,6 @@ export function useCriarAporte() {
       await recalcularAtivo(ticker);
     },
     onSuccess: () => sincronizarCarteira(qc),
-
   });
 }
 
@@ -419,7 +406,8 @@ export function useImportarB3() {
         const atual = (existentes ?? []).find((e) => e.ticker === ticker);
         if (atual) {
           const qtd = Number(atual.quantidade) + novo.qtd;
-          const pm = qtd > 0 ? (Number(atual.quantidade) * Number(atual.preco_medio) + novo.total) / qtd : 0;
+          const pm =
+            qtd > 0 ? (Number(atual.quantidade) * Number(atual.preco_medio) + novo.total) / qtd : 0;
           const { error } = await supabase
             .from("ativos")
             .update({ quantidade: qtd, preco_medio: pm })
@@ -443,7 +431,6 @@ export function useImportarB3() {
       return { aportes: aportes.length, dividendos: dividendos.length };
     },
     onSuccess: () => sincronizarCarteira(qc),
-
   });
 }
 
@@ -474,11 +461,12 @@ export function useAtualizarAporte() {
         .eq("id", id);
       if (error) throw error;
 
-      const tickers = new Set([ticker, anterior?.ticker?.toUpperCase()].filter(Boolean) as string[]);
+      const tickers = new Set(
+        [ticker, anterior?.ticker?.toUpperCase()].filter(Boolean) as string[],
+      );
       for (const t of tickers) await recalcularAtivo(t);
     },
     onSuccess: () => sincronizarCarteira(qc),
-
   });
 }
 
@@ -497,6 +485,5 @@ export function useExcluirAporte() {
       if (linha?.ticker) await recalcularAtivo(linha.ticker);
     },
     onSuccess: () => sincronizarCarteira(qc),
-
   });
 }

@@ -111,7 +111,13 @@ function desenharTabela(doc: import("jspdf").jsPDF, resumos: ResumoCenario[], to
     ["Em valor de hoje", (r) => brl(r.patrimonioReal)],
     ["Renda passiva/mês", (r) => brl(r.rendaPassiva)],
     ["Total aportado", (r) => brl(r.totalAportado)],
-    ["Independência", (r) => (r.anoIndependencia ? `${r.anoIndependencia} · ${r.idadeIndependencia} anos` : "Após o período")],
+    [
+      "Independência",
+      (r) =>
+        r.anoIndependencia
+          ? `${r.anoIndependencia} · ${r.idadeIndependencia} anos`
+          : "Após o período",
+    ],
     ["Progresso da meta", (r) => pct(r.progresso)],
   ];
 

@@ -10,7 +10,6 @@ const RODAPE = ALTURA - 40;
 const VERDE = [0, 107, 60] as const;
 const VERDE_CLARO = [0, 150, 84] as const;
 const CINZA = [110, 110, 110] as const;
-const CINZA_CLARO = [235, 238, 236] as const;
 const TEXTO = [40, 40, 40] as const;
 const ERRO = [211, 47, 47] as const;
 const OK = [0, 130, 60] as const;
@@ -82,11 +81,6 @@ function tituloSecao(doc: Doc, texto: string, y: number) {
   doc.setTextColor(VERDE[0], VERDE[1], VERDE[2]);
   doc.text(semAcento(texto), M + 10, y);
   return y + 8;
-}
-
-function linhaDivisoria(doc: Doc, y: number) {
-  doc.setDrawColor(225, 225, 225);
-  doc.line(M, y, LARGURA - M, y);
 }
 
 function barra(
@@ -185,7 +179,6 @@ export async function gerarPdfRelatorioAuditoria(dados: DadosRelatorioAuditoria)
   ];
 
   kpis.forEach(([rotulo, valor, cor], i) => {
-    const linha = Math.floor(i / 3);
     const col = i % 3;
     kpiCard(doc, M + col * (colW + 8), y, colW, rotulo, valor, cor);
   });
@@ -288,7 +281,6 @@ export async function gerarPdfRelatorioAuditoria(dados: DadosRelatorioAuditoria)
   const colClasse = 170;
   const colAtual = 90;
   const colAlvo = 90;
-  const colDif = 130;
   const cabecs = [
     ["Classe", M],
     ["Atual", M + colClasse],
@@ -518,7 +510,6 @@ export async function gerarPdfRelatorioAuditoria(dados: DadosRelatorioAuditoria)
     const colPM = 90;
     const colPreco = 90;
     const colPct = 60;
-    const colValor = (CONTEUDO - colTicker - colCat - colQtd - colPM - colPreco - colPct - 6) / 2;
 
     doc.setFillColor(240, 244, 241);
     doc.roundedRect(M, y - 12, CONTEUDO, 18, 3, 3, "F");

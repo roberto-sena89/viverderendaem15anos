@@ -41,8 +41,12 @@ function useFlash(preco: number | null) {
 function Linha({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
     <div className="min-w-0 rounded-lg border border-border/60 bg-muted/30 p-bloco">
-      <TextoTruncado as="p" className="t-label block">{rotulo}</TextoTruncado>
-      <TextoTruncado as="p" className="t-num mt-0.5 block">{valor}</TextoTruncado>
+      <TextoTruncado as="p" className="t-label block">
+        {rotulo}
+      </TextoTruncado>
+      <TextoTruncado as="p" className="t-num mt-0.5 block">
+        {valor}
+      </TextoTruncado>
     </div>
   );
 }
@@ -94,7 +98,9 @@ export function MarketCard({ symbol }: { symbol: string }) {
               <Star className={`size-4 ${favorito ? "fill-primary text-primary" : ""}`} />
             </button>
           </div>
-          <TextoTruncado as="p" className="t-subtexto block">{q.longName ?? q.shortName ?? "—"}</TextoTruncado>
+          <TextoTruncado as="p" className="t-subtexto block">
+            {q.longName ?? q.shortName ?? "—"}
+          </TextoTruncado>
         </div>
         <span
           className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
@@ -103,7 +109,9 @@ export function MarketCard({ symbol }: { symbol: string }) {
               : "border-border bg-muted text-muted-foreground"
           }`}
         >
-          <span className={`size-1.5 rounded-full ${aberto ? "animate-pulse bg-positive" : "bg-muted-foreground"}`} />
+          <span
+            className={`size-1.5 rounded-full ${aberto ? "animate-pulse bg-positive" : "bg-muted-foreground"}`}
+          />
           {aberto ? "Mercado aberto" : "Mercado fechado"}
         </span>
       </div>

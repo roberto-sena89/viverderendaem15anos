@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Loader2, TrendingDown, TrendingUp } from "lucide-react";
 import {
   Dialog,
@@ -31,7 +39,15 @@ function pctFmt(v: number | null | undefined) {
   return `${v >= 0 ? "+" : "-"}${Math.abs(v).toFixed(2).replace(".", ",")}%`;
 }
 
-function Indicador({ rotulo, valor, tom }: { rotulo: string; valor: string; tom?: "alta" | "baixa" }) {
+function Indicador({
+  rotulo,
+  valor,
+  tom,
+}: {
+  rotulo: string;
+  valor: string;
+  tom?: "alta" | "baixa";
+}) {
   return (
     <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
       <p className="text-[0.78rem] uppercase tracking-wide text-muted-foreground">{rotulo}</p>
@@ -159,8 +175,19 @@ export function DialogDetalheAtivo({
                     <stop offset="100%" stopColor="var(--color-chart-1)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="data" tickLine={false} axisLine={false} fontSize={13} minTickGap={28} stroke="var(--color-muted-foreground)" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="data"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={13}
+                  minTickGap={28}
+                  stroke="var(--color-muted-foreground)"
+                />
                 <YAxis
                   tickFormatter={(v: number) => moedaFmt(v, moeda)}
                   tickLine={false}

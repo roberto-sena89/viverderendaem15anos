@@ -80,16 +80,19 @@ export function ResumoFiis({
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="font-display text-xl leading-none tabular-nums">
-              {ifix?.valor
-                ? ifix.valor.toLocaleString("pt-BR", { maximumFractionDigits: 0 })
-                : "—"}
+              {ifix?.valor ? ifix.valor.toLocaleString("pt-BR", { maximumFractionDigits: 0 }) : "—"}
             </p>
             <p className="mt-1 flex items-center gap-2 text-xs">
-              <span className={`font-semibold tabular-nums ${corVar(ifix?.variacaoPercent ?? null)}`}>
+              <span
+                className={`font-semibold tabular-nums ${corVar(ifix?.variacaoPercent ?? null)}`}
+              >
                 {fmtPct(ifix?.variacaoPercent ?? null)}
               </span>
               <span className="text-muted-foreground">
-                12m <span className={corVar(ifix?.variacao12m ?? null)}>{fmtPct(ifix?.variacao12m ?? null)}</span>
+                12m{" "}
+                <span className={corVar(ifix?.variacao12m ?? null)}>
+                  {fmtPct(ifix?.variacao12m ?? null)}
+                </span>
               </span>
             </p>
           </div>
@@ -97,7 +100,10 @@ export function ResumoFiis({
         </div>
       </Card>
 
-      <Card titulo="Maior alta do dia" aoClicar={maiorAlta ? () => aoSelecionar(maiorAlta) : undefined}>
+      <Card
+        titulo="Maior alta do dia"
+        aoClicar={maiorAlta ? () => aoSelecionar(maiorAlta) : undefined}
+      >
         <Destaque
           linha={maiorAlta}
           valor={fmtPct(maiorAlta?.variacaoPercent ?? null)}
@@ -106,7 +112,10 @@ export function ResumoFiis({
         />
       </Card>
 
-      <Card titulo="Maior baixa do dia" aoClicar={maiorBaixa ? () => aoSelecionar(maiorBaixa) : undefined}>
+      <Card
+        titulo="Maior baixa do dia"
+        aoClicar={maiorBaixa ? () => aoSelecionar(maiorBaixa) : undefined}
+      >
         <Destaque
           linha={maiorBaixa}
           valor={fmtPct(maiorBaixa?.variacaoPercent ?? null)}
@@ -115,7 +124,10 @@ export function ResumoFiis({
         />
       </Card>
 
-      <Card titulo="Maior dividend yield" aoClicar={maiorDy ? () => aoSelecionar(maiorDy) : undefined}>
+      <Card
+        titulo="Maior dividend yield"
+        aoClicar={maiorDy ? () => aoSelecionar(maiorDy) : undefined}
+      >
         <Destaque
           linha={maiorDy}
           valor={fmtPctSimples(maiorDy?.dy12 ?? null, 1)}

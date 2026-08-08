@@ -1,4 +1,9 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Panel } from "@/components/panel";
 
 const TOPICOS = [
@@ -52,10 +57,10 @@ export function RodapeEducativoFiis() {
         ))}
       </Accordion>
       <p className="t-caption mt-secao leading-relaxed">
-        Os dados desta página são coletados de fontes públicas de mercado e podem sofrer atraso ou divergência.
-        Indicadores fundamentalistas são atualizados diariamente; preços e variações acompanham o pregão da B3.
-        Nada aqui constitui recomendação de compra ou venda — avalie os relatórios gerenciais de cada fundo antes de
-        investir.
+        Os dados desta página são coletados de fontes públicas de mercado e podem sofrer atraso ou
+        divergência. Indicadores fundamentalistas são atualizados diariamente; preços e variações
+        acompanham o pregão da B3. Nada aqui constitui recomendação de compra ou venda — avalie os
+        relatórios gerenciais de cada fundo antes de investir.
       </p>
     </Panel>
   );

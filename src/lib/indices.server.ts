@@ -26,7 +26,11 @@ const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const memoria = new Map<string, { expira: number; valor: unknown }>();
 
-async function json<T>(url: string, ttlMs: number, headers: Record<string, string>): Promise<T | null> {
+async function json<T>(
+  url: string,
+  ttlMs: number,
+  headers: Record<string, string>,
+): Promise<T | null> {
   const cache = memoria.get(url);
   if (cache && cache.expira > Date.now()) return cache.valor as T;
   const controller = new AbortController();
@@ -101,7 +105,7 @@ async function indiceBolsa(def: DefIndice): Promise<LinhaIndice> {
       if (t > 0) await dormir(200 * t);
       const data = await yahoo(
         `https://${host}/v8/finance/chart/${encodeURIComponent(simbolo)}?range=1y&interval=1d`,
-        headers as Record<string, string>,
+        headers,
       );
       const r = data?.chart?.result?.[0];
       const serie = (r?.indicators?.quote?.[0]?.close ?? []).filter(
@@ -154,13 +158,12 @@ async function serieSgs(codigo: number, mesesAtras: number): Promise<PontoSgs[]>
   const dados = await json<PontoSgs[]>(
     `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${codigo}/dados?formato=json&dataInicial=${br(inicio)}&dataFinal=${br(fim)}`,
     3 * 60 * 60_000,
-    PADRAO as unknown as Record<string, string>,
+    PADRAO,
   );
   return Array.isArray(dados) ? dados : [];
 }
 
 const num = (p?: PontoSgs) => (p ? Number(p.valor.replace(",", ".")) : null);
-
 
 async function taxaReferencia(def: DefIndice): Promise<LinhaIndice> {
   const base: LinhaIndice = {
@@ -176,7 +179,8 @@ async function taxaReferencia(def: DefIndice): Promise<LinhaIndice> {
     spark: [],
     divulgadoEm: null,
     extras: [],
-    fonte: def.codigo === "IPCA" ? "IBGE via Banco Central (SGS 433)" : `Banco Central (SGS ${def.sgs})`,
+    fonte:
+      def.codigo === "IPCA" ? "IBGE via Banco Central (SGS 433)" : `Banco Central (SGS ${def.sgs})`,
   };
   if (!def.sgs) return base;
 

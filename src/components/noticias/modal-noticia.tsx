@@ -10,7 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { DialogDetalheAtivo } from "@/components/dialog-detalhe-ativo";
-import { BadgeCategoria, MarcaFonte, SeloUrgente, TickersMencionados, tempoRelativo } from "./cartoes";
+import {
+  BadgeCategoria,
+  MarcaFonte,
+  SeloUrgente,
+  TickersMencionados,
+  tempoRelativo,
+} from "./cartoes";
 import type { Noticia } from "@/lib/noticias.functions";
 
 function dataCompleta(iso: string) {

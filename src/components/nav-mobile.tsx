@@ -3,13 +3,7 @@ import { LayoutDashboard, Menu, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logoIcone from "@/assets/logo-icone.webp";
 
@@ -103,9 +97,7 @@ export function NavMobile({
                           : "font-medium text-muted-foreground active:bg-sidebar-accent/60"
                       }`}
                     >
-                      <Icon
-                        className={`size-[17px] shrink-0 ${ativo ? "text-primary" : ""}`}
-                      />
+                      <Icon className={`size-[17px] shrink-0 ${ativo ? "text-primary" : ""}`} />
                       <span className="min-w-0 flex-1 truncate">{label}</span>
                     </Link>
                   );

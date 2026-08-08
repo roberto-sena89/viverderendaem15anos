@@ -506,7 +506,11 @@ function PaginaNoticias() {
                   As fontes de notícias podem estar temporariamente indisponíveis.
                 </p>
                 <Button onClick={() => refetch()} disabled={isFetching}>
-                  {isFetching ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+                  {isFetching ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="size-4" />
+                  )}
                   Tentar novamente
                 </Button>
               </div>

@@ -12,15 +12,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { notificarPush, registrarAlerta } from "@/lib/alertas-historico";
-import {
-  itensStreamaveis,
-  useCotacoesStream,
-  type StatusStream,
-} from "@/lib/cotacoes-stream";
+import { itensStreamaveis, useCotacoesStream, type StatusStream } from "@/lib/cotacoes-stream";
 import { cotacoesCarteira, type CotacaoLive } from "@/lib/cotacoes.functions";
 import { useAtivos } from "@/lib/data";
 import type { Ativo } from "@/lib/portfolio";
-
 
 /* ---------------------------------------------------------------- *
  * Preferências do usuário (persistidas no navegador)
@@ -38,7 +33,6 @@ export interface ConfigSync {
   pushAtivo: boolean;
 }
 
-
 export const INTERVALOS = [
   { ms: 15_000, rotulo: "15s" },
   { ms: 30_000, rotulo: "30s" },
@@ -54,7 +48,6 @@ const CONFIG_PADRAO: ConfigSync = {
   pushAtivo: false,
 };
 
-
 const CHAVE_CONFIG = "cotacoes:config";
 const CHAVE_CACHE = "cotacoes:cache";
 
@@ -62,7 +55,9 @@ function lerConfig(): ConfigSync {
   if (typeof window === "undefined") return CONFIG_PADRAO;
   try {
     const bruto = window.localStorage.getItem(CHAVE_CONFIG);
-    return bruto ? { ...CONFIG_PADRAO, ...(JSON.parse(bruto) as Partial<ConfigSync>) } : CONFIG_PADRAO;
+    return bruto
+      ? { ...CONFIG_PADRAO, ...(JSON.parse(bruto) as Partial<ConfigSync>) }
+      : CONFIG_PADRAO;
   } catch {
     return CONFIG_PADRAO;
   }
@@ -154,7 +149,6 @@ interface ContextoCotacoes {
 
 const Ctx = createContext<ContextoCotacoes | null>(null);
 
-
 const chaveTicker = (t: string) => t.trim().toUpperCase().replace(/\.SA$/i, "");
 
 export function CotacoesTempoRealProvider({ children }: { children: ReactNode }) {
@@ -214,8 +208,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     () => ativos.some((a) => String(a.categoria) === "Criptomoedas"),
     [ativos],
   );
-  const mercadoAtivo =
-    pregao.aberto || cripto || (temInternacional && mercadoGlobal.aberto);
+  const mercadoAtivo = pregao.aberto || cripto || (temInternacional && mercadoGlobal.aberto);
 
   // Ativos que a fonte consegue transmitir por streaming (SSE).
   const itensStream = useMemo(() => itensStreamaveis(ativos), [ativos]);
@@ -244,7 +237,13 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
   const intervalo = config.automatico ? (precisaPolling ? intervaloBase : false) : false;
 
   const { data, isFetching, isError, dataUpdatedAt, refetch } = useQuery({
-    queryKey: ["cotacoes-carteira", itens.map((i) => `${i.ticker}:${i.categoria}`).sort().join(",")],
+    queryKey: [
+      "cotacoes-carteira",
+      itens
+        .map((i) => `${i.ticker}:${i.categoria}`)
+        .sort()
+        .join(","),
+    ],
     queryFn: () => buscar({ data: { itens } }),
     enabled: itens.length > 0,
     refetchInterval: intervalo,
@@ -333,7 +332,6 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streamEm]);
 
-
   const status: StatusSync = isFetching
     ? "atualizando"
     : isError
@@ -357,7 +355,6 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     statusStream,
   };
 
-
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>;
 }
 
@@ -379,7 +376,6 @@ export function useCotacoesTempoReal(): ContextoCotacoes {
     streaming: false,
     statusStream: "inativo",
   };
-
 }
 
 /** Aplica as cotações ao vivo sobre a lista de ativos vinda do banco. */

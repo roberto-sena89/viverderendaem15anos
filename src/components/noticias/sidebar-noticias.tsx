@@ -3,12 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, Flame, Radar } from "lucide-react";
 import { Panel } from "@/components/panel";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { agendaEconomica, type Noticia } from "@/lib/noticias.functions";
 import { BadgeCategoria, MarcaFonte, tempoRelativo } from "./cartoes";
 
@@ -26,10 +21,7 @@ export function MaisLidas({
   onAbrir: (n: Noticia) => void;
 }) {
   const ordenadas = [...noticias]
-    .sort(
-      (a, b) =>
-        (leituras[b.id] ?? 0) - (leituras[a.id] ?? 0) || b.relevancia - a.relevancia,
-    )
+    .sort((a, b) => (leituras[b.id] ?? 0) - (leituras[a.id] ?? 0) || b.relevancia - a.relevancia)
     .slice(0, 5);
 
   return (
@@ -106,7 +98,10 @@ export function AgendaEconomica() {
           {(data ?? []).map((e) => {
             const d = new Date(e.quando);
             return (
-              <li key={e.id} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-4 py-2.5">
+              <li
+                key={e.id}
+                className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-4 py-2.5"
+              >
                 <span
                   className="grid size-10 shrink-0 place-items-center rounded-lg text-center leading-none"
                   style={{
@@ -178,7 +173,9 @@ export function RadarCarteira({
                     </span>
                   ))}
                 </span>
-                <span className="line-clamp-2 block text-sm leading-snug font-medium">{n.titulo}</span>
+                <span className="line-clamp-2 block text-sm leading-snug font-medium">
+                  {n.titulo}
+                </span>
                 <span className="mt-1 block text-xs text-muted-foreground">
                   {n.fonte} · {tempoRelativo(n.publicadoEm)}
                 </span>
@@ -197,13 +194,31 @@ export function RadarCarteira({
 
 const GLOSSARIO: { termo: string; definicao: string }[] = [
   { termo: "Copom", definicao: "Comitê do Banco Central que define a taxa Selic a cada 45 dias." },
-  { termo: "Selic", definicao: "Taxa básica de juros da economia brasileira; referência da renda fixa pós-fixada." },
+  {
+    termo: "Selic",
+    definicao: "Taxa básica de juros da economia brasileira; referência da renda fixa pós-fixada.",
+  },
   { termo: "IPCA", definicao: "Índice oficial de inflação do Brasil, calculado pelo IBGE." },
-  { termo: "Dividend yield", definicao: "Proventos pagos nos últimos 12 meses divididos pelo preço da cota ou ação." },
-  { termo: "Payroll", definicao: "Relatório mensal de criação de empregos nos EUA; move juros e câmbio globais." },
-  { termo: "Guidance", definicao: "Projeção que a própria companhia divulga sobre seus resultados futuros." },
-  { termo: "Vacância", definicao: "Percentual de imóveis desocupados na carteira de um fundo imobiliário." },
-  { termo: "Circuit breaker", definicao: "Interrupção automática do pregão após queda brusca do índice." },
+  {
+    termo: "Dividend yield",
+    definicao: "Proventos pagos nos últimos 12 meses divididos pelo preço da cota ou ação.",
+  },
+  {
+    termo: "Payroll",
+    definicao: "Relatório mensal de criação de empregos nos EUA; move juros e câmbio globais.",
+  },
+  {
+    termo: "Guidance",
+    definicao: "Projeção que a própria companhia divulga sobre seus resultados futuros.",
+  },
+  {
+    termo: "Vacância",
+    definicao: "Percentual de imóveis desocupados na carteira de um fundo imobiliário.",
+  },
+  {
+    termo: "Circuit breaker",
+    definicao: "Interrupção automática do pregão após queda brusca do índice.",
+  },
 ];
 
 export function TermosDefinicoes() {
@@ -235,7 +250,6 @@ export function TermosDefinicoes() {
           ))}
         </ul>
       </TooltipProvider>
-
     </Panel>
   );
 }
@@ -245,7 +259,14 @@ export function NoticiasSalvas({
   salvas,
   onRemover,
 }: {
-  salvas: { id: string; titulo: string; url: string; fonte: string; categoria: string; publicadoEm: string }[];
+  salvas: {
+    id: string;
+    titulo: string;
+    url: string;
+    fonte: string;
+    categoria: string;
+    publicadoEm: string;
+  }[];
   onRemover: (id: string) => void;
 }) {
   if (salvas.length === 0) return null;
@@ -253,7 +274,10 @@ export function NoticiasSalvas({
     <Panel title="Notícias salvas" bodyClassName="p-0">
       <ul className="divide-y divide-border">
         {salvas.slice(0, 8).map((s) => (
-          <li key={s.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2 px-4 py-3">
+          <li
+            key={s.id}
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2 px-4 py-3"
+          >
             <a
               href={s.url}
               target="_blank"

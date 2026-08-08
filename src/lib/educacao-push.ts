@@ -7,13 +7,8 @@
  * Técnico IA para transformar diagnóstico em orientação acionável.
  */
 
-import {
-  ALOCACAO_POR_PERFIL,
-  analisarCarteiraDe,
-  type AtivoLinha,
-  type PerfilInvestidor,
-} from "@/lib/auditoria";
-import { CLASSE_POS_FIXADO, classeDoAtivo, planoPadrao } from "@/lib/portfolio";
+import { ALOCACAO_POR_PERFIL, type AtivoLinha, type PerfilInvestidor } from "@/lib/auditoria";
+import { CLASSE_POS_FIXADO, classeDoAtivo } from "@/lib/portfolio";
 
 export type GapId =
   | "carteira_vazia"
@@ -109,7 +104,6 @@ export function educacaoPush(entrada: EntradaEducacaoPush, gap?: GapId): Respost
   );
   const totalAportado = aportes.reduce((s, a) => s + a.quantidade * a.preco, 0);
 
-  const auditoria = analisarCarteiraDe(ativos);
   const alvo = ALOCACAO_POR_PERFIL[perfil];
   const alvoRendaFixa = alvo[CLASSE_POS_FIXADO] ?? 0;
 

@@ -57,8 +57,6 @@ const grupos = ["Carteira", "MERCADO", "Planejamento"].map((titulo) => ({
   })),
 }));
 
-const nav = grupos.flatMap((g) => g.itens);
-
 export function AppShell({
   title,
   description,

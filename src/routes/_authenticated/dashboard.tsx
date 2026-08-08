@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { BarChart3, Calendar, CircleDollarSign, Wallet } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Calendar, CircleDollarSign } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -35,7 +35,6 @@ import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { useAportes, useDividendos } from "@/lib/data";
 import { classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
-import type { Ativo } from "@/lib/portfolio";
 import {
   brl,
   categorias,

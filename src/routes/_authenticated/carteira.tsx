@@ -23,15 +23,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { useExcluir, useSalvarAtivo } from "@/lib/data";
-import { brl, categorias, resumoCarteira, rotuloCategoria, type Ativo, type Categoria } from "@/lib/portfolio";
+import {
+  brl,
+  categorias,
+  resumoCarteira,
+  rotuloCategoria,
+  type Ativo,
+  type Categoria,
+} from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/carteira")({
   head: () => ({
     meta: [
       { title: "Carteira · Investidor em 15 Anos" },
-      { name: "description", content: "Tabela completa da carteira com preço médio, lucro, rentabilidade, dividend yield e participação." },
+      {
+        name: "description",
+        content:
+          "Tabela completa da carteira com preço médio, lucro, rentabilidade, dividend yield e participação.",
+      },
       { property: "og:title", content: "Carteira · Investidor em 15 Anos" },
-      { property: "og:description", content: "Todos os seus ativos consolidados por categoria em uma única tabela." },
+      {
+        property: "og:description",
+        content: "Todos os seus ativos consolidados por categoria em uma única tabela.",
+      },
       { name: "robots", content: "noindex, follow" },
     ],
     links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/carteira" }],
@@ -107,7 +121,11 @@ function CarteiraPage() {
                   }`}
                 >
                   <span className="w-full break-words">{f}</span>
-                  <span className={`text-[10px] tabular-nums ${ativo ? "opacity-90" : "opacity-60"}`}>{qtd}</span>
+                  <span
+                    className={`text-[10px] tabular-nums ${ativo ? "opacity-90" : "opacity-60"}`}
+                  >
+                    {qtd}
+                  </span>
                 </button>
               );
             })}
@@ -122,9 +140,10 @@ function CarteiraPage() {
         </Button>
       </div>
 
-
       {isLoading ? (
-        <div className="surface-card p-12 text-center text-sm text-muted-foreground">Carregando carteira…</div>
+        <div className="surface-card p-12 text-center text-sm text-muted-foreground">
+          Carregando carteira…
+        </div>
       ) : (
         <CarteiraGrupos
           ativos={ativos}
@@ -137,8 +156,6 @@ function CarteiraPage() {
           }
         />
       )}
-
-
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-2xl">
@@ -161,11 +178,22 @@ function CarteiraPage() {
               <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
                 <div className="grid gap-2">
                   <Label htmlFor="ticker">Ticker *</Label>
-                  <Input id="ticker" name="ticker" defaultValue={editando?.ticker} placeholder="BOVA11" required />
+                  <Input
+                    id="ticker"
+                    name="ticker"
+                    defaultValue={editando?.ticker}
+                    placeholder="BOVA11"
+                    required
+                  />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="nome">Nome do ativo</Label>
-                  <Input id="nome" name="nome" defaultValue={editando?.nome} placeholder="iShares Ibovespa" />
+                  <Input
+                    id="nome"
+                    name="nome"
+                    defaultValue={editando?.nome}
+                    placeholder="iShares Ibovespa"
+                  />
                 </div>
               </div>
             </section>
@@ -233,7 +261,12 @@ function CarteiraPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="dy">Dividend yield (%)</Label>
-                  <InputNumeroBR key={`dy-${editando?.id ?? "novo"}`} id="dy" name="dy" defaultValue={editando?.dy ?? 0} />
+                  <InputNumeroBR
+                    key={`dy-${editando?.id ?? "novo"}`}
+                    id="dy"
+                    name="dy"
+                    defaultValue={editando?.dy ?? 0}
+                  />
                 </div>
               </div>
             </section>
@@ -251,8 +284,6 @@ function CarteiraPage() {
           </form>
         </DialogContent>
       </Dialog>
-
-
     </AppShell>
   );
 }

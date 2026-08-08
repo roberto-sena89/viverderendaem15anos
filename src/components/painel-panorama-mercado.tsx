@@ -10,7 +10,6 @@ import { panoramaMercado } from "@/lib/market.functions";
 import type { ItemVariacao, PeriodoPanorama } from "@/lib/market.server";
 import { EstadoVazio } from "@/components/estado-vazio";
 
-
 const PERIODOS: PeriodoPanorama[] = ["1D", "7D", "30D", "6M", "1A", "5A"];
 
 const num = (v: number, casas = 2) =>
@@ -150,7 +149,9 @@ export function PainelPanoramaMercado() {
                 className={`size-1.5 rounded-full ${pregao.aberto ? "animate-pulse bg-primary" : "bg-muted-foreground"}`}
                 aria-hidden="true"
               />
-              {pregao.aberto ? "Ao vivo • pregão aberto" : `Fechado • abre ${pregao.proximaAbertura}`}
+              {pregao.aberto
+                ? "Ao vivo • pregão aberto"
+                : `Fechado • abre ${pregao.proximaAbertura}`}
             </span>
             <button
               type="button"
@@ -159,7 +160,10 @@ export function PainelPanoramaMercado() {
               aria-label="Atualizar panorama de mercado agora"
               className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] font-semibold text-muted-foreground transition-colors hover:bg-muted disabled:opacity-60"
             >
-              <RefreshCw className={`size-3.5 ${isFetching ? "animate-spin" : ""}`} aria-hidden="true" />
+              <RefreshCw
+                className={`size-3.5 ${isFetching ? "animate-spin" : ""}`}
+                aria-hidden="true"
+              />
               Atualizar
             </button>
           </div>
@@ -169,7 +173,9 @@ export function PainelPanoramaMercado() {
               className={`num rounded-md text-2xl font-bold tabular-nums ${flash ? `flash-${flash}` : ""}`}
               aria-live="polite"
             >
-              {indice?.pontos === null || indice?.pontos === undefined ? "—" : `${num(indice.pontos)} pontos`}
+              {indice?.pontos === null || indice?.pontos === undefined
+                ? "—"
+                : `${num(indice.pontos)} pontos`}
             </p>
             {variacao !== null ? (
               <span
@@ -182,10 +188,9 @@ export function PainelPanoramaMercado() {
             ) : null}
           </div>
 
-
           <p className="mt-1 text-xs text-muted-foreground">
-            Fechamento anterior: {indice?.fechamentoAnterior ? num(indice.fechamentoAnterior) : "—"} • Abertura:{" "}
-            {indice?.abertura ? num(indice.abertura) : "—"}
+            Fechamento anterior: {indice?.fechamentoAnterior ? num(indice.fechamentoAnterior) : "—"}{" "}
+            • Abertura: {indice?.abertura ? num(indice.abertura) : "—"}
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -261,12 +266,21 @@ export function PainelPanoramaMercado() {
             {hora
               ? `Atualizado em ${hora} • ${pregao.aberto ? "atualização automática a cada 30s" : "a cada 5min fora do pregão"}`
               : "Carregando dados de mercado…"}
-
           </p>
         </div>
 
-        <ListaVariacao titulo="Maiores Altas" itens={data?.altas ?? []} tipo="alta" carregando={isFetching} />
-        <ListaVariacao titulo="Maiores Baixas" itens={data?.baixas ?? []} tipo="baixa" carregando={isFetching} />
+        <ListaVariacao
+          titulo="Maiores Altas"
+          itens={data?.altas ?? []}
+          tipo="alta"
+          carregando={isFetching}
+        />
+        <ListaVariacao
+          titulo="Maiores Baixas"
+          itens={data?.baixas ?? []}
+          tipo="baixa"
+          carregando={isFetching}
+        />
       </div>
     </Panel>
   );

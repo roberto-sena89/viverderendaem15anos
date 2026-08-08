@@ -29,7 +29,9 @@ export function Sparkline({
   const faixa = max - min || 1;
   const passo = largura / (pontos.length - 1);
   const y = (v: number) => altura - 2 - ((v - min) / faixa) * (altura - 4);
-  const d = pontos.map((v, i) => `${i === 0 ? "M" : "L"}${(i * passo).toFixed(2)},${y(v).toFixed(2)}`).join(" ");
+  const d = pontos
+    .map((v, i) => `${i === 0 ? "M" : "L"}${(i * passo).toFixed(2)},${y(v).toFixed(2)}`)
+    .join(" ");
   const area = `${d} L${largura},${altura} L0,${altura} Z`;
   const cor = positivo ? "var(--color-positive, #16a34a)" : "var(--color-negative, #dc2626)";
 
@@ -50,7 +52,14 @@ export function Sparkline({
         </linearGradient>
       </defs>
       <path d={area} fill={`url(#sp-${id})`} />
-      <path d={d} fill="none" stroke={cor} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+      <path
+        d={d}
+        fill="none"
+        stroke={cor}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

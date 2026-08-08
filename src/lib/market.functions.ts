@@ -54,16 +54,12 @@ export const fitaMercado = createServerFn({ method: "GET" }).handler(
 
 export const rankingsAtivos = createServerFn({ method: "GET" })
   .inputValidator((d: { tipo?: "acoes" | "fiis" | "bdrs" }) => ({
-    tipo: (d?.tipo ?? "acoes") as "acoes" | "fiis" | "bdrs",
+    tipo: d?.tipo ?? "acoes",
   }))
   .handler(async ({ data }) => {
     const mercado = await import("@/lib/market.server");
     return mercado.buscarRankingsB3(data.tipo);
   });
-
-
-
-
 
 export const painelB3 = createServerFn({ method: "GET" }).handler(async (): Promise<PainelB3> => {
   const mercado = await import("@/lib/market.server");
@@ -92,7 +88,9 @@ export const painelB3 = createServerFn({ method: "GET" }).handler(async (): Prom
         try {
           const r = await mercado.buscarIndicador(chave, 1);
           const ultimo = r.serie[r.serie.length - 1];
-          return ultimo ? { nome: r.indicador, valor: ultimo.valor, unidade: r.unidade, data: ultimo.data } : null;
+          return ultimo
+            ? { nome: r.indicador, valor: ultimo.valor, unidade: r.unidade, data: ultimo.data }
+            : null;
         } catch {
           return null;
         }
@@ -113,7 +111,7 @@ export const cotacaoAtivo = createServerFn({ method: "GET" })
 export const historicoAtivo = createServerFn({ method: "GET" })
   .inputValidator((d: { simbolo: string; periodo?: "1y" | "5y" | "10y" }) => ({
     simbolo: String(d.simbolo).slice(0, 20),
-    periodo: (d.periodo ?? "10y") as "1y" | "5y" | "10y",
+    periodo: d.periodo ?? "10y",
   }))
   .handler(async ({ data }) => {
     const mercado = await import("@/lib/market.server");
@@ -133,17 +131,17 @@ export const sincronizarPrecos = createServerFn({ method: "POST" })
 
     for (const ativo of ativos ?? []) {
       try {
-        const c = await mercado.buscarCotacao(ativo.ticker as string);
+        const c = await mercado.buscarCotacao(ativo.ticker);
         if (c.preco && c.preco > 0) {
           const { error: upErr } = await context.supabase
             .from("ativos")
             .update({ preco_atual: c.preco })
-            .eq("id", ativo.id as string);
+            .eq("id", ativo.id);
           if (upErr) throw new Error(upErr.message);
           atualizados++;
-        } else falhas.push(ativo.ticker as string);
+        } else falhas.push(ativo.ticker);
       } catch {
-        falhas.push(ativo.ticker as string);
+        falhas.push(ativo.ticker);
       }
     }
 
@@ -170,13 +168,7 @@ export interface SugestaoAtivo {
 }
 
 /** Categorias negociadas na B3 (sufixo .SA no Yahoo). */
-const CATEGORIAS_B3 = [
-  "Ações",
-  "Fundos Imobiliários",
-  "BDR",
-  "ETF Brasil",
-  "Fiagro",
-];
+const CATEGORIAS_B3 = ["Ações", "Fundos Imobiliários", "BDR", "ETF Brasil", "Fiagro"];
 const CATEGORIAS_TESOURO = ["Tesouro Direto", "Renda Fixa"];
 /** Categorias que aceitam tanto papéis da B3 quanto do exterior. */
 const CATEGORIAS_MISTAS = ["ETF (Global)", "ETF (Exterior)"];
@@ -205,14 +197,15 @@ const ETFS_GLOBAIS_B3: Array<{ ticker: string; nome: string }> = [
   { ticker: "WRLD39", nome: "BDR de ETF iShares MSCI World" },
 ];
 
-
 /**
  * Autocomplete de ativos: títulos do Tesouro Transparente e papéis listados na
  * B3 / exterior (Yahoo Finance), filtrados pela categoria escolhida.
  */
 export const procurarAtivos = createServerFn({ method: "GET" })
   .inputValidator((d: { termo: string; categoria?: string }) => ({
-    termo: String(d.termo ?? "").trim().slice(0, 40),
+    termo: String(d.termo ?? "")
+      .trim()
+      .slice(0, 40),
     categoria: String(d.categoria ?? "").slice(0, 40),
   }))
   .handler(async ({ data }): Promise<SugestaoAtivo[]> => {
@@ -246,7 +239,9 @@ export const procurarAtivos = createServerFn({ method: "GET" })
             ticker: nome.toUpperCase(),
             nome,
             fonte: "Tesouro Transparente",
-            detalhe: t.vencimento ? `Vencimento ${t.vencimento.split("-").reverse().join("/")}` : null,
+            detalhe: t.vencimento
+              ? `Vencimento ${t.vencimento.split("-").reverse().join("/")}`
+              : null,
             preco: t.precoCompra ?? t.precoVenda ?? null,
           });
           if (sugestoes.length >= 12) break;

@@ -12,7 +12,11 @@ import {
 } from "@/components/fiis/formatos-fii";
 import { COR_TIPO, type HistoricoFii, type LinhaFii } from "@/lib/fiis-base";
 
-const INDICADORES: { rotulo: string; valor: (l: LinhaFii, h?: HistoricoFii) => string; cor?: (l: LinhaFii, h?: HistoricoFii) => string }[] = [
+const INDICADORES: {
+  rotulo: string;
+  valor: (l: LinhaFii, h?: HistoricoFii) => string;
+  cor?: (l: LinhaFii, h?: HistoricoFii) => string;
+}[] = [
   { rotulo: "Preço atual", valor: (l) => fmtMoeda(l.preco) },
   {
     rotulo: "Variação do dia",
@@ -55,10 +59,7 @@ export function ComparadorFiis({
   aoFechar: () => void;
 }) {
   if (!linhas.length) return null;
-  const maxima = Math.max(
-    1,
-    ...linhas.map((l) => Math.abs(historico.get(l.ticker)?.var60m ?? 0)),
-  );
+  const maxima = Math.max(1, ...linhas.map((l) => Math.abs(historico.get(l.ticker)?.var60m ?? 0)));
 
   return (
     <Dialog open={aberto} onOpenChange={(v) => !v && aoFechar()}>
@@ -76,7 +77,9 @@ export function ComparadorFiis({
                 </th>
                 {linhas.map((l) => (
                   <th key={l.ticker} scope="col" className="min-w-0 px-3 py-2 text-right">
-                    <TextoTruncado as="span" className="t-ticker block font-display">{l.ticker}</TextoTruncado>
+                    <TextoTruncado as="span" className="t-ticker block font-display">
+                      {l.ticker}
+                    </TextoTruncado>
                     <TextoTruncado as="span" className="t-subtexto block font-normal">
                       {nomeCurto(l)}
                     </TextoTruncado>
@@ -92,7 +95,10 @@ export function ComparadorFiis({
             <tbody>
               {INDICADORES.map((ind) => (
                 <tr key={ind.rotulo} className="border-b border-border/60">
-                  <th scope="row" className="py-2 text-left text-xs font-medium text-muted-foreground">
+                  <th
+                    scope="row"
+                    className="py-2 text-left text-xs font-medium text-muted-foreground"
+                  >
                     {ind.rotulo}
                   </th>
                   {linhas.map((l) => {
@@ -109,7 +115,10 @@ export function ComparadorFiis({
                 </tr>
               ))}
               <tr>
-                <th scope="row" className="py-3 text-left text-xs font-medium text-muted-foreground">
+                <th
+                  scope="row"
+                  className="py-3 text-left text-xs font-medium text-muted-foreground"
+                >
                   Performance (12m · 24m · 5a)
                 </th>
                 {linhas.map((l) => {
@@ -119,7 +128,12 @@ export function ComparadorFiis({
                   );
                   return (
                     <td key={l.ticker} className="px-3 py-3 text-right">
-                      <Sparkline serie={serie} positivo={(h?.var12m ?? 0) >= 0} largura={110} altura={34} />
+                      <Sparkline
+                        serie={serie}
+                        positivo={(h?.var12m ?? 0) >= 0}
+                        largura={110}
+                        altura={34}
+                      />
                     </td>
                   );
                 })}

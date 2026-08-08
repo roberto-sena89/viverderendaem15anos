@@ -53,7 +53,6 @@ export async function lerPrecosPersistidos(tickers: string[]): Promise<PrecoPers
  * confiável (BRAPI, cache de cotações, jobs agendados), nunca do navegador.
  */
 export async function gravarPrecosPersistidos(precos: PrecoPersistido[]) {
-
   const linhas = precos
     .filter((p) => Number.isFinite(p.preco) && p.preco > 0 && p.ticker)
     .map((p) => ({
@@ -91,7 +90,7 @@ export async function sincronizarPrecosDeFonte(tickers: string[]) {
       // Só preços em reais: tickers que resolvem para bolsas estrangeiras
       // (ex.: "IVVB" nos EUA) devolvem USD e contaminariam a tabela.
       .filter((p) => !p.moeda || p.moeda === "BRL")
-      .filter((p) => p.preco !== null && Number.isFinite(p.preco) && (p.preco as number) > 0)
+      .filter((p) => p.preco !== null && Number.isFinite(p.preco) && p.preco > 0)
 
       .map((p) => ({
         ticker: p.ticker,

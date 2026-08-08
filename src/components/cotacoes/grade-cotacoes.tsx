@@ -4,7 +4,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { ArrowDown, ArrowUp, RefreshCw, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { ModalAtivo } from "@/components/cotacoes/modal-ativo";
 import { TextoTruncado } from "@/components/texto-truncado";
@@ -17,7 +23,11 @@ import {
   posicaoFaixa,
 } from "@/components/cotacoes/formatos";
 import { useFavoritos } from "@/lib/favoritos-mercado";
-import { gradeMercado, type CategoriaMercado, type LinhaCotacao } from "@/lib/grade-mercado.functions";
+import {
+  gradeMercado,
+  type CategoriaMercado,
+  type LinhaCotacao,
+} from "@/lib/grade-mercado.functions";
 import { EstadoVazio } from "@/components/estado-vazio";
 import { SkeletonLinhasGrade } from "@/components/skeleton-grade";
 
@@ -86,7 +96,8 @@ export function GradeCotacoes({
     const termo = busca.trim().toLowerCase();
     const minimo = Number(volumeMin.replace(/\D/g, "")) || 0;
     const filtradas = (data?.linhas ?? []).filter((l) => {
-      if (termo && !`${l.ticker} ${l.nome} ${l.grupo ?? ""}`.toLowerCase().includes(termo)) return false;
+      if (termo && !`${l.ticker} ${l.nome} ${l.grupo ?? ""}`.toLowerCase().includes(termo))
+        return false;
       const v = l.variacaoPercent ?? 0;
       if (filtroVar === "altas" && v <= 0) return false;
       if (filtroVar === "baixas" && v >= 0) return false;
@@ -98,8 +109,8 @@ export function GradeCotacoes({
     const fator = ordem.desc ? -1 : 1;
     return [...filtradas].sort((a, b) => {
       if (ordem.coluna === "ticker") return fator * a.ticker.localeCompare(b.ticker) * -1;
-      const va = (a[ordem.coluna] as number | null) ?? Number.NEGATIVE_INFINITY;
-      const vb = (b[ordem.coluna] as number | null) ?? Number.NEGATIVE_INFINITY;
+      const va = a[ordem.coluna] ?? Number.NEGATIVE_INFINITY;
+      const vb = b[ordem.coluna] ?? Number.NEGATIVE_INFINITY;
       return fator * (va - vb);
     });
   }, [data, busca, favoritos, filtroVar, volumeMin, ordem]);
@@ -117,9 +128,7 @@ export function GradeCotacoes({
     ) : null;
 
   if (isLoading) {
-    return (
-      <SkeletonLinhasGrade quantidade={8} colunas={4} />
-    );
+    return <SkeletonLinhasGrade quantidade={8} colunas={4} />;
   }
 
   return (
@@ -176,12 +185,20 @@ export function GradeCotacoes({
                 <tr className="border-b border-border text-[0.7rem] tracking-[0.08em] text-muted-foreground uppercase">
                   <th className="w-8 py-2 pl-3" aria-label="Favorito" />
                   <th className="py-2 text-left">
-                    <button type="button" className="inline-flex items-center gap-1" onClick={() => ordenar("ticker")}>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1"
+                      onClick={() => ordenar("ticker")}
+                    >
                       Ativo <Seta coluna="ticker" />
                     </button>
                   </th>
                   <th className="w-[124px] py-2 text-right">
-                    <button type="button" className="inline-flex items-center gap-1" onClick={() => ordenar("preco")}>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1"
+                      onClick={() => ordenar("preco")}
+                    >
                       Último <Seta coluna="preco" />
                     </button>
                   </th>
@@ -197,7 +214,11 @@ export function GradeCotacoes({
                   <th className="w-[92px] py-2 text-right">Variação</th>
                   <th className="hidden w-[132px] py-2 text-right lg:table-cell">Mín. / Máx.</th>
                   <th className="hidden w-[92px] py-2 text-right lg:table-cell">
-                    <button type="button" className="inline-flex items-center gap-1" onClick={() => ordenar("volume")}>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1"
+                      onClick={() => ordenar("volume")}
+                    >
                       Volume <Seta coluna="volume" />
                     </button>
                   </th>
@@ -229,7 +250,9 @@ export function GradeCotacoes({
                         <button
                           type="button"
                           aria-label={
-                            ehFavorito(l.ticker) ? `Remover ${l.ticker} dos favoritos` : `Favoritar ${l.ticker}`
+                            ehFavorito(l.ticker)
+                              ? `Remover ${l.ticker} dos favoritos`
+                              : `Favoritar ${l.ticker}`
                           }
                           aria-pressed={ehFavorito(l.ticker)}
                           onClick={(e) => {
@@ -244,15 +267,25 @@ export function GradeCotacoes({
                         </button>
                       </td>
                       <td className="min-w-0 py-2">
-                        <TextoTruncado as="p" className="t-ticker font-medium" texto={l.ticker}>{l.ticker}</TextoTruncado>
-                        <TextoTruncado as="p" className="t-subtexto" texto={`${l.nome}${l.grupo ? ` · ${l.grupo}` : ""}`}>
+                        <TextoTruncado as="p" className="t-ticker font-medium" texto={l.ticker}>
+                          {l.ticker}
+                        </TextoTruncado>
+                        <TextoTruncado
+                          as="p"
+                          className="t-subtexto"
+                          texto={`${l.nome}${l.grupo ? ` · ${l.grupo}` : ""}`}
+                        >
                           {l.nome}
                           {l.grupo ? ` · ${l.grupo}` : ""}
                         </TextoTruncado>
                       </td>
                       <td
                         className={`py-2 text-right font-medium tabular-nums ${
-                          flash[l.ticker] === "alta" ? "flash-alta" : flash[l.ticker] === "baixa" ? "flash-baixa" : ""
+                          flash[l.ticker] === "alta"
+                            ? "flash-alta"
+                            : flash[l.ticker] === "baixa"
+                              ? "flash-baixa"
+                              : ""
                         }`}
                       >
                         {fmtPreco(l.preco, l.moeda)}
@@ -260,7 +293,9 @@ export function GradeCotacoes({
                       <td className={`py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
                         {fmtPercent(l.variacaoPercent)}
                       </td>
-                      <td className={`py-2 text-right tabular-nums ${corVar(l.variacao)}`}>{fmtVar(l.variacao)}</td>
+                      <td className={`py-2 text-right tabular-nums ${corVar(l.variacao)}`}>
+                        {fmtVar(l.variacao)}
+                      </td>
                       <td className="hidden py-2 text-right lg:table-cell">
                         {faixa === null ? (
                           <span className="text-muted-foreground">—</span>
@@ -317,14 +352,22 @@ export function GradeCotacoes({
                       />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <TextoTruncado as="span" className="t-ticker block" texto={l.ticker} passivo>{l.ticker}</TextoTruncado>
-                      <TextoTruncado as="span" className="t-subtexto block" texto={l.nome} passivo>{l.nome}</TextoTruncado>
+                      <TextoTruncado as="span" className="t-ticker block" texto={l.ticker} passivo>
+                        {l.ticker}
+                      </TextoTruncado>
+                      <TextoTruncado as="span" className="t-subtexto block" texto={l.nome} passivo>
+                        {l.nome}
+                      </TextoTruncado>
                     </span>
                     <Sparkline serie={l.spark} positivo={pos} largura={56} altura={24} />
                     <span className="shrink-0 text-right">
                       <span
                         className={`block text-sm font-medium tabular-nums ${
-                          flash[l.ticker] === "alta" ? "flash-alta" : flash[l.ticker] === "baixa" ? "flash-baixa" : ""
+                          flash[l.ticker] === "alta"
+                            ? "flash-alta"
+                            : flash[l.ticker] === "baixa"
+                              ? "flash-baixa"
+                              : ""
                         }`}
                       >
                         {fmtPreco(l.preco, l.moeda)}

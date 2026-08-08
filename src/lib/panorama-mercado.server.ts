@@ -128,16 +128,17 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
   const simboloCommodity = (codigo: string) =>
     DEFS_COMMODITIES.find((d) => d.codigo === codigo)?.simbolos?.[0] ?? null;
 
-  const [indicesGrade, acoes, fiis, cripto, etfs, indices, tesouro, commodities] = await Promise.all([
-    seguro(() => gradeComCache("indices")),
-    seguro(() => gradeComCache("acoes")),
-    seguro(() => gradeComCache("fiis")),
-    seguro(() => gradeCriptoComCache()),
-    seguro(() => gradeEtfsComCache()),
-    seguro(() => buscarIndices()),
-    seguro(() => buscarTesouro()),
-    seguro(() => buscarCommodities()),
-  ]);
+  const [indicesGrade, acoes, fiis, cripto, etfs, indices, tesouro, commodities] =
+    await Promise.all([
+      seguro(() => gradeComCache("indices")),
+      seguro(() => gradeComCache("acoes")),
+      seguro(() => gradeComCache("fiis")),
+      seguro(() => gradeCriptoComCache()),
+      seguro(() => gradeEtfsComCache()),
+      seguro(() => buscarIndices()),
+      seguro(() => buscarTesouro()),
+      seguro(() => buscarCommodities()),
+    ]);
 
   /* --- faixa superior de índices --- */
   const ehIndice = (t: string) => !/USD|BRL|BTC|ETH|EUR/i.test(t);
@@ -167,7 +168,10 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
       destino,
       simbolo: l.simbolo ?? null,
       detalhes: [
-        { rotulo: "Fech. anterior", valor: moeda(l.fechamentoAnterior, l.moeda === "USD" ? "USD" : "BRL") },
+        {
+          rotulo: "Fech. anterior",
+          valor: moeda(l.fechamentoAnterior, l.moeda === "USD" ? "USD" : "BRL"),
+        },
         { rotulo: "Mínima do dia", valor: moeda(l.minimo, l.moeda === "USD" ? "USD" : "BRL") },
         { rotulo: "Máxima do dia", valor: moeda(l.maximo, l.moeda === "USD" ? "USD" : "BRL") },
         { rotulo: "Volume", valor: compacto(l.volume) },
@@ -237,12 +241,7 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
   const mapaIndice = (l: (typeof linhasIndices)[number]): LinhaResumo => ({
     ticker: l.codigo,
     nome: l.nome,
-    valor:
-      l.valor === null
-        ? "—"
-        : l.unidade === "%"
-          ? pct(l.valor)
-          : `${nf(l.valor, 0)} pts`,
+    valor: l.valor === null ? "—" : l.unidade === "%" ? pct(l.valor) : `${nf(l.valor, 0)} pts`,
     variacao: l.variacaoDiaPercent,
     spark: l.spark ?? [],
     destino: "indices",
@@ -347,7 +346,10 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
         destaque: etfsOrd[0]
           ? {
               rotulo: `Destaque · ${etfsOrd[0].ticker}`,
-              valor: moeda(etfsOrd[0].preco, etfsOrd[0].mercado === "internacional" ? "USD" : "BRL"),
+              valor: moeda(
+                etfsOrd[0].preco,
+                etfsOrd[0].mercado === "internacional" ? "USD" : "BRL",
+              ),
               variacao: etfsOrd[0].variacaoPercent,
             }
           : null,
@@ -440,9 +442,7 @@ export async function buscarPanorama(): Promise<PanoramaMercado> {
           ? { rotulo: ouro.nome, valor: moeda(ouro.precoUsd, "USD"), variacao: ouro.variacaoDia }
           : null,
         metricas: [
-          ...(petroleo
-            ? [{ rotulo: petroleo.nome, valor: moeda(petroleo.precoUsd, "USD") }]
-            : []),
+          ...(petroleo ? [{ rotulo: petroleo.nome, valor: moeda(petroleo.precoUsd, "USD") }] : []),
           { rotulo: "USD/BRL", valor: moeda(commodities?.usdBrl ?? null, "BRL") },
           { rotulo: "Acompanhadas", valor: `${comms.length}` },
         ],

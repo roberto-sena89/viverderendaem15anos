@@ -12,7 +12,7 @@ import type { Noticia } from "@/lib/noticias.functions";
 /** Uma cor fixa por categoria, reaproveitando a paleta das classes de ativos. */
 export const COR_CATEGORIA_NOTICIA: Record<string, string> = {
   Mercados: "var(--color-chart-3)",
-  "Ações": COR_CLASSE["Ações"],
+  Ações: COR_CLASSE["Ações"],
   "Renda Fixa": COR_CLASSE[CLASSE_POS_FIXADO],
   "Fundos Imobiliários": COR_CLASSE.FIIs,
   "Câmbio & Cripto": COR_CLASSE.Criptomoedas,
@@ -33,7 +33,13 @@ export function tempoRelativo(iso: string): string {
   return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 }
 
-export function BadgeCategoria({ categoria, className }: { categoria: string; className?: string }) {
+export function BadgeCategoria({
+  categoria,
+  className,
+}: {
+  categoria: string;
+  className?: string;
+}) {
   const cor = COR_CATEGORIA_NOTICIA[categoria] ?? "var(--color-muted-foreground)";
   return (
     <span
@@ -235,7 +241,9 @@ export function CartaoMedio({ noticia, salva, onAbrir, onSalvar, onTicker }: Pro
         <div className="flex flex-wrap items-center gap-2">
           {noticia.urgente ? <SeloUrgente /> : null}
           <BadgeCategoria categoria={noticia.categoria} />
-          <span className="text-xs text-muted-foreground">{tempoRelativo(noticia.publicadoEm)}</span>
+          <span className="text-xs text-muted-foreground">
+            {tempoRelativo(noticia.publicadoEm)}
+          </span>
         </div>
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
           <button type="button" onClick={() => onAbrir(noticia)} className="min-w-0 text-left">
@@ -277,7 +285,9 @@ export function ItemFeed({ noticia, salva, onAbrir, onSalvar, onTicker }: PropsC
           {noticia.urgente ? <SeloUrgente /> : null}
           <BadgeCategoria categoria={noticia.categoria} />
           <MarcaFonte fonte={noticia.fonte} />
-          <span className="text-xs text-muted-foreground">· {tempoRelativo(noticia.publicadoEm)}</span>
+          <span className="text-xs text-muted-foreground">
+            · {tempoRelativo(noticia.publicadoEm)}
+          </span>
           <TickersMencionados tickers={noticia.tickers.slice(0, 3)} onTicker={onTicker} />
         </div>
       </div>

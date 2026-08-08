@@ -106,7 +106,10 @@ export async function listarTesouroDireto(): Promise<TituloTesouro[]> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 120000);
   try {
-    const res = await fetch(CSV_TESOURO, { headers: { Accept: "text/csv" }, signal: controller.signal });
+    const res = await fetch(CSV_TESOURO, {
+      headers: { Accept: "text/csv" },
+      signal: controller.signal,
+    });
     if (!res.ok || !res.body) throw new Error(`Tesouro Transparente respondeu ${res.status}`);
 
     const corte = corteSerie();

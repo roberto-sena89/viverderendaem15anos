@@ -15,7 +15,20 @@ export type PontoAporte = { chave: string; rotulo: string; total: number };
 
 function rotuloCurto(chave: string) {
   const [ano, mes] = chave.split("-");
-  const nomes = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  const nomes = [
+    "jan",
+    "fev",
+    "mar",
+    "abr",
+    "mai",
+    "jun",
+    "jul",
+    "ago",
+    "set",
+    "out",
+    "nov",
+    "dez",
+  ];
   return `${nomes[Number(mes) - 1] ?? mes}/${ano.slice(2)}`;
 }
 
@@ -57,14 +70,16 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
             Total acumulado
           </span>
         </div>
-
-
       </div>
 
       <div className="mt-2 h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={dados} margin={{ top: 6, right: 6, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="color-mix(in oklab, var(--foreground) 18%, transparent)" vertical={false} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="color-mix(in oklab, var(--foreground) 18%, transparent)"
+              vertical={false}
+            />
             <XAxis
               dataKey="rotulo"
               tick={{ fontSize: 12, fill: "var(--foreground)", fontWeight: 500 }}
@@ -97,10 +112,14 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
                 borderRadius: 8,
                 fontSize: 12,
               }}
-              labelFormatter={(_l: unknown, p: readonly { payload?: { completo?: string } }[] = []) =>
-                p?.[0]?.payload?.completo ?? ""
-              }
-              formatter={(v, n) => [brl(Number(v), 2), n === "aporte" ? "Aporte do mês" : "Total acumulado"]}
+              labelFormatter={(
+                _l: unknown,
+                p: readonly { payload?: { completo?: string } }[] = [],
+              ) => p?.[0]?.payload?.completo ?? ""}
+              formatter={(v, n) => [
+                brl(Number(v), 2),
+                n === "aporte" ? "Aporte do mês" : "Total acumulado",
+              ]}
             />
             <Bar
               yAxisId="esq"

@@ -113,7 +113,12 @@ export function BuscaAtivo({
 
       {mostrarLista && (
         <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border bg-popover shadow-lg">
-          <ul id={listaId} role="listbox" aria-label="Ativos encontrados" className="max-h-72 overflow-y-auto">
+          <ul
+            id={listaId}
+            role="listbox"
+            aria-label="Ativos encontrados"
+            className="max-h-72 overflow-y-auto"
+          >
             {sugestoes.map((s, i) => (
               <li
                 key={s.ticker}

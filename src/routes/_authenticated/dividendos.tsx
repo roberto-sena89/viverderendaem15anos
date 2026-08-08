@@ -1,6 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Calendar, Check, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign, Plus, Search, Trash2 } from "lucide-react";
+import {
+  Calendar,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  CircleDollarSign,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
@@ -20,20 +30,47 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useCriarDividendo, useDividendos, useExcluir } from "@/lib/data";
 import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import type { Ativo, Dividendo } from "@/lib/portfolio";
-import { brl, dividendos12m, dividendosMensais, pct, resumoCarteira, valorInvestido } from "@/lib/portfolio";
+import {
+  brl,
+  dividendos12m,
+  dividendosMensais,
+  pct,
+  resumoCarteira,
+  valorInvestido,
+} from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/dividendos")({
   head: () => ({
     meta: [
       { title: "Proventos · Investidor em 15 Anos" },
-      { name: "description", content: "Dividendos mensais e anuais, yield on cost, dividend yield e histórico de proventos." },
+      {
+        name: "description",
+        content:
+          "Dividendos mensais e anuais, yield on cost, dividend yield e histórico de proventos.",
+      },
       { property: "og:title", content: "Proventos · Investidor em 15 Anos" },
-      { property: "og:description", content: "Acompanhe sua renda passiva mês a mês e o yield on cost da carteira." },
+      {
+        property: "og:description",
+        content: "Acompanhe sua renda passiva mês a mês e o yield on cost da carteira.",
+      },
       { name: "robots", content: "noindex, follow" },
     ],
     links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/dividendos" }],
@@ -112,7 +149,11 @@ function DividendosPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="tipo">Tipo</Label>
-                <select id="tipo" name="tipo" className="h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                <select
+                  id="tipo"
+                  name="tipo"
+                  className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                >
                   {tipos.map((t) => (
                     <option key={t} value={t}>
                       {t}
@@ -142,7 +183,6 @@ function DividendosPage() {
         onRegistrar={() => setOpen(true)}
       />
 
-
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Recebidos 12m" value={brl(recebidos12m)} />
         <StatCard label="Média mensal" value={brl(recebidos12m / 12)} />
@@ -150,11 +190,9 @@ function DividendosPage() {
         <StatCard label="Yield on cost" value={pct(yieldOnCost)} tone="positive" />
       </div>
 
-
       <HistoricoMensal proventos={proventos} carteira={carteira} />
 
       <MeusProventos proventos={proventos} carteira={carteira} />
-
 
       <div className="surface-card p-6">
         <p className="panel-title">Calendário de proventos (12 meses)</p>
@@ -162,8 +200,19 @@ function DividendosPage() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={grafico}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-              <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
-              <YAxis tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
+              <XAxis
+                dataKey="mes"
+                tickLine={false}
+                axisLine={false}
+                fontSize={13}
+                stroke="var(--color-muted-foreground)"
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                fontSize={13}
+                stroke="var(--color-muted-foreground)"
+              />
               <Tooltip
                 cursor={{ fill: "var(--color-muted)" }}
                 contentStyle={{
@@ -195,12 +244,17 @@ function DividendosPage() {
                 <TableRow key={ticker}>
                   <TableCell className="font-medium">{ticker}</TableCell>
                   <TableCell className="text-right">{brl(total)}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">{brl(total / 12)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    {brl(total / 12)}
+                  </TableCell>
                 </TableRow>
               ))}
               {!isLoading && porAtivo.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={3} className="py-12 text-center text-sm text-muted-foreground">
+                  <TableCell
+                    colSpan={3}
+                    className="py-12 text-center text-sm text-muted-foreground"
+                  >
                     Nenhum provento registrado ainda.
                   </TableCell>
                 </TableRow>
@@ -337,7 +391,6 @@ function dentroDoPeriodo(dataISO: string, valor: string) {
   }
 }
 
-
 function FiltroPeriodo({
   valor,
   onChange,
@@ -355,7 +408,11 @@ function FiltroPeriodo({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="h-9 gap-2 text-xs font-normal" aria-label="Período dos proventos">
+        <Button
+          variant="outline"
+          className="h-9 gap-2 text-xs font-normal"
+          aria-label="Período dos proventos"
+        >
           <Calendar className="size-8! shrink-0 text-muted-foreground" />
           {rotuloPeriodo(valor)}
           <ChevronDown className="size-3.5 text-muted-foreground" />
@@ -375,7 +432,9 @@ function FiltroPeriodo({
                 <RadioGroupItem value={o.valor} id={`periodo-${o.valor}`} />
                 {o.rotulo}
                 {o.chip ? (
-                  <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{o.chip}</span>
+                  <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                    {o.chip}
+                  </span>
                 ) : null}
               </Label>
             ))}
@@ -453,7 +512,6 @@ function FiltroPeriodo({
   );
 }
 
-
 function FiltroAtivos({
   valor,
   onChange,
@@ -487,7 +545,11 @@ function FiltroAtivos({
           <Search className="pointer-events-none absolute right-5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         </div>
         <div className="border-t border-border py-1">
-          <OpcaoAtivo rotulo="Todos os ativos" ativo={valor === "todos"} onClick={() => onChange("todos")} />
+          <OpcaoAtivo
+            rotulo="Todos os ativos"
+            ativo={valor === "todos"}
+            onClick={() => onChange("todos")}
+          />
           {lista.map((a) => (
             <OpcaoAtivo key={a} rotulo={a} ativo={valor === a} onClick={() => onChange(a)} />
           ))}
@@ -500,7 +562,15 @@ function FiltroAtivos({
   );
 }
 
-function OpcaoAtivo({ rotulo, ativo, onClick }: { rotulo: string; ativo: boolean; onClick: () => void }) {
+function OpcaoAtivo({
+  rotulo,
+  ativo,
+  onClick,
+}: {
+  rotulo: string;
+  ativo: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
@@ -537,7 +607,10 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
 
   const opcoesTipo = [
     { valor: "todos", rotulo: "Tipo de ativo" },
-    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
+    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({
+      valor: c,
+      rotulo: c,
+    })),
   ];
 
   return (
@@ -552,7 +625,9 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
           <FiltroPeriodo
             valor={periodo}
             onChange={setPeriodo}
-            anos={Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) => b.localeCompare(a))}
+            anos={Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) =>
+              b.localeCompare(a),
+            )}
           />
           <SeletorFiltro
             valor={tipoAtivo}
@@ -580,7 +655,10 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
             {linhas.map(([mes, valor]) => (
               <TableRow key={mes}>
                 <TableCell className="font-medium tabular-nums">
-                  {new Date(`${mes}-01T12:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
+                  {new Date(`${mes}-01T12:00`).toLocaleDateString("pt-BR", {
+                    month: "long",
+                    year: "numeric",
+                  })}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">{brl(valor, 2)}</TableCell>
               </TableRow>
@@ -590,7 +668,9 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
       ) : (
         <div className="flex flex-col items-center justify-center gap-1 py-16 text-center">
           <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
-          <p className="text-sm text-muted-foreground">Ainda não há dados disponíveis para exibição.</p>
+          <p className="text-sm text-muted-foreground">
+            Ainda não há dados disponíveis para exibição.
+          </p>
         </div>
       )}
     </div>
@@ -598,7 +678,9 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
 }
 
 function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; carteira: Ativo[] }) {
-  const anos = Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) => b.localeCompare(a));
+  const anos = Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) =>
+    b.localeCompare(a),
+  );
   const [periodo, setPeriodo] = useState("ano-atual");
   const [tipoAtivo, setTipoAtivo] = useState("todos");
   const [ativoSel, setAtivoSel] = useState("todos");
@@ -618,7 +700,10 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
 
   const opcoesTipo = [
     { valor: "todos", rotulo: "Tipo de ativo" },
-    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
+    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({
+      valor: c,
+      rotulo: c,
+    })),
   ];
 
   return (
@@ -670,14 +755,14 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
       ) : (
         <div className="flex flex-col items-center justify-center gap-1 py-16 text-center">
           <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
-          <p className="text-sm text-muted-foreground">Ainda não há dados disponíveis para exibição.</p>
+          <p className="text-sm text-muted-foreground">
+            Ainda não há dados disponíveis para exibição.
+          </p>
         </div>
       )}
     </div>
   );
 }
-
-
 
 const ESCOPOS_TOTAL = [
   { valor: "mes", rotulo: "Total do mês" },
@@ -762,15 +847,21 @@ function PainelProventos({
 
   const hoje = new Date();
   const chaveMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
-  const totalMes = filtrados.filter((d) => d.data.startsWith(chaveMes)).reduce((s, d) => s + d.valor, 0);
+  const totalMes = filtrados
+    .filter((d) => d.data.startsWith(chaveMes))
+    .reduce((s, d) => s + d.valor, 0);
   const totalAno = filtrados
     .filter((d) => d.data.startsWith(String(hoje.getFullYear())))
     .reduce((s, d) => s + d.valor, 0);
-  const totalEscopo = escopoTotal === "mes" ? totalMes : escopoTotal === "ano" ? totalAno : total12m;
+  const totalEscopo =
+    escopoTotal === "mes" ? totalMes : escopoTotal === "ano" ? totalAno : total12m;
 
   const opcoesTipo = [
     { valor: "todos", rotulo: "Tipo de ativo" },
-    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({ valor: c, rotulo: c })),
+    ...Array.from(new Set(carteira.map((a) => a.categoria as string))).map((c) => ({
+      valor: c,
+      rotulo: c,
+    })),
   ];
 
   return (
@@ -782,9 +873,13 @@ function PainelProventos({
           <div className="mt-1 flex items-baseline justify-between gap-2">
             <p className="text-2xl font-semibold tabular-nums">
               {brl(media, 2)}{" "}
-              <span className="text-sm font-normal text-muted-foreground">/ {brl(META_MENSAL, 2)}</span>
+              <span className="text-sm font-normal text-muted-foreground">
+                / {brl(META_MENSAL, 2)}
+              </span>
             </p>
-            <span className="text-sm tabular-nums text-muted-foreground">{Math.round(progresso)}%</span>
+            <span className="text-sm tabular-nums text-muted-foreground">
+              {Math.round(progresso)}%
+            </span>
           </div>
           <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
             <div className="h-full rounded-full bg-primary" style={{ width: `${progresso}%` }} />
@@ -792,7 +887,9 @@ function PainelProventos({
         </div>
         <div className="p-5">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground">{ESCOPOS_TOTAL.find((e) => e.valor === escopoTotal)?.rotulo}</p>
+            <p className="text-xs text-muted-foreground">
+              {ESCOPOS_TOTAL.find((e) => e.valor === escopoTotal)?.rotulo}
+            </p>
             <Select value={escopoTotal} onValueChange={setEscopoTotal}>
               <SelectTrigger
                 aria-label="Escopo do total de proventos"
@@ -827,7 +924,9 @@ function PainelProventos({
         </div>
 
         <div className="flex min-h-40 items-center justify-center p-5 text-sm text-muted-foreground">
-          {temDados ? `${serie.filter((s) => s.valor > 0).length} períodos com proventos` : "Sem dados para exibir"}
+          {temDados
+            ? `${serie.filter((s) => s.valor > 0).length} períodos com proventos`
+            : "Sem dados para exibir"}
         </div>
       </div>
 
@@ -852,7 +951,9 @@ function PainelProventos({
             <FiltroPeriodo
               valor={periodo}
               onChange={setPeriodo}
-              anos={Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) => b.localeCompare(a))}
+              anos={Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) =>
+                b.localeCompare(a),
+              )}
             />
             <SeletorFiltro
               valor={tipoAtivo}
@@ -873,9 +974,24 @@ function PainelProventos({
           {temDados ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={serie}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
-                <YAxis tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="mes"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={13}
+                  stroke="var(--color-muted-foreground)"
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={13}
+                  stroke="var(--color-muted-foreground)"
+                />
                 <Tooltip
                   cursor={{ fill: "var(--color-muted)" }}
                   contentStyle={{
@@ -897,7 +1013,8 @@ function PainelProventos({
               <div className="space-y-1">
                 <p className="font-display text-lg font-semibold">Nenhum provento registrado</p>
                 <p className="mx-auto max-w-sm text-sm text-muted-foreground">
-                  Registre dividendos, JCP e rendimentos para acompanhar a evolução da sua renda passiva mês a mês.
+                  Registre dividendos, JCP e rendimentos para acompanhar a evolução da sua renda
+                  passiva mês a mês.
                 </p>
               </div>
               {onRegistrar ? (
@@ -916,7 +1033,6 @@ function PainelProventos({
           )}
         </div>
       </div>
-
     </div>
   );
 }

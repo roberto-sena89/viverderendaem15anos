@@ -40,12 +40,19 @@ const INSTITUICOES = [
 ];
 
 const numero = (v: string) => {
-  const n = Number(String(v).trim().replace(/\s|R\$/g, "").replace(/\./g, "").replace(",", "."));
+  const n = Number(
+    String(v)
+      .trim()
+      .replace(/\s|R\$/g, "")
+      .replace(/\./g, "")
+      .replace(",", "."),
+  );
   return Number.isFinite(n) ? n : 0;
 };
 
 /** Aceita apenas dígitos, ponto e vírgula (formato monetário brasileiro). */
-const monetarioValido = (v: string) => /^\d{1,3}(\.\d{3})*(,\d{1,8})?$|^\d+([.,]\d{1,8})?$/.test(v.trim());
+const monetarioValido = (v: string) =>
+  /^\d{1,3}(\.\d{3})*(,\d{1,8})?$|^\d+([.,]\d{1,8})?$/.test(v.trim());
 
 /** Formata o campo para o padrão brasileiro (1.234,56) ao sair do input. */
 const formatarMoeda = (v: string) => {
@@ -60,7 +67,16 @@ const LIMITE_VALOR = 1_000_000_000;
 
 type Erros = Partial<
   Record<
-    "data" | "categoria" | "ticker" | "preco" | "quantidade" | "corretagem" | "emolumentos" | "impostos" | "instituicao" | "descricao",
+    | "data"
+    | "categoria"
+    | "ticker"
+    | "preco"
+    | "quantidade"
+    | "corretagem"
+    | "emolumentos"
+    | "impostos"
+    | "instituicao"
+    | "descricao",
     string
   >
 >;
@@ -74,13 +90,7 @@ function MensagemErro({ id, texto }: { id: string; texto?: string }) {
   );
 }
 
-export function DialogTransacao({
-  children,
-  aporte,
-}: {
-  children: ReactNode;
-  aporte?: Aporte;
-}) {
+export function DialogTransacao({ children, aporte }: { children: ReactNode; aporte?: Aporte }) {
   const edicao = Boolean(aporte);
   const [aberto, setAberto] = useState(false);
   const [tipo, setTipo] = useState<"compra" | "venda">("compra");
@@ -174,13 +184,16 @@ export function DialogTransacao({
     if (!quantidade.trim()) e.quantidade = "Informe a quantidade.";
     else if (!monetarioValido(quantidade)) e.quantidade = "Formato inválido. Use 10 ou 10,5.";
     else if (numero(quantidade) <= 0) e.quantidade = "A quantidade deve ser maior que zero.";
-    else if (numero(quantidade) > LIMITE_VALOR) e.quantidade = "Quantidade acima do limite permitido.";
+    else if (numero(quantidade) > LIMITE_VALOR)
+      e.quantidade = "Quantidade acima do limite permitido.";
 
-    ([
-      ["corretagem", corretagem],
-      ["emolumentos", emolumentos],
-      ["impostos", impostos],
-    ] as const).forEach(([campo, valor]) => {
+    (
+      [
+        ["corretagem", corretagem],
+        ["emolumentos", emolumentos],
+        ["impostos", impostos],
+      ] as const
+    ).forEach(([campo, valor]) => {
       if (!valor.trim()) return;
       if (!monetarioValido(valor)) e[campo] = "Formato inválido. Use 1.234,56.";
       else if (numero(valor) < 0) e[campo] = "O custo não pode ser negativo.";
@@ -323,7 +336,8 @@ export function DialogTransacao({
                   setNomeAtivo(s.nome);
                   setAtivoSel(s);
                   limparErro("ticker");
-                  if (!preco.trim() && s.preco) setPreco(formatarMoeda(String(s.preco).replace(".", ",")));
+                  if (!preco.trim() && s.preco)
+                    setPreco(formatarMoeda(String(s.preco).replace(".", ",")));
                 }}
               />
               <MensagemErro id="erro-ticker" texto={erros.ticker} />
@@ -535,7 +549,9 @@ export function DialogTransacao({
             />
             <div className="flex items-center justify-between gap-3">
               <MensagemErro id="erro-descricao" texto={erros.descricao} />
-              <span className="ml-auto text-[0.82rem] text-muted-foreground">{descricao.length}/200</span>
+              <span className="ml-auto text-[0.82rem] text-muted-foreground">
+                {descricao.length}/200
+              </span>
             </div>
           </div>
 

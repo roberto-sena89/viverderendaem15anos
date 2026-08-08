@@ -32,9 +32,9 @@ export function AvisoSincronizacao({ compacto = false }: { compacto?: boolean })
           </p>
           {!compacto ? (
             <p className="text-xs opacity-90">
-              Para manter os dados atualizados: entre em investidor.b3.com.br (ou no home broker da Ágora), exporte o
-              Extrato de Negociação/Movimentação em Excel ou CSV e envie o arquivo na aba “Importar carteira”. As
-              cotações são atualizadas automaticamente todos os dias.
+              Para manter os dados atualizados: entre em investidor.b3.com.br (ou no home broker da
+              Ágora), exporte o Extrato de Negociação/Movimentação em Excel ou CSV e envie o arquivo
+              na aba “Importar carteira”. As cotações são atualizadas automaticamente todos os dias.
             </p>
           ) : null}
         </div>

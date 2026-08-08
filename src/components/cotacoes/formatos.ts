@@ -23,7 +23,13 @@ export const fmtVolume = (v: number | null) => {
 };
 
 export const corVar = (v: number | null) =>
-  v === null ? "text-muted-foreground" : v > 0 ? "text-positive" : v < 0 ? "text-negative" : "text-muted-foreground";
+  v === null
+    ? "text-muted-foreground"
+    : v > 0
+      ? "text-positive"
+      : v < 0
+        ? "text-negative"
+        : "text-muted-foreground";
 
 /** Posição do preço atual dentro da faixa mínima/máxima do dia (0–100). */
 export function posicaoFaixa(l: LinhaCotacao): number | null {

@@ -23,8 +23,12 @@ import { useAtivos } from "@/lib/data";
 function Item({ rotulo, valor, cor }: { rotulo: string; valor: string; cor?: string }) {
   return (
     <div className="min-w-0 rounded-lg border border-border bg-muted/30 p-bloco">
-      <TextoTruncado as="p" className="t-label block">{rotulo}</TextoTruncado>
-      <TextoTruncado as="p" className={`t-num mt-0.5 block font-semibold ${cor ?? ""}`}>{valor}</TextoTruncado>
+      <TextoTruncado as="p" className="t-label block">
+        {rotulo}
+      </TextoTruncado>
+      <TextoTruncado as="p" className={`t-num mt-0.5 block font-semibold ${cor ?? ""}`}>
+        {valor}
+      </TextoTruncado>
     </div>
   );
 }
@@ -114,10 +118,18 @@ export function ModalEtf({
             <Item rotulo="DY médio 5 anos" valor={fmtPctSimples(linha.dy5a, 2)} />
             <Item rotulo="Provento por cota (12m)" valor={fmtMoeda(proventoAno)} />
             <Item rotulo="Classe" valor={linha.classe} />
-            <Item rotulo="Variação 30 dias" valor={fmtPct(linha.var30d)} cor={corVar(linha.var30d)} />
+            <Item
+              rotulo="Variação 30 dias"
+              valor={fmtPct(linha.var30d)}
+              cor={corVar(linha.var30d)}
+            />
             <Item rotulo="Variação 12m" valor={fmtPct(linha.var12m)} cor={corVar(linha.var12m)} />
             <Item rotulo="Variação 24m" valor={fmtPct(linha.var24m)} cor={corVar(linha.var24m)} />
-            <Item rotulo="Variação 5 anos" valor={fmtPct(linha.var60m)} cor={corVar(linha.var60m)} />
+            <Item
+              rotulo="Variação 5 anos"
+              valor={fmtPct(linha.var60m)}
+              cor={corVar(linha.var60m)}
+            />
           </div>
 
           {posicao ? (
@@ -126,7 +138,8 @@ export function ModalEtf({
               <p className="mt-1 text-muted-foreground">
                 {posicao.quantidade.toLocaleString("pt-BR")} cotas · preço médio{" "}
                 {fmtMoeda(posicao.precoMedio)} ·{" "}
-                <span className={corVar(rentabilidade)}>{fmtPct(rentabilidade)}</span> de rentabilidade
+                <span className={corVar(rentabilidade)}>{fmtPct(rentabilidade)}</span> de
+                rentabilidade
               </p>
             </div>
           ) : null}

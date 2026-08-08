@@ -98,10 +98,7 @@ export function PainelCommodities({
   const linhas = data?.linhas ?? [];
   const usdBrl = data?.usdBrl ?? 0;
 
-  const tickersCarteira = useMemo(
-    () => ativos.map((a) => a.ticker.toUpperCase()),
-    [ativos],
-  );
+  const tickersCarteira = useMemo(() => ativos.map((a) => a.ticker.toUpperCase()), [ativos]);
 
   // Bolsas presentes nos dados carregados, com a contagem de contratos de cada uma
   const bolsasDisponiveis = useMemo(() => {
@@ -109,7 +106,10 @@ export function PainelCommodities({
     for (const l of linhas) {
       for (const g of bolsasDaLinha(l.bolsa)) contagem.set(g, (contagem.get(g) ?? 0) + 1);
     }
-    return GRUPOS_BOLSA.filter((g) => contagem.has(g)).map((g) => ({ id: g, total: contagem.get(g)! }));
+    return GRUPOS_BOLSA.filter((g) => contagem.has(g)).map((g) => ({
+      id: g,
+      total: contagem.get(g)!,
+    }));
   }, [linhas]);
 
   const filtradas = useMemo(() => {
@@ -126,7 +126,9 @@ export function PainelCommodities({
     });
 
     if (ordem === "maior12m") {
-      lista = [...lista].sort((a, b) => (b.variacao12m ?? -Infinity) - (a.variacao12m ?? -Infinity));
+      lista = [...lista].sort(
+        (a, b) => (b.variacao12m ?? -Infinity) - (a.variacao12m ?? -Infinity),
+      );
     } else if (ordem === "menor12m") {
       lista = [...lista].sort((a, b) => (a.variacao12m ?? Infinity) - (b.variacao12m ?? Infinity));
     } else {
@@ -173,7 +175,9 @@ export function PainelCommodities({
   };
 
   const alternarSelecao = (codigo: string) =>
-    setSelecionadas((s) => (s.includes(codigo) ? s.filter((x) => x !== codigo) : [...s, codigo].slice(-6)));
+    setSelecionadas((s) =>
+      s.includes(codigo) ? s.filter((x) => x !== codigo) : [...s, codigo].slice(-6),
+    );
 
   const segundos = dataUpdatedAt ? Math.round((Date.now() - dataUpdatedAt) / 1000) : null;
 
@@ -224,10 +228,13 @@ export function PainelCommodities({
 
         <Panel
           title="Commodities globais"
-          hint={`${filtradas.length} contratos monitorados · dólar comercial R$ ${usdBrl.toLocaleString("pt-BR", {
-            minimumFractionDigits: 4,
-            maximumFractionDigits: 4,
-          })} · ${segundos === null ? "sincronizando…" : `atualizado há ${Math.max(0, segundos)}s`}`}
+          hint={`${filtradas.length} contratos monitorados · dólar comercial R$ ${usdBrl.toLocaleString(
+            "pt-BR",
+            {
+              minimumFractionDigits: 4,
+              maximumFractionDigits: 4,
+            },
+          )} · ${segundos === null ? "sincronizando…" : `atualizado há ${Math.max(0, segundos)}s`}`}
           action={
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-0.5 rounded-lg border border-border p-0.5">
@@ -279,7 +286,7 @@ export function PainelCommodities({
               <button
                 key={c.id}
                 type="button"
-                onClick={() => setCategoria(c.id as CategoriaCommodity | "todas")}
+                onClick={() => setCategoria(c.id)}
                 aria-pressed={categoria === c.id}
                 className={cn(
                   "rounded-full border px-3 py-1 text-xs transition-colors",
@@ -314,7 +321,9 @@ export function PainelCommodities({
                   )}
                 >
                   {b.id}
-                  <span className={cn("ml-1 tabular-nums", ativa ? "opacity-80" : "opacity-60")}>{b.total}</span>
+                  <span className={cn("ml-1 tabular-nums", ativa ? "opacity-80" : "opacity-60")}>
+                    {b.total}
+                  </span>
                 </button>
               );
             })}
@@ -330,7 +339,12 @@ export function PainelCommodities({
                   : "border-border text-muted-foreground hover:bg-muted",
               )}
             >
-              <span className={cn("size-1.5 rounded-full", somenteAbertas ? "bg-positive" : "bg-muted-foreground")} />
+              <span
+                className={cn(
+                  "size-1.5 rounded-full",
+                  somenteAbertas ? "bg-positive" : "bg-muted-foreground",
+                )}
+              />
               Pregão aberto
             </button>
             {filtrosAtivos > 0 ? (
@@ -373,7 +387,9 @@ export function PainelCommodities({
                     className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border pb-1.5 text-left"
                   >
                     <span className="flex min-w-0 items-center gap-2">
-                      <TextoTruncado as="span" className="panel-title truncate">{s.rotulo}</TextoTruncado>
+                      <TextoTruncado as="span" className="panel-title truncate">
+                        {s.rotulo}
+                      </TextoTruncado>
                       <span
                         className={cn(
                           "hidden shrink-0 rounded-full px-2 py-0.5 text-[0.62rem] font-medium sm:inline",
@@ -387,7 +403,9 @@ export function PainelCommodities({
                     </span>
                     <span className="t-num-sm flex shrink-0 items-center gap-2 text-muted-foreground">
                       {s.itens.length}
-                      <ChevronDown className={cn("size-4 transition-transform", !aberta && "-rotate-90")} />
+                      <ChevronDown
+                        className={cn("size-4 transition-transform", !aberta && "-rotate-90")}
+                      />
                     </span>
                   </button>
                   {aberta ? (
@@ -421,7 +439,9 @@ export function PainelCommodities({
         {selecionadas.length > 1 ? (
           <div className="fixed inset-x-0 bottom-4 z-30 flex justify-center px-4">
             <div className="flex items-center gap-2 rounded-full border border-border bg-background/90 p-1.5 pl-4 shadow-lg backdrop-blur-xl">
-              <span className="text-xs text-muted-foreground">{selecionadas.length} selecionadas</span>
+              <span className="text-xs text-muted-foreground">
+                {selecionadas.length} selecionadas
+              </span>
               <Button size="sm" className="h-8 rounded-full" onClick={() => setComparando(true)}>
                 <BarChart3 className="size-4" />
                 Comparar selecionadas ({selecionadas.length})

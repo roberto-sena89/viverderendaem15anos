@@ -1,6 +1,10 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { TIPOS_TITULO } from "@/lib/tesouro-base";
-import { TextoTruncado } from "@/components/texto-truncado";
 
 const PERGUNTAS = [
   {

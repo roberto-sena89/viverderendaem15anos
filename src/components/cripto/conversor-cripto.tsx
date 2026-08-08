@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { ArrowLeftRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { fmtPreco } from "@/components/cripto/formatos-cripto";
 import { TextoTruncado } from "@/components/texto-truncado";
 import type { LinhaCripto } from "@/lib/cripto-base";
@@ -68,7 +74,9 @@ export function ConversorCripto({ linhas, usdBrl }: { linhas: LinhaCripto[]; usd
         </p>
       </div>
       <p className="t-caption mt-1.5">
-        {moeda ? `1 ${moeda.ticker} = ${fmtPreco(precoBrl, "R$")} · dólar R$ ${usdBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : ""}
+        {moeda
+          ? `1 ${moeda.ticker} = ${fmtPreco(precoBrl, "R$")} · dólar R$ ${usdBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          : ""}
       </p>
     </div>
   );
@@ -86,11 +94,23 @@ export function ComparadorCripto({
 }) {
   if (linhas.length === 0) return null;
   const campos: { rotulo: string; valor: (l: LinhaCripto) => string }[] = [
-    { rotulo: "Cotação (R$)", valor: (l) => fmtPreco(l.precoUsd === null ? null : l.precoUsd * usdBrl, "R$") },
+    {
+      rotulo: "Cotação (R$)",
+      valor: (l) => fmtPreco(l.precoUsd === null ? null : l.precoUsd * usdBrl, "R$"),
+    },
     { rotulo: "Cotação (US$)", valor: (l) => fmtPreco(l.precoUsd, "US$") },
-    { rotulo: "Var. 24h", valor: (l) => (l.variacao24h === null ? "—" : `${l.variacao24h.toFixed(2)}%`) },
-    { rotulo: "Var. 30D", valor: (l) => (l.variacao30d === null ? "—" : `${l.variacao30d.toFixed(2)}%`) },
-    { rotulo: "Var. 12M", valor: (l) => (l.variacao12m === null ? "—" : `${l.variacao12m.toFixed(2)}%`) },
+    {
+      rotulo: "Var. 24h",
+      valor: (l) => (l.variacao24h === null ? "—" : `${l.variacao24h.toFixed(2)}%`),
+    },
+    {
+      rotulo: "Var. 30D",
+      valor: (l) => (l.variacao30d === null ? "—" : `${l.variacao30d.toFixed(2)}%`),
+    },
+    {
+      rotulo: "Var. 12M",
+      valor: (l) => (l.variacao12m === null ? "—" : `${l.variacao12m.toFixed(2)}%`),
+    },
   ];
 
   return (
@@ -99,7 +119,10 @@ export function ComparadorCripto({
       <div className="mt-bloco overflow-x-auto">
         <div className="flex gap-bloco">
           {linhas.map((l) => (
-            <div key={l.id} className="min-w-[168px] rounded-lg border border-border bg-muted/30 p-bloco">
+            <div
+              key={l.id}
+              className="min-w-[168px] rounded-lg border border-border bg-muted/30 p-bloco"
+            >
               <div className="flex min-w-0 items-center justify-between gap-2">
                 <TextoTruncado as="span" className="t-ticker min-w-0" texto={l.ticker}>
                   {l.ticker}

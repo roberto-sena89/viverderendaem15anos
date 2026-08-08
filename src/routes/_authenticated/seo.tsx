@@ -47,7 +47,10 @@ export const Route = createFileRoute("/_authenticated/seo")({
 });
 
 const inteiro = new Intl.NumberFormat("pt-BR");
-const umaCasa = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const umaCasa = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
 
 function variacao(atual: number, anterior: number) {
   if (anterior === 0) return atual > 0 ? 100 : 0;
@@ -262,7 +265,11 @@ function PaginaSeo() {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={painel.serie} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--color-border)"
+                      vertical={false}
+                    />
                     <XAxis
                       dataKey="data"
                       tickFormatter={(v: string) => v.slice(5).replace("-", "/")}
@@ -310,7 +317,11 @@ function PaginaSeo() {
           </Panel>
 
           <div className="grid gap-4 xl:grid-cols-2">
-            <Tabela titulo="Principais buscas" primeiraColuna="Consulta" linhas={painel.consultas} />
+            <Tabela
+              titulo="Principais buscas"
+              primeiraColuna="Consulta"
+              linhas={painel.consultas}
+            />
             <Tabela titulo="Páginas mais vistas" primeiraColuna="Página" linhas={painel.paginas} />
           </div>
 
@@ -324,11 +335,21 @@ function PaginaSeo() {
                 <table className="w-full text-xs">
                   <thead className="text-muted-foreground">
                     <tr className="border-b border-border">
-                      <th scope="col" className="px-4 py-2 text-left font-medium">Sitemap</th>
-                      <th scope="col" className="px-3 py-2 text-right font-medium">Erros</th>
-                      <th scope="col" className="px-3 py-2 text-right font-medium">Avisos</th>
-                      <th scope="col" className="px-3 py-2 text-right font-medium">URLs enviadas</th>
-                      <th scope="col" className="px-4 py-2 text-right font-medium">Último download</th>
+                      <th scope="col" className="px-4 py-2 text-left font-medium">
+                        Sitemap
+                      </th>
+                      <th scope="col" className="px-3 py-2 text-right font-medium">
+                        Erros
+                      </th>
+                      <th scope="col" className="px-3 py-2 text-right font-medium">
+                        Avisos
+                      </th>
+                      <th scope="col" className="px-3 py-2 text-right font-medium">
+                        URLs enviadas
+                      </th>
+                      <th scope="col" className="px-4 py-2 text-right font-medium">
+                        Último download
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -343,7 +364,9 @@ function PaginaSeo() {
                           {inteiro.format(s.erros)}
                         </td>
                         <td className="num px-3 py-2 text-right">{inteiro.format(s.avisos)}</td>
-                        <td className="num px-3 py-2 text-right">{inteiro.format(s.urlsEnviadas)}</td>
+                        <td className="num px-3 py-2 text-right">
+                          {inteiro.format(s.urlsEnviadas)}
+                        </td>
                         <td className="num px-4 py-2 text-right">
                           {s.ultimoDownload
                             ? new Date(s.ultimoDownload).toLocaleDateString("pt-BR")
@@ -366,10 +389,18 @@ function PaginaSeo() {
               <table className="w-full text-xs">
                 <thead className="text-muted-foreground">
                   <tr className="border-b border-border">
-                    <th scope="col" className="px-4 py-2 text-left font-medium">Página</th>
-                    <th scope="col" className="px-3 py-2 text-left font-medium">Status</th>
-                    <th scope="col" className="px-3 py-2 text-left font-medium">Cobertura</th>
-                    <th scope="col" className="px-4 py-2 text-right font-medium">Último rastreio</th>
+                    <th scope="col" className="px-4 py-2 text-left font-medium">
+                      Página
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left font-medium">
+                      Status
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left font-medium">
+                      Cobertura
+                    </th>
+                    <th scope="col" className="px-4 py-2 text-right font-medium">
+                      Último rastreio
+                    </th>
                   </tr>
                 </thead>
                 <tbody>

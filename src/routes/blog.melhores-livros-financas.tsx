@@ -2,7 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import ogImagem from "@/assets/og-blog-livros.jpg.asset.json";
 
 const TITLE = "Os Melhores Livros de Finanças e Investimentos para 2026";
@@ -185,7 +192,10 @@ export const Route = createFileRoute("/blog/melhores-livros-financas")({
       { property: "og:image", content: OG_IMAGE },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Capa do guia dos melhores livros de finanças e investimentos" },
+      {
+        property: "og:image:alt",
+        content: "Capa do guia dos melhores livros de finanças e investimentos",
+      },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: OG_IMAGE },
     ],
@@ -240,7 +250,12 @@ export const Route = createFileRoute("/blog/melhores-livros-financas")({
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Início", item: "https://viverderendaem15anos.lovable.app/" },
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Início",
+              item: "https://viverderendaem15anos.lovable.app/",
+            },
             { "@type": "ListItem", position: 2, name: "Melhores livros de finanças", item: URL },
           ],
         }),
@@ -253,7 +268,9 @@ export const Route = createFileRoute("/blog/melhores-livros-financas")({
 function LivrosPage() {
   return (
     <div className="min-h-dvh bg-background">
-      <a href="#conteudo" className="link-pular">Pular para o conteúdo</a>
+      <a href="#conteudo" className="link-pular">
+        Pular para o conteúdo
+      </a>
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
@@ -323,7 +340,9 @@ function LivrosPage() {
           </section>
 
           <section className="mt-12 space-y-8">
-            <h2 className="text-2xl font-semibold">Os 10 melhores livros de finanças e investimentos</h2>
+            <h2 className="text-2xl font-semibold">
+              Os 10 melhores livros de finanças e investimentos
+            </h2>
             {livros.map((l, i) => (
               <div key={l.titulo} className="rounded-2xl border border-border bg-card p-6">
                 <h3 className="text-xl font-semibold">
@@ -338,7 +357,9 @@ function LivrosPage() {
           </section>
 
           <section className="mt-12 space-y-6">
-            <h2 className="text-2xl font-semibold">Qual escola escolher: comparação por intenção</h2>
+            <h2 className="text-2xl font-semibold">
+              Qual escola escolher: comparação por intenção
+            </h2>
             {comparacoes.map((c) => (
               <div key={c.titulo}>
                 <h3 className="font-medium">{c.titulo}</h3>

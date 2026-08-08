@@ -89,7 +89,7 @@ export function useCotacoesStream(itens: ItemStream[], { habilitado, aoReceber }
 
       fonte.addEventListener("cotacoes", (evento) => {
         try {
-          const payload = JSON.parse((evento as MessageEvent).data) as { cotacoes: CotacaoLive[] };
+          const payload = JSON.parse(String(evento.data)) as { cotacoes: CotacaoLive[] };
           if (payload.cotacoes?.length) {
             setStatus("ao-vivo");
             callbackRef.current(payload.cotacoes);

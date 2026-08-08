@@ -47,7 +47,9 @@ export function useCarteiraRealtime() {
     // Sincronização entre abas do mesmo navegador.
     const pararBroadcast = ouvirCarteiraAlterada((chaves) => {
       if (!ativo) return;
-      const alvos = chaves.length ? chaves.map((c) => [c] as const) : [qk.ativos, qk.aportes, qk.dividendos];
+      const alvos = chaves.length
+        ? chaves.map((c) => [c] as const)
+        : [qk.ativos, qk.aportes, qk.dividendos];
       void Promise.all(
         alvos.map((queryKey) => qc.invalidateQueries({ queryKey, refetchType: "all" })),
       );

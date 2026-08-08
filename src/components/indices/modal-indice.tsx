@@ -45,7 +45,9 @@ export function ModalIndice({
               </p>
             </div>
             <div className="text-right">
-              <p className={cn("text-lg font-semibold tabular-nums", corVariacao(linha.variacao12m))}>
+              <p
+                className={cn("text-lg font-semibold tabular-nums", corVariacao(linha.variacao12m))}
+              >
                 {fmtVariacao(linha.variacao12m, linha.tipo === "taxa" ? " p.p." : "%")}
               </p>
               <p className="text-xs text-muted-foreground">Variação em 12 meses</p>
@@ -56,19 +58,29 @@ export function ModalIndice({
             <p className="panel-title mb-2">
               {linha.tipo === "taxa" ? "Histórico recente" : "Últimos 30 pregões"}
             </p>
-            <Sparkline serie={linha.spark} positivo={positivo} largura={640} altura={140} className="w-full" />
+            <Sparkline
+              serie={linha.spark}
+              positivo={positivo}
+              largura={640}
+              altura={140}
+              className="w-full"
+            />
           </div>
 
           <div className="grid gap-2 sm:grid-cols-3">
             {linha.extras.length ? (
               linha.extras.map((e) => (
                 <div key={e.rotulo} className="panel p-3">
-                  <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">{e.rotulo}</p>
+                  <p className="text-[0.7rem] tracking-wide text-muted-foreground uppercase">
+                    {e.rotulo}
+                  </p>
                   <p className="mt-1 font-display text-sm tabular-nums">{e.valor}</p>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">Sem indicadores adicionais disponíveis.</p>
+              <p className="text-sm text-muted-foreground">
+                Sem indicadores adicionais disponíveis.
+              </p>
             )}
           </div>
 
@@ -76,8 +88,9 @@ export function ModalIndice({
 
           {linha.tipo === "taxa" ? (
             <p className="text-xs text-muted-foreground">
-              Indicador divulgado oficialmente {linha.codigo === "IPCA" ? "pelo IBGE (mensal)" : "pelo Banco Central"} —
-              não possui variação intradiária. Última divulgação: {linha.divulgadoEm ?? "—"}.
+              Indicador divulgado oficialmente{" "}
+              {linha.codigo === "IPCA" ? "pelo IBGE (mensal)" : "pelo Banco Central"} — não possui
+              variação intradiária. Última divulgação: {linha.divulgadoEm ?? "—"}.
             </p>
           ) : null}
         </div>

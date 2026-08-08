@@ -33,7 +33,9 @@ export function useJanelaVirtual(
       const inicio = Math.max(0, Math.floor(ocultoAcima / alturaLinha) - overscan);
       const cabem = Math.ceil(alturaViewport / alturaLinha) + overscan * 2;
       const fim = Math.min(total, inicio + cabem);
-      setJanela((atual) => (atual.inicio === inicio && atual.fim === fim ? atual : { inicio, fim }));
+      setJanela((atual) =>
+        atual.inicio === inicio && atual.fim === fim ? atual : { inicio, fim },
+      );
     };
 
     const agendar = () => {

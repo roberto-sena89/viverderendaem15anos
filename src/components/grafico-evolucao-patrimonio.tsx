@@ -1,14 +1,6 @@
 import { useState } from "react";
 import { Calendar, CircleDollarSign } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Panel } from "@/components/panel";
 import { TooltipEvolucao } from "@/components/tooltip-evolucao";
 import {
@@ -29,14 +21,6 @@ const PERIODOS = [
   { valor: "120", rotulo: "10 Anos" },
   { valor: "custom", rotulo: "Data personalizada" },
 ];
-
-const tooltipStyle = {
-  backgroundColor: "var(--color-popover)",
-  border: "1px solid var(--color-border)",
-  borderRadius: "12px",
-  color: "var(--color-popover-foreground)",
-  fontSize: "13px",
-};
 
 function FiltroSelect({
   valor,
@@ -97,7 +81,7 @@ export function GraficoEvolucaoPatrimonio() {
         : evolucao.slice(-Number(periodo));
 
   const aplicadoFinal = Math.max(resumo.totalInvestido, 1);
-  
+
   const dados = evolucaoFiltrada.map((m) => {
     const aplicado = Math.min(m.patrimonio, resumo.totalInvestido || m.patrimonio);
     return {
@@ -148,9 +132,6 @@ export function GraficoEvolucaoPatrimonio() {
         </div>
       }
     >
-
-
-
       <div className="legenda-grafico mb-3 text-foreground">
         <span className="chip-legenda serie-aplicado">
           <span className="ponto-legenda" aria-hidden />
@@ -170,43 +151,55 @@ export function GraficoEvolucaoPatrimonio() {
           Nenhum dado no período selecionado. Ajuste o filtro de período ou registre um aporte.
         </p>
       ) : (
-      <div className="h-72">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={dados}
-            margin={{ top: 12, right: 12, left: 4, bottom: 8 }}
-            barGap={0}
-            barCategoryGap="35%"
-            maxBarSize={14}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-            <XAxis
-              dataKey="mes"
-              tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
-              tickLine={false}
-              axisLine={{ stroke: "var(--color-border)" }}
-              tickMargin={8}
-            />
-            <YAxis
-              tickFormatter={(v: number) => brl(v, 0)}
-              tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
-              tickLine={false}
-              axisLine={false}
-              width={78}
-              tickMargin={4}
-            />
-            <Tooltip
-              cursor={{ fill: "var(--color-muted)", opacity: 0.22 }}
-              wrapperStyle={{ outline: "none", zIndex: 30 }}
-              offset={16}
-              content={<TooltipEvolucao rotuloPeriodo="Mês" serie={dados} />}
-            />
-            <Bar dataKey="aplicado" stackId="p" fill="var(--color-serie-investido)" name="Valor aplicado" isAnimationActive={false} />
-            <Bar dataKey="ganho" stackId="p" fill="var(--color-serie-ganho)" name="Ganho de capital" radius={[3, 3, 0, 0]} isAnimationActive={false} />
-
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+        <div className="h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={dados}
+              margin={{ top: 12, right: 12, left: 4, bottom: 8 }}
+              barGap={0}
+              barCategoryGap="35%"
+              maxBarSize={14}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+              <XAxis
+                dataKey="mes"
+                tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                tickLine={false}
+                axisLine={{ stroke: "var(--color-border)" }}
+                tickMargin={8}
+              />
+              <YAxis
+                tickFormatter={(v: number) => brl(v, 0)}
+                tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                tickLine={false}
+                axisLine={false}
+                width={78}
+                tickMargin={4}
+              />
+              <Tooltip
+                cursor={{ fill: "var(--color-muted)", opacity: 0.22 }}
+                wrapperStyle={{ outline: "none", zIndex: 30 }}
+                offset={16}
+                content={<TooltipEvolucao rotuloPeriodo="Mês" serie={dados} />}
+              />
+              <Bar
+                dataKey="aplicado"
+                stackId="p"
+                fill="var(--color-serie-investido)"
+                name="Valor aplicado"
+                isAnimationActive={false}
+              />
+              <Bar
+                dataKey="ganho"
+                stackId="p"
+                fill="var(--color-serie-ganho)"
+                name="Ganho de capital"
+                radius={[3, 3, 0, 0]}
+                isAnimationActive={false}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
     </Panel>
   );

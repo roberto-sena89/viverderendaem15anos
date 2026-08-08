@@ -84,7 +84,8 @@ export const COLUNAS_ETF: {
     id: "dy12",
     rotulo: "Dividend yield",
     grupo: "Proventos",
-    ajuda: "Proventos distribuídos nos últimos 12 meses sobre o preço da cota. ETFs de acumulação reinvestem os dividendos e por isso aparecem sem DY.",
+    ajuda:
+      "Proventos distribuídos nos últimos 12 meses sobre o preço da cota. ETFs de acumulação reinvestem os dividendos e por isso aparecem sem DY.",
   },
   {
     id: "dy5a",
@@ -204,7 +205,11 @@ function Cabecalho({
         </button>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button type="button" aria-label={`O que é ${rotulo}`} className="text-muted-foreground/70">
+            <button
+              type="button"
+              aria-label={`O que é ${rotulo}`}
+              className="text-muted-foreground/70"
+            >
               <Info className="size-3" aria-hidden />
             </button>
           </TooltipTrigger>
@@ -215,7 +220,15 @@ function Cabecalho({
   );
 }
 
-function Estrela({ ativo, aoClicar, ticker }: { ativo: boolean; aoClicar: () => void; ticker: string }) {
+function Estrela({
+  ativo,
+  aoClicar,
+  ticker,
+}: {
+  ativo: boolean;
+  aoClicar: () => void;
+  ticker: string;
+}) {
   return (
     <button
       type="button"
@@ -326,7 +339,11 @@ export function TabelaEtfs({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const ehMobile = useEhMobile();
-  const janela = useJanelaVirtual(containerRef, linhas.length, ehMobile ? ALTURA_CARD : ALTURA_LINHA);
+  const janela = useJanelaVirtual(
+    containerRef,
+    linhas.length,
+    ehMobile ? ALTURA_CARD : ALTURA_LINHA,
+  );
 
   const naJanela = useMemo(
     () => linhas.slice(janela.inicio, janela.fim),
@@ -368,7 +385,10 @@ export function TabelaEtfs({
             <table className="w-full table-fixed border-collapse text-sm">
               <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
                 <tr className="border-b border-border">
-                  <th scope="col" className="w-8 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="w-8 px-1 py-2 text-right text-[0.7rem] text-muted-foreground"
+                  >
                     #
                   </th>
                   <Cabecalho
@@ -449,9 +469,7 @@ export function TabelaEtfs({
                             {l.ticker.slice(0, 2)}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="t-ticker font-display block">
-                              {l.ticker}
-                            </span>
+                            <span className="t-ticker font-display block">{l.ticker}</span>
                             <TextoTruncado as="span" className="t-subtexto block">
                               {nomeFundo(l)}
                             </TextoTruncado>
@@ -486,7 +504,9 @@ export function TabelaEtfs({
                           </span>
                         ) : null}
                       </td>
-                      <td className={`truncate px-2 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
+                      <td
+                        className={`truncate px-2 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}
+                      >
                         <span className="block font-medium">{fmtPct(l.variacaoPercent)}</span>
                         <span className="block text-[0.68rem]">
                           {l.variacao === null ? "" : fmtMoeda(l.variacao)}
@@ -543,7 +563,9 @@ export function TabelaEtfs({
                           </span>
                           {l.ticker}
                         </span>
-                        <TextoTruncado as="span" className="t-subtexto block">{nomeFundo(l)}</TextoTruncado>
+                        <TextoTruncado as="span" className="t-subtexto block">
+                          {nomeFundo(l)}
+                        </TextoTruncado>
                       </span>
                     </div>
                     <div className="text-right">
@@ -555,7 +577,9 @@ export function TabelaEtfs({
                       >
                         {fmtMoeda(l.preco)}
                       </span>
-                      <span className={`block text-xs font-medium tabular-nums ${corVar(l.variacaoPercent)}`}>
+                      <span
+                        className={`block text-xs font-medium tabular-nums ${corVar(l.variacaoPercent)}`}
+                      >
                         {fmtPct(l.variacaoPercent)}
                       </span>
                     </div>

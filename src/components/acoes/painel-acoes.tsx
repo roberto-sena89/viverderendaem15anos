@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -219,12 +218,22 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
       if (setores.length && !setores.includes(l.setor)) return false;
       if (subsetor !== "todos" && l.subsetor !== subsetor) return false;
       if (segmento !== "todos" && l.segmento !== segmento) return false;
-      if (l.dy12 !== null && (l.dy12 < faixas.dy[0] || (faixas.dy[1] < 20 && l.dy12 > faixas.dy[1])))
+      if (
+        l.dy12 !== null &&
+        (l.dy12 < faixas.dy[0] || (faixas.dy[1] < 20 && l.dy12 > faixas.dy[1]))
+      )
         return false;
-      if (l.pl !== null && (l.pl < faixas.pl[0] || (faixas.pl[1] < 40 && l.pl > faixas.pl[1]))) return false;
-      if (l.pvp !== null && (l.pvp < faixas.pvp[0] || (faixas.pvp[1] < 10 && l.pvp > faixas.pvp[1])))
+      if (l.pl !== null && (l.pl < faixas.pl[0] || (faixas.pl[1] < 40 && l.pl > faixas.pl[1])))
         return false;
-      if (l.roe !== null && (l.roe < faixas.roe[0] || (faixas.roe[1] < 50 && l.roe > faixas.roe[1])))
+      if (
+        l.pvp !== null &&
+        (l.pvp < faixas.pvp[0] || (faixas.pvp[1] < 10 && l.pvp > faixas.pvp[1]))
+      )
+        return false;
+      if (
+        l.roe !== null &&
+        (l.roe < faixas.roe[0] || (faixas.roe[1] < 50 && l.roe > faixas.roe[1]))
+      )
         return false;
       if (
         l.margemLiquida !== null &&
@@ -306,7 +315,9 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
   }, [termo, setores, subsetor, segmento, faixas, porPagina, ranking]);
 
   const aoOrdenar = useCallback((c: OrdemColunaAcao) => {
-    setOrdem((atual) => (atual.coluna === c ? { coluna: c, desc: !atual.desc } : { coluna: c, desc: true }));
+    setOrdem((atual) =>
+      atual.coluna === c ? { coluna: c, desc: !atual.desc } : { coluna: c, desc: true },
+    );
   }, []);
 
   const aoSelecionar = useCallback((t: string) => {
@@ -495,9 +506,7 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
                       </div>
                     ))}
                   </div>
-
                 </DropdownMenuContent>
-
               </DropdownMenu>
 
               <span
@@ -516,7 +525,9 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
               >
                 <span
                   className={`size-1.5 rounded-full ${
-                    aoVivo.canal === "websocket" ? "animate-pulse bg-primary" : "bg-muted-foreground"
+                    aoVivo.canal === "websocket"
+                      ? "animate-pulse bg-primary"
+                      : "bg-muted-foreground"
                   }`}
                   aria-hidden
                 />
@@ -581,7 +592,8 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
                 {ordenadasBase.length ? inicio + 1 : 0}–
                 {Math.min(inicio + porPagina, ordenadasBase.length)}
               </strong>{" "}
-              de <strong className="text-foreground tabular-nums">{ordenadasBase.length}</strong> ações
+              de <strong className="text-foreground tabular-nums">{ordenadasBase.length}</strong>{" "}
+              ações
             </span>
             <div className="flex items-center gap-2">
               <Select value={String(porPagina)} onValueChange={(v) => setPorPagina(Number(v))}>
@@ -633,7 +645,11 @@ export function PainelAcoes({ intervaloMs, busca }: Props) {
               <span className="text-muted-foreground">{selecionados.join(", ")}</span>
             </span>
             <div className="ml-auto flex items-center gap-2">
-              <Button size="sm" onClick={() => setComparando(true)} disabled={selecionados.length < 2}>
+              <Button
+                size="sm"
+                onClick={() => setComparando(true)}
+                disabled={selecionados.length < 2}
+              >
                 <GitCompare className="size-4" />
                 Comparar
               </Button>

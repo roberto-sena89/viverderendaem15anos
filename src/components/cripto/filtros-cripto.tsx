@@ -12,7 +12,6 @@ export type RankingCripto =
   | "baixas24h"
   | "queridas";
 
-
 export const RANKINGS: { id: RankingCripto; rotulo: string }[] = [
   { id: "capitalizacao", rotulo: "Maior capitalização" },
   { id: "altas1h", rotulo: "Maiores altas 1h" },

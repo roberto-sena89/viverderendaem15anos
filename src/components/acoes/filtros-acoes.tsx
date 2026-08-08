@@ -11,12 +11,7 @@ import {
 import { COR_SETOR, SETORES_ACAO, type SetorAcao } from "@/lib/acoes-base";
 
 export type RankingAcao =
-  | "valorMercado"
-  | "dy"
-  | "graham"
-  | "margemLiquida"
-  | "pontuacao"
-  | "var12m";
+  "valorMercado" | "dy" | "graham" | "margemLiquida" | "pontuacao" | "var12m";
 
 export const RANKINGS_ACAO: { id: RankingAcao; rotulo: string }[] = [
   { id: "valorMercado", rotulo: "Valor de mercado" },
@@ -78,9 +73,7 @@ export function FiltrosAcoes({
   return (
     <div className="pilha-secao">
       <div>
-        <p className="t-label mb-2">
-          Ranking rápido
-        </p>
+        <p className="t-label mb-2">Ranking rápido</p>
         <div className="flex flex-wrap gap-1.5">
           {RANKINGS_ACAO.map((r) => (
             <button
@@ -101,9 +94,7 @@ export function FiltrosAcoes({
       </div>
 
       <div>
-        <p className="t-label mb-2">
-          Setor
-        </p>
+        <p className="t-label mb-2">Setor</p>
         <div className="flex flex-wrap gap-1.5">
           {SETORES_ACAO.map((s) => {
             const ativo = setores.includes(s);

@@ -41,7 +41,8 @@ export function normalizarSetor(bruto: string | null | undefined): SetorAcao {
   if (s.includes("finance")) return "Financeiro";
   if (s.includes("utilit")) return "Utilidade Pública";
   if (s.includes("energy minerals")) return "Petróleo, Gás e Biocombustíveis";
-  if (s.includes("non-energy minerals") || s.includes("process industries")) return "Materiais Básicos";
+  if (s.includes("non-energy minerals") || s.includes("process industries"))
+    return "Materiais Básicos";
   if (
     s.includes("producer manufacturing") ||
     s.includes("industrial services") ||
@@ -51,7 +52,11 @@ export function normalizarSetor(bruto: string | null | undefined): SetorAcao {
   ) {
     return "Bens Industriais";
   }
-  if (s.includes("retail trade") || s.includes("consumer services") || s.includes("consumer durables")) {
+  if (
+    s.includes("retail trade") ||
+    s.includes("consumer services") ||
+    s.includes("consumer durables")
+  ) {
     return "Consumo Cíclico";
   }
   if (s.includes("consumer non-durables")) return "Consumo não Cíclico";
@@ -171,7 +176,11 @@ export type RespostaAcoes = {
  * Preço-teto de Bazin: dividendo anual por ação dividido pelo yield mínimo
  * exigido (padrão de 6% ao ano).
  */
-export function precoTetoBazin(preco: number | null, dy: number | null, yieldMinimo = 6): number | null {
+export function precoTetoBazin(
+  preco: number | null,
+  dy: number | null,
+  yieldMinimo = 6,
+): number | null {
   if (!preco || !dy || dy <= 0 || preco <= 0) return null;
   const dividendoAnual = preco * (dy / 100);
   return (dividendoAnual / yieldMinimo) * 100;

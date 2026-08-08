@@ -1,9 +1,21 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkline } from "@/components/cotacoes/sparkline";
 import { SimuladorTesouro } from "@/components/tesouro/simulador-tesouro";
 import { fmtBRL, fmtData, fmtNum, fmtPct } from "@/components/tesouro/resumo-tesouro";
-import { corIndexador, defTipo, rotuloIndexador, textoTaxa, type LinhaTesouro } from "@/lib/tesouro-base";
+import {
+  corIndexador,
+  defTipo,
+  rotuloIndexador,
+  textoTaxa,
+  type LinhaTesouro,
+} from "@/lib/tesouro-base";
 import { cn } from "@/lib/utils";
 import { TextoTruncado } from "@/components/texto-truncado";
 
@@ -92,7 +104,10 @@ export function ModalTitulo({
             <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
               <Dado rotulo="Tipo" valor={def.rotulo} />
               <Dado rotulo="Indexador" valor={rotuloIndexador(linha.indexador)} />
-              <Dado rotulo="Pagamento" valor={linha.jurosSemestrais ? "Cupons semestrais" : "No vencimento"} />
+              <Dado
+                rotulo="Pagamento"
+                valor={linha.jurosSemestrais ? "Cupons semestrais" : "No vencimento"}
+              />
               <Dado rotulo="Taxa de compra" valor={fmtPct(linha.taxaCompra)} />
               <Dado rotulo="Taxa de venda" valor={fmtPct(linha.taxaVenda)} />
               <Dado rotulo="Preço de venda" valor={fmtBRL(linha.precoVenda)} />
@@ -100,7 +115,11 @@ export function ModalTitulo({
               <Dado rotulo="Preços de" valor={fmtData(linha.dataBase)} />
               <Dado
                 rotulo="Estimativa nominal"
-                valor={linha.rentabilidadeEstimada === null ? "—" : `${fmtPct(linha.rentabilidadeEstimada)} a.a.`}
+                valor={
+                  linha.rentabilidadeEstimada === null
+                    ? "—"
+                    : `${fmtPct(linha.rentabilidadeEstimada)} a.a.`
+                }
               />
             </dl>
           </TabsContent>
@@ -113,8 +132,13 @@ export function ModalTitulo({
 function Bloco({ rotulo, valor, destaque }: { rotulo: string; valor: string; destaque?: boolean }) {
   return (
     <div className="min-w-0 rounded-xl border border-border bg-card p-bloco">
-      <TextoTruncado as="p" className="t-label block">{rotulo}</TextoTruncado>
-      <TextoTruncado as="p" className={`t-num mt-0.5 block font-semibold ${destaque ? "text-primary" : ""}`}>
+      <TextoTruncado as="p" className="t-label block">
+        {rotulo}
+      </TextoTruncado>
+      <TextoTruncado
+        as="p"
+        className={`t-num mt-0.5 block font-semibold ${destaque ? "text-primary" : ""}`}
+      >
         {valor}
       </TextoTruncado>
     </div>
@@ -125,7 +149,9 @@ function Dado({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
     <div className="min-w-0">
       <dt className="t-label">{rotulo}</dt>
-      <TextoTruncado as="dd" className="font-medium tabular-nums block">{valor}</TextoTruncado>
+      <TextoTruncado as="dd" className="font-medium tabular-nums block">
+        {valor}
+      </TextoTruncado>
     </div>
   );
 }

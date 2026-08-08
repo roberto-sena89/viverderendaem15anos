@@ -84,7 +84,9 @@ export function ModalAcao({
               aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
               onClick={() => alternar(linha.ticker)}
             >
-              <Star className={`size-4 ${favorito ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+              <Star
+                className={`size-4 ${favorito ? "fill-primary text-primary" : "text-muted-foreground"}`}
+              />
             </Button>
           </DialogTitle>
           <DialogDescription className="text-left">
@@ -162,7 +164,8 @@ export function ModalAcao({
               <p className="mt-1 text-muted-foreground">
                 {posicao.quantidade.toLocaleString("pt-BR")} ações · preço médio{" "}
                 {fmtMoeda(posicao.precoMedio)} ·{" "}
-                <span className={corVar(rentabilidade)}>{fmtPct(rentabilidade)}</span> de rentabilidade
+                <span className={corVar(rentabilidade)}>{fmtPct(rentabilidade)}</span> de
+                rentabilidade
               </p>
             </div>
           ) : null}

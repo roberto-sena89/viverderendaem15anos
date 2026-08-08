@@ -35,15 +35,44 @@ export const COLUNAS: { id: ColunaId; rotulo: string; ajuda: string; largura?: s
   {
     id: "pvp",
     rotulo: "P/VP",
-    ajuda: "Preço da cota dividido pelo valor patrimonial por cota. Abaixo de 1 indica cota negociada com desconto.",
+    ajuda:
+      "Preço da cota dividido pelo valor patrimonial por cota. Abaixo de 1 indica cota negociada com desconto.",
   },
-  { id: "dy12", rotulo: "Dividend yield", ajuda: "Proventos distribuídos nos últimos 12 meses sobre o preço atual." },
-  { id: "dy5a", rotulo: "DY médio 5 anos", ajuda: "Média anual do dividend yield nos últimos cinco anos." },
-  { id: "liquidez", rotulo: "Liquidez diária", ajuda: "Volume financeiro médio negociado por dia." },
-  { id: "tipo", rotulo: "Tipo", ajuda: "Classificação do fundo: tijolo, papel, misto, FOF, FI-Infra, FIP e outros." },
-  { id: "var12m", rotulo: "Var. 12m", ajuda: "Rentabilidade da cota nos últimos 12 meses (sem proventos)." },
-  { id: "var24m", rotulo: "Var. 24m", ajuda: "Rentabilidade da cota nos últimos 24 meses (sem proventos)." },
-  { id: "var60m", rotulo: "Var. 5 anos", ajuda: "Rentabilidade da cota nos últimos cinco anos (sem proventos)." },
+  {
+    id: "dy12",
+    rotulo: "Dividend yield",
+    ajuda: "Proventos distribuídos nos últimos 12 meses sobre o preço atual.",
+  },
+  {
+    id: "dy5a",
+    rotulo: "DY médio 5 anos",
+    ajuda: "Média anual do dividend yield nos últimos cinco anos.",
+  },
+  {
+    id: "liquidez",
+    rotulo: "Liquidez diária",
+    ajuda: "Volume financeiro médio negociado por dia.",
+  },
+  {
+    id: "tipo",
+    rotulo: "Tipo",
+    ajuda: "Classificação do fundo: tijolo, papel, misto, FOF, FI-Infra, FIP e outros.",
+  },
+  {
+    id: "var12m",
+    rotulo: "Var. 12m",
+    ajuda: "Rentabilidade da cota nos últimos 12 meses (sem proventos).",
+  },
+  {
+    id: "var24m",
+    rotulo: "Var. 24m",
+    ajuda: "Rentabilidade da cota nos últimos 24 meses (sem proventos).",
+  },
+  {
+    id: "var60m",
+    rotulo: "Var. 5 anos",
+    ajuda: "Rentabilidade da cota nos últimos cinco anos (sem proventos).",
+  },
   { id: "segmento", rotulo: "Segmento", ajuda: "Área de atuação dos imóveis ou ativos do fundo." },
 ];
 
@@ -109,7 +138,9 @@ function Cabecalho({
   const ativo = ordem.coluna === coluna;
   return (
     <th scope="col" className={`px-3 py-2 ${alinhamento === "right" ? "text-right" : "text-left"}`}>
-      <span className={`inline-flex items-center gap-1 ${alinhamento === "right" ? "flex-row-reverse" : ""}`}>
+      <span
+        className={`inline-flex items-center gap-1 ${alinhamento === "right" ? "flex-row-reverse" : ""}`}
+      >
         <button
           type="button"
           onClick={() => aoOrdenar(coluna)}
@@ -129,7 +160,11 @@ function Cabecalho({
         </button>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button type="button" aria-label={`O que é ${rotulo}`} className="text-muted-foreground/70">
+            <button
+              type="button"
+              aria-label={`O que é ${rotulo}`}
+              className="text-muted-foreground/70"
+            >
               <Info className="size-3" aria-hidden />
             </button>
           </TooltipTrigger>
@@ -140,7 +175,15 @@ function Cabecalho({
   );
 }
 
-function Estrela({ ativo, aoClicar, ticker }: { ativo: boolean; aoClicar: () => void; ticker: string }) {
+function Estrela({
+  ativo,
+  aoClicar,
+  ticker,
+}: {
+  ativo: boolean;
+  aoClicar: () => void;
+  ticker: string;
+}) {
   return (
     <button
       type="button"
@@ -161,7 +204,9 @@ function Estrela({ ativo, aoClicar, ticker }: { ativo: boolean; aoClicar: () => 
 
 function BadgeTipo({ linha }: { linha: LinhaFii }) {
   return (
-    <span className={`inline-block rounded-full border px-2 py-0.5 text-[0.68rem] font-medium ${COR_TIPO[linha.tipo]}`}>
+    <span
+      className={`inline-block rounded-full border px-2 py-0.5 text-[0.68rem] font-medium ${COR_TIPO[linha.tipo]}`}
+    >
       {linha.tipo}
     </span>
   );
@@ -182,11 +227,17 @@ function celula(id: ColunaId, l: LinhaFii, h: HistoricoFii | undefined) {
     case "tipo":
       return <BadgeTipo linha={l} />;
     case "var12m":
-      return <span className={`tabular-nums ${corVar(h?.var12m)}`}>{fmtPct(h?.var12m ?? null)}</span>;
+      return (
+        <span className={`tabular-nums ${corVar(h?.var12m)}`}>{fmtPct(h?.var12m ?? null)}</span>
+      );
     case "var24m":
-      return <span className={`tabular-nums ${corVar(h?.var24m)}`}>{fmtPct(h?.var24m ?? null)}</span>;
+      return (
+        <span className={`tabular-nums ${corVar(h?.var24m)}`}>{fmtPct(h?.var24m ?? null)}</span>
+      );
     case "var60m":
-      return <span className={`tabular-nums ${corVar(h?.var60m)}`}>{fmtPct(h?.var60m ?? null)}</span>;
+      return (
+        <span className={`tabular-nums ${corVar(h?.var60m)}`}>{fmtPct(h?.var60m ?? null)}</span>
+      );
     case "segmento":
       return (
         <span className="inline-block rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[0.68rem] text-muted-foreground">
@@ -211,8 +262,6 @@ export function TabelaFiis({
   favoritos,
   aoFavoritar,
   posicoes,
-  selecionados,
-  aoSelecionar,
   aoAbrir,
   carregando,
   inicioRanking,
@@ -223,7 +272,11 @@ export function TabelaFiis({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const ehMobile = useEhMobile();
-  const janela = useJanelaVirtual(containerRef, linhas.length, ehMobile ? ALTURA_CARD : ALTURA_LINHA);
+  const janela = useJanelaVirtual(
+    containerRef,
+    linhas.length,
+    ehMobile ? ALTURA_CARD : ALTURA_LINHA,
+  );
 
   const naJanela = useMemo(
     () => linhas.slice(janela.inicio, janela.fim),
@@ -255,7 +308,8 @@ export function TabelaFiis({
   }
 
   const espacoTopo = janela.inicio * (ehMobile ? ALTURA_CARD : ALTURA_LINHA);
-  const espacoBase = Math.max(0, linhas.length - janela.fim) * (ehMobile ? ALTURA_CARD : ALTURA_LINHA);
+  const espacoBase =
+    Math.max(0, linhas.length - janela.fim) * (ehMobile ? ALTURA_CARD : ALTURA_LINHA);
   const colunasTotais = visiveis.length + 4;
 
   return (
@@ -267,7 +321,10 @@ export function TabelaFiis({
             <table className="w-full border-collapse text-sm">
               <thead className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
                 <tr className="border-b border-border">
-                  <th scope="col" className="w-10 px-1 py-2 text-right text-[0.7rem] text-muted-foreground">
+                  <th
+                    scope="col"
+                    className="w-10 px-1 py-2 text-right text-[0.7rem] text-muted-foreground"
+                  >
                     #
                   </th>
                   <Cabecalho
@@ -342,14 +399,21 @@ export function TabelaFiis({
                             ticker={l.ticker}
                           />
                           {l.logo ? (
-                            <img src={l.logo} alt="" loading="lazy" className="size-6 rounded bg-muted object-contain" />
+                            <img
+                              src={l.logo}
+                              alt=""
+                              loading="lazy"
+                              className="size-6 rounded bg-muted object-contain"
+                            />
                           ) : (
                             <span className="grid size-6 shrink-0 place-items-center rounded bg-primary-soft text-[0.6rem] font-bold">
                               {l.ticker.slice(0, 2)}
                             </span>
                           )}
                           <span className="min-w-0">
-                            <span className="block font-display text-[0.9rem] leading-tight">{l.ticker}</span>
+                            <span className="block font-display text-[0.9rem] leading-tight">
+                              {l.ticker}
+                            </span>
                             <span className="block max-w-[220px] truncate text-xs text-muted-foreground">
                               {nomeCurto(l)}
                             </span>
@@ -371,7 +435,8 @@ export function TabelaFiis({
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent className="text-xs">
-                                Sincronização ao vivo indisponível para este fundo — exibindo o último fechamento.
+                                Sincronização ao vivo indisponível para este fundo — exibindo o
+                                último fechamento.
                               </TooltipContent>
                             </Tooltip>
                           ) : null}
@@ -383,9 +448,13 @@ export function TabelaFiis({
                           </span>
                         ) : null}
                       </td>
-                      <td className={`px-3 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}>
+                      <td
+                        className={`px-3 py-2 text-right tabular-nums ${corVar(l.variacaoPercent)}`}
+                      >
                         <span className="block font-medium">{fmtPct(l.variacaoPercent)}</span>
-                        <span className="block text-[0.68rem]">{l.variacao === null ? "" : fmtMoeda(l.variacao)}</span>
+                        <span className="block text-[0.68rem]">
+                          {l.variacao === null ? "" : fmtMoeda(l.variacao)}
+                        </span>
                       </td>
                       {visiveis.map((c) => (
                         <td
@@ -437,7 +506,9 @@ export function TabelaFiis({
                           </span>
                           {l.ticker}
                         </span>
-                        <span className="block truncate text-xs text-muted-foreground">{nomeCurto(l)}</span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {nomeCurto(l)}
+                        </span>
                       </span>
                     </div>
                     <div className="text-right">
@@ -449,7 +520,9 @@ export function TabelaFiis({
                       >
                         {fmtMoeda(l.preco)}
                       </span>
-                      <span className={`block text-xs font-medium tabular-nums ${corVar(l.variacaoPercent)}`}>
+                      <span
+                        className={`block text-xs font-medium tabular-nums ${corVar(l.variacaoPercent)}`}
+                      >
                         {fmtPct(l.variacaoPercent)}
                       </span>
                     </div>
@@ -460,7 +533,11 @@ export function TabelaFiis({
                     <Info2 rotulo="Patrimônio" valor={fmtCompacto(l.patrimonio)} />
                     <Info2 rotulo="Liquidez" valor={fmtCompacto(l.liquidez)} />
                     <Info2 rotulo="DY 5 anos" valor={fmtPctSimples(h?.dy5a ?? null, 2)} />
-                    <Info2 rotulo="Var. 12m" valor={fmtPct(h?.var12m ?? null)} cor={corVar(h?.var12m)} />
+                    <Info2
+                      rotulo="Var. 12m"
+                      valor={fmtPct(h?.var12m ?? null)}
+                      cor={corVar(h?.var12m)}
+                    />
                   </div>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     <BadgeTipo linha={l} />
@@ -478,7 +555,6 @@ export function TabelaFiis({
     </TooltipProvider>
   );
 }
-
 
 function Info2({ rotulo, valor, cor }: { rotulo: string; valor: string; cor?: string }) {
   return (

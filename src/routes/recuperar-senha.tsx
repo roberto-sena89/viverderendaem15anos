@@ -25,9 +25,7 @@ export const Route = createFileRoute("/recuperar-senha")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [
-      { rel: "canonical", href: "https://viverderendaem15anos.lovable.app/recuperar-senha" },
-    ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/recuperar-senha" }],
   }),
   component: RecuperarSenhaPage,
 });
@@ -37,8 +35,7 @@ const ESPERA_SEGUNDOS = 60;
 function mascararEmail(valor: string) {
   const [usuario, dominio] = valor.trim().split("@");
   if (!usuario || !dominio) return valor;
-  const visivel =
-    usuario.length <= 2 ? usuario.slice(0, 1) : usuario.slice(0, 2);
+  const visivel = usuario.length <= 2 ? usuario.slice(0, 1) : usuario.slice(0, 2);
   const oculto = "•".repeat(Math.max(usuario.length - visivel.length, 2));
 
   const partes = dominio.split(".");
@@ -115,7 +112,6 @@ function RecuperarSenhaPage() {
               </div>
             </div>
 
-
             <div>
               <p className="text-sm font-medium">Próximos passos</p>
               <ol className="mt-3 space-y-3 text-sm text-muted-foreground">
@@ -162,8 +158,6 @@ function RecuperarSenhaPage() {
             </div>
           </div>
         ) : (
-
-
           <>
             <p className="mt-1 text-sm text-muted-foreground">
               Informe seu e-mail e enviaremos um link para criar uma nova senha.
@@ -181,7 +175,11 @@ function RecuperarSenhaPage() {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : "Enviar link de redefinição"}
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Enviar link de redefinição"
+                )}
               </Button>
             </form>
           </>

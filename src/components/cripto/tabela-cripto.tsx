@@ -74,7 +74,6 @@ const COLUNAS_VAR: {
   { id: "variacao12m", rotulo: "12M", campo: "variacao12m", classe: "hidden 2xl:table-cell" },
 ];
 
-
 export function TabelaCripto({
   linhas,
   usdBrl,
@@ -117,7 +116,6 @@ export function TabelaCripto({
   }, [linhas.length]);
 
   const sombra = inicio ? "" : "shadow-[8px_0_12px_-8px_rgba(0,0,0,0.55)]";
-
 
   const Cabecalho = ({
     coluna,
@@ -168,162 +166,189 @@ export function TabelaCripto({
         className="w-full overflow-x-auto overscroll-x-contain scroll-smooth [-webkit-overflow-scrolling:touch] [scrollbar-width:thin] focus:outline-none [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
       >
         <table className="w-full min-w-[880px] table-fixed border-separate border-spacing-0 text-sm">
-        <thead className="t-label sticky top-0 z-30">
-          <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted [&>th]:backdrop-blur">
-            <Cabecalho
-              coluna="rank"
-              className="sticky left-0 z-40 w-9 px-1.5 text-center text-[0.6rem] sm:w-11 sm:px-2"
-            >
-              #
-            </Cabecalho>
-            <Cabecalho
-              coluna="ticker"
-              className={`sticky left-9 z-40 w-[152px] px-2 text-left text-[0.62rem] after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border sm:left-11 sm:w-[196px] sm:text-[0.68rem] ${sombra}`}
-            >
-              Ativo
-            </Cabecalho>
-            <Cabecalho coluna="precoUsd" className="w-[104px] text-right">
-              Preço (US$)
-            </Cabecalho>
-            <Cabecalho className="w-[104px] text-right">Preço (R$)</Cabecalho>
-            {COLUNAS_VAR.map((c, i) => (
+          <thead className="t-label sticky top-0 z-30">
+            <tr className="[&>th]:border-b [&>th]:border-border [&>th]:bg-muted [&>th]:backdrop-blur">
               <Cabecalho
-                key={c.id}
-                coluna={c.id}
-                className={`w-[72px] text-center ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
+                coluna="rank"
+                className="sticky left-0 z-40 w-9 px-1.5 text-center text-[0.6rem] sm:w-11 sm:px-2"
               >
-                {c.rotulo}
+                #
               </Cabecalho>
-            ))}
-            <Cabecalho coluna="capitalizacao" className="w-[104px] border-l border-border/70 text-center">
-              Cap. mercado
-            </Cabecalho>
-            <Cabecalho coluna="volume24h" className="hidden w-[96px] text-center md:table-cell">
-              Vol. 24h
-            </Cabecalho>
-            <th className="hidden w-[80px] border-b border-border bg-muted px-2 py-2 text-center backdrop-blur sm:table-cell">
-              7 dias
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {linhas.map((l) => {
-            const stable = ehStablecoin(l);
-            const brl = l.precoUsd === null ? null : l.precoUsd * usdBrl;
-            const favorito = favoritos.includes(l.ticker);
-            const posicao = posicoes.get(l.ticker);
-            const rentabilidade =
-              posicao && posicao.precoMedio > 0 && brl !== null
-                ? (brl / posicao.precoMedio - 1) * 100
-                : null;
-
-            return (
-              <tr
-                key={l.id}
-                onClick={() => aoAbrir(l)}
-                className={`group cursor-pointer border-b border-border/60 transition-colors hover:bg-muted/30 ${
-                  posicao ? "bg-primary/[0.04]" : ""
-                }`}
+              <Cabecalho
+                coluna="ticker"
+                className={`sticky left-9 z-40 w-[152px] px-2 text-left text-[0.62rem] after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border sm:left-11 sm:w-[196px] sm:text-[0.68rem] ${sombra}`}
               >
-                <td
-                  className={`sticky left-0 z-10 bg-background px-1.5 py-2.5 text-center text-[0.7rem] text-muted-foreground tabular-nums group-hover:bg-muted/30 sm:px-2 sm:text-xs ${posicao ? "border-l-2 border-l-primary" : ""}`}
+                Ativo
+              </Cabecalho>
+              <Cabecalho coluna="precoUsd" className="w-[104px] text-right">
+                Preço (US$)
+              </Cabecalho>
+              <Cabecalho className="w-[104px] text-right">Preço (R$)</Cabecalho>
+              {COLUNAS_VAR.map((c, i) => (
+                <Cabecalho
+                  key={c.id}
+                  coluna={c.id}
+                  className={`w-[72px] text-center ${i === 0 ? "border-l border-border/70" : ""} ${c.classe ?? ""}`}
                 >
-                  {l.rank ?? "—"}
-                </td>
-                <td className={`sticky left-9 z-10 bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30 sm:left-11 ${sombra}`}>
-                  <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
-                    <button
-                      type="button"
-                      aria-label={favorito ? `Remover ${l.ticker} dos favoritos` : `Favoritar ${l.ticker}`}
-                      aria-pressed={favorito}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        aoFavoritar(l.ticker);
-                      }}
-                      className="grid size-5 shrink-0 place-items-center rounded-md hover:bg-muted sm:size-6"
-                    >
-                      <Star
-                        className={`size-3.5 transition-all duration-200 ${
-                          favorito ? "scale-110 fill-primary text-primary" : "text-muted-foreground"
-                        }`}
-                      />
-                    </button>
-                    {l.imagem ? (
-                      <img src={l.imagem} alt="" className="size-5 shrink-0 rounded-full sm:size-6" loading="lazy" />
-                    ) : null}
-                    <div className="min-w-0 flex-1">
-                      <p className="flex min-w-0 items-baseline gap-1.5 text-[0.78rem] leading-tight font-semibold sm:text-sm">
-                        <TextoTruncado as="span" className="truncate" texto={l.nome}>
-                          <RealceTermo texto={l.nome} termo={termoBusca} />
-                        </TextoTruncado>
-                        <span className="shrink-0 text-[0.62rem] font-medium tracking-wide text-muted-foreground uppercase sm:text-[0.68rem]">
-                          <RealceTermo texto={l.ticker} termo={termoBusca} />
-                        </span>
-                      </p>
-                      <div className="mt-0.5 flex items-center gap-1">
-                        <BadgeCategoria categoria={l.categoria} rede={l.rede} compacta />
-                        {rentabilidade !== null ? (
-                          <span className={`text-[0.62rem] tabular-nums ${corVar(rentabilidade)}`}>
-                            sua posição {fmtPct(rentabilidade)}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td
-                  className={`px-2 py-2.5 text-right font-semibold tabular-nums ${
-                    flash[l.id] === "alta" ? "flash-alta" : flash[l.id] === "baixa" ? "flash-baixa" : ""
+                  {c.rotulo}
+                </Cabecalho>
+              ))}
+              <Cabecalho
+                coluna="capitalizacao"
+                className="w-[104px] border-l border-border/70 text-center"
+              >
+                Cap. mercado
+              </Cabecalho>
+              <Cabecalho coluna="volume24h" className="hidden w-[96px] text-center md:table-cell">
+                Vol. 24h
+              </Cabecalho>
+              <th className="hidden w-[80px] border-b border-border bg-muted px-2 py-2 text-center backdrop-blur sm:table-cell">
+                7 dias
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {linhas.map((l) => {
+              const stable = ehStablecoin(l);
+              const brl = l.precoUsd === null ? null : l.precoUsd * usdBrl;
+              const favorito = favoritos.includes(l.ticker);
+              const posicao = posicoes.get(l.ticker);
+              const rentabilidade =
+                posicao && posicao.precoMedio > 0 && brl !== null
+                  ? (brl / posicao.precoMedio - 1) * 100
+                  : null;
+
+              return (
+                <tr
+                  key={l.id}
+                  onClick={() => aoAbrir(l)}
+                  className={`group cursor-pointer border-b border-border/60 transition-colors hover:bg-muted/30 ${
+                    posicao ? "bg-primary/[0.04]" : ""
                   }`}
                 >
-                  {l.precoUsd === null ? (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center gap-1 text-muted-foreground">
-                          <AlertTriangle className="size-3.5 text-amber-400" /> —
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent className="text-xs">
-                        Sincronização falhou para este ativo.
-                      </TooltipContent>
-                    </Tooltip>
-                  ) : (
-                    fmtPreco(l.precoUsd, "US$")
-                  )}
-                </td>
-                <td className="px-2 py-2.5 text-right text-muted-foreground tabular-nums">
-                  {fmtPreco(brl, "R$")}
-                </td>
-                {COLUNAS_VAR.map((c, i) => {
-                  const v = l[c.campo] as number | null;
-                  return (
-                    <td
-                      key={c.id}
-                      className={`px-2 py-2.5 text-center font-medium ${i === 0 ? "border-l border-border/50" : ""} ${c.classe ?? ""}`}
-                    >
-                      <CelulaVariacao valor={v} stable={stable} movimento={direcao[`${l.id}:${c.id}`]} />
-                    </td>
-                  );
-                })}
-                <td className="border-l border-border/50 px-2 py-2.5 text-center text-muted-foreground tabular-nums">
-                  {fmtCompacto(l.capitalizacao)}
-                </td>
-                <td className="hidden px-2 py-2.5 text-center text-muted-foreground tabular-nums md:table-cell">
-                  {fmtCompacto(l.volume24h)}
-                </td>
-                <td className="hidden px-2 py-2.5 text-center sm:table-cell">
-                  <div className="flex justify-center">
-                    <Sparkline serie={l.spark} positivo={(l.variacao7d ?? 0) >= 0} largura={80} altura={24} />
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
+                  <td
+                    className={`sticky left-0 z-10 bg-background px-1.5 py-2.5 text-center text-[0.7rem] text-muted-foreground tabular-nums group-hover:bg-muted/30 sm:px-2 sm:text-xs ${posicao ? "border-l-2 border-l-primary" : ""}`}
+                  >
+                    {l.rank ?? "—"}
+                  </td>
+                  <td
+                    className={`sticky left-9 z-10 bg-background px-2 py-2.5 after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border/60 group-hover:bg-muted/30 sm:left-11 ${sombra}`}
+                  >
+                    <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+                      <button
+                        type="button"
+                        aria-label={
+                          favorito ? `Remover ${l.ticker} dos favoritos` : `Favoritar ${l.ticker}`
+                        }
+                        aria-pressed={favorito}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          aoFavoritar(l.ticker);
+                        }}
+                        className="grid size-5 shrink-0 place-items-center rounded-md hover:bg-muted sm:size-6"
+                      >
+                        <Star
+                          className={`size-3.5 transition-all duration-200 ${
+                            favorito
+                              ? "scale-110 fill-primary text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </button>
+                      {l.imagem ? (
+                        <img
+                          src={l.imagem}
+                          alt=""
+                          className="size-5 shrink-0 rounded-full sm:size-6"
+                          loading="lazy"
+                        />
+                      ) : null}
+                      <div className="min-w-0 flex-1">
+                        <p className="flex min-w-0 items-baseline gap-1.5 text-[0.78rem] leading-tight font-semibold sm:text-sm">
+                          <TextoTruncado as="span" className="truncate" texto={l.nome}>
+                            <RealceTermo texto={l.nome} termo={termoBusca} />
+                          </TextoTruncado>
+                          <span className="shrink-0 text-[0.62rem] font-medium tracking-wide text-muted-foreground uppercase sm:text-[0.68rem]">
+                            <RealceTermo texto={l.ticker} termo={termoBusca} />
+                          </span>
+                        </p>
+                        <div className="mt-0.5 flex items-center gap-1">
+                          <BadgeCategoria categoria={l.categoria} rede={l.rede} compacta />
+                          {rentabilidade !== null ? (
+                            <span
+                              className={`text-[0.62rem] tabular-nums ${corVar(rentabilidade)}`}
+                            >
+                              sua posição {fmtPct(rentabilidade)}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    className={`px-2 py-2.5 text-right font-semibold tabular-nums ${
+                      flash[l.id] === "alta"
+                        ? "flash-alta"
+                        : flash[l.id] === "baixa"
+                          ? "flash-baixa"
+                          : ""
+                    }`}
+                  >
+                    {l.precoUsd === null ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="inline-flex items-center gap-1 text-muted-foreground">
+                            <AlertTriangle className="size-3.5 text-amber-400" /> —
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="text-xs">
+                          Sincronização falhou para este ativo.
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      fmtPreco(l.precoUsd, "US$")
+                    )}
+                  </td>
+                  <td className="px-2 py-2.5 text-right text-muted-foreground tabular-nums">
+                    {fmtPreco(brl, "R$")}
+                  </td>
+                  {COLUNAS_VAR.map((c, i) => {
+                    const v = l[c.campo] as number | null;
+                    return (
+                      <td
+                        key={c.id}
+                        className={`px-2 py-2.5 text-center font-medium ${i === 0 ? "border-l border-border/50" : ""} ${c.classe ?? ""}`}
+                      >
+                        <CelulaVariacao
+                          valor={v}
+                          stable={stable}
+                          movimento={direcao[`${l.id}:${c.id}`]}
+                        />
+                      </td>
+                    );
+                  })}
+                  <td className="border-l border-border/50 px-2 py-2.5 text-center text-muted-foreground tabular-nums">
+                    {fmtCompacto(l.capitalizacao)}
+                  </td>
+                  <td className="hidden px-2 py-2.5 text-center text-muted-foreground tabular-nums md:table-cell">
+                    {fmtCompacto(l.volume24h)}
+                  </td>
+                  <td className="hidden px-2 py-2.5 text-center sm:table-cell">
+                    <div className="flex justify-center">
+                      <Sparkline
+                        serie={l.spark}
+                        positivo={(l.variacao7d ?? 0) >= 0}
+                        largura={80}
+                        altura={24}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
     </div>
-
   );
 }
-

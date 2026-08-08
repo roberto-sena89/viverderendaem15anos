@@ -29,7 +29,13 @@ export const ABAS_COTACOES: AbaCotacoes[] = [
   { id: "indices", rotulo: "Índices", icone: Gauge },
   { id: "tesouro", rotulo: "Tesouro Direto", rotuloCurto: "Tesouro", icone: Landmark },
   { id: "etfs", rotulo: "ETFs", icone: Layers, categoria: "etfs" },
-  { id: "cripto", rotulo: "Criptomoedas", rotuloCurto: "Cripto", icone: Bitcoin, categoria: "cripto" },
+  {
+    id: "cripto",
+    rotulo: "Criptomoedas",
+    rotuloCurto: "Cripto",
+    icone: Bitcoin,
+    categoria: "cripto",
+  },
   { id: "commodities", rotulo: "Commodities", rotuloCurto: "Commod.", icone: Wheat },
 ];
 

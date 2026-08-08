@@ -6,7 +6,7 @@ const ativo = (over: Partial<Ativo>): Ativo => ({
   id: "1",
   ticker: "",
   nome: "",
-  categoria: "Renda Fixa" as Categoria,
+  categoria: "Renda Fixa",
   quantidade: 1,
   precoMedio: 1,
   precoAtual: 1,
@@ -29,7 +29,9 @@ describe("classeDoAtivo · Tesouro Direto e Renda Fixa", () => {
 
   it("todo título do Tesouro Direto cai na janela única de Renda Fixa", () => {
     for (const [ticker, nome] of titulos) {
-      expect(classeDoAtivo(ativo({ ticker, nome, categoria: "Tesouro Direto" }))).toBe(CLASSE_POS_FIXADO);
+      expect(classeDoAtivo(ativo({ ticker, nome, categoria: "Tesouro Direto" }))).toBe(
+        CLASSE_POS_FIXADO,
+      );
     }
   });
 
@@ -63,9 +65,9 @@ describe("classeDoAtivo · demais categorias", () => {
   });
 
   it("ticker com palavra de renda fixa não muda a classe de categorias de variável", () => {
-    expect(classeDoAtivo(ativo({ ticker: "SELIC11", nome: "ETF Selic", categoria: "ETF Brasil" }))).toBe(
-      "ETFs - Brasil",
-    );
+    expect(
+      classeDoAtivo(ativo({ ticker: "SELIC11", nome: "ETF Selic", categoria: "ETF Brasil" })),
+    ).toBe("ETFs - Brasil");
   });
 });
 

@@ -24,7 +24,6 @@ export interface AlertaDisparado {
   url?: string;
 }
 
-
 const CHAVE = "alertas:historico";
 const LIMITE_REGISTROS = 100;
 
@@ -115,11 +114,7 @@ export function notificarPush(titulo: string, corpo: string): boolean {
  * ---------------------------------------------------------------- */
 
 export function useAlertasHistorico() {
-  const alertas = useSyncExternalStore(
-    inscrever,
-    ler,
-    () => VAZIO,
-  );
+  const alertas = useSyncExternalStore(inscrever, ler, () => VAZIO);
 
   const marcarTodosLidos = useCallback(() => {
     gravar(ler().map((a) => (a.lido ? a : { ...a, lido: true })));

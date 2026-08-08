@@ -167,8 +167,7 @@ function assinarTempoReal(id: string) {
       },
       (mensagem) => {
         const novo = mensagem.new as
-          | { favoritos?: string[] | null; filtro_favoritos?: boolean | null }
-          | undefined;
+          { favoritos?: string[] | null; filtro_favoritos?: boolean | null } | undefined;
         if (!novo) return;
         const p: PreferenciasMercado = {
           favoritos: (novo.favoritos ?? []).map(String),
@@ -252,4 +251,3 @@ export function useFavoritos() {
 
   return { favoritos, alternar, ehFavorito, sincronizado };
 }
-

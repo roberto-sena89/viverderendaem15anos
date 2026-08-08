@@ -2,7 +2,13 @@
 
 /** Converte texto no padrão brasileiro para número. */
 export const numeroBR = (v: string): number => {
-  const n = Number(String(v).trim().replace(/\s|R\$/g, "").replace(/\./g, "").replace(",", "."));
+  const n = Number(
+    String(v)
+      .trim()
+      .replace(/\s|R\$/g, "")
+      .replace(/\./g, "")
+      .replace(",", "."),
+  );
   return Number.isFinite(n) ? n : 0;
 };
 
@@ -20,5 +26,8 @@ export const formatarNumeroBR = (v: string | number, casas = 2): string => {
   }
   if (!v.trim()) return "";
   if (!monetarioValido(v)) return v;
-  return numeroBR(v).toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas });
+  return numeroBR(v).toLocaleString("pt-BR", {
+    minimumFractionDigits: casas,
+    maximumFractionDigits: casas,
+  });
 };

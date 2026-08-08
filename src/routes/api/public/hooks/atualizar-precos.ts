@@ -54,7 +54,10 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
       POST: async ({ request }: { request: Request }) => {
         if (!autorizado(request)) return Response.json({ error: "unauthorized" }, { status: 401 });
 
-        const corpo = (await request.json().catch(() => ({}))) as { escopo?: Escopo; forcar?: boolean };
+        const corpo = (await request.json().catch(() => ({}))) as {
+          escopo?: Escopo;
+          forcar?: boolean;
+        };
         const escopo: Escopo = corpo.escopo ?? "todos";
         const { data: hoje, hora, diaUtil } = agoraBrasilia();
         const dentroDoPregao = diaUtil && hora >= 10 && hora < 18;
@@ -69,7 +72,9 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
           import("@/lib/tesouro.server"),
         ]);
 
-        const { data: ativos, error } = await supabaseAdmin.from("ativos").select("id, ticker, nome, categoria");
+        const { data: ativos, error } = await supabaseAdmin
+          .from("ativos")
+          .select("id, ticker, nome, categoria");
         if (error) return Response.json({ error: error.message }, { status: 500 });
 
         const lista = ativos ?? [];
@@ -114,14 +119,20 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
             } else {
               const c = await mercado.buscarCotacao(item.ticker);
               if (c.preco && c.preco > 0) {
-                precos.set(item.ticker, { preco: c.preco, fonte: "yahoo/brapi", classe: "variavel" });
+                precos.set(item.ticker, {
+                  preco: c.preco,
+                  fonte: "yahoo/brapi",
+                  classe: "variavel",
+                });
                 m.obtidos++;
               } else {
                 m.falhas.push(item.ticker);
               }
             }
           } catch (e) {
-            m.falhas.push(`${item.ticker}: ${e instanceof Error ? e.message : "erro desconhecido"}`);
+            m.falhas.push(
+              `${item.ticker}: ${e instanceof Error ? e.message : "erro desconhecido"}`,
+            );
           }
         }
         falhas.push(...metricas.tesouro.falhas, ...metricas.b3.falhas);
@@ -176,7 +187,12 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
               }
             : null,
           escopo !== "tesouro"
-            ? { escopo: "b3", fonte: "Yahoo Finance / brapi.dev", metricas: metricas.b3, erro: erroHistorico }
+            ? {
+                escopo: "b3",
+                fonte: "Yahoo Finance / brapi.dev",
+                metricas: metricas.b3,
+                erro: erroHistorico,
+              }
             : null,
         ].filter((r): r is NonNullable<typeof r> => r !== null);
 
@@ -206,7 +222,6 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
           duracaoMs: duracao,
           executadoEm: new Date().toISOString(),
         });
-
       },
     },
   },

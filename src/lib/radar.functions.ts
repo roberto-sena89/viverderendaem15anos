@@ -174,21 +174,21 @@ export const radarVisao = createServerFn({ method: "GET" })
         ticker,
         nome: raw.nome,
         categoria: data.categoria,
-        tipo: "tipo" in raw ? ((raw.tipo as string) ?? null) : null,
+        tipo: "tipo" in raw ? (raw.tipo ?? null) : null,
         setor:
           data.categoria === "acao"
             ? "setor" in raw
-              ? ((raw.setor as string) ?? null)
+              ? (raw.setor ?? null)
               : null
             : "tipo" in raw
-              ? ((raw.tipo as string) ?? null)
+              ? (raw.tipo ?? null)
               : null,
         logo: raw.logo ?? null,
         preco: raw.preco ?? null,
         variacaoDia: raw.variacaoPercent ?? null,
         dy12: raw.dy12 ?? null,
         pvp: raw.pvp ?? null,
-        pl: "pl" in raw ? ((raw.pl as number) ?? null) : null,
+        pl: "pl" in raw ? (raw.pl ?? null) : null,
         posicao,
         sinal,
       });
@@ -257,8 +257,6 @@ export const radarDetalhe = createServerFn({ method: "GET" })
     const rawFii = gradeFiis?.linhas.find(
       (l: { ticker: string }) => l.ticker.toUpperCase() === data.ticker,
     );
-    const razao = rawAcao ?? rawFii;
-    const categoria: "acao" | "fii" = rawAcao ? "acao" : "fii";
 
     const [serie, posicoes, noticiasMod] = await Promise.all([
       radarFx.serieParaGrafico(data.ticker),

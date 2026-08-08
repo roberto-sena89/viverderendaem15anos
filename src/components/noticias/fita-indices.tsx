@@ -7,7 +7,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 function valor(i: IndiceNoticias) {
   if (i.preco === null) return "—";
   const casas = i.nome === "Ibovespa" || i.nome === "Nasdaq" || i.nome === "Bitcoin" ? 0 : 2;
-  return i.preco.toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas });
+  return i.preco.toLocaleString("pt-BR", {
+    minimumFractionDigits: casas,
+    maximumFractionDigits: casas,
+  });
 }
 
 function Item({ i }: { i: IndiceNoticias }) {

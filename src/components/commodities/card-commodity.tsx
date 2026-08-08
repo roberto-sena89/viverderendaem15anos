@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowDownRight, ArrowUpRight, Star } from "lucide-react";
 import { Sparkline } from "@/components/cotacoes/sparkline";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   CORRELACOES,
@@ -123,7 +122,11 @@ export function CardCommodity({
               {linha.bolsa}
             </span>
           </div>
-          <TextoTruncado as="p" className="t-caption" texto={`Contrato futuro · cotação por ${linha.unidade}`}>
+          <TextoTruncado
+            as="p"
+            className="t-caption"
+            texto={`Contrato futuro · cotação por ${linha.unidade}`}
+          >
             Contrato futuro · cotação por {linha.unidade}
           </TextoTruncado>
         </div>
@@ -138,7 +141,9 @@ export function CardCommodity({
           </span>
           <button
             type="button"
-            aria-label={favorito ? `Remover ${linha.nome} dos favoritos` : `Favoritar ${linha.nome}`}
+            aria-label={
+              favorito ? `Remover ${linha.nome} dos favoritos` : `Favoritar ${linha.nome}`
+            }
             aria-pressed={favorito}
             onClick={(e) => {
               e.stopPropagation();
@@ -162,7 +167,9 @@ export function CardCommodity({
               )}
             >
               {fmtDinheiro(linha.precoUsd, "US$")}
-              <span className="ml-1 text-xs font-normal text-muted-foreground">/ {linha.unidade}</span>
+              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                / {linha.unidade}
+              </span>
             </p>
           ) : null}
           {moeda !== "usd" ? (
@@ -175,11 +182,18 @@ export function CardCommodity({
               )}
             >
               {fmtDinheiro(brl, "R$")}
-              <span className="ml-1 text-xs font-normal text-muted-foreground">/ {linha.unidade}</span>
+              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                / {linha.unidade}
+              </span>
             </p>
           ) : null}
 
-          <p className={cn("mt-1.5 inline-flex items-center gap-1 text-sm font-semibold tabular-nums", corVar(linha.variacao12m))}>
+          <p
+            className={cn(
+              "mt-1.5 inline-flex items-center gap-1 text-sm font-semibold tabular-nums",
+              corVar(linha.variacao12m),
+            )}
+          >
             {linha.variacao12m !== null ? <Icone className="size-4" /> : null}
             {fmtVar(linha.variacao12m)}
             <span className="text-[0.7rem] font-normal text-muted-foreground">em 12m</span>
@@ -197,7 +211,9 @@ export function CardCommodity({
 
       <div className="t-caption mt-bloco flex items-center justify-between gap-2 border-t border-border pt-bloco">
         <span className={cn("truncate", corVar(linha.variacaoDia))}>
-          {linha.variacaoDia !== null ? `${fmtVar(linha.variacaoDia)} no dia` : "Sem dado intradiário"}
+          {linha.variacaoDia !== null
+            ? `${fmtVar(linha.variacaoDia)} no dia`
+            : "Sem dado intradiário"}
         </span>
         <span
           className={cn(

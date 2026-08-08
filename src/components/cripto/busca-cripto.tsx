@@ -88,7 +88,9 @@ export function BuscaCripto({
         aria-expanded={mostrar}
         aria-controls={listaId}
         aria-autocomplete="list"
-        aria-activedescendant={mostrar && sugestoes[destaque] ? `${listaId}-${destaque}` : undefined}
+        aria-activedescendant={
+          mostrar && sugestoes[destaque] ? `${listaId}-${destaque}` : undefined
+        }
         autoComplete="off"
         value={valor}
         onChange={(e) => {
@@ -150,7 +152,12 @@ export function BuscaCripto({
 
       {mostrar ? (
         <div className="absolute z-50 mt-1 w-full min-w-56 overflow-hidden rounded-lg border border-border bg-popover shadow-xl">
-          <ul id={listaId} role="listbox" aria-label="Criptomoedas encontradas" className="max-h-72 overflow-y-auto py-1">
+          <ul
+            id={listaId}
+            role="listbox"
+            aria-label="Criptomoedas encontradas"
+            className="max-h-72 overflow-y-auto py-1"
+          >
             {sugestoes.map((l, i) => (
               <li
                 key={l.id}
@@ -171,7 +178,12 @@ export function BuscaCripto({
                 )}
               >
                 {l.imagem ? (
-                  <img src={l.imagem} alt="" loading="lazy" className="size-5 shrink-0 rounded-full" />
+                  <img
+                    src={l.imagem}
+                    alt=""
+                    loading="lazy"
+                    className="size-5 shrink-0 rounded-full"
+                  />
                 ) : (
                   <span className="grid size-5 shrink-0 place-items-center rounded-full bg-muted text-[0.6rem] font-semibold">
                     {l.ticker.slice(0, 1)}
@@ -186,7 +198,9 @@ export function BuscaCripto({
                   </TextoTruncado>
                 </span>
                 {l.rank ? (
-                  <span className="shrink-0 text-[0.65rem] tabular-nums text-muted-foreground">#{l.rank}</span>
+                  <span className="shrink-0 text-[0.65rem] tabular-nums text-muted-foreground">
+                    #{l.rank}
+                  </span>
                 ) : null}
               </li>
             ))}

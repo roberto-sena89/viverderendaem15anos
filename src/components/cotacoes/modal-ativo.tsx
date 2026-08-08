@@ -9,7 +9,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Sparkline } from "@/components/cotacoes/sparkline";
-import { corVar, fmtPercent, fmtPreco, fmtVar, fmtVolume, posicaoFaixa } from "@/components/cotacoes/formatos";
+import {
+  corVar,
+  fmtPercent,
+  fmtPreco,
+  fmtVar,
+  fmtVolume,
+  posicaoFaixa,
+} from "@/components/cotacoes/formatos";
 import { useFavoritos } from "@/lib/favoritos-mercado";
 import type { LinhaCotacao } from "@/lib/grade-mercado.functions";
 import { useAtivos } from "@/lib/data";
@@ -49,7 +56,9 @@ export function ModalAtivo({
               aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
               onClick={() => alternar(linha.ticker)}
             >
-              <Star className={`size-4 ${favorito ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+              <Star
+                className={`size-4 ${favorito ? "fill-primary text-primary" : "text-muted-foreground"}`}
+              />
             </Button>
           </DialogTitle>
           <DialogDescription className="text-left">{linha.nome}</DialogDescription>
@@ -58,7 +67,9 @@ export function ModalAtivo({
         <div className="space-y-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="font-display text-3xl tabular-nums">{fmtPreco(linha.preco, linha.moeda)}</p>
+              <p className="font-display text-3xl tabular-nums">
+                {fmtPreco(linha.preco, linha.moeda)}
+              </p>
               <p className={`text-sm tabular-nums ${corVar(linha.variacaoPercent)}`}>
                 {fmtVar(linha.variacao)} ({fmtPercent(linha.variacaoPercent)})
               </p>
@@ -82,7 +93,10 @@ export function ModalAtivo({
           ) : null}
 
           <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <Info rotulo="Fechamento anterior" valor={fmtPreco(linha.fechamentoAnterior, linha.moeda)} />
+            <Info
+              rotulo="Fechamento anterior"
+              valor={fmtPreco(linha.fechamentoAnterior, linha.moeda)}
+            />
             <Info rotulo="Volume do dia" valor={fmtVolume(linha.volume)} />
             <Info rotulo="Moeda" valor={linha.moeda} />
             {linha.extra.map((e) => (
@@ -97,14 +111,20 @@ export function ModalAtivo({
                 <Info rotulo="Quantidade" valor={posicao.quantidade.toLocaleString("pt-BR")} />
                 <Info
                   rotulo="Preço médio"
-                  valor={posicao.precoMedio.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                />
-                <Info
-                  rotulo="Saldo atual"
-                  valor={(posicao.quantidade * (linha.preco ?? posicao.precoAtual)).toLocaleString("pt-BR", {
+                  valor={posicao.precoMedio.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
+                />
+                <Info
+                  rotulo="Saldo atual"
+                  valor={(posicao.quantidade * (linha.preco ?? posicao.precoAtual)).toLocaleString(
+                    "pt-BR",
+                    {
+                      style: "currency",
+                      currency: "BRL",
+                    },
+                  )}
                 />
                 <Info
                   rotulo="Rentabilidade"

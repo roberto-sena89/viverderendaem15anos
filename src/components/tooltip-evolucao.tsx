@@ -1,7 +1,12 @@
 import { brl } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
 
-type Item = { dataKey?: string | number; name?: string; value?: number; payload?: Record<string, unknown> };
+type Item = {
+  dataKey?: string | number;
+  name?: string;
+  value?: number;
+  payload?: Record<string, unknown>;
+};
 
 type PontoSerie = {
   id?: string;
@@ -87,7 +92,10 @@ export function TooltipEvolucao({
           const chave = String(p.dataKey ?? "");
           const apagado = destaque && destaque !== chave;
           return (
-            <li key={chave} className={cn(CLASSES_SERIE[chave] ?? "serie-investido", apagado && "opacity-60")}>
+            <li
+              key={chave}
+              className={cn(CLASSES_SERIE[chave] ?? "serie-investido", apagado && "opacity-60")}
+            >
               <div className="flex items-center justify-between gap-3">
                 <span className="flex items-center gap-1.5 font-medium">
                   <span className="ponto-legenda" aria-hidden />
@@ -96,7 +104,9 @@ export function TooltipEvolucao({
                 <span className="font-semibold tabular-nums">{brl(p.value ?? 0, 2)}</span>
               </div>
               {EXPLICACOES[chave] ? (
-                <p className="mt-0.5 pl-4 text-[11px] leading-snug text-muted-foreground">{EXPLICACOES[chave]}</p>
+                <p className="mt-0.5 pl-4 text-[11px] leading-snug text-muted-foreground">
+                  {EXPLICACOES[chave]}
+                </p>
               ) : null}
             </li>
           );
@@ -106,7 +116,12 @@ export function TooltipEvolucao({
       <div className="mt-2 space-y-1 border-t border-border pt-2">
         <div className="flex items-center justify-between gap-3">
           <span className="text-muted-foreground">Ganho de capital</span>
-          <span className={cn("font-semibold tabular-nums", ganho >= 0 ? "text-serie-ganho" : "text-destructive")}>
+          <span
+            className={cn(
+              "font-semibold tabular-nums",
+              ganho >= 0 ? "text-serie-ganho" : "text-destructive",
+            )}
+          >
             {brl(ganho, 2)}
             {ganhoPct !== null ? <span className="ml-1 text-[11px]">({pct(ganhoPct)})</span> : null}
           </span>
@@ -117,11 +132,16 @@ export function TooltipEvolucao({
             <span className="text-muted-foreground">—</span>
           ) : (
             <span
-              className={cn("font-semibold tabular-nums", deltaAbs >= 0 ? "text-serie-ganho" : "text-destructive")}
+              className={cn(
+                "font-semibold tabular-nums",
+                deltaAbs >= 0 ? "text-serie-ganho" : "text-destructive",
+              )}
             >
               {deltaAbs >= 0 ? "+" : ""}
               {brl(deltaAbs, 2)}
-              {deltaPct !== null ? <span className="ml-1 text-[11px]">({pct(deltaPct)})</span> : null}
+              {deltaPct !== null ? (
+                <span className="ml-1 text-[11px]">({pct(deltaPct)})</span>
+              ) : null}
             </span>
           )}
         </div>

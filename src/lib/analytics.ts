@@ -17,7 +17,7 @@ function injetarGtag() {
   const win = window as unknown as Record<string, unknown>;
   const dataLayer: unknown[] = [];
   const gtag = (...args: unknown[]) => {
-    (dataLayer as unknown[]).push(args);
+    dataLayer.push(args);
   };
   win.dataLayer = dataLayer;
   win.gtag = gtag;

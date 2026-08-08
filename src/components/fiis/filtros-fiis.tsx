@@ -10,13 +10,7 @@ import {
 } from "@/components/ui/select";
 import { COR_TIPO, ROTULO_TIPO, SEGMENTOS_FII, TIPOS_FII, type TipoFii } from "@/lib/fiis-base";
 
-export type Ranking =
-  | "patrimonio"
-  | "dy"
-  | "queridos"
-  | "liquidez"
-  | "pvp"
-  | "var12m";
+export type Ranking = "patrimonio" | "dy" | "queridos" | "liquidez" | "pvp" | "var12m";
 
 export const RANKINGS: { id: Ranking; rotulo: string }[] = [
   { id: "patrimonio", rotulo: "Valor patrimonial" },
@@ -62,9 +56,7 @@ export function FiltrosFiis({
   return (
     <div className="pilha-secao">
       <div>
-        <p className="t-label mb-2">
-          Ranking rápido
-        </p>
+        <p className="t-label mb-2">Ranking rápido</p>
         <div className="flex flex-wrap gap-1.5">
           {RANKINGS.map((r) => (
             <button
@@ -85,9 +77,7 @@ export function FiltrosFiis({
       </div>
 
       <div>
-        <p className="t-label mb-2">
-          Tipo de fundo
-        </p>
+        <p className="t-label mb-2">Tipo de fundo</p>
         <div className="flex flex-wrap gap-1.5">
           {TIPOS_FII.map((t) => {
             const ativo = tipos.includes(t);

@@ -7,13 +7,7 @@
  * educacional de triagem, não recomendação formal de investimento.
  */
 
-export type ZonaHistorica =
-  | "minima"
-  | "baixa"
-  | "media"
-  | "alta"
-  | "maxima"
-  | "sem-dados";
+export type ZonaHistorica = "minima" | "baixa" | "media" | "alta" | "maxima" | "sem-dados";
 
 export type TipoSinal = "comprar" | "manter" | "vender" | "observar" | "sem-dados";
 
@@ -111,8 +105,7 @@ export function sinalRadar(e: EntradasSinal): SinalRadar {
       tipo: "observar",
       zona,
       percentil,
-      motivo:
-        "Nas mínimas históricas, mas sem DY atrativo — observe a qualidade antes de decidir.",
+      motivo: "Nas mínimas históricas, mas sem DY atrativo — observe a qualidade antes de decidir.",
       urgente: false,
     };
   }

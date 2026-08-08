@@ -181,4 +181,3 @@ function VerifyEmailPage() {
     </main>
   );
 }
-

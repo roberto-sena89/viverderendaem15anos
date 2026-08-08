@@ -61,11 +61,11 @@ function vazio(symbol: string): CotacaoBrapi {
   };
 }
 
-
 function erroDeStatus(status: number): string {
   if (status === 401 || status === 403) return "Token da BRAPI inválido ou sem permissão.";
   if (status === 404) return "Ativo inexistente na BRAPI.";
-  if (status === 429) return "Limite de requisições da BRAPI atingido. Tente novamente em instantes.";
+  if (status === 429)
+    return "Limite de requisições da BRAPI atingido. Tente novamente em instantes.";
   if (status >= 500) return "A BRAPI está indisponível no momento.";
   return `Falha ao consultar a BRAPI (HTTP ${status}).`;
 }
@@ -126,9 +126,10 @@ async function buscarNaBrapi(symbol: string): Promise<CotacaoBrapi> {
       throw new Error(mensagem);
     }
 
-
     const json = (await res.json()) as {
-      results?: Array<Record<string, unknown> & { historicalDataPrice?: Array<{ close?: number }> }>;
+      results?: Array<
+        Record<string, unknown> & { historicalDataPrice?: Array<{ close?: number }> }
+      >;
     };
     const r = json?.results?.[0];
     if (!r) throw new Error(erroDeStatus(404));

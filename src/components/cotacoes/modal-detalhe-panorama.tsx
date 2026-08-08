@@ -113,7 +113,6 @@ export function ModalDetalhePanorama({
             </div>
           </div>
 
-
           {/* seletor de período */}
           {simbolo ? (
             <div
@@ -174,9 +173,7 @@ export function ModalDetalhePanorama({
               <dl className="grade-metricas">
                 {data.janelas.map((j) => (
                   <div key={j.rotulo} className="rounded-lg bg-muted/40 px-2 py-1.5 text-center">
-                    <dt className="t-label truncate">
-                      {j.rotulo}
-                    </dt>
+                    <dt className="t-label truncate">{j.rotulo}</dt>
                     <dd className={`t-num-sm font-semibold ${corVar(j.variacaoPercent)}`}>
                       {fmtPercent(j.variacaoPercent)}
                     </dd>
@@ -189,9 +186,18 @@ export function ModalDetalhePanorama({
           {/* estatísticas de risco/retorno */}
           {data ? (
             <dl className="grade-metricas">
-              <Info rotulo="Retorno a.a. (5 anos)" valor={fmtPercent(data.estatisticas.retornoAnualizadoPercent)} />
-              <Info rotulo="Volatilidade anual" valor={fmtPercent(data.estatisticas.volatilidadeAnualPercent)} />
-              <Info rotulo="Maior queda" valor={fmtPercent(data.estatisticas.drawdownMaximoPercent)} />
+              <Info
+                rotulo="Retorno a.a. (5 anos)"
+                valor={fmtPercent(data.estatisticas.retornoAnualizadoPercent)}
+              />
+              <Info
+                rotulo="Volatilidade anual"
+                valor={fmtPercent(data.estatisticas.volatilidadeAnualPercent)}
+              />
+              <Info
+                rotulo="Maior queda"
+                valor={fmtPercent(data.estatisticas.drawdownMaximoPercent)}
+              />
               <Info
                 rotulo="Faixa 5 anos"
                 valor={

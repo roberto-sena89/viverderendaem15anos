@@ -8,12 +8,7 @@
  */
 
 export type CategoriaCommodity =
-  | "energia"
-  | "metais-preciosos"
-  | "metais-industriais"
-  | "graos"
-  | "softs"
-  | "pecuaria";
+  "energia" | "metais-preciosos" | "metais-industriais" | "graos" | "softs" | "pecuaria";
 
 export type DefCommodity = {
   codigo: string;
@@ -380,12 +375,18 @@ export const CORRELACOES: Record<string, { tickers: string[]; frase: string }> =
     frase: "PETR4 e PRIO3 tendem a seguir o Brent",
   },
   WTI: { tickers: ["PETR4", "PETR3", "PRIO3"], frase: "Petroleiras acompanham o WTI" },
-  MINERIO: { tickers: ["VALE3", "CSNA3", "GGBR4", "USIM5"], frase: "VALE3 acompanha o minério de ferro" },
+  MINERIO: {
+    tickers: ["VALE3", "CSNA3", "GGBR4", "USIM5"],
+    frase: "VALE3 acompanha o minério de ferro",
+  },
   OURO: { tickers: ["AURA33", "GOAU4"], frase: "Ouro é proteção contra crises e dólar forte" },
   SOJA: { tickers: ["SLCE3", "AGRO3", "SOJA3"], frase: "Agrícolas seguem a soja de Chicago" },
   MILHO: { tickers: ["SLCE3", "AGRO3", "SMTO3"], frase: "Milho pressiona custos de ração" },
   ACUCAR: { tickers: ["SMTO3", "RAIZ4"], frase: "Sucroenergéticas seguem açúcar e etanol" },
-  BOI: { tickers: ["BEEF3", "JBSS3", "MRFG3"], frase: "Boi gordo é o principal custo dos frigoríficos" },
+  BOI: {
+    tickers: ["BEEF3", "JBSS3", "MRFG3"],
+    frase: "Boi gordo é o principal custo dos frigoríficos",
+  },
   PORCO: { tickers: ["BRFS3", "JBSS3"], frase: "Suíno afeta margens de BRFS3" },
   CAFE: { tickers: ["AGRO3"], frase: "Brasil é o maior exportador de café" },
 };
@@ -420,7 +421,10 @@ export function mercadoCategoria(
   const dia = agora.getUTCDay();
   const minutos = agora.getUTCHours() * 60 + agora.getUTCMinutes();
   const j = JANELAS[categoria];
-  const dentro = j.inicio > j.fim ? minutos >= j.inicio || minutos <= j.fim : minutos >= j.inicio && minutos <= j.fim;
+  const dentro =
+    j.inicio > j.fim
+      ? minutos >= j.inicio || minutos <= j.fim
+      : minutos >= j.inicio && minutos <= j.fim;
   const util = dia >= 1 && dia <= 5;
   const aberto = util && dentro;
   const bolsa = CATEGORIAS_COMMODITY.find((c) => c.id === categoria)?.bolsa ?? "";

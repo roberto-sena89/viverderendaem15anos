@@ -65,7 +65,8 @@ export function resumirCenario(cenario: Cenario): ResumoCenario {
   const linhas = projetar(cenario.input);
   const final = linhas[linhas.length - 1];
   const taxa = cenario.input.taxaRetirada / 100;
-  const patrimonioNecessario = taxa > 0 ? (cenario.objetivoRenda * 12) / taxa : Number.POSITIVE_INFINITY;
+  const patrimonioNecessario =
+    taxa > 0 ? (cenario.objetivoRenda * 12) / taxa : Number.POSITIVE_INFINITY;
   const alvo = linhas.find((l) => l.patrimonio >= patrimonioNecessario) ?? null;
 
   return {
@@ -123,7 +124,12 @@ export function indiceVencedor(resumos: ResumoCenario[]): number {
 export interface LinhaAnoAAno {
   ano: number;
   idade: number | null;
-  valores: { id: string; patrimonio: number | null; variacao: number | null; crescimento: number | null }[];
+  valores: {
+    id: string;
+    patrimonio: number | null;
+    variacao: number | null;
+    crescimento: number | null;
+  }[];
 }
 
 /**

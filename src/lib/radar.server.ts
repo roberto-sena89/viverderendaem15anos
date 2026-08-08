@@ -175,7 +175,7 @@ async function gravarPosicoesBanco(
       for (const [ticker, posicao] of adicionadas) posicoes[ticker] = posicao;
       linhas.push({
         categoria: "radar:posicao",
-        payload: JSON.parse(JSON.stringify(posicoes)),
+        payload: JSON.parse(JSON.stringify(posicoes)) as Json,
         parcial: false,
         atualizado_em: agora,
       });
@@ -183,7 +183,7 @@ async function gravarPosicoesBanco(
     for (const [ticker, serie] of series) {
       linhas.push({
         categoria: `radar:serie:${ticker}`,
-        payload: JSON.parse(JSON.stringify(serie)),
+        payload: JSON.parse(JSON.stringify(serie)) as Json,
         parcial: false,
         atualizado_em: agora,
       });
@@ -356,7 +356,7 @@ function decodificarXml(texto: string): string {
   return texto
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
     .replace(/<[^>]*>/g, " ")
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCodePoint(parseInt(h, 16)))
     .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
     .replace(
       /&(amp|quot|apos|lt|gt|nbsp);/gi,
@@ -389,8 +389,7 @@ export async function buscarFatosExternos(ticker: string, nome: string): Promise
     clearTimeout(timer);
     if (!res.ok) return [];
     const xml = await res.text();
-    const blocos =
-      xml.match(/<(item|entry)(?:\s[^>]*)?>[\s\S]*?<\/\1>/gi)?.slice(0, 10) ?? [];
+    const blocos = xml.match(/<(item|entry)(?:\s[^>]*)?>[\s\S]*?<\/\1>/gi)?.slice(0, 10) ?? [];
     const fatos: FatoExterno[] = [];
     for (const bloco of blocos) {
       const tituloBruto = bloco.match(/<title(?:\s[^>]*)?>([\s\S]*?)<\/title>/i)?.[1];

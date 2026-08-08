@@ -34,10 +34,13 @@ export type EstadoTempoRealEtfs = {
   intervaloPolling: number;
 };
 
-function extrairPrecos(payload: unknown): { precos: Map<string, PrecoAoVivoEtf>; em: string | null } {
+function extrairPrecos(payload: unknown): {
+  precos: Map<string, PrecoAoVivoEtf>;
+  em: string | null;
+} {
   const precos = new Map<string, PrecoAoVivoEtf>();
   const grade = payload as Partial<RespostaEtfs> | null;
-  const linhas = Array.isArray(grade?.linhas) ? (grade!.linhas as LinhaEtf[]) : [];
+  const linhas = Array.isArray(grade?.linhas) ? grade.linhas : [];
   for (const l of linhas) {
     if (!l?.ticker) continue;
     precos.set(l.ticker, {

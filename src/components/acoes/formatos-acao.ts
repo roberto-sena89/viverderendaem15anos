@@ -19,7 +19,7 @@ export function nomeEmpresa(l: LinhaAcao) {
   if (texto.toUpperCase() === texto) {
     return texto
       .toLowerCase()
-      .replace(/(^|\s|\/)([a-zà-ú])/g, (_, a, b) => a + b.toUpperCase())
+      .replace(/(^|\s|\/)([a-zà-ú])/g, (_, a: string, b: string) => a + b.toUpperCase())
       .slice(0, 42);
   }
   return texto.slice(0, 42);

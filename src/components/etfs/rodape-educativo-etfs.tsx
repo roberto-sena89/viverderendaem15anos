@@ -35,7 +35,9 @@ export function RodapeEducativoEtfs() {
       <dl className="mt-bloco grid gap-secao sm:grid-cols-2">
         {TOPICOS.map((t) => (
           <div key={t.titulo} className="min-w-0">
-            <TextoTruncado as="dt" className="text-sm font-medium block">{t.titulo}</TextoTruncado>
+            <TextoTruncado as="dt" className="text-sm font-medium block">
+              {t.titulo}
+            </TextoTruncado>
             <dd className="mt-1 t-body-sm leading-relaxed text-muted-foreground">{t.texto}</dd>
           </div>
         ))}

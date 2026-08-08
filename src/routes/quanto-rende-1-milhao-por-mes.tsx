@@ -52,7 +52,8 @@ export const Route = createFileRoute("/quanto-rende-1-milhao-por-mes")({
       { property: "og:image:height", content: "630" },
       {
         property: "og:image:alt",
-        content: "Comparativo do rendimento mensal de R$ 1 milhão em poupança, Tesouro Selic, CDB e FIIs",
+        content:
+          "Comparativo do rendimento mensal de R$ 1 milhão em poupança, Tesouro Selic, CDB e FIIs",
       },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: OG_IMAGE },
@@ -185,10 +186,11 @@ function QuantoRendePage() {
             Quanto rende 1 milhão por mês? Poupança, Tesouro Selic e FIIs comparados
           </h1>
           <p className="text-muted-foreground mt-5 text-lg leading-relaxed">
-            A resposta curta: entre <strong className="text-foreground">R$ 5.000 e R$ 7.500 por mês</strong>{" "}
-            líquidos, dependendo de onde o dinheiro está. A diferença entre a pior e a melhor alternativa passa
-            de R$ 30 mil por ano — sobre o mesmo R$ 1 milhão. Abaixo você compara os cenários, ajusta o valor e
-            entende qual parte dessa renda é realmente sustentável.
+            A resposta curta: entre{" "}
+            <strong className="text-foreground">R$ 5.000 e R$ 7.500 por mês</strong> líquidos,
+            dependendo de onde o dinheiro está. A diferença entre a pior e a melhor alternativa
+            passa de R$ 30 mil por ano — sobre o mesmo R$ 1 milhão. Abaixo você compara os cenários,
+            ajusta o valor e entende qual parte dessa renda é realmente sustentável.
           </p>
 
           <section className="mt-10">
@@ -206,7 +208,8 @@ function QuantoRendePage() {
                 className="mt-2 max-w-xs"
               />
               <p className="text-muted-foreground mt-2 text-xs">
-                Estimativas com Selic de 10,5% ao ano, CDI equivalente e yield médio de FIIs de 9% ao ano.
+                Estimativas com Selic de 10,5% ao ano, CDI equivalente e yield médio de FIIs de 9%
+                ao ano.
               </p>
             </div>
 
@@ -220,12 +223,14 @@ function QuantoRendePage() {
                     <h3 className="text-base font-semibold">{l.nome}</h3>
                     <p className="text-primary num text-xl font-bold">
                       {brl(l.liq)}
-                      <span className="text-muted-foreground ml-1 text-xs font-normal">/mês líquido</span>
+                      <span className="text-muted-foreground ml-1 text-xs font-normal">
+                        /mês líquido
+                      </span>
                     </p>
                   </div>
                   <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-                    Rendimento bruto de {brl(l.bruto)} por mês ({(l.taxaAno * 100).toFixed(2)}% ao ano).{" "}
-                    {l.detalhe}
+                    Rendimento bruto de {brl(l.bruto)} por mês ({(l.taxaAno * 100).toFixed(2)}% ao
+                    ano). {l.detalhe}
                   </p>
                 </div>
               ))}
@@ -237,38 +242,41 @@ function QuantoRendePage() {
               Quanto dá para retirar sem consumir o patrimônio
             </h2>
             <p className="text-muted-foreground mt-3 leading-relaxed">
-              Render não é o mesmo que poder gastar. Parte do rendimento precisa ser reinvestida só para repor a
-              inflação — caso contrário, o seu R$ 1 milhão perde poder de compra ano após ano. A regra da taxa de
-              retirada segura (4% ao ano) considera exatamente isso: com {brl(capital)}, a retirada perpétua
-              estimada é de <strong className="text-foreground">{brl(retiradaSegura)} por mês</strong>, corrigida
+              Render não é o mesmo que poder gastar. Parte do rendimento precisa ser reinvestida só
+              para repor a inflação — caso contrário, o seu R$ 1 milhão perde poder de compra ano
+              após ano. A regra da taxa de retirada segura (4% ao ano) considera exatamente isso:
+              com {brl(capital)}, a retirada perpétua estimada é de{" "}
+              <strong className="text-foreground">{brl(retiradaSegura)} por mês</strong>, corrigida
               pela inflação.
             </p>
             <p className="text-muted-foreground mt-3 leading-relaxed">
-              Ou seja: a poupança entrega uma renda nominal maior que a retirada segura, mas quase nada acima da
-              inflação. Uma carteira diversificada — Tesouro IPCA+ para proteger o poder de compra, FIIs e ações
-              de dividendos para a renda mensal, Tesouro Selic para a reserva — é o que permite retirar mais e
-              continuar com o patrimônio de pé.
+              Ou seja: a poupança entrega uma renda nominal maior que a retirada segura, mas quase
+              nada acima da inflação. Uma carteira diversificada — Tesouro IPCA+ para proteger o
+              poder de compra, FIIs e ações de dividendos para a renda mensal, Tesouro Selic para a
+              reserva — é o que permite retirar mais e continuar com o patrimônio de pé.
             </p>
           </section>
 
           <section className="mt-12">
-            <h2 className="text-xl font-semibold tracking-tight">Como montar essa renda passiva na prática</h2>
+            <h2 className="text-xl font-semibold tracking-tight">
+              Como montar essa renda passiva na prática
+            </h2>
             <ol className="text-muted-foreground mt-4 grid list-decimal gap-3 pl-5 text-sm leading-relaxed">
               <li>
-                Defina o seu custo de vida mensal — é ele que determina de quanto você precisa, não o valor
-                redondo de R$ 1 milhão.
+                Defina o seu custo de vida mensal — é ele que determina de quanto você precisa, não
+                o valor redondo de R$ 1 milhão.
               </li>
               <li>
-                Escolha uma alocação-alvo por classe (renda fixa, FIIs, ações, exterior) e mantenha-a com aportes,
-                não com vendas.
+                Escolha uma alocação-alvo por classe (renda fixa, FIIs, ações, exterior) e
+                mantenha-a com aportes, não com vendas.
               </li>
               <li>
-                Acompanhe o yield on cost real dos seus proventos, mês a mês, em vez de projeções otimistas de
-                planilha.
+                Acompanhe o yield on cost real dos seus proventos, mês a mês, em vez de projeções
+                otimistas de planilha.
               </li>
               <li>
-                Rebalanceie quando uma classe se afastar da meta, direcionando o próximo aporte para o que está
-                abaixo do alvo.
+                Rebalanceie quando uma classe se afastar da meta, direcionando o próximo aporte para
+                o que está abaixo do alvo.
               </li>
             </ol>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -317,8 +325,8 @@ function QuantoRendePage() {
           </section>
 
           <p className="text-muted-foreground mt-10 text-xs leading-relaxed">
-            Conteúdo educativo. As taxas usadas são estimativas de mercado e variam com a Selic, a inflação e os
-            proventos efetivamente distribuídos. Não é recomendação de investimento.
+            Conteúdo educativo. As taxas usadas são estimativas de mercado e variam com a Selic, a
+            inflação e os proventos efetivamente distribuídos. Não é recomendação de investimento.
           </p>
         </article>
       </main>

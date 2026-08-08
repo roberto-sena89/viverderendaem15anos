@@ -29,7 +29,8 @@ const FORMATO_MOEDA = /^\d{1,3}(\.\d{3})*(,\d{1,2})?$|^\d+([.,]\d{1,2})?$/;
 function validarAporte(entrada: string): { valor: number; erro: string | null } {
   const texto = entrada.trim();
   if (!texto) return { valor: 0, erro: null };
-  if (!/^[\d.,\s]+$/.test(texto)) return { valor: 0, erro: "Use apenas números, ponto e vírgula (ex.: 1.500,00)." };
+  if (!/^[\d.,\s]+$/.test(texto))
+    return { valor: 0, erro: "Use apenas números, ponto e vírgula (ex.: 1.500,00)." };
   if (!FORMATO_MOEDA.test(texto.replace(/\s/g, "")))
     return { valor: 0, erro: "Formato inválido. Use o padrão de moeda, ex.: 1.500,00." };
 
@@ -99,7 +100,8 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
   const { linhas, totalAtual, totalFuturo, somaManual, restante } = useMemo(() => {
     const atualPorClasse: Record<string, number> = {};
     for (const classe of Object.keys(alvo)) atualPorClasse[classe] = 0;
-    for (const a of carteira) atualPorClasse[classeDoAtivo(a)] = (atualPorClasse[classeDoAtivo(a)] ?? 0) + valorAtual(a);
+    for (const a of carteira)
+      atualPorClasse[classeDoAtivo(a)] = (atualPorClasse[classeDoAtivo(a)] ?? 0) + valorAtual(a);
 
     const total = Object.values(atualPorClasse).reduce((s, v) => s + v, 0);
     const futuro = total + aporte;
@@ -157,7 +159,6 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
     };
   }, [carteira, alvo, aporte, manuais]);
 
-
   /** Sub-classes da Renda Fixa com alvo definido e sua fatia do aporte da classe. */
   const subsRendaFixa = useMemo(() => {
     const itens = Object.entries(subAlvo)
@@ -167,8 +168,6 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
     return itens.map((s) => ({ ...s, fracao: soma > 0 ? s.alvoPct / soma : 0 }));
   }, [subAlvo]);
 
-
-
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
       <DialogTrigger asChild>
@@ -176,14 +175,13 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
           <Calculator className="size-4!" />
           Calcular aporte mensal
         </Button>
-
       </DialogTrigger>
       <DialogContent className="max-h-[92vh] overflow-hidden sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>Calculadora de aporte mensal</DialogTitle>
           <DialogDescription>
-            Informe quanto pretende investir no próximo mês e veja o valor exato para cada classe, priorizando o que
-            está abaixo da alocação ideal.
+            Informe quanto pretende investir no próximo mês e veja o valor exato para cada classe,
+            priorizando o que está abaixo da alocação ideal.
           </DialogDescription>
         </DialogHeader>
 
@@ -210,7 +208,9 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                 id="aporte-mensal-ajuda"
                 className={`text-xs ${mostrarErro ? "text-destructive" : "text-muted-foreground"}`}
               >
-                {mostrarErro ? erro : `Entre ${brl(MIN_APORTE)} e ${brl(MAX_APORTE)} · use vírgula para centavos.`}
+                {mostrarErro
+                  ? erro
+                  : `Entre ${brl(MIN_APORTE)} e ${brl(MAX_APORTE)} · use vírgula para centavos.`}
               </p>
             </div>
 
@@ -222,7 +222,9 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                   variant="outline"
                   size="sm"
                   className="h-9 w-full justify-center px-1 text-xs tabular-nums"
-                  onClick={() => aplicar(formatarNumeroBR(Math.min((erro ? 0 : aporte) + v, MAX_APORTE)))}
+                  onClick={() =>
+                    aplicar(formatarNumeroBR(Math.min((erro ? 0 : aporte) + v, MAX_APORTE)))
+                  }
                 >
                   {brl(v)}
                 </Button>
@@ -254,7 +256,6 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
               </Button>
             </div>
 
-
             <dl className="space-y-2 border-t border-border pt-3 text-xs">
               <div className="flex items-baseline justify-between gap-2">
                 <dt className="text-muted-foreground">Carteira hoje</dt>
@@ -280,13 +281,14 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
             </p>
           ) : (
             <div className="min-w-0 space-y-3">
-
               <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2">
                 <div className="text-[11px] leading-tight text-muted-foreground">
                   <p className="font-semibold text-foreground">Aporte manual por classe</p>
                   <p>
-                    Travado: <span className="num font-semibold text-foreground">{brl(somaManual, 2)}</span> · Restante
-                    distribuído: <span className="num font-semibold text-foreground">{brl(restante, 2)}</span>
+                    Travado:{" "}
+                    <span className="num font-semibold text-foreground">{brl(somaManual, 2)}</span>{" "}
+                    · Restante distribuído:{" "}
+                    <span className="num font-semibold text-foreground">{brl(restante, 2)}</span>
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -295,12 +297,19 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                     variant="ghost"
                     size="sm"
                     className="h-8 border border-border text-xs"
-                    disabled={Object.keys(manuais).length === 0 && Object.keys(rascunho).length === 0}
+                    disabled={
+                      Object.keys(manuais).length === 0 && Object.keys(rascunho).length === 0
+                    }
                     onClick={limparManuais}
                   >
                     Limpar manuais
                   </Button>
-                  <Button type="button" size="sm" className="h-8 gap-1.5 text-xs" onClick={recalcular}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs"
+                    onClick={recalcular}
+                  >
                     <RefreshCw className="size-3.5" />
                     Recalcular
                   </Button>
@@ -315,7 +324,6 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
               </div>
 
               <ul className="space-y-1.5">
-
                 {linhas
                   .filter((l) => l.alvoPct > 0 || l.atualPct > 0)
                   .map((l) => (
@@ -337,14 +345,19 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                       </span>
                       <span className="num text-right text-sm font-semibold">
                         {brl(l.valor, 2)}
-                        <span className="ml-1 text-[11px] font-normal text-muted-foreground">({pct(l.parte)})</span>
+                        <span className="ml-1 text-[11px] font-normal text-muted-foreground">
+                          ({pct(l.parte)})
+                        </span>
                       </span>
                       <span className="num order-4 text-right text-xs text-muted-foreground sm:order-none">
                         {pct(l.depoisPct)}
                       </span>
 
                       <div className="order-6 col-span-full flex items-center justify-end gap-2 sm:order-none">
-                        <Label htmlFor={`manual-${l.classe}`} className="text-[11px] text-muted-foreground">
+                        <Label
+                          htmlFor={`manual-${l.classe}`}
+                          className="text-[11px] text-muted-foreground"
+                        >
                           Manual R$
                         </Label>
                         <Input
@@ -352,7 +365,9 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                           inputMode="decimal"
                           placeholder="0,00"
                           value={rascunho[l.classe] ?? ""}
-                          onChange={(e) => setRascunho((r) => ({ ...r, [l.classe]: e.target.value }))}
+                          onChange={(e) =>
+                            setRascunho((r) => ({ ...r, [l.classe]: e.target.value }))
+                          }
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
@@ -367,8 +382,6 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                           </span>
                         )}
                       </div>
-
-
 
                       {l.classe === CLASSE_POS_FIXADO && subsRendaFixa.length > 0 && (
                         <ul className="order-5 col-span-full mt-1 space-y-1 border-t border-border/60 pt-1.5 pl-4 sm:order-none">
@@ -387,7 +400,6 @@ export function DialogAporteMensal({ carteira }: { carteira: Ativo[] }) {
                         </ul>
                       )}
                     </li>
-
                   ))}
               </ul>
             </div>

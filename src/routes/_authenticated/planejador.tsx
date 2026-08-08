@@ -2,7 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useId, useMemo, useState } from "react";
 import { CalendarClock, Save, Sparkles, Wallet } from "lucide-react";
 import { toast } from "sonner";
-import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { AppShell } from "@/components/app-shell";
 import { ComparadorCenarios } from "@/components/comparador-cenarios";
 
@@ -12,17 +21,39 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useAtivos, usePlano, useSalvarPlano } from "@/lib/data";
-import { brl, pct, planoPadrao, projetar, resumoCarteira, type ProjecaoInput } from "@/lib/portfolio";
+import {
+  brl,
+  pct,
+  planoPadrao,
+  projetar,
+  resumoCarteira,
+  type ProjecaoInput,
+} from "@/lib/portfolio";
 
 export const Route = createFileRoute("/_authenticated/planejador")({
   head: () => ({
     meta: [
       { title: "Planejador da Independência Financeira · Investidor em 15 Anos" },
-      { name: "description", content: "Projete seu patrimônio ano a ano, estime sua renda passiva e descubra a data da sua independência financeira." },
+      {
+        name: "description",
+        content:
+          "Projete seu patrimônio ano a ano, estime sua renda passiva e descubra a data da sua independência financeira.",
+      },
       { property: "og:title", content: "Planejador da Independência Financeira" },
-      { property: "og:description", content: "Cenários otimista, base e conservador com inflação, aportes crescentes e taxa de retirada." },
+      {
+        property: "og:description",
+        content:
+          "Cenários otimista, base e conservador com inflação, aportes crescentes e taxa de retirada.",
+      },
       { name: "robots", content: "noindex, follow" },
     ],
     links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/planejador" }],
@@ -74,34 +105,87 @@ function Planejador() {
     });
   }
 
-
   return (
-    <AppShell title="Planejador da Independência Financeira" description="Simule cenários e descubra sua data de liberdade">
+    <AppShell
+      title="Planejador da Independência Financeira"
+      description="Simule cenários e descubra sua data de liberdade"
+    >
       <div className="grid gap-4 lg:grid-cols-[340px_1fr] [&>*]:min-w-0">
         <div className="surface-card space-y-5 p-6">
           <NumberField label="Idade atual" value={input.idadeAtual} onChange={set("idadeAtual")} />
-          <NumberField label="Idade da aposentadoria" value={input.idadeAposentadoria} onChange={set("idadeAposentadoria")} />
-          <NumberField label="Patrimônio atual (R$)" value={input.patrimonioAtual} onChange={set("patrimonioAtual")} step={1000} />
-          <NumberField label="Aporte mensal (R$)" value={input.aporteMensal} onChange={set("aporteMensal")} step={500} />
-          <SliderField label="Aumento anual dos aportes" value={input.aumentoAnual} onChange={set("aumentoAnual")} max={20} suffix="%" />
-          <SliderField label="Rentabilidade esperada" value={input.rentabilidadeAnual} onChange={set("rentabilidadeAnual")} max={20} suffix="% a.a." />
-          <SliderField label="Inflação esperada" value={input.inflacaoAnual} onChange={set("inflacaoAnual")} max={12} suffix="% a.a." />
-          <SliderField label="Taxa de retirada" value={input.taxaRetirada} onChange={set("taxaRetirada")} max={8} min={2} suffix="%" />
-          <NumberField label="Renda passiva desejada (R$/mês)" value={objetivoRenda} onChange={setObjetivoRenda} step={500} />
+          <NumberField
+            label="Idade da aposentadoria"
+            value={input.idadeAposentadoria}
+            onChange={set("idadeAposentadoria")}
+          />
+          <NumberField
+            label="Patrimônio atual (R$)"
+            value={input.patrimonioAtual}
+            onChange={set("patrimonioAtual")}
+            step={1000}
+          />
+          <NumberField
+            label="Aporte mensal (R$)"
+            value={input.aporteMensal}
+            onChange={set("aporteMensal")}
+            step={500}
+          />
+          <SliderField
+            label="Aumento anual dos aportes"
+            value={input.aumentoAnual}
+            onChange={set("aumentoAnual")}
+            max={20}
+            suffix="%"
+          />
+          <SliderField
+            label="Rentabilidade esperada"
+            value={input.rentabilidadeAnual}
+            onChange={set("rentabilidadeAnual")}
+            max={20}
+            suffix="% a.a."
+          />
+          <SliderField
+            label="Inflação esperada"
+            value={input.inflacaoAnual}
+            onChange={set("inflacaoAnual")}
+            max={12}
+            suffix="% a.a."
+          />
+          <SliderField
+            label="Taxa de retirada"
+            value={input.taxaRetirada}
+            onChange={set("taxaRetirada")}
+            max={8}
+            min={2}
+            suffix="%"
+          />
+          <NumberField
+            label="Renda passiva desejada (R$/mês)"
+            value={objetivoRenda}
+            onChange={setObjetivoRenda}
+            step={500}
+          />
           <Button className="w-full" onClick={handleSalvar} disabled={salvarPlano.isPending}>
             <Save className="size-4" /> Salvar plano
           </Button>
         </div>
 
-
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard label="Patrimônio projetado" value={brl(final.patrimonio)} icon={Wallet} />
-            <StatCard label="Renda passiva estimada" value={`${brl(final.rendaPassivaMensal)}/mês`} tone="positive" />
+            <StatCard
+              label="Renda passiva estimada"
+              value={`${brl(final.rendaPassivaMensal)}/mês`}
+              tone="positive"
+            />
             <StatCard label="Patrimônio em valor de hoje" value={brl(final.patrimonioReal)} />
             <StatCard
               label="Independência financeira"
-              value={anoIndependencia ? `${anoIndependencia.ano} · ${anoIndependencia.idade} anos` : "Após o período"}
+              value={
+                anoIndependencia
+                  ? `${anoIndependencia.ano} · ${anoIndependencia.idade} anos`
+                  : "Após o período"
+              }
               icon={CalendarClock}
             />
           </div>
@@ -111,7 +195,8 @@ function Planejador() {
               <div>
                 <h2 className="panel-title">Meta de independência</h2>
                 <p className="text-xs text-muted-foreground">
-                  Necessário {brl(patrimonioNecessario)} para {brl(objetivoRenda)}/mês a {pct(input.taxaRetirada)} ao ano
+                  Necessário {brl(patrimonioNecessario)} para {brl(objetivoRenda)}/mês a{" "}
+                  {pct(input.taxaRetirada)} ao ano
                 </p>
               </div>
               <p className="font-display text-xl font-semibold text-primary">{pct(progresso)}</p>
@@ -139,8 +224,18 @@ function Planejador() {
                       <stop offset="100%" stopColor="var(--color-chart-1)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                  <XAxis dataKey="ano" tickLine={false} axisLine={false} fontSize={13} stroke="var(--color-muted-foreground)" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="var(--color-border)"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="ano"
+                    tickLine={false}
+                    axisLine={false}
+                    fontSize={13}
+                    stroke="var(--color-muted-foreground)"
+                  />
                   <YAxis
                     tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}M`}
                     tickLine={false}
@@ -157,9 +252,31 @@ function Planejador() {
                     }}
                     formatter={(v: number) => brl(v)}
                   />
-                  <Area type="monotone" dataKey="base" name="Base" stroke="var(--color-chart-1)" strokeWidth={2} fill="url(#cenario)" />
-                  <Line type="monotone" dataKey="otimista" name="Otimista" stroke="var(--color-chart-2)" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="conservador" name="Conservador" stroke="var(--color-chart-5)" strokeWidth={2} dot={false} strokeDasharray="4 4" />
+                  <Area
+                    type="monotone"
+                    dataKey="base"
+                    name="Base"
+                    stroke="var(--color-chart-1)"
+                    strokeWidth={2}
+                    fill="url(#cenario)"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="otimista"
+                    name="Otimista"
+                    stroke="var(--color-chart-2)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="conservador"
+                    name="Conservador"
+                    stroke="var(--color-chart-5)"
+                    strokeWidth={2}
+                    dot={false}
+                    strokeDasharray="4 4"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -167,8 +284,12 @@ function Planejador() {
 
           <ComparadorCenarios input={input} objetivoRenda={objetivoRenda} />
 
-          <div className="surface-card w-full min-w-0 max-w-full overflow-auto" tabIndex={0} role="region" aria-label="Projeção ano a ano">
-
+          <div
+            className="surface-card w-full min-w-0 max-w-full overflow-auto"
+            tabIndex={0}
+            role="region"
+            aria-label="Projeção ano a ano"
+          >
             <Table>
               <TableHeader>
                 <TableRow>
@@ -186,9 +307,15 @@ function Planejador() {
                     <TableCell className="font-medium">{l.ano}</TableCell>
                     <TableCell>{l.idade}</TableCell>
                     <TableCell className="text-right">{brl(l.patrimonio)}</TableCell>
-                    <TableCell className="text-right text-muted-foreground">{brl(l.patrimonioReal)}</TableCell>
-                    <TableCell className="text-right text-muted-foreground">{brl(l.aportado)}</TableCell>
-                    <TableCell className="text-right text-success">{brl(l.rendaPassivaMensal)}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {brl(l.patrimonioReal)}
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {brl(l.aportado)}
+                    </TableCell>
+                    <TableCell className="text-right text-success">
+                      {brl(l.rendaPassivaMensal)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -215,7 +342,13 @@ function NumberField({
   return (
     <div className="grid gap-2">
       <Label htmlFor={id}>{label}</Label>
-      <Input id={id} type="number" step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <Input
+        id={id}
+        type="number"
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
     </div>
   );
 }

@@ -25,7 +25,10 @@ async function json<T>(url: string, ttlMs: number): Promise<T | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 12_000);
   try {
-    const res = await fetch(url, { headers: { Accept: "application/json" }, signal: controller.signal });
+    const res = await fetch(url, {
+      headers: { Accept: "application/json" },
+      signal: controller.signal,
+    });
     if (!res.ok) return null;
     const valor = (await res.json()) as T;
     memoria.set(url, { valor, expira: Date.now() + ttlMs });
@@ -87,7 +90,9 @@ async function coletar(): Promise<RespostaTesouro> {
   const corte = dataBaseMaxima ? recuar(dataBaseMaxima, 7) : null;
 
   const linhas: LinhaTesouro[] = titulos
-    .filter((t) => t.vencimento && t.vencimento > hoje && t.dataBase && (!corte || t.dataBase >= corte))
+    .filter(
+      (t) => t.vencimento && t.vencimento > hoje && t.dataBase && (!corte || t.dataBase >= corte),
+    )
     .map((t) => {
       const tipo = classificar(t.nome);
       const def = defTipo(tipo);
@@ -115,8 +120,7 @@ async function coletar(): Promise<RespostaTesouro> {
         taxaVenda: t.taxaVenda,
         precoCompra: t.precoCompra,
         precoVenda: t.precoVenda,
-        rentabilidadeEstimada:
-          estimada !== null ? estimada - 0.2 /* custódia B3 */ : null,
+        rentabilidadeEstimada: estimada !== null ? estimada - 0.2 /* custódia B3 */ : null,
         investimentoMinimo: minimoAplicacao(t.precoCompra ?? t.precoVenda),
         anosAteVencimento: anos,
         serie: t.serie,

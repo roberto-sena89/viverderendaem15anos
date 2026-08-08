@@ -65,7 +65,8 @@ export function SimuladorTesouro({ linha, cdi }: { linha: LinhaTesouro; cdi: num
 
         <div className="space-y-1.5">
           <Label htmlFor="prazo-simulacao">
-            Prazo · {fmtNum(dias / 365, 1)} anos {antecipado ? "(resgate antecipado)" : "(até o vencimento)"}
+            Prazo · {fmtNum(dias / 365, 1)} anos{" "}
+            {antecipado ? "(resgate antecipado)" : "(até o vencimento)"}
           </Label>
           <Slider
             id="prazo-simulacao"
@@ -86,11 +87,7 @@ export function SimuladorTesouro({ linha, cdi }: { linha: LinhaTesouro; cdi: num
 
       <div className="grid gap-bloco sm:grid-cols-3">
         <Metrica rotulo="Valor bruto" valor={fmtBRL(resultado.valorBruto)} />
-        <Metrica
-          rotulo="Valor líquido"
-          valor={fmtBRL(resultado.valorLiquido)}
-          destaque
-        />
+        <Metrica rotulo="Valor líquido" valor={fmtBRL(resultado.valorLiquido)} destaque />
         <Metrica
           rotulo="Rendimento líquido"
           valor={fmtBRL(resultado.rendimentoLiquido)}
@@ -100,23 +97,25 @@ export function SimuladorTesouro({ linha, cdi }: { linha: LinhaTesouro; cdi: num
 
       <dl className="grid grid-cols-2 gap-x-6 gap-y-1.5 rounded-xl border border-border bg-muted/20 p-bloco text-xs sm:grid-cols-4">
         <Item rotulo="Rentabilidade estimada" valor={`${fmtPct(taxa)} a.a.`} />
-        <Item rotulo={`IR (${fmtNum(aliquotaIr(dias) * 100, 1)}%)`} valor={`- ${fmtBRL(resultado.ir)}`} />
         <Item
-          rotulo="Custódia B3 (0,20% a.a.)"
-          valor={`- ${fmtBRL(resultado.custodia)}`}
+          rotulo={`IR (${fmtNum(aliquotaIr(dias) * 100, 1)}%)`}
+          valor={`- ${fmtBRL(resultado.ir)}`}
         />
+        <Item rotulo="Custódia B3 (0,20% a.a.)" valor={`- ${fmtBRL(resultado.custodia)}`} />
         <Item rotulo="IOF" valor={resultado.iof > 0 ? `- ${fmtBRL(resultado.iof)}` : "Isento"} />
         {resultado.percentualCdi !== null ? (
-          <Item rotulo="Equivalente ao CDI" valor={`${fmtNum(resultado.percentualCdi, 0)}% do CDI`} />
+          <Item
+            rotulo="Equivalente ao CDI"
+            valor={`${fmtNum(resultado.percentualCdi, 0)}% do CDI`}
+          />
         ) : null}
-        {linha.tipo === "SELIC" ? (
-          <Item rotulo="Custódia" valor="Isenta até R$ 10 mil" />
-        ) : null}
+        {linha.tipo === "SELIC" ? <Item rotulo="Custódia" valor="Isenta até R$ 10 mil" /> : null}
       </dl>
 
       <p className="t-caption">
         Projeção informativa. Títulos indexados usam o IPCA acumulado em 12 meses e a Selic atual
-        como referência futura; o resultado real depende da inflação e dos juros ao longo do período.
+        como referência futura; o resultado real depende da inflação e dos juros ao longo do
+        período.
       </p>
     </div>
   );
@@ -137,8 +136,13 @@ function Metrica({
     <div
       className={`min-w-0 rounded-xl border p-bloco ${destaque ? "border-primary/40 bg-primary/5" : "border-border bg-card"}`}
     >
-      <TextoTruncado as="p" className="t-label block">{rotulo}</TextoTruncado>
-      <TextoTruncado as="p" className={`t-num mt-1 block font-semibold ${destaque ? "text-primary" : ""}`}>
+      <TextoTruncado as="p" className="t-label block">
+        {rotulo}
+      </TextoTruncado>
+      <TextoTruncado
+        as="p"
+        className={`t-num mt-1 block font-semibold ${destaque ? "text-primary" : ""}`}
+      >
         {valor}
       </TextoTruncado>
       {detalhe ? <p className="t-caption">{detalhe}</p> : null}

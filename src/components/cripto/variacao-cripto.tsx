@@ -3,7 +3,8 @@ import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { corVar, fmtPct } from "@/components/cripto/formatos-cripto";
 import type { LinhaCripto } from "@/lib/cripto-base";
 
-type Campo = "variacao1h" | "variacao24h" | "variacao7d" | "variacao30d" | "variacao6m" | "variacao12m";
+type Campo =
+  "variacao1h" | "variacao24h" | "variacao7d" | "variacao30d" | "variacao6m" | "variacao12m";
 
 export type DirecaoVar = Record<string, "alta" | "baixa">;
 
@@ -23,7 +24,8 @@ export function useDirecaoVariacoes(linhas: LinhaCripto[], campos: readonly Camp
         if (v === null || !Number.isFinite(v)) continue;
         const chave = `${l.id}:${campo}`;
         const anterior = anteriores.current[chave];
-        if (anterior !== undefined && anterior !== v) novos[chave] = v > anterior ? "alta" : "baixa";
+        if (anterior !== undefined && anterior !== v)
+          novos[chave] = v > anterior ? "alta" : "baixa";
         anteriores.current[chave] = v;
       }
     }
@@ -55,7 +57,7 @@ export function CelulaVariacao({
   className?: string;
 }) {
   const neutro = valor === null || !Number.isFinite(valor) || (stable && Math.abs(valor) < 1);
-  const Icone = neutro ? Minus : (valor as number) > 0 ? ArrowUp : ArrowDown;
+  const Icone = neutro ? Minus : valor > 0 ? ArrowUp : ArrowDown;
 
   return (
     <span

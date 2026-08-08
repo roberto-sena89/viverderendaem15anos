@@ -16,7 +16,12 @@ import {
   type FaixasCripto,
   type RankingCripto,
 } from "@/components/cripto/filtros-cripto";
-import { TabelaCripto, type ColunaOrdem, type OrdemCripto, type PosicaoCarteira } from "@/components/cripto/tabela-cripto";
+import {
+  TabelaCripto,
+  type ColunaOrdem,
+  type OrdemCripto,
+  type PosicaoCarteira,
+} from "@/components/cripto/tabela-cripto";
 import { CardsCripto } from "@/components/cripto/cards-cripto";
 import { SkeletonLinhasCripto } from "@/components/cripto/skeleton-linhas-cripto";
 import { ModalCripto } from "@/components/cripto/modal-cripto";
@@ -113,8 +118,10 @@ export function PainelCripto({
     const fator = ordem.desc ? -1 : 1;
     return [...base].sort((a, b) => {
       if (ordem.coluna === "ticker") return -fator * a.ticker.localeCompare(b.ticker);
-      const va = (a[ordem.coluna] as number | null) ?? (ordem.desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY);
-      const vb = (b[ordem.coluna] as number | null) ?? (ordem.desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY);
+      const va =
+        a[ordem.coluna] ?? (ordem.desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY);
+      const vb =
+        b[ordem.coluna] ?? (ordem.desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY);
       return fator * (va - vb);
     });
   }, [data, busca, buscaLocal, favoritos, categorias, faixas, ordem, ranking]);
@@ -155,13 +162,14 @@ export function PainelCripto({
   const ordenar = (coluna: ColunaOrdem) =>
     setOrdem((o) => (o.coluna === coluna ? { coluna, desc: !o.desc } : { coluna, desc: true }));
 
-
-
-
   if (isLoading) {
     return (
       <div className="pilha-secao">
-        <SkeletonCartoesGrade quantidade={6} altura="h-[86px]" className="grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 2xl:grid-cols-6" />
+        <SkeletonCartoesGrade
+          quantidade={6}
+          altura="h-[86px]"
+          className="grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 2xl:grid-cols-6"
+        />
         <Skeleton className="h-[420px] w-full rounded-xl" />
       </div>
     );
@@ -183,7 +191,6 @@ export function PainelCripto({
           <ConversorCripto linhas={data?.linhas ?? []} usdBrl={usdBrl} />
         </div>
 
-
         <div className={`panel rounded-xl p-cartao ${mostrarFiltros ? "" : "hidden lg:block"}`}>
           <FiltrosCripto
             categorias={categorias}
@@ -204,7 +211,6 @@ export function PainelCripto({
           usdBrl={usdBrl}
           aoRemover={(id) => setSelecionados((s) => s.filter((x) => x !== id))}
         />
-
 
         <div className="panel overflow-hidden rounded-xl">
           {/* Cabeçalho da grade: título + contagem, busca e ações */}
@@ -244,7 +250,6 @@ export function PainelCripto({
             </div>
           </div>
 
-
           {/* Rankings: rolagem horizontal no mobile, quebra natural no desktop */}
           <div className="border-b border-border bg-muted/20 px-3 py-2 sm:px-4">
             <div
@@ -273,7 +278,6 @@ export function PainelCripto({
               ))}
             </div>
           </div>
-
 
           <div className="min-w-0">
             {linhas.length === 0 ? (
@@ -374,7 +378,6 @@ export function PainelCripto({
               </>
             )}
           </div>
-
         </div>
 
         <p className="t-caption">

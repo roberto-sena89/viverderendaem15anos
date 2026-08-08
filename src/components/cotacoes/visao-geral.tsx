@@ -57,51 +57,50 @@ export function VisaoGeralMercado({
 
   return (
     <TooltipProvider delayDuration={150}>
-    <div className="container-panorama pilha-secao">
-      <ModalDetalhePanorama
-        linha={detalhe?.linha ?? null}
-        rotuloCategoria={detalhe?.categoria}
-        aberto={detalhe !== null}
-        aoFechar={() => setDetalhe(null)}
-        aoAbrirAba={aoAbrirAba}
-      />
+      <div className="container-panorama pilha-secao">
+        <ModalDetalhePanorama
+          linha={detalhe?.linha ?? null}
+          rotuloCategoria={detalhe?.categoria}
+          aberto={detalhe !== null}
+          aoFechar={() => setDetalhe(null)}
+          aoAbrirAba={aoAbrirAba}
+        />
 
-      <Termometro data={data} />
+        <Termometro data={data} />
 
-      <div className="grade-panorama">
-        {data.categorias.map((c) => (
-          <CartaoCategoria
-            key={c.id}
-            resumo={c}
-            aoAbrirAba={aoAbrirAba}
-            aoDetalhar={(linha) => setDetalhe({ linha, categoria: c.rotulo })}
-          />
-        ))}
+        <div className="grade-panorama">
+          {data.categorias.map((c) => (
+            <CartaoCategoria
+              key={c.id}
+              resumo={c}
+              aoAbrirAba={aoAbrirAba}
+              aoDetalhar={(linha) => setDetalhe({ linha, categoria: c.rotulo })}
+            />
+          ))}
+        </div>
+
+        <div className="grade-paineis">
+          <Panel
+            title="Maiores altas do dia"
+            hint="Ações, FIIs e criptomoedas"
+            bodyClassName="p-0"
+            action={<TrendingUp className="size-4 text-positive" aria-hidden />}
+          >
+            <ListaCompacta linhas={data.altas} aoDetalhar={(l) => setDetalhe({ linha: l })} />
+          </Panel>
+          <Panel
+            title="Maiores baixas do dia"
+            hint="Ações, FIIs e criptomoedas"
+            bodyClassName="p-0"
+            action={<TrendingDown className="size-4 text-negative" aria-hidden />}
+          >
+            <ListaCompacta linhas={data.baixas} aoDetalhar={(l) => setDetalhe({ linha: l })} />
+          </Panel>
+        </div>
       </div>
-
-      <div className="grade-paineis">
-        <Panel
-          title="Maiores altas do dia"
-          hint="Ações, FIIs e criptomoedas"
-          bodyClassName="p-0"
-          action={<TrendingUp className="size-4 text-positive" aria-hidden />}
-        >
-          <ListaCompacta linhas={data.altas} aoDetalhar={(l) => setDetalhe({ linha: l })} />
-        </Panel>
-        <Panel
-          title="Maiores baixas do dia"
-          hint="Ações, FIIs e criptomoedas"
-          bodyClassName="p-0"
-          action={<TrendingDown className="size-4 text-negative" aria-hidden />}
-        >
-          <ListaCompacta linhas={data.baixas} aoDetalhar={(l) => setDetalhe({ linha: l })} />
-        </Panel>
-      </div>
-    </div>
     </TooltipProvider>
   );
 }
-
 
 /* ------------------------------- termômetro ------------------------------ */
 
@@ -109,7 +108,11 @@ function Termometro({ data }: { data: PanoramaMercado }) {
   const t = data.termometro;
   const emAlta = t.percentual;
   const clima =
-    emAlta >= 60 ? "Predomínio comprador" : emAlta <= 40 ? "Predomínio vendedor" : "Mercado equilibrado";
+    emAlta >= 60
+      ? "Predomínio comprador"
+      : emAlta <= 40
+        ? "Predomínio vendedor"
+        : "Mercado equilibrado";
 
   return (
     <section className="panel relative overflow-hidden p-cartao">
@@ -166,7 +169,6 @@ function Termometro({ data }: { data: PanoramaMercado }) {
         </div>
       </div>
     </section>
-
   );
 }
 
@@ -209,7 +211,9 @@ function CartaoCategoria({
       </button>
 
       {resumo.indisponivel ? (
-        <p className="t-body-sm mt-bloco text-muted-foreground">Sem dados disponíveis no momento.</p>
+        <p className="t-body-sm mt-bloco text-muted-foreground">
+          Sem dados disponíveis no momento.
+        </p>
       ) : (
         <>
           {resumo.destaque ? (
@@ -222,9 +226,7 @@ function CartaoCategoria({
                   {resumo.destaque.valor}
                 </TextoTruncado>
                 {resumo.destaque.variacao !== null ? (
-                  <span
-                    className={`t-num-sm shrink-0 ${corVar(resumo.destaque.variacao)}`}
-                  >
+                  <span className={`t-num-sm shrink-0 ${corVar(resumo.destaque.variacao)}`}>
                     {fmtPercent(resumo.destaque.variacao)}
                   </span>
                 ) : null}
@@ -284,7 +286,6 @@ function CartaoCategoria({
           ) : null}
         </>
       )}
-
     </div>
   );
 }
@@ -326,7 +327,6 @@ function LinhaClicavel({
       </span>
     </>
   );
-
 
   const base = compacta
     ? "alvo-toque-linha flex w-full items-center gap-2 rounded-md px-1 py-1 text-left"
@@ -373,4 +373,3 @@ function ListaCompacta({
     </ul>
   );
 }
-

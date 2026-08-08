@@ -18,7 +18,13 @@ export const fmtVariacao = (v: number | null, sufixo = "%") =>
   v === null || !Number.isFinite(v) ? "—" : `${v > 0 ? "+" : ""}${fmtNum(v)}${sufixo}`;
 
 export const corVariacao = (v: number | null) =>
-  v === null ? "text-muted-foreground" : v > 0 ? "text-positive" : v < 0 ? "text-negative" : "text-muted-foreground";
+  v === null
+    ? "text-muted-foreground"
+    : v > 0
+      ? "text-positive"
+      : v < 0
+        ? "text-negative"
+        : "text-muted-foreground";
 
 /** Card de um índice/taxa, com flash sutil a cada mudança de valor ao vivo. */
 export function CardIndice({
@@ -81,7 +87,11 @@ export function CardIndice({
                     corCategoria(linha.categoria),
                   )}
                 >
-                  {linha.tipo === "taxa" ? "taxa" : linha.categoria === "internacionais" ? "global" : "b3"}
+                  {linha.tipo === "taxa"
+                    ? "taxa"
+                    : linha.categoria === "internacionais"
+                      ? "global"
+                      : "b3"}
                 </span>
               </TooltipTrigger>
               <TooltipContent className="max-w-[16rem] text-xs">{linha.descricao}</TooltipContent>
@@ -91,7 +101,9 @@ export function CardIndice({
         </div>
         <button
           type="button"
-          aria-label={favorito ? `Remover ${linha.codigo} dos favoritos` : `Favoritar ${linha.codigo}`}
+          aria-label={
+            favorito ? `Remover ${linha.codigo} dos favoritos` : `Favoritar ${linha.codigo}`
+          }
           aria-pressed={favorito}
           onClick={(e) => {
             e.stopPropagation();
@@ -114,7 +126,12 @@ export function CardIndice({
           >
             {fmtValor(linha)}
           </p>
-          <p className={cn("mt-1 inline-flex items-center gap-1 text-xs font-semibold tabular-nums", corVariacao(variacao))}>
+          <p
+            className={cn(
+              "mt-1 inline-flex items-center gap-1 text-xs font-semibold tabular-nums",
+              corVariacao(variacao),
+            )}
+          >
             {variacao !== null ? <Icone className="size-3.5" /> : null}
             {fmtVariacao(variacao, sufixoVar)}
             <span className="font-normal text-muted-foreground">
@@ -124,9 +141,13 @@ export function CardIndice({
         </div>
         <Sparkline
           serie={linha.spark}
-          positivo={(linha.tipo === "taxa" ? linha.variacao12m : linha.variacao12m ?? linha.variacaoDiaPercent) !== null
-            ? (linha.variacao12m ?? linha.variacaoDiaPercent ?? 0) >= 0
-            : true}
+          positivo={
+            (linha.tipo === "taxa"
+              ? linha.variacao12m
+              : (linha.variacao12m ?? linha.variacaoDiaPercent)) !== null
+              ? (linha.variacao12m ?? linha.variacaoDiaPercent ?? 0) >= 0
+              : true
+          }
           largura={84}
           altura={30}
           className="shrink-0 opacity-80"

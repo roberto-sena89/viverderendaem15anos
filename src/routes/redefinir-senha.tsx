@@ -22,9 +22,7 @@ export const Route = createFileRoute("/redefinir-senha")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [
-      { rel: "canonical", href: "https://viverderendaem15anos.lovable.app/redefinir-senha" },
-    ],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/redefinir-senha" }],
   }),
   component: RedefinirSenhaPage,
 });
@@ -87,7 +85,8 @@ function RedefinirSenhaPage() {
         {!pronto && semSessao ? (
           <div className="mt-4 space-y-4">
             <p className="text-sm text-muted-foreground">
-              Este link de redefinição é inválido ou expirou. Solicite um novo e-mail de recuperação.
+              Este link de redefinição é inválido ou expirou. Solicite um novo e-mail de
+              recuperação.
             </p>
             <Button asChild className="w-full">
               <Link to="/recuperar-senha">Solicitar novo link</Link>

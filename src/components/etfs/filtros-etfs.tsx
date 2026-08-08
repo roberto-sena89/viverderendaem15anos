@@ -69,9 +69,7 @@ export function FiltrosEtfs({
   return (
     <div className="pilha-secao">
       <div>
-        <p className="mb-2 t-label">
-          Ranking rápido
-        </p>
+        <p className="mb-2 t-label">Ranking rápido</p>
         <div className="flex flex-wrap gap-1.5">
           {RANKINGS_ETF.map((r) => (
             <button
@@ -92,9 +90,7 @@ export function FiltrosEtfs({
       </div>
 
       <div>
-        <p className="mb-2 t-label">
-          Classe de exposição
-        </p>
+        <p className="mb-2 t-label">Classe de exposição</p>
         <div className="flex flex-wrap gap-1.5">
           {CLASSES_ETF.map((c) => {
             const ativo = classes.includes(c);
@@ -169,9 +165,7 @@ export function FiltrosEtfs({
 
         <div className="space-y-1.5 text-xs sm:col-span-2 xl:col-span-4">
           <div className="flex items-baseline justify-between gap-2">
-            <span className="t-label">
-              Patrimônio mínimo
-            </span>
+            <span className="t-label">Patrimônio mínimo</span>
             <span className="tabular-nums">
               {faixas.patrimonioMin === 0
                 ? "sem mínimo"
