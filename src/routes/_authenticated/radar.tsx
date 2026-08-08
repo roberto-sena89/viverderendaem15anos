@@ -7,8 +7,9 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/app-shell";
 import { TabelaRadar } from "@/components/radar/tabela-radar";
 import { ModalRadar } from "@/components/radar/modal-radar";
@@ -35,7 +36,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
-import { radarAnaliseIA } from "@/lib/radar.functions";
+import { radarAnaliseIA, radarCompletarCache } from "@/lib/radar.functions";
 import { exportarRadar, type FormatoExportacaoRadar } from "@/lib/radar-exportacao";
 import { useAtivos } from "@/lib/data";
 import type { LinhaRadarBase } from "@/lib/radar.server";
@@ -44,6 +45,7 @@ import {
   ArrowUpNarrowWide,
   ChevronLeft,
   ChevronRight,
+  DatabaseZap,
   Download,
   Loader2,
   Radar,
@@ -136,6 +138,14 @@ function PaginaRadar() {
   const analisar = useServerFn(radarAnaliseIA);
 
   const { data: visao, isPending, isError, isFetching, refetch } = useRadarVisao(categoria);
+  const queryClient = useQueryClient();
+  const completar = useServerFn(radarCompletarCache);
+  const [preenchimento, setPreenchimento] = useState<{
+    ativo: boolean;
+    obtidos: number;
+    faltam: number;
+  } | null>(null);
+  const tentouPagina = useRef(false);
   const { data: ativos = [] } = useAtivos();
   const carteiraPorTicker = useMemo(
     () =>
@@ -199,6 +209,65 @@ function PaginaRadar() {
     () => aplicarPosicoes(linhasDaPagina, posicoes),
     [linhasDaPagina, posicoes],
   );
+
+  const faltandoPagina = useMemo(
+    () => linhasCompletas.filter((l) => !l.posicao).length,
+    [linhasCompletas],
+  );
+
+  /** Preenche em lotes o histórico faltante do universo; retorna true se concluiu. */
+  const preencherHistoricos = async (manual: boolean) => {
+    if (preenchimento?.ativo) return;
+    setPreenchimento({ ativo: true, obtidos: 0, faltam: 0 });
+    let faltam = 0;
+    let obtidos = 0;
+    try {
+      for (let i = 0; i < 12; i++) {
+        const r = await completar({ data: { categoria, limite: 120 } });
+        if (!r || r.faltam <= 0) {
+          faltam = r?.faltam ?? 0;
+          break;
+        }
+        faltam = r.faltam;
+        obtidos += r.obtidos;
+        setPreenchimento({ ativo: i < 11, obtidos, faltam });
+      }
+      if (manual) {
+        if (faltam > 0)
+          toast.info(`Histórico em andamento: ${faltam.toLocaleString("pt-BR")} pendentes.`);
+        else toast.success("Histórico da B3 totalmente preenchido.");
+      }
+    } catch {
+      if (manual) toast.error("Não foi possível preencher o histórico agora.");
+    } finally {
+      setPreenchimento((s) => (s ? { ...s, ativo: false } : s));
+      void refetch();
+    }
+  };
+
+  /* Aviso da página: algo ficou sem histórico → uma tentativa automática. */
+  useEffect(() => {
+    tentouPagina.current = false;
+  }, [categoria, pagina]);
+
+  useEffect(() => {
+    if (carregando || faltandoPagina === 0 || tentouPagina.current) return;
+    tentouPagina.current = true;
+    const timer = setTimeout(() => {
+      void queryClient.invalidateQueries({ queryKey: ["radar", "posicoes"] });
+    }, 4000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [carregando, faltandoPagina, categoria, pagina]);
+
+  /* Preenchimento automático do universo, uma vez por categoria nesta sessão. */
+  useEffect(() => {
+    const chave = `radar:backfill:${categoria}`;
+    if (typeof sessionStorage === "undefined" || sessionStorage.getItem(chave) === "1") return;
+    sessionStorage.setItem(chave, "1");
+    void preencherHistoricos(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoria]);
 
   const ordenadas = useMemo(() => {
     const q = [...linhasCompletas];
@@ -626,6 +695,46 @@ function PaginaRadar() {
                   )}
                   Ordenar
                 </Button>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">
+                {faltandoPagina > 0 ? (
+                  <p className="min-w-0 text-xs text-muted-foreground">
+                    {faltandoPagina} ativo{faltandoPagina > 1 ? "s" : ""} desta página
+                    {carregando
+                      ? " carregando histórico…"
+                      : " ainda sem histórico — tentando novamente…"}
+                  </p>
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    Página {paginaSegura}/{totalPaginas} — histórico próprio carregado
+                  </span>
+                )}
+                {!preenchimento || preenchimento.faltam > 0 ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5"
+                    onClick={() => void preencherHistoricos(true)}
+                    disabled={preenchimento?.ativo ?? false}
+                  >
+                    {preenchimento?.ativo ? (
+                      <Loader2 className="size-3.5 shrink-0 animate-spin" aria-hidden />
+                    ) : (
+                      <DatabaseZap className="size-3.5 shrink-0" aria-hidden />
+                    )}
+                    {preenchimento?.ativo
+                      ? preenchimento.obtidos > 0
+                        ? `Preenchendo… ${preenchimento.obtidos} ok`
+                        : "Preparando…"
+                      : `Completar histórico de ${categoria === "acao" ? "ações" : "FIIs"}${
+                          preenchimento && preenchimento.faltam > 0
+                            ? ` (${preenchimento.faltam.toLocaleString("pt-BR")})`
+                            : ""
+                        }`}
+                  </Button>
+                ) : null}
               </div>
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-border/60 pt-3">

@@ -417,6 +417,25 @@ export const radarHistoricoIA = createServerFn({ method: "GET" })
     return radarServer.lerHistoricoIA(data.ticker);
   });
 
+/** Preenche em lotes o histórico que falta no universo da categoria (idempotente). */
+export const radarCompletarCache = createServerFn({ method: "POST" })
+  .inputValidator((d: { categoria?: unknown; limite?: unknown } | undefined) => ({
+    categoria: d?.categoria === "fii" ? ("fii" as const) : ("acao" as const),
+    limite: Number.isFinite(Number(d?.limite))
+      ? Math.min(300, Math.max(1, Math.floor(Number(d?.limite))))
+      : 120,
+  }))
+  .handler(
+    async ({
+      data,
+    }: {
+      data: { categoria: "acao" | "fii"; limite: number };
+    }): Promise<{ buscados: number; obtidos: number; faltam: number }> => {
+      const radarServer = await import("@/lib/radar.server");
+      return radarServer.completarFaltasRadar(data.categoria, data.limite);
+    },
+  );
+
 /** Backtest do sinal do radar para um ativo (+ buy-and-hold do Ibovespa via BOVA11). */
 export const radarBacktest = createServerFn({ method: "GET" })
   .inputValidator((d: { ticker?: unknown } | undefined) => ({

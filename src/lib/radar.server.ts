@@ -67,9 +67,148 @@ export type PosicaoSerie = {
 const TTL_POSICAO_MS = 24 * 60 * 60 * 1000;
 const TTL_SERIE_MS = 24 * 60 * 60 * 1000;
 const MAX_EM_VOO = 2;
-const ESPERA_ENTRE_LOADS_MS = 130;
+const ESPERA_ENTRE_LOADS_MS = 450;
 const MAX_PONTOS_GRAFICO = 240;
 const MAX_PONTOS_SPARKLINE = 40;
+
+/**
+ * O Yahoo limita silenciosamente com 404/429 quando o volume de requisições
+ * sobe (observado em campo). Este fetcher é o único caminho de histórico do
+ * radar: alterna query1/query2, troca o User-Agent e recua o intervalo
+ * (1wk → 1mo) até conseguir a série — com folgas entre as tentativas.
+ */
+const HOSTS_YAHOO = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
+const UA_YAHOO =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+
+type PontoPreco = { data: string; fechamento: number };
+
+async function buscarSerieResiliente(ticker: string): Promise<PontoPreco[] | null> {
+  const intervalos: Array<"1wk" | "1mo"> = ["1wk", "1mo"];
+  for (const intervalo of intervalos) {
+    for (let tentativa = 0; tentativa < 3; tentativa++) {
+      for (const host of HOSTS_YAHOO) {
+        const url = `https://${host}/v8/finance/chart/${encodeURIComponent(
+          ticker,
+        )}?range=max&interval=${intervalo}&events=div%2Csplit`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 15_000);
+        try {
+          const headers: Record<string, string> =
+            tentativa > 0
+              ? {
+                  Accept: "application/json",
+                  "User-Agent": UA_YAHOO,
+                  "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+                }
+              : { Accept: "application/json" };
+          const res = await fetch(url, { headers, signal: controller.signal });
+          if (!res.ok) continue;
+          const payload = (await res.json()) as {
+            chart?: {
+              result?: Array<{
+                timestamp?: number[];
+                indicators?: {
+                  adjclose?: Array<{ adjclose?: (number | null)[] }>;
+                  quote?: Array<{ close?: (number | null)[] }>;
+                };
+              }>;
+            };
+          };
+          const r = payload.chart?.result?.[0];
+          if (!r?.timestamp?.length) continue;
+          const closes =
+            r.indicators?.adjclose?.[0]?.adjclose ?? r.indicators?.quote?.[0]?.close ?? [];
+          const pontos: PontoPreco[] = [];
+          for (let i = 0; i < r.timestamp.length; i++) {
+            const fechamento = closes[i];
+            if (typeof fechamento === "number" && Number.isFinite(fechamento) && fechamento > 0) {
+              pontos.push({
+                data: new Date(r.timestamp[i] * 1000).toISOString().slice(0, 10),
+                fechamento,
+              });
+            }
+          }
+          if (pontos.length >= 2) return pontos;
+        } catch {
+          /* tenta a próxima combinação */
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+      await dormir(350 + 350 * tentativa);
+    }
+  }
+
+  /* Última chance: espera maior e um único pedido mais curto (10y/1d). */
+  await dormir(1200);
+  for (const host of HOSTS_YAHOO) {
+    const url = `https://${host}/v8/finance/chart/${encodeURIComponent(
+      ticker,
+    )}?range=10y&interval=1d`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15_000);
+    try {
+      const res = await fetch(url, {
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      });
+      if (!res.ok) continue;
+      const payload = (await res.json()) as {
+        chart?: {
+          result?: Array<{
+            timestamp?: number[];
+            indicators?: {
+              adjclose?: Array<{ adjclose?: (number | null)[] }>;
+              quote?: Array<{ close?: (number | null)[] }>;
+            };
+          }>;
+        };
+      };
+      const r = payload.chart?.result?.[0];
+      if (!r?.timestamp?.length) continue;
+      const closes = r.indicators?.adjclose?.[0]?.adjclose ?? r.indicators?.quote?.[0]?.close ?? [];
+      const pontos: PontoPreco[] = [];
+      for (let i = 0; i < r.timestamp.length; i++) {
+        const fechamento = closes[i];
+        if (typeof fechamento === "number" && Number.isFinite(fechamento) && fechamento > 0) {
+          pontos.push({
+            data: new Date(r.timestamp[i] * 1000).toISOString().slice(0, 10),
+            fechamento,
+          });
+        }
+      }
+      if (pontos.length >= 2) return pontos;
+    } catch {
+      /* sem série disponível mesmo na última tentativa */
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  return null;
+}
+
+function posicaoDeSerie(ticker: string, pontos: PontoPreco[]): PosicaoHistorica {
+  return posicaoDeHistorico(ticker, {
+    simbolo: ticker,
+    nome: ticker,
+    moeda: "BRL",
+    periodo: "max",
+    intervalo: "1wk",
+    serie: pontos,
+    resumo: {
+      primeiroPreco: pontos[0]?.fechamento ?? null,
+      ultimoPreco: pontos[pontos.length - 1]?.fechamento ?? null,
+      minimo: Math.min(...pontos.map((p) => p.fechamento)),
+      maximo: Math.max(...pontos.map((p) => p.fechamento)),
+    },
+  } as unknown as Historico);
+}
+
+function serieDePontos(pontos: PontoPreco[]): PosicaoSerie {
+  const serie = pontos.filter((p) => p.fechamento > 0).map((p) => ({ d: p.data, f: p.fechamento }));
+  return { pontos: amostrarSerie(serie), inicioSerie: serie[0]?.d ?? null };
+}
 
 let posicaoMemoria = new Map<string, { posicao: PosicaoHistorica; em: number }>();
 const serieMemoria = new Map<string, { serie: PosicaoSerie; em: number }>();
@@ -131,13 +270,6 @@ function posicaoDeHistorico(ticker: string, h: Historico): PosicaoHistorica {
     volatilidadeAnualPct: variancia > 0 ? Math.sqrt(variancia * 52) * 100 : null,
     atualizadoEm: new Date().toISOString(),
   };
-}
-
-function serieDeHistorico(h: Historico): PosicaoSerie {
-  const pontos = h.serie
-    .filter((p) => p.fechamento > 0)
-    .map((p) => ({ d: p.data, f: p.fechamento }));
-  return { pontos: amostrarSerie(pontos), inicioSerie: pontos[0]?.d ?? null };
 }
 
 /** Posições históricas salvas no banco (payload completo da chave `radar:posicao`). */
@@ -246,9 +378,10 @@ export async function posicoesParaTickers(
     corridas.push(
       (async () => {
         try {
-          const hist = await buscarHistorico(ticker, "max", "1wk");
-          const p = posicaoDeHistorico(ticker, hist);
-          const serie = serieDeHistorico(hist);
+          const pontos = await buscarSerieResiliente(ticker);
+          if (!pontos) return;
+          const p = posicaoDeSerie(ticker, pontos);
+          const serie = serieDePontos(pontos);
           novidades.set(ticker, p);
           seriesNovas.set(ticker, serie);
           serieMemoria.set(ticker, { serie, em: Date.now() });
@@ -267,6 +400,38 @@ export async function posicoesParaTickers(
   if (novidades.size || seriesNovas.size)
     await gravarPosicoesBanco(novidades, seriesNovas).catch(() => undefined);
   return resultado;
+}
+
+/**
+ * Preenche o histórico que falta no universo inteiro da categoria, em lotes.
+ * Idempotente: só busca o que ainda não está em cache (memória/banco) e grava
+ * cada lote antes de retornar, então o chamador pode repetir até `faltam` = 0.
+ */
+export async function completarFaltasRadar(
+  categoria: "acao" | "fii",
+  limite = 120,
+): Promise<{ buscados: number; obtidos: number; faltam: number }> {
+  const grade =
+    categoria === "acao"
+      ? await (await import("@/lib/acoes.server")).gradeAcoesComCache().catch(() => null)
+      : await (await import("@/lib/fiis.server")).gradeFiisComCache().catch(() => null);
+  const tickers = (grade?.linhas ?? []).map((l: { ticker: string }) => l.ticker.toUpperCase());
+  const { posicoes } = await lerPosicoesBanco();
+  const faltantes = tickers.filter((t) => {
+    const m = posicaoMemoria.get(t);
+    if (m && Date.now() - m.em < TTL_POSICAO_MS) return false;
+    const salva = posicoes[t];
+    if (salva && Date.now() - Date.parse(salva.atualizadoEm ?? "0") < TTL_POSICAO_MS) return false;
+    return true;
+  });
+  const lote = faltantes.slice(0, limite);
+  if (!lote.length) return { buscados: 0, obtidos: 0, faltam: 0 };
+  const resultado = await posicoesParaTickers(lote, posicoes);
+  return {
+    buscados: lote.length,
+    obtidos: Object.keys(resultado).length,
+    faltam: Math.max(0, faltantes.length - Math.min(limite, lote.length)),
+  };
 }
 
 /* ------------------------------------------------------------------ *
