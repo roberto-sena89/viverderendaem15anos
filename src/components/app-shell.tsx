@@ -14,6 +14,7 @@ import {
   FileUp,
   Newspaper,
   Bot,
+  Radar,
   LogOut,
   Search,
 } from "lucide-react";
@@ -40,6 +41,7 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/cotacoes": BarChart3,
   "/rankings": Trophy,
   "/noticias": Newspaper,
+  "/radar": Radar,
   "/planejador": LineChart,
   "/metas": Target,
   "/chat": Bot,

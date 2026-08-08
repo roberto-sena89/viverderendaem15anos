@@ -34,6 +34,7 @@ import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMetasRouteImport } from './routes/_authenticated/metas'
 import { Route as AuthenticatedNoticiasRouteImport } from './routes/_authenticated/noticias'
 import { Route as AuthenticatedPlanejadorRouteImport } from './routes/_authenticated/planejador'
+import { Route as AuthenticatedRadarRouteImport } from './routes/_authenticated/radar'
 import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
 import { Route as AuthenticatedSeoRouteImport } from './routes/_authenticated/seo'
@@ -176,6 +177,11 @@ const AuthenticatedPlanejadorRoute = AuthenticatedPlanejadorRouteImport.update({
   path: '/planejador',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRadarRoute = AuthenticatedRadarRouteImport.update({
+  id: '/radar',
+  path: '/radar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRankingsRoute = AuthenticatedRankingsRouteImport.update({
   id: '/rankings',
   path: '/rankings',
@@ -267,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/metas': typeof AuthenticatedMetasRoute
   '/noticias': typeof AuthenticatedNoticiasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
+  '/radar': typeof AuthenticatedRadarRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/seo': typeof AuthenticatedSeoRoute
@@ -305,6 +312,7 @@ export interface FileRoutesByTo {
   '/metas': typeof AuthenticatedMetasRoute
   '/noticias': typeof AuthenticatedNoticiasRoute
   '/planejador': typeof AuthenticatedPlanejadorRoute
+  '/radar': typeof AuthenticatedRadarRoute
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/seo': typeof AuthenticatedSeoRoute
@@ -345,6 +353,7 @@ export interface FileRoutesById {
   '/_authenticated/metas': typeof AuthenticatedMetasRoute
   '/_authenticated/noticias': typeof AuthenticatedNoticiasRoute
   '/_authenticated/planejador': typeof AuthenticatedPlanejadorRoute
+  '/_authenticated/radar': typeof AuthenticatedRadarRoute
   '/_authenticated/rankings': typeof AuthenticatedRankingsRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/_authenticated/seo': typeof AuthenticatedSeoRoute
@@ -385,6 +394,7 @@ export interface FileRouteTypes {
     | '/metas'
     | '/noticias'
     | '/planejador'
+    | '/radar'
     | '/rankings'
     | '/rebalanceamento'
     | '/seo'
@@ -423,6 +433,7 @@ export interface FileRouteTypes {
     | '/metas'
     | '/noticias'
     | '/planejador'
+    | '/radar'
     | '/rankings'
     | '/rebalanceamento'
     | '/seo'
@@ -462,6 +473,7 @@ export interface FileRouteTypes {
     | '/_authenticated/metas'
     | '/_authenticated/noticias'
     | '/_authenticated/planejador'
+    | '/_authenticated/radar'
     | '/_authenticated/rankings'
     | '/_authenticated/rebalanceamento'
     | '/_authenticated/seo'
@@ -679,6 +691,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanejadorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/radar': {
+      id: '/_authenticated/radar'
+      path: '/radar'
+      fullPath: '/radar'
+      preLoaderRoute: typeof AuthenticatedRadarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/rankings': {
       id: '/_authenticated/rankings'
       path: '/rankings'
@@ -778,6 +797,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMetasRoute: typeof AuthenticatedMetasRoute
   AuthenticatedNoticiasRoute: typeof AuthenticatedNoticiasRoute
   AuthenticatedPlanejadorRoute: typeof AuthenticatedPlanejadorRoute
+  AuthenticatedRadarRoute: typeof AuthenticatedRadarRoute
   AuthenticatedRankingsRoute: typeof AuthenticatedRankingsRoute
   AuthenticatedRebalanceamentoRoute: typeof AuthenticatedRebalanceamentoRoute
   AuthenticatedSeoRoute: typeof AuthenticatedSeoRoute
@@ -795,6 +815,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMetasRoute: AuthenticatedMetasRoute,
   AuthenticatedNoticiasRoute: AuthenticatedNoticiasRoute,
   AuthenticatedPlanejadorRoute: AuthenticatedPlanejadorRoute,
+  AuthenticatedRadarRoute: AuthenticatedRadarRoute,
   AuthenticatedRankingsRoute: AuthenticatedRankingsRoute,
   AuthenticatedRebalanceamentoRoute: AuthenticatedRebalanceamentoRoute,
   AuthenticatedSeoRoute: AuthenticatedSeoRoute,
