@@ -337,84 +337,108 @@ function PaginaRadar() {
             </div>
           ) : null}
 
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <Input
-              placeholder="Buscar ativo (ex.: TASY3, Itaú)…"
-              value={busca}
-              onChange={(e) => {
-                setBusca(e.target.value);
-                setVisiveis(TAMANHO_PAGINA);
-              }}
-              className="lg:max-w-xs"
-            />
-            <div className="flex flex-wrap items-center gap-2">
-              <Select value={filtroSinal} onValueChange={(v) => setFiltroSinal(v as FiltroSinal)}>
-                <SelectTrigger className="w-44">
-                  <SelectValue placeholder="Sinal" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(ROTULOS_SINAL_FILTRO) as FiltroSinal[]).map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {ROTULOS_SINAL_FILTRO[s]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {setoresDisponiveis.length ? (
-                <Select value={filtroSetor} onValueChange={setFiltroSetor}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Setor / Tipo" />
+          <section
+            aria-label="Filtros do radar"
+            className="w-full max-w-full overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/60"
+          >
+            <div className="flex flex-col gap-4 p-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
+                <div className="relative min-w-0">
+                  <Search
+                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden
+                  />
+                  <Input
+                    placeholder="Buscar ativo (ex.: TASY3, Itaú)…"
+                    value={busca}
+                    onChange={(e) => {
+                      setBusca(e.target.value);
+                      setVisiveis(TAMANHO_PAGINA);
+                    }}
+                    aria-label="Buscar ativo"
+                    className="w-full min-w-0 pl-9"
+                  />
+                </div>
+
+                <Select value={filtroSinal} onValueChange={(v) => setFiltroSinal(v as FiltroSinal)}>
+                  <SelectTrigger className="w-full min-w-0">
+                    <SelectValue placeholder="Sinal" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todos os setores</SelectItem>
-                    {setoresDisponiveis.map((s) => (
+                    {(Object.keys(ROTULOS_SINAL_FILTRO) as FiltroSinal[]).map((s) => (
                       <SelectItem key={s} value={s}>
-                        {s}
+                        {ROTULOS_SINAL_FILTRO[s]}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              ) : null}
-              <Select value={ordem} onValueChange={(v) => setOrdem(v as Ordenacao)}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Ordenar por" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sinal">Por sinal do radar</SelectItem>
-                  <SelectItem value="dy">Maior DY 12m</SelectItem>
-                  <SelectItem value="queda">Maior queda do dia</SelectItem>
-                  <SelectItem value="minima52">Mais perto da mín. 52s</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setDirecao((d) => (d === "desc" ? "asc" : "desc"))}
-                title="Inverter a ordem da página"
-                aria-label={`Ordenar página: ${direcao === "desc" ? "decrescente" : "crescente"}`}
-              >
-                {direcao === "desc" ? (
-                  <ArrowDownWideNarrow className="mr-1 size-4" aria-hidden />
-                ) : (
-                  <ArrowUpNarrowWide className="mr-1 size-4" aria-hidden />
-                )}
-                Ordenar
-              </Button>
-              <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Switch checked={apenasPosicao} onCheckedChange={setApenasPosicao} />
-                Com histórico
-              </label>
-              <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Switch checked={apenasMinimas52} onCheckedChange={setApenasMinimas52} />
-                ≤5% da mín. 52s
-              </label>
+
+                {setoresDisponiveis.length ? (
+                  <Select value={filtroSetor} onValueChange={setFiltroSetor}>
+                    <SelectTrigger className="w-full min-w-0">
+                      <SelectValue placeholder="Setor / Tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos os setores</SelectItem>
+                      {setoresDisponiveis.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : null}
+
+                <Select value={ordem} onValueChange={(v) => setOrdem(v as Ordenacao)}>
+                  <SelectTrigger className="w-full min-w-0">
+                    <SelectValue placeholder="Ordenar por" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sinal">Por sinal do radar</SelectItem>
+                    <SelectItem value="dy">Maior DY 12m</SelectItem>
+                    <SelectItem value="queda">Maior queda do dia</SelectItem>
+                    <SelectItem value="minima52">Mais perto da mín. 52s</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDirecao((d) => (d === "desc" ? "asc" : "desc"))}
+                  title="Inverter a ordem da página"
+                  aria-label={`Ordenar página: ${direcao === "desc" ? "decrescente" : "crescente"}`}
+                  className="w-full justify-center whitespace-nowrap sm:w-auto"
+                >
+                  {direcao === "desc" ? (
+                    <ArrowDownWideNarrow className="mr-1 size-4 shrink-0" aria-hidden />
+                  ) : (
+                    <ArrowUpNarrowWide className="mr-1 size-4 shrink-0" aria-hidden />
+                  )}
+                  Ordenar
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-border/60 pt-3">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                  <SlidersHorizontal className="size-3.5 shrink-0" aria-hidden />
+                  Refinar
+                </span>
+                <label className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
+                  <Switch checked={apenasPosicao} onCheckedChange={setApenasPosicao} />
+                  Com histórico
+                </label>
+                <label className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
+                  <Switch checked={apenasMinimas52} onCheckedChange={setApenasMinimas52} />
+                  ≤5% da mín. 52s
+                </label>
+                <p className="ml-auto inline-flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+                  <Radar className="size-3.5 shrink-0" aria-hidden />
+                  <span className="truncate">Percentil 0 = menor preço histórico · 100 = maior</span>
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground lg:ml-auto">
-              <Radar className="mr-1 inline size-3.5" aria-hidden />
-              Percentil 0 = menor preço histórico · 100 = maior
-            </p>
-          </div>
+          </section>
+
 
           <TabelaRadar
             linhas={ordenadas}
