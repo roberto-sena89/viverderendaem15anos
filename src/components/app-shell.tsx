@@ -48,7 +48,6 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
   "/planejador": LineChart,
   "/metas": Target,
   "/chat": Bot,
-  "/seo": Search,
 };
 
 const grupos = ["Carteira", "MERCADO", "Planejamento"].map((titulo) => ({
