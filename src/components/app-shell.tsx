@@ -134,29 +134,29 @@ export function AppShell({
       <a href="#conteudo" className="link-pular">
         Pular para o conteúdo
       </a>
-      <aside className="sticky top-0 z-30 hidden h-dvh w-64 shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar px-4 py-5 lg:flex">
-        <Link to="/" className="mb-5 flex shrink-0 items-center gap-3 px-1">
+      <aside className="sticky top-0 z-30 hidden h-dvh w-64 shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar px-3 py-3 lg:flex">
+        <Link to="/" className="mb-3 flex shrink-0 items-center gap-2.5 px-1">
           <img
             src={logoIcone}
             alt="Viver de Renda em 15 Anos"
             width={512}
             height={512}
-            className="size-10 shrink-0 rounded-xl object-contain"
+            className="size-9 shrink-0 rounded-xl object-contain"
           />
 
-          <span className="font-brand text-base leading-[1.15] font-bold text-sidebar-foreground uppercase">
+          <span className="font-brand text-sm leading-[1.15] font-bold text-sidebar-foreground uppercase">
             VIVER DE RENDA
             <br />
-            <span className="font-brand text-sm font-semibold tracking-[0.1em] text-muted-foreground">
+            <span className="font-brand text-xs font-semibold tracking-[0.1em] text-muted-foreground">
               EM 15 ANOS
             </span>
           </span>
         </Link>
 
-        <nav className="scrollbar-none flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain">
+        <nav className="scrollbar-none flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain">
           {grupos.map((grupo, i) => (
-            <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-4" : ""}>
-              <p className="mb-2 px-3 text-[0.82rem] leading-none font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+            <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-2" : ""}>
+              <p className="mb-1 px-3 text-[0.68rem] leading-none font-semibold tracking-[0.14em] text-muted-foreground uppercase">
                 {grupo.titulo}
               </p>
               <div className="flex flex-col gap-0.5">
@@ -167,17 +167,17 @@ export function AppShell({
                       key={to}
                       to={to}
                       aria-current={active ? "page" : undefined}
-                      className={`group relative flex min-h-11 items-center gap-3 rounded-lg py-2.5 pr-3 pl-4 text-[0.875rem] leading-none transition-colors lg:min-h-10 ${
+                      className={`group relative flex min-h-11 items-center gap-2.5 rounded-lg py-1.5 pr-3 pl-4 text-[0.82rem] leading-none transition-colors lg:min-h-8 ${
                         active
                           ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
                           : "font-medium text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
                       }`}
                     >
                       {active ? (
-                        <span className="absolute top-2 bottom-2 left-0 w-[3px] rounded-full bg-gradient-brand" />
+                        <span className="absolute top-1.5 bottom-1.5 left-0 w-[3px] rounded-full bg-gradient-brand" />
                       ) : null}
                       <Icon
-                        className={`size-[18px] shrink-0 ${active ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"}`}
+                        className={`size-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"}`}
                       />
                       <span className="truncate">{label}</span>
                     </Link>
@@ -188,7 +188,8 @@ export function AppShell({
           ))}
         </nav>
 
-        <div className="mt-4 flex shrink-0 items-center gap-3 rounded-xl border border-sidebar-border p-3">
+        <div className="mt-2.5 flex shrink-0 items-center gap-2.5 rounded-xl border border-sidebar-border p-2">
+
           <Avatar className="size-9">
             {user?.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
             <AvatarFallback className="bg-primary-soft text-xs text-accent-foreground">
