@@ -16,7 +16,6 @@ import {
   Bot,
   Radar,
   LogOut,
-  Search,
   PanelLeftOpen,
   PanelLeftClose,
 
