@@ -5,14 +5,19 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
 import { FormularioNewsletter } from "@/components/formulario-newsletter";
 import { dadosVivosConteudo } from "@/lib/dados-vivos.functions";
-import { CONTEUDO_POR_SLUG, caminhoConteudo, conteudosRelacionados } from "@/lib/conteudo-publico";
+import {
+  CONTEUDO_POR_SLUG,
+  caminhoConteudo,
+  conteudosRelacionados,
+  type ConteudoPublico,
+} from "@/lib/conteudo-publico";
 import ogImagem from "@/assets/og-home.jpg.asset.json";
 
 const SITE = "https://viverderendaem15anos.lovable.app";
 const OG_IMAGE = `${SITE}${ogImagem.url}`;
 
 export const Route = createFileRoute("/conteudo/$slug")({
-  loader: async ({ params, context }) => {
+  loader: async ({ params, context }): Promise<ConteudoPublico> => {
     const conteudo = CONTEUDO_POR_SLUG.get(params.slug);
     if (!conteudo) throw notFound();
     // Pré-busca os dividend yields atuais para os exemplos de renda passiva:
@@ -183,7 +188,9 @@ function BlocoRendaHoje() {
 }
 
 function ConteudoPage() {
-  const conteudo = Route.useLoaderData();
+  const { slug } = Route.useParams();
+  const conteudo = CONTEUDO_POR_SLUG.get(slug);
+  if (!conteudo) return null;
   const relacionados = conteudosRelacionados(conteudo.slug, 4);
   const temMaisDaCategoria = relacionados.some((c) => c.categoria === conteudo.categoria);
 
