@@ -110,12 +110,27 @@ export function AppShell({
     return () => ro.disconnect();
   }, []);
 
+  // Recolhimento da barra lateral (persistido e automático em telas baixas/estreitas).
+  const [recolhida, setRecolhida] = useState(false);
+  useEffect(() => {
+    const salvo = window.localStorage.getItem("sidebar-recolhida");
+    if (salvo != null) setRecolhida(salvo === "1");
+    else setRecolhida(window.matchMedia("(max-width: 1279px)").matches);
+  }, []);
+  function alternarSidebar() {
+    setRecolhida((v) => {
+      window.localStorage.setItem("sidebar-recolhida", v ? "0" : "1");
+      return !v;
+    });
+  }
+
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true, search: { redirect: undefined } });
   }
+
 
   const secaoAtual = secaoPorRota(pathname);
   const grupoAtual = secaoAtual?.grupo ?? "Investidor em 15 anos";
