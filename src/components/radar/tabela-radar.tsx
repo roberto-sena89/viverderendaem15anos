@@ -93,19 +93,18 @@ export function TabelaRadar({
       <Table className="w-full min-w-[720px] table-fixed">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[26%] min-w-[150px] pl-4">Ativo</TableHead>
-            <TableHead className="hidden w-[14%] lg:table-cell">Setor / Tipo</TableHead>
+            <TableHead className="w-[24%] min-w-[150px] pl-4">Ativo</TableHead>
+            <TableHead className="hidden w-[13%] lg:table-cell">Setor / Tipo</TableHead>
             <TableHead className="w-[10%] whitespace-nowrap text-right">Preço</TableHead>
             <TableHead className="w-[9%] whitespace-nowrap text-right">Variação</TableHead>
             <TableHead className="w-[8%] whitespace-nowrap text-right">DY 12m</TableHead>
             <TableHead className="w-[8%] whitespace-nowrap text-right">P/VPA</TableHead>
-            <TableHead className="w-[14%]">Histórico</TableHead>
+            <TableHead className="w-[12%]">Histórico</TableHead>
             <TableHead className="hidden w-[8%] whitespace-nowrap text-center xl:table-cell">
               Mín. 52s
             </TableHead>
+            <TableHead className="w-[8%] pr-4">Sinal</TableHead>
 
-            
-            <TableHead className="w-[10%] pr-4">Sinal</TableHead>
           </TableRow>
         </TableHeader>
 
