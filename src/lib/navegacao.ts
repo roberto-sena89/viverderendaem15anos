@@ -25,7 +25,6 @@ export const SECOES: SecaoNav[] = [
   { to: "/planejador", rotulo: "Planejador Financeiro", grupo: "Planejamento" },
   { to: "/metas", rotulo: "Metas", grupo: "Planejamento" },
   { to: "/chat", rotulo: "Técnico IA", grupo: "Planejamento" },
-  { to: "/seo", rotulo: "SEO & Busca", grupo: "Planejamento" },
 ];
 
 /** Abas horizontais da carteira, na ordem exibida. */
