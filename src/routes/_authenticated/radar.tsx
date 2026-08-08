@@ -7,7 +7,7 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/app-shell";
 import { TabelaRadar } from "@/components/radar/tabela-radar";
@@ -42,6 +42,8 @@ import type { LinhaRadarBase } from "@/lib/radar.server";
 import {
   ArrowDownWideNarrow,
   ArrowUpNarrowWide,
+  ChevronLeft,
+  ChevronRight,
   Download,
   Loader2,
   Radar,
@@ -99,6 +101,19 @@ const ROTULOS_SINAL_FILTRO: Record<FiltroSinal, string> = {
   "sem-dados": "Sem dados",
 };
 
+/** Números de página com elipses: 1 … 3 4 5 … 20 (máx. 7 itens vislumbrado). */
+function paginasNumeradas(total: number, atual: number): (number | "…")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const itens: (number | "…")[] = [1];
+  if (atual > 3) itens.push("…");
+  const inicio = Math.max(2, atual - 1);
+  const fim = Math.min(total - 1, atual + 1);
+  for (let p = inicio; p <= fim; p++) itens.push(p);
+  if (atual < total - 2) itens.push("…");
+  itens.push(total);
+  return itens;
+}
+
 function PaginaRadar() {
   const [categoria, setCategoria] = useState<"acao" | "fii">("acao");
   const [busca, setBusca] = useState("");
@@ -108,7 +123,7 @@ function PaginaRadar() {
   const [filtroSetor, setFiltroSetor] = useState("todos");
   const [apenasPosicao, setApenasPosicao] = useState(false);
   const [apenasMinimas52, setApenasMinimas52] = useState(false);
-  const [visiveis, setVisiveis] = useState(TAMANHO_PAGINA);
+  const [pagina, setPagina] = useState(1);
   const [selecionado, setSelecionado] = useState<LinhaRadarBase | null>(null);
   const [lote, setLote] = useState<{
     ativo: boolean;
@@ -165,14 +180,23 @@ function PaginaRadar() {
     [visao],
   );
 
+  const totalPaginas = Math.max(1, Math.ceil(linhasFiltradas.length / TAMANHO_PAGINA));
+  const paginaSegura = Math.min(Math.max(1, pagina), totalPaginas);
+  const inicioPagina = (paginaSegura - 1) * TAMANHO_PAGINA;
+  const linhasDaPagina = linhasFiltradas.slice(inicioPagina, inicioPagina + TAMANHO_PAGINA);
+
+  useEffect(() => {
+    setPagina(1);
+  }, [busca, filtroSinal, filtroSetor, apenasPosicao, apenasMinimas52, categoria]);
+
   const { posicoes, sparklines, carregando } = useRadarPosicoes(
-    linhasFiltradas.slice(0, visiveis).map((l) => l.ticker),
+    linhasDaPagina.map((l) => l.ticker),
     true,
   );
 
   const linhasCompletas = useMemo(
-    () => aplicarPosicoes(linhasFiltradas.slice(0, visiveis), posicoes),
-    [linhasFiltradas, visiveis, posicoes],
+    () => aplicarPosicoes(linhasDaPagina, posicoes),
+    [linhasDaPagina, posicoes],
   );
 
   const ordenadas = useMemo(() => {
@@ -286,7 +310,6 @@ function PaginaRadar() {
         value={categoria}
         onValueChange={(v) => {
           setCategoria(v as "acao" | "fii");
-          setVisiveis(TAMANHO_PAGINA);
           setFiltroSetor("todos");
         }}
       >
@@ -511,7 +534,6 @@ function PaginaRadar() {
                     value={busca}
                     onChange={(e) => {
                       setBusca(e.target.value);
-                      setVisiveis(TAMANHO_PAGINA);
                     }}
                     aria-label="Buscar ativo"
                     className="w-full min-w-0 pl-9"
@@ -608,12 +630,65 @@ function PaginaRadar() {
             aoSelecionar={setSelecionado}
           />
 
-          {linhasFiltradas.length > visiveis ? (
-            <div className="flex justify-center">
-              <Button variant="outline" onClick={() => setVisiveis((v) => v + TAMANHO_PAGINA)}>
-                Carregar mais ({linhasFiltradas.length - visiveis} restantes)
-              </Button>
-            </div>
+          {totalPaginas > 1 ? (
+            <nav
+              aria-label="Paginação do radar"
+              className="flex flex-col items-center gap-2 border-t border-border/60 pt-4"
+            >
+              <div className="flex flex-wrap items-center justify-center gap-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  disabled={paginaSegura <= 1}
+                  onClick={() => setPagina(paginaSegura - 1)}
+                  aria-label="Página anterior"
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                {paginasNumeradas(totalPaginas, paginaSegura).map((item, i) =>
+                  item === "…" ? (
+                    <span
+                      key={`elipse-${i}`}
+                      aria-hidden
+                      className="flex size-9 items-center justify-center text-muted-foreground"
+                    >
+                      …
+                    </span>
+                  ) : (
+                    <Button
+                      key={item}
+                      type="button"
+                      variant={item === paginaSegura ? "outline" : "ghost"}
+                      size="icon"
+                      onClick={() => setPagina(item)}
+                      aria-current={item === paginaSegura ? "page" : undefined}
+                      className={
+                        item === paginaSegura
+                          ? "border-emerald-600/50 font-semibold text-emerald-600"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      {item}
+                    </Button>
+                  ),
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  disabled={paginaSegura >= totalPaginas}
+                  onClick={() => setPagina(paginaSegura + 1)}
+                  aria-label="Próxima página"
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Página {paginaSegura} de {totalPaginas} ·{" "}
+                {linhasFiltradas.length.toLocaleString("pt-BR")} ativos
+              </p>
+            </nav>
           ) : null}
 
           <p className="text-xs text-muted-foreground">
