@@ -26,7 +26,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
 import type { LinhaRadarBase } from "@/lib/radar.server";
-import { Radar } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUpNarrowWide, Radar } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/radar")({
   head: () => ({
@@ -81,6 +81,7 @@ function PaginaRadar() {
   const [categoria, setCategoria] = useState<"acao" | "fii">("acao");
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState<Ordenacao>("sinal");
+  const [direcao, setDirecao] = useState<"desc" | "asc">("desc");
   const [filtroSinal, setFiltroSinal] = useState<FiltroSinal>("todos");
   const [filtroSetor, setFiltroSetor] = useState("todos");
   const [apenasPosicao, setApenasPosicao] = useState(false);
@@ -135,25 +136,27 @@ function PaginaRadar() {
 
   const ordenadas = useMemo(() => {
     const q = [...linhasCompletas];
+    const fator = direcao === "asc" ? -1 : 1;
     switch (ordem) {
       case "dy":
-        return q.sort((a, b) => (b.dy12 ?? -1) - (a.dy12 ?? -1));
+        return q.sort((a, b) => fator * ((b.dy12 ?? -1) - (a.dy12 ?? -1)));
       case "queda":
-        return q.sort((a, b) => (a.variacaoDia ?? 0) - (b.variacaoDia ?? 0));
+        return q.sort((a, b) => fator * ((a.variacaoDia ?? 0) - (b.variacaoDia ?? 0)));
       case "minima52":
         return q.sort((a, b) => {
           const da = a.posicao?.distMinima52sPct ?? 999;
           const db = b.posicao?.distMinima52sPct ?? 999;
-          return da - db;
+          return fator * (da - db);
         });
       default:
         return q.sort((a, b) => {
           const d = (PESO_SINAL[a.sinal.tipo] ?? 4) - (PESO_SINAL[b.sinal.tipo] ?? 4);
-          if (d !== 0) return d;
-          return (b.posicao?.percentil ?? 101) - (a.posicao?.percentil ?? 101);
+          if (d !== 0) return fator * d;
+          return fator * ((b.posicao?.percentil ?? 101) - (a.posicao?.percentil ?? 101));
         });
     }
-  }, [linhasCompletas, ordem]);
+  }, [linhasCompletas, ordem, direcao]);
+
 
   /** Foco de compra: melhores relações preço/história do universo inteiro. */
   const focoCompra = useMemo(() => {
@@ -383,6 +386,21 @@ function PaginaRadar() {
                   <SelectItem value="minima52">Mais perto da mín. 52s</SelectItem>
                 </SelectContent>
               </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setDirecao((d) => (d === "desc" ? "asc" : "desc"))}
+                title="Inverter a ordem da página"
+                aria-label={`Ordenar página: ${direcao === "desc" ? "decrescente" : "crescente"}`}
+              >
+                {direcao === "desc" ? (
+                  <ArrowDownWideNarrow className="mr-1 size-4" aria-hidden />
+                ) : (
+                  <ArrowUpNarrowWide className="mr-1 size-4" aria-hidden />
+                )}
+                Ordenar
+              </Button>
               <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Switch checked={apenasPosicao} onCheckedChange={setApenasPosicao} />
                 Com histórico
