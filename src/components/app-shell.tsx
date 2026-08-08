@@ -153,7 +153,7 @@ export function AppShell({
       <aside
         data-recolhida={recolhida ? "true" : "false"}
         className={`sticky top-0 z-30 hidden h-dvh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar py-3 transition-[width] duration-200 lg:flex ${
-          recolhida ? "w-[4.5rem] px-2" : "w-64 px-3"
+          recolhida ? "w-[4.5rem] px-2" : "w-[min(730px,45vw)] px-3"
         }`}
       >
         <Link
