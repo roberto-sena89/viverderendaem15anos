@@ -1,4 +1,4 @@
-import { Bell, BellOff, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { Bell, BellOff, Bot, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAlertasHistorico } from "@/lib/alertas-historico";
@@ -64,6 +64,29 @@ export function SinoAlertas() {
         ) : (
           <ul className="max-h-80 divide-y divide-border overflow-y-auto">
             {alertas.map((a) => {
+              if (a.tipo === "veredito") {
+                return (
+                  <li key={a.id} className="flex items-start gap-3 px-3 py-2.5">
+                    <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-amber-600/10 text-amber-600">
+                      <Bot className="size-3.5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">
+                        {a.ticker}{" "}
+                        <span className="text-amber-600">
+                          Técnico IA: {a.vereditoDe} → {a.vereditoPara}
+                        </span>
+                      </p>
+                      <p className="line-clamp-2 text-xs text-muted-foreground">
+                        {a.titulo ?? "O Técnico IA mudou de ideia sobre este ativo."}
+                      </p>
+                      <p className="text-[0.7rem] text-muted-foreground">
+                        {quando(a.em)} · {a.canais.join(" + ")}
+                      </p>
+                    </div>
+                  </li>
+                );
+              }
               const alta = a.variacaoPercent >= 0;
               return (
                 <li key={a.id} className="flex items-start gap-3 px-3 py-2.5">

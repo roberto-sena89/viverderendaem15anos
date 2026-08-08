@@ -8,6 +8,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/app-shell";
 import { TabelaRadar } from "@/components/radar/tabela-radar";
 import { ModalRadar } from "@/components/radar/modal-radar";
@@ -24,16 +25,30 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
+import { radarAnaliseIA } from "@/lib/radar.functions";
+import { exportarRadar, type FormatoExportacaoRadar } from "@/lib/radar-exportacao";
+import { useAtivos } from "@/lib/data";
 import type { LinhaRadarBase } from "@/lib/radar.server";
 import {
   ArrowDownWideNarrow,
   ArrowUpNarrowWide,
+  Download,
+  Loader2,
   Radar,
   Search,
   SlidersHorizontal,
+  Sparkles,
 } from "lucide-react";
-import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/radar")({
   head: () => ({
@@ -57,14 +72,14 @@ export const Route = createFileRoute("/_authenticated/radar")({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, follow" },
     ],
-    links: [{ rel: "canonical", href: urlAbsoluta("/radar") }],
+    links: [{ rel: "canonical", href: "https://viverderendaem15anos.lovable.app/radar" }],
   }),
   component: PaginaRadar,
 });
 
 const TAMANHO_PAGINA = 50;
 
-type Ordenacao = "sinal" | "dy" | "queda" | "minima52";
+type Ordenacao = "sinal" | "dy" | "queda" | "minima52" | "score";
 type FiltroSinal = "todos" | "comprar" | "manter" | "vender" | "observar" | "sem-dados";
 
 const PESO_SINAL: Record<string, number> = {
@@ -95,8 +110,27 @@ function PaginaRadar() {
   const [apenasMinimas52, setApenasMinimas52] = useState(false);
   const [visiveis, setVisiveis] = useState(TAMANHO_PAGINA);
   const [selecionado, setSelecionado] = useState<LinhaRadarBase | null>(null);
+  const [lote, setLote] = useState<{
+    ativo: boolean;
+    processados: number;
+    total: number;
+    atual: string;
+  } | null>(null);
+
+  const analisar = useServerFn(radarAnaliseIA);
 
   const { data: visao, isPending, isError, refetch } = useRadarVisao(categoria);
+  const { data: ativos = [] } = useAtivos();
+  const carteiraPorTicker = useMemo(
+    () =>
+      new Map(
+        ativos.map((a) => [
+          a.ticker.trim().toUpperCase(),
+          Number.isFinite(a.quantidade) ? a.quantidade : 0,
+        ]),
+      ),
+    [ativos],
+  );
 
   const linhasFiltradas = useMemo(() => {
     const base = visao?.linhas ?? [];
@@ -131,7 +165,7 @@ function PaginaRadar() {
     [visao],
   );
 
-  const { posicoes, carregando } = useRadarPosicoes(
+  const { posicoes, sparklines, carregando } = useRadarPosicoes(
     linhasFiltradas.slice(0, visiveis).map((l) => l.ticker),
     true,
   );
@@ -154,6 +188,13 @@ function PaginaRadar() {
           const da = a.posicao?.distMinima52sPct ?? 999;
           const db = b.posicao?.distMinima52sPct ?? 999;
           return fator * (da - db);
+        });
+      case "score":
+        return q.sort((a, b) => {
+          const sa = a.score ?? -1;
+          const sb = b.score ?? -1;
+          if (sa !== sb) return fator * (sb - sa);
+          return fator * ((b.posicao?.percentil ?? 101) - (a.posicao?.percentil ?? 101));
         });
       default:
         return q.sort((a, b) => {
@@ -183,6 +224,59 @@ function PaginaRadar() {
       .slice(0, 5);
   }, [visao]);
 
+  /** Melhores oportunidades pelo score composto (0–100). */
+  const melhoresScore = useMemo(() => {
+    const base = visao?.linhas ?? [];
+    return base
+      .filter((l) => l.score !== null)
+      .sort((a, b) => (b.score ?? -1) - (a.score ?? -1))
+      .slice(0, 5);
+  }, [visao]);
+
+  const exportarVisao = async (formato: FormatoExportacaoRadar) => {
+    try {
+      await exportarRadar(formato, ordenadas, categoria);
+      toast.success(`Radar exportado em ${formato.toUpperCase()}.`);
+    } catch {
+      toast.error("Não foi possível exportar o radar agora.");
+    }
+  };
+
+  /** Lote do Técnico IA: analisa o top 20 pelo score (2 análises em paralelo). */
+  const analisarLote = async () => {
+    const visaoAtual = visao;
+    if (!visaoAtual) return;
+    const alvo = visaoAtual.linhas
+      .filter((l) => l.score !== null)
+      .sort((a, b) => (b.score ?? -1) - (a.score ?? -1))
+      .slice(0, 20);
+    if (!alvo.length) {
+      toast.info("Nenhum ativo com score disponível para analisar.");
+      return;
+    }
+    if (lote?.ativo) return;
+    setLote({ ativo: true, processados: 0, total: alvo.length, atual: "" });
+    let falhas = 0;
+    const fila = [...alvo];
+    const trabalhador = async () => {
+      while (fila.length) {
+        const l = fila.shift()!;
+        setLote((s) => (s ? { ...s, atual: l.ticker } : s));
+        try {
+          await analisar({ data: { ticker: l.ticker } });
+        } catch {
+          falhas++;
+        }
+        setLote((s) => (s ? { ...s, processados: s.processados + 1 } : s));
+      }
+    };
+    await Promise.all([trabalhador(), trabalhador()]);
+    setLote(null);
+    toast.success(
+      `Lote concluído: ${alvo.length - falhas} ativos analisados${falhas ? `, ${falhas} com falha` : ""}.`,
+    );
+  };
+
   return (
     <AppShell
       title="Radar de Oportunidades"
@@ -200,6 +294,39 @@ function PaginaRadar() {
           <TabsTrigger value="acao">Ações</TabsTrigger>
           <TabsTrigger value="fii">FIIs</TabsTrigger>
         </TabsList>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Download className="mr-1 size-4 shrink-0" aria-hidden />
+              Exportar
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuLabel>Visão atual (até {ordenadas.length})</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => void exportarVisao("csv")}>CSV</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void exportarVisao("xlsx")}>
+              Excel (XLSX)
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void exportarVisao("pdf")}>PDF</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => void analisarLote()}
+          disabled={lote?.ativo ?? false}
+          title="Analisa o top 20 pelo score do Técnico IA (usado também para o histórico de cada ativo)."
+        >
+          {lote?.ativo ? (
+            <Loader2 className="mr-1 size-4 animate-spin" aria-hidden />
+          ) : (
+            <Sparkles className="mr-1 size-4" aria-hidden />
+          )}
+          {lote?.ativo
+            ? `${lote.atual || "…"} ${lote.processados}/${lote.total}`
+            : "Analisar top 20 com IA"}
+        </Button>
       </Tabs>
 
       {isPending ? (
@@ -284,8 +411,8 @@ function PaginaRadar() {
             </div>
           ) : null}
 
-          {focoCompra.length || alertaVenda.length ? (
-            <div className="grid gap-4 lg:grid-cols-2">
+          {focoCompra.length || alertaVenda.length || melhoresScore.length ? (
+            <div className="grid gap-4 lg:grid-cols-3">
               {focoCompra.length ? (
                 <div className="rounded-xl border bg-card p-4">
                   <h3 className="mb-3 text-sm font-semibold text-emerald-600">
@@ -303,6 +430,31 @@ function PaginaRadar() {
                           <span className="text-xs text-muted-foreground">{l.nome}</span>
                           <span className="ml-auto text-xs tabular-nums text-emerald-600">
                             {l.posicao?.percentil?.toFixed(0) ?? "—"}% do range
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {melhoresScore.length ? (
+                <div className="rounded-xl border bg-card p-4">
+                  <h3 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-sky-600">
+                    <Sparkles className="size-4" aria-hidden />
+                    Melhores oportunidades pelo score
+                  </h3>
+                  <ul className="space-y-2">
+                    {melhoresScore.map((l) => (
+                      <li key={l.ticker}>
+                        <button
+                          type="button"
+                          onClick={() => setSelecionado(l)}
+                          className="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
+                        >
+                          <span className="font-medium">{l.ticker}</span>
+                          <span className="text-xs text-muted-foreground">{l.nome}</span>
+                          <span className="ml-auto text-xs font-semibold tabular-nums text-sky-600">
+                            {l.score ?? "—"}
                           </span>
                         </button>
                       </li>
@@ -401,6 +553,7 @@ function PaginaRadar() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="sinal">Por sinal do radar</SelectItem>
+                    <SelectItem value="score">Melhor score de oportunidade</SelectItem>
                     <SelectItem value="dy">Maior DY 12m</SelectItem>
                     <SelectItem value="queda">Maior queda do dia</SelectItem>
                     <SelectItem value="minima52">Mais perto da mín. 52s</SelectItem>
@@ -449,7 +602,8 @@ function PaginaRadar() {
 
           <TabelaRadar
             linhas={ordenadas}
-
+            sparklines={sparklines}
+            carteira={carteiraPorTicker}
             carregandoPosicoes={carregando}
             aoSelecionar={setSelecionado}
           />

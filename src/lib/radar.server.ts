@@ -12,9 +12,13 @@
  */
 
 import { buscarHistorico, type Historico } from "@/lib/market.server";
-import { posicaoPercentil, type SinalRadar } from "@/lib/radar-base";
+import {
+  backtestSinal,
+  posicaoPercentil,
+  type ResultadoBacktest,
+  type SinalRadar,
+} from "@/lib/radar-base";
 import type { Json } from "@/integrations/supabase/types";
-import { SITE_URL } from "@/lib/seo";
 
 export type PosicaoHistorica = {
   ticker: string;
@@ -48,6 +52,8 @@ export type LinhaRadarBase = {
   pl: number | null;
   posicao: PosicaoHistorica | null;
   sinal: SinalRadar;
+  /** Score de oportunidade 0–100 (null sem histórico). */
+  score: number | null;
 };
 
 /** Ponto da série semanal para o gráfico (compacto). */
@@ -63,6 +69,7 @@ const TTL_SERIE_MS = 24 * 60 * 60 * 1000;
 const MAX_EM_VOO = 2;
 const ESPERA_ENTRE_LOADS_MS = 130;
 const MAX_PONTOS_GRAFICO = 240;
+const MAX_PONTOS_SPARKLINE = 40;
 
 let posicaoMemoria = new Map<string, { posicao: PosicaoHistorica; em: number }>();
 const serieMemoria = new Map<string, { serie: PosicaoSerie; em: number }>();
@@ -310,6 +317,72 @@ export async function serieParaGrafico(ticker: string): Promise<PosicaoSerie | n
 }
 
 /* ------------------------------------------------------------------ *
+ * Sparklines (mini-séries da tabela do radar)
+ * ------------------------------------------------------------------ */
+
+function ultimosSpark(serie: PosicaoSerie): number[] | null {
+  const valores = serie.pontos.map((p) => p.f).filter(Number.isFinite);
+  return valores.length >= 2 ? valores.slice(-MAX_PONTOS_SPARKLINE) : null;
+}
+
+/**
+ * Últimos ~40 fechamentos semanais por ticker para sparklines da tabela.
+ * Usa memória → cache do banco (uma consulta só) → Yahoo apenas para o que
+ * faltar (reaproveitando a carga de posições, que já grava as séries).
+ */
+export async function sparklinesParaTickers(tickers: string[]): Promise<Record<string, number[]>> {
+  const unicos = [...new Set(tickers.map((t) => t.toUpperCase()).filter(Boolean))];
+  const resultado: Record<string, number[]> = {};
+  if (!unicos.length) return resultado;
+
+  const falta: string[] = [];
+  for (const t of unicos) {
+    const mem = serieMemoria.get(t);
+    const spark = mem?.serie ? ultimosSpark(mem.serie) : null;
+    if (spark) {
+      resultado[t] = spark;
+    } else {
+      falta.push(t);
+    }
+  }
+
+  if (falta.length) {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data } = await supabaseAdmin
+        .from("cotacoes_cache")
+        .select("categoria, payload")
+        .in(
+          "categoria",
+          falta.map((t) => `radar:serie:${t}`),
+        );
+      for (const linha of data ?? []) {
+        const t = String(linha.categoria).replace(/^radar:serie:/, "");
+        const p = linha.payload as unknown as PosicaoSerie | null;
+        if (!p || !Array.isArray(p?.pontos) || !p.pontos.length) continue;
+        const serie = { pontos: p.pontos, inicioSerie: p.inicioSerie ?? null };
+        serieMemoria.set(t, { serie, em: Date.now() });
+        const spark = ultimosSpark(serie);
+        if (spark) resultado[t] = spark;
+      }
+    } catch {
+      /* sem banco: a carga de posições cobre */
+    }
+  }
+
+  const restantes = unicos.filter((t) => !resultado[t]);
+  if (restantes.length) {
+    await posicoesParaTickers(restantes);
+    for (const t of restantes) {
+      const mem = serieMemoria.get(t);
+      const spark = mem ? ultimosSpark(mem.serie) : null;
+      if (spark) resultado[t] = spark;
+    }
+  }
+  return resultado;
+}
+
+/* ------------------------------------------------------------------ *
  * Contexto macro (Banco Central) — cache de 15min em memória
  * ------------------------------------------------------------------ */
 
@@ -382,7 +455,8 @@ export async function buscarFatosExternos(ticker: string, nome: string): Promise
     const res = await fetch(url, {
       headers: {
         Accept: "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-        "User-Agent": `Mozilla/5.0 (compatible; ViverDeRenda/1.0; +${SITE_URL})`,
+        "User-Agent":
+          "Mozilla/5.0 (compatible; ViverDeRenda/1.0; +https://viverderendaem15anos.lovable.app)",
       },
       signal: controller.signal,
     });
@@ -465,6 +539,125 @@ async function gravarAnaliseIA(ticker: string, analise: AnaliseIA) {
     );
   } catch {
     /* best-effort */
+  }
+}
+
+/** Histórico do Técnico IA: cada análise gerada vira uma linha em `radar_analises`. */
+async function gravarHistoricoIA(ticker: string, analise: AnaliseIA) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("radar_analises").insert({
+      ticker,
+      veredito: analise.veredito,
+      tese: analise.tese,
+      riscos: analise.riscos,
+      gatilhos: analise.gatilhos,
+      fatores_externos: analise.fatoresExternos,
+      gerada_em: analise.geradaEm,
+    });
+  } catch {
+    /* best-effort */
+  }
+}
+
+/** Últimas análises do Técnico IA para um ativo, da mais recente para a mais antiga. */
+export async function lerHistoricoIA(ticker: string, qtd = 10): Promise<AnaliseIA[]> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("radar_analises")
+      .select("ticker, veredito, tese, riscos, gatilhos, fatores_externos, gerada_em")
+      .eq("ticker", ticker)
+      .order("gerada_em", { ascending: false })
+      .limit(qtd);
+    if (!Array.isArray(data)) return [];
+    return data.map((linha) => ({
+      ticker: linha.ticker,
+      veredito: linha.veredito as AnaliseIA["veredito"],
+      tese: linha.tese ?? "",
+      riscos: linha.riscos ?? "",
+      gatilhos: linha.gatilhos ?? "",
+      fatoresExternos: Array.isArray(linha.fatores_externos)
+        ? (linha.fatores_externos as unknown[]).map((f) => String(f)).slice(0, 3)
+        : [],
+      geradaEm: linha.gerada_em ?? "",
+    }));
+  } catch {
+    return [];
+  }
+}
+
+const TTL_BACKTEST_MS = 7 * 24 * 60 * 60 * 1000;
+const COLUNA_IBOV = "BOVA11";
+
+export type RespostaBacktest = {
+  ticker: string;
+  inicioSerie: string | null;
+  fimSerie: string | null;
+  resultado: ResultadoBacktest | null;
+  ibov: { inicioSerie: string | null; fimSerie: string | null; buyHoldPct: number | null } | null;
+  geradoEm: string;
+};
+
+function buyHoldDeSerie(serie: { data: string; fechamento: number }[]) {
+  const precos = serie.filter((p) => Number.isFinite(p.fechamento) && p.fechamento > 0);
+  const primeiro = precos[0]?.fechamento ?? null;
+  const ultimo = precos[precos.length - 1]?.fechamento ?? null;
+  return {
+    inicioSerie: precos[0]?.data ?? null,
+    fimSerie: precos[precos.length - 1]?.data ?? null,
+    buyHoldPct:
+      primeiro !== null && ultimo !== null && primeiro > 0 ? (ultimo / primeiro - 1) * 100 : null,
+  };
+}
+
+/**
+ * Backtest do sinal do radar para um ativo (série semanal completa do Yahoo),
+ * comparado ao buy-and-hold do ativo e do Ibovespa via BOVA11 no mesmo período.
+ * Resultado fica em cache por 7 dias.
+ */
+export async function backtestRadarAtivo(ticker: string): Promise<RespostaBacktest | null> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: cache } = await supabaseAdmin
+      .from("cotacoes_cache")
+      .select("payload, atualizado_em")
+      .eq("categoria", `radar:backtest:${ticker}`)
+      .maybeSingle();
+    if (cache?.payload) {
+      const vencido = Date.now() - new Date(cache.atualizado_em ?? 0).getTime() > TTL_BACKTEST_MS;
+      if (!vencido) return cache.payload as unknown as RespostaBacktest;
+    }
+
+    const [histAtivo, histIbov] = await Promise.all([
+      buscarHistorico(ticker, "max", "1wk").catch(() => null),
+      buscarHistorico(COLUNA_IBOV, "max", "1wk").catch(() => null),
+    ]);
+    const serieAtivo = histAtivo?.serie ?? [];
+    const resultado = backtestSinal(serieAtivo.map((p) => ({ f: p.fechamento })));
+    const ibov = histIbov ? buyHoldDeSerie(histIbov.serie) : null;
+
+    const resposta: RespostaBacktest = {
+      ticker,
+      inicioSerie: serieAtivo[0]?.data ?? null,
+      fimSerie: serieAtivo[serieAtivo.length - 1]?.data ?? null,
+      resultado,
+      ibov,
+      geradoEm: new Date().toISOString(),
+    };
+    await supabaseAdmin.from("cotacoes_cache").upsert(
+      {
+        categoria: `radar:backtest:${ticker}`,
+        payload: JSON.parse(JSON.stringify(resposta)),
+        parcial: false,
+        atualizado_em: new Date().toISOString(),
+      },
+      { onConflict: "categoria" },
+    );
+    return resposta;
+  } catch (e) {
+    console.error(`Radar backtest falhou para ${ticker}:`, e);
+    return null;
   }
 }
 
@@ -596,6 +789,7 @@ export async function gerarAnaliseIA(
       geradaEm: new Date().toISOString(),
     };
     await gravarAnaliseIA(ticker, analise);
+    await gravarHistoricoIA(ticker, analise);
     return analise;
   } catch (e) {
     console.error(`Radar IA falhou para ${ticker}:`, e);

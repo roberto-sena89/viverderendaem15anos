@@ -332,6 +332,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      radar_analises: {
+        Row: {
+          fatores_externos: Json;
+          gatilhos: string | null;
+          gerada_em: string;
+          id: number;
+          riscos: string | null;
+          tese: string | null;
+          ticker: string;
+          veredito: string;
+        };
+        Insert: {
+          fatores_externos?: Json;
+          gatilhos?: string | null;
+          gerada_em?: string;
+          id?: number;
+          riscos?: string | null;
+          tese?: string | null;
+          ticker: string;
+          veredito: string;
+        };
+        Update: {
+          fatores_externos?: Json;
+          gatilhos?: string | null;
+          gerada_em?: string;
+          id?: number;
+          riscos?: string | null;
+          tese?: string | null;
+          ticker?: string;
+          veredito?: string;
+        };
+        Relationships: [];
+      };
       preferencias_mercado: {
         Row: {
           created_at: string;

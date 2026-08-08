@@ -16,12 +16,16 @@ export interface AlertaDisparado {
   lido: boolean;
   /** Canais em que o alerta foi entregue. */
   canais: string[];
-  /** Origem do alerta: variação de preço (padrão) ou notícia. */
-  tipo?: "preco" | "noticia";
+  /** Origem do alerta: variação de preço (padrão), notícia ou Técnico IA. */
+  tipo?: "preco" | "noticia" | "veredito";
   /** Título da notícia, quando tipo = "noticia". */
   titulo?: string;
   /** Link da notícia, quando tipo = "noticia". */
   url?: string;
+  /** Veredito anterior, quando tipo = "veredito" (mudança do Técnico IA). */
+  vereditoDe?: string;
+  /** Veredito novo, quando tipo = "veredito" (mudança do Técnico IA). */
+  vereditoPara?: string;
 }
 
 const CHAVE = "alertas:historico";

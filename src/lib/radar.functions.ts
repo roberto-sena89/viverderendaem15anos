@@ -6,10 +6,22 @@
  */
 
 import { createServerFn } from "@tanstack/react-start";
-import type { AnaliseIA, LinhaRadarBase, PosicaoHistorica, PosicaoSerie } from "@/lib/radar.server";
-import { sinalRadar } from "@/lib/radar-base";
+import type {
+  AnaliseIA,
+  LinhaRadarBase,
+  PosicaoHistorica,
+  PosicaoSerie,
+  RespostaBacktest,
+} from "@/lib/radar.server";
+import { scoreOportunidade, sinalRadar } from "@/lib/radar-base";
 
-export type { AnaliseIA, LinhaRadarBase, PosicaoHistorica, PosicaoSerie };
+export type { AnaliseIA, LinhaRadarBase, PosicaoHistorica, PosicaoSerie, RespostaBacktest };
+
+/** Resposta de posições: posição histórica + mini-série para sparkline. */
+export interface RadarPosicoesResposta {
+  posicoes: Record<string, PosicaoHistorica>;
+  sparklines: Record<string, number[]>;
+}
 
 export interface NoticiaResumo {
   id: string;
@@ -161,6 +173,12 @@ export const radarVisao = createServerFn({ method: "GET" })
         percentil: posicao?.percentil ?? null,
         noticiaImpacto: noticiasDoTicker.some((n) => n.urgente),
       });
+      const score = scoreOportunidade({
+        percentil: posicao?.percentil ?? null,
+        dy12: raw.dy12 ?? null,
+        drawdownMaximoPct: posicao?.drawdownMaximoPct ?? null,
+        noticiaImpacto: noticiasDoTicker.some((n) => n.urgente),
+      });
 
       contagem.total++;
       if (posicao) {
@@ -191,6 +209,7 @@ export const radarVisao = createServerFn({ method: "GET" })
         pl: "pl" in raw ? (raw.pl ?? null) : null,
         posicao,
         sinal,
+        score,
       });
     }
 
@@ -216,10 +235,14 @@ export const radarPosicoes = createServerFn({ method: "GET" })
       ? [...new Set(d.tickers.map((t) => String(t).trim().toUpperCase()))].slice(0, 120)
       : [],
   }))
-  .handler(async ({ data }): Promise<Record<string, PosicaoHistorica>> => {
-    if (!data.tickers.length) return {};
+  .handler(async ({ data }): Promise<RadarPosicoesResposta> => {
+    if (!data.tickers.length) return { posicoes: {}, sparklines: {} };
     const radarFx = await import("@/lib/radar.server");
-    return radarFx.posicoesParaTickers(data.tickers);
+    const [posicoes, sparklines] = await Promise.all([
+      radarFx.posicoesParaTickers(data.tickers),
+      radarFx.sparklinesParaTickers(data.tickers),
+    ]);
+    return { posicoes, sparklines };
   });
 
 /** Série semanal (desde o início) para o gráfico de um ativo. */
@@ -381,4 +404,26 @@ export const radarAnaliseIA = createServerFn({ method: "GET" })
     const lovableApiKey = process.env.LOVABLE_API_KEY;
     if (!lovableApiKey) return null;
     return radarServer.gerarAnaliseIA(data.ticker, lovableApiKey);
+  });
+
+/** Histórico do Técnico IA para um ativo (da mais recente para a mais antiga). */
+export const radarHistoricoIA = createServerFn({ method: "GET" })
+  .inputValidator((d: { ticker?: unknown } | undefined) => ({
+    ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
+  }))
+  .handler(async ({ data }): Promise<AnaliseIA[]> => {
+    if (!data.ticker) return [];
+    const radarServer = await import("@/lib/radar.server");
+    return radarServer.lerHistoricoIA(data.ticker);
+  });
+
+/** Backtest do sinal do radar para um ativo (+ buy-and-hold do Ibovespa via BOVA11). */
+export const radarBacktest = createServerFn({ method: "GET" })
+  .inputValidator((d: { ticker?: unknown } | undefined) => ({
+    ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
+  }))
+  .handler(async ({ data }): Promise<RespostaBacktest | null> => {
+    if (!data.ticker) return null;
+    const radarServer = await import("@/lib/radar.server");
+    return radarServer.backtestRadarAtivo(data.ticker);
   });

@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  BT_LUCRO_ALVO_PCT,
   LIMITE_ALTA,
   LIMITE_BAIXA,
   LIMITE_MEDIA,
+  backtestSinal,
   posicaoPercentil,
+  rotuloScore,
+  scoreOportunidade,
   sinalRadar,
   zonaDePercentil,
 } from "@/lib/radar-base";
@@ -145,6 +149,54 @@ describe("sinalRadar", () => {
     expect(sinal.tipo).toBe("manter");
   });
 
+  it("não cai em sem-dados na faixa cara (70–90%) do histórico", () => {
+    const sinal = sinalRadar({
+      variacaoDia: 1,
+      dy12: 6,
+      pvp: 2,
+      percentil: 75,
+      noticiaImpacto: false,
+    });
+    expect(sinal.tipo).toBe("manter");
+    expect(sinal.motivo).toContain("caro");
+    expect(sinal.zona).toBe("alta");
+  });
+
+  it("mantém exatamente no limite de 90% da faixa", () => {
+    const sinal = sinalRadar({
+      variacaoDia: 1,
+      dy12: 4,
+      pvp: 1,
+      percentil: 90,
+      noticiaImpacto: false,
+    });
+    expect(sinal.tipo).toBe("manter");
+  });
+
+  it("observa nas mínimas com DY atrativo mas P/VPA de armadilha", () => {
+    const sinal = sinalRadar({
+      variacaoDia: 1,
+      dy12: 8,
+      pvp: 3.2,
+      percentil: 12,
+      noticiaImpacto: false,
+    });
+    expect(sinal.tipo).toBe("observar");
+    expect(sinal.motivo).toContain("armadilha de valor");
+  });
+
+  it("observa na faixa barata quando o P/VPA é muito alto", () => {
+    const sinal = sinalRadar({
+      variacaoDia: 0,
+      dy12: 6,
+      pvp: 4.1,
+      percentil: 38,
+      noticiaImpacto: false,
+    });
+    expect(sinal.tipo).toBe("observar");
+    expect(sinal.zona).toBe("baixa");
+  });
+
   it("evita comprar no topo mesmo com DY elevado", () => {
     const sinal = sinalRadar({
       variacaoDia: 0,
@@ -165,5 +217,127 @@ describe("sinalRadar", () => {
       noticiaImpacto: false,
     });
     expect(sinal.tipo).toBe("sem-dados");
+  });
+});
+
+describe("scoreOportunidade", () => {
+  it("premia posição nas mínimas com DY alto", () => {
+    const score = scoreOportunidade({
+      percentil: 10,
+      dy12: 10,
+      drawdownMaximoPct: -20,
+      noticiaImpacto: false,
+    });
+    expect(score).not.toBeNull();
+    expect(score!).toBeGreaterThanOrEqual(70);
+    expect(rotuloScore(score!)).toBe("excelente");
+  });
+
+  it("penaliza o topo do histórico mesmo com DY alto", () => {
+    const score = scoreOportunidade({
+      percentil: 95,
+      dy12: 9,
+      drawdownMaximoPct: -10,
+      noticiaImpacto: false,
+    });
+    expect(score!).toBeLessThan(50);
+    expect(rotuloScore(score!)).toBe("media");
+  });
+
+  it("sem histórico devolve null", () => {
+    expect(
+      scoreOportunidade({
+        percentil: null,
+        dy12: 8,
+        drawdownMaximoPct: null,
+        noticiaImpacto: false,
+      }),
+    ).toBeNull();
+  });
+
+  it("desconta notícia de alto impacto", () => {
+    const base = { percentil: 20, dy12: 8, drawdownMaximoPct: -25 };
+    const semNoticia = scoreOportunidade({ ...base, noticiaImpacto: false })!;
+    const comNoticia = scoreOportunidade({ ...base, noticiaImpacto: true })!;
+    expect(comNoticia).toBeLessThan(semNoticia);
+  });
+
+  it("penaliza drawdown máximo profundo", () => {
+    const leve = scoreOportunidade({
+      percentil: 30,
+      dy12: 6,
+      drawdownMaximoPct: -15,
+      noticiaImpacto: false,
+    })!;
+    const profundo = scoreOportunidade({
+      percentil: 30,
+      dy12: 6,
+      drawdownMaximoPct: -75,
+      noticiaImpacto: false,
+    })!;
+    expect(profundo).toBeLessThan(leve);
+  });
+
+  it("mantém o score dentro da faixa 0–100", () => {
+    const score = scoreOportunidade({
+      percentil: 0,
+      dy12: 30,
+      drawdownMaximoPct: 0,
+      noticiaImpacto: true,
+    })!;
+    expect(score).toBeGreaterThanOrEqual(0);
+    expect(score).toBeLessThanOrEqual(100);
+  });
+});
+
+describe("backtestSinal", () => {
+  it("retorna null com série curta demais", () => {
+    const curta = Array.from({ length: 30 }, (_, i) => ({ f: 10 + i }));
+    expect(backtestSinal(curta)).toBeNull();
+  });
+
+  it("não compra em tendência de alta constante após a mínima inicial", () => {
+    // 200 semanas subindo 2% por semana: o preço nunca volta à vizinhança da mínima 52s.
+    const serie = Array.from({ length: 200 }, (_, i) => ({ f: 100 * 1.02 ** i }));
+    const resultado = backtestSinal(serie)!;
+    expect(resultado).not.toBeNull();
+    expect(resultado.negocios).toBe(0);
+  });
+
+  it("compra na queda e vende ao bater o lucro-alvo", () => {
+    // 180 semanas em queda suave (compra perto do fundo), depois retomada até +20%.
+    const serie: Array<{ f: number }> = [];
+    for (let i = 0; i < 180; i++) serie.push({ f: 100 - i * 0.45 });
+    const fundo = serie[serie.length - 1].f;
+    for (let i = 0; i < 12; i++) serie.push({ f: fundo * (1 + 0.02 * (i + 1)) });
+    const resultado = backtestSinal(serie)!;
+    expect(resultado.negocios).toBeGreaterThanOrEqual(1);
+    expect(resultado.vencedores).toBeGreaterThanOrEqual(1);
+    expect(resultado.taxaAcertoPct).toBeGreaterThan(0);
+  });
+
+  it("aciona a proteção quando o preço despenca após a compra", () => {
+    const serie: Array<{ f: number }> = [];
+    let preco = 100;
+    for (let i = 0; i < 60; i++) {
+      serie.push({ f: preco });
+      preco -= 1.5; // queda constante de 1,5% ao dia
+    }
+    for (let i = 0; i < 40; i++) {
+      serie.push({ f: preco });
+      preco *= 0.95; // queda adicional alta
+    }
+    const resultado = backtestSinal(serie)!;
+    // Sempre há um negócio (líquida no fim) e o stop foi tocado: retorno < lucro-alvo.
+    expect(resultado.negocios).toBeGreaterThanOrEqual(1);
+    expect(resultado.retornoMedioPct).toBeLessThan(BT_LUCRO_ALVO_PCT);
+  });
+
+  it("calcula o buy-and-hold como o salto da ponta a ponta", () => {
+    const serie = Array.from({ length: 150 }, (_, i) => ({ f: 50 + i }));
+    const resultado = backtestSinal(serie)!;
+    const esperado = ((149 - 0) / 50) * 100;
+    expect(resultado.buyHoldPct).toBeCloseTo(esperado, 6);
+    expect(resultado.buyHoldAnualPct).toBeGreaterThan(0);
   });
 });
