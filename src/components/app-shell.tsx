@@ -149,8 +149,16 @@ export function AppShell({
       <a href="#conteudo" className="link-pular">
         Pular para o conteúdo
       </a>
-      <aside className="sticky top-0 z-30 hidden h-dvh w-64 shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar px-3 py-3 lg:flex">
-        <Link to="/" className="mb-3 flex shrink-0 items-center gap-2.5 px-1">
+      <aside
+        data-recolhida={recolhida ? "true" : "false"}
+        className={`sticky top-0 z-30 hidden h-dvh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar py-3 transition-[width] duration-200 lg:flex ${
+          recolhida ? "w-[4.5rem] px-2" : "w-64 px-3"
+        }`}
+      >
+        <Link
+          to="/"
+          className={`mb-3 flex shrink-0 items-center gap-2.5 ${recolhida ? "justify-center px-0" : "px-1"}`}
+        >
           <img
             src={logoIcone}
             alt="Viver de Renda em 15 Anos"
@@ -159,21 +167,41 @@ export function AppShell({
             className="size-9 shrink-0 rounded-xl object-contain"
           />
 
-          <span className="font-brand text-sm leading-[1.15] font-bold text-sidebar-foreground uppercase">
-            VIVER DE RENDA
-            <br />
-            <span className="font-brand text-xs font-semibold tracking-[0.1em] text-muted-foreground">
-              EM 15 ANOS
+          {!recolhida && (
+            <span className="font-brand text-sm leading-[1.15] font-bold text-sidebar-foreground uppercase">
+              VIVER DE RENDA
+              <br />
+              <span className="font-brand text-xs font-semibold tracking-[0.1em] text-muted-foreground">
+                EM 15 ANOS
+              </span>
             </span>
-          </span>
+          )}
         </Link>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={alternarSidebar}
+          aria-label={recolhida ? "Expandir menu lateral" : "Recolher menu lateral"}
+          aria-expanded={!recolhida}
+          title={recolhida ? "Expandir menu" : "Recolher menu"}
+          className={`mb-2 size-8 shrink-0 text-muted-foreground ${recolhida ? "self-center" : "self-end"}`}
+        >
+          {recolhida ? (
+            <PanelLeftOpen className="size-4" />
+          ) : (
+            <PanelLeftClose className="size-4" />
+          )}
+        </Button>
 
         <nav className="scrollbar-none flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain">
           {grupos.map((grupo, i) => (
             <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-2" : ""}>
-              <p className="mb-1 px-3 text-[0.68rem] leading-none font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-                {grupo.titulo}
-              </p>
+              {!recolhida && (
+                <p className="mb-1 px-3 text-[0.68rem] leading-none font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                  {grupo.titulo}
+                </p>
+              )}
               <div className="flex flex-col gap-0.5">
                 {grupo.itens.map(({ to, label, icon: Icon }) => {
                   const active = pathname === to;
@@ -182,19 +210,22 @@ export function AppShell({
                       key={to}
                       to={to}
                       aria-current={active ? "page" : undefined}
-                      className={`group relative flex min-h-11 items-center gap-2.5 rounded-lg py-1.5 pr-3 pl-4 text-[0.82rem] leading-none transition-colors lg:min-h-8 ${
+                      title={label}
+                      className={`group relative flex min-h-11 items-center gap-2.5 rounded-lg py-1.5 text-[0.82rem] leading-none transition-colors lg:min-h-8 ${
+                        recolhida ? "justify-center px-0" : "pr-3 pl-4"
+                      } ${
                         active
                           ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
                           : "font-medium text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
                       }`}
                     >
-                      {active ? (
+                      {active && !recolhida ? (
                         <span className="absolute top-1.5 bottom-1.5 left-0 w-[3px] rounded-full bg-gradient-brand" />
                       ) : null}
                       <Icon
                         className={`size-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"}`}
                       />
-                      <span className="truncate">{label}</span>
+                      <span className={recolhida ? "sr-only" : "truncate"}>{label}</span>
                     </Link>
                   );
                 })}
@@ -203,20 +234,25 @@ export function AppShell({
           ))}
         </nav>
 
-        <div className="mt-2.5 flex shrink-0 items-center gap-2.5 rounded-xl border border-sidebar-border p-2">
-
+        <div
+          className={`mt-2.5 flex shrink-0 items-center gap-2.5 rounded-xl border border-sidebar-border p-2 ${
+            recolhida ? "flex-col" : ""
+          }`}
+        >
           <Avatar className="size-9">
             {user?.avatar ? <AvatarImage src={user.avatar} alt={user.name} /> : null}
             <AvatarFallback className="bg-primary-soft text-xs text-accent-foreground">
               {initials || "IN"}
             </AvatarFallback>
           </Avatar>
-          <div className="min-w-0 flex-1 text-xs">
-            <p className="truncate font-medium text-sidebar-foreground">
-              {user?.name ?? "Investidor"}
-            </p>
-            <p className="truncate text-muted-foreground">{user?.email ?? "Perfil moderado"}</p>
-          </div>
+          {!recolhida && (
+            <div className="min-w-0 flex-1 text-xs">
+              <p className="truncate font-medium text-sidebar-foreground">
+                {user?.name ?? "Investidor"}
+              </p>
+              <p className="truncate text-muted-foreground">{user?.email ?? "Perfil moderado"}</p>
+            </div>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -228,6 +264,7 @@ export function AppShell({
           </Button>
         </div>
       </aside>
+
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header
