@@ -389,6 +389,42 @@ export type Database = {
         }
         Relationships: []
       }
+      radar_analises: {
+        Row: {
+          created_at: string
+          fatores_externos: Json
+          gatilhos: string | null
+          gerada_em: string
+          id: string
+          riscos: string | null
+          tese: string | null
+          ticker: string
+          veredito: string
+        }
+        Insert: {
+          created_at?: string
+          fatores_externos?: Json
+          gatilhos?: string | null
+          gerada_em?: string
+          id?: string
+          riscos?: string | null
+          tese?: string | null
+          ticker: string
+          veredito: string
+        }
+        Update: {
+          created_at?: string
+          fatores_externos?: Json
+          gatilhos?: string | null
+          gerada_em?: string
+          id?: string
+          riscos?: string | null
+          tese?: string | null
+          ticker?: string
+          veredito?: string
+        }
+        Relationships: []
+      }
       relatorios: {
         Row: {
           created_at: string
