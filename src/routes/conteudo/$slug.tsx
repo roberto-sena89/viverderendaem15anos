@@ -188,7 +188,9 @@ function BlocoRendaHoje() {
 }
 
 function ConteudoPage() {
-  const conteudo = Route.useLoaderData();
+  const { slug } = Route.useParams();
+  const conteudo = CONTEUDO_POR_SLUG.get(slug);
+  if (!conteudo) return null;
   const relacionados = conteudosRelacionados(conteudo.slug, 4);
   const temMaisDaCategoria = relacionados.some((c) => c.categoria === conteudo.categoria);
 
