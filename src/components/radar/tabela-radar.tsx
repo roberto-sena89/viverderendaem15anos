@@ -141,8 +141,9 @@ export function TabelaRadar({
                 </div>
               </TableCell>
               <TableCell className="hidden lg:table-cell">
-                <span className="text-xs text-muted-foreground">{l.setor ?? "—"}</span>
+                <span className="block truncate text-xs text-muted-foreground">{l.setor ?? "—"}</span>
               </TableCell>
+
               <TableCell className="text-right tabular-nums">
                 {l.preco !== null ? fmtPreco(l.preco, "BRL") : "—"}
               </TableCell>
