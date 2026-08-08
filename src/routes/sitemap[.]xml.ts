@@ -29,6 +29,11 @@ export const Route = createFileRoute("/sitemap.xml")({
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/calculadora-juros-compostos", changefreq: "monthly", priority: "0.9" },
+          {
+            path: "/calculadora-independencia-financeira",
+            changefreq: "monthly",
+            priority: "0.9",
+          },
           { path: "/quanto-rende-1-milhao-por-mes", changefreq: "monthly", priority: "0.9" },
           { path: "/o-que-e-renda-passiva", changefreq: "monthly", priority: "0.9" },
 
