@@ -121,7 +121,10 @@ export function TabelaRadar({
             <TableHead className="w-[8%] whitespace-nowrap text-right">DY 12m</TableHead>
             <TableHead className="w-[8%] whitespace-nowrap text-right">P/VPA</TableHead>
             <TableHead className="w-[14%]">Histórico</TableHead>
-            <TableHead className="hidden w-[8%] whitespace-nowrap xl:table-cell">Mín. 52s</TableHead>
+            <TableHead className="hidden w-[8%] whitespace-nowrap text-center xl:table-cell">
+              Mín. 52s
+            </TableHead>
+
             <TableHead className="hidden w-[8%] lg:table-cell">Notícias</TableHead>
             <TableHead className="w-[10%] pr-4">Sinal</TableHead>
           </TableRow>
