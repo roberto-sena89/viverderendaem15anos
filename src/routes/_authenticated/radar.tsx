@@ -386,6 +386,21 @@ function PaginaRadar() {
                   <SelectItem value="minima52">Mais perto da mín. 52s</SelectItem>
                 </SelectContent>
               </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setDirecao((d) => (d === "desc" ? "asc" : "desc"))}
+                title="Inverter a ordem da página"
+                aria-label={`Ordenar página: ${direcao === "desc" ? "decrescente" : "crescente"}`}
+              >
+                {direcao === "desc" ? (
+                  <ArrowDownWideNarrow className="mr-1 size-4" aria-hidden />
+                ) : (
+                  <ArrowUpNarrowWide className="mr-1 size-4" aria-hidden />
+                )}
+                Ordenar
+              </Button>
               <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Switch checked={apenasPosicao} onCheckedChange={setApenasPosicao} />
                 Com histórico
