@@ -93,17 +93,18 @@ export function TabelaRadar({
       <Table className="w-full min-w-[720px] table-fixed">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[24%] min-w-[150px] pl-4">Ativo</TableHead>
+            <TableHead className="w-[22%] min-w-[150px] pl-4">Ativo</TableHead>
             <TableHead className="hidden w-[13%] lg:table-cell">Setor / Tipo</TableHead>
             <TableHead className="w-[10%] whitespace-nowrap text-right">Preço</TableHead>
             <TableHead className="w-[9%] whitespace-nowrap text-right">Variação</TableHead>
             <TableHead className="w-[8%] whitespace-nowrap text-right">DY 12m</TableHead>
             <TableHead className="w-[8%] whitespace-nowrap text-right">P/VPA</TableHead>
-            <TableHead className="w-[12%]">Histórico</TableHead>
+            <TableHead className="w-[14%]">Histórico</TableHead>
             <TableHead className="hidden w-[8%] whitespace-nowrap text-center xl:table-cell">
               Mín. 52s
             </TableHead>
-            <TableHead className="w-[8%] pr-4">Sinal</TableHead>
+            <TableHead className="w-[12%] pr-4">Sinal</TableHead>
+
 
           </TableRow>
         </TableHeader>
@@ -143,11 +144,11 @@ export function TabelaRadar({
               <TableCell className="text-right tabular-nums text-muted-foreground">
                 {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
               </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
+              <TableCell className="overflow-hidden">
+                <div className="flex min-w-0 items-center gap-2">
                   <BarraPercentil percentil={l.posicao?.percentil ?? null} />
                   {l.posicao ? (
-                    <span className="hidden text-xs text-muted-foreground xl:inline">
+                    <span className="hidden truncate text-xs text-muted-foreground xl:inline">
                       {ROTULOS_ZONA[l.sinal.zona]}
                     </span>
                   ) : null}
@@ -159,6 +160,7 @@ export function TabelaRadar({
               <TableCell className="pr-4">
                 <SinalBadge sinal={l.sinal} />
               </TableCell>
+
             </TableRow>
           ))}
         </TableBody>
