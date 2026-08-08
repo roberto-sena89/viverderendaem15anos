@@ -442,7 +442,7 @@ function PaginaRadar() {
 
           <TabelaRadar
             linhas={ordenadas}
-            noticiasPorTicker={visao.noticiasImpacto}
+            
             carregandoPosicoes={carregando}
             aoSelecionar={setSelecionado}
           />

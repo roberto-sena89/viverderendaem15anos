@@ -14,8 +14,6 @@ import {
 import { fmtPercent, fmtPreco, corVar } from "@/components/cotacoes/formatos";
 import { CORES_SINAL, ROTULOS_ZONA, type SinalRadar } from "@/lib/radar-base";
 import type { LinhaRadarBase } from "@/lib/radar.server";
-import type { NoticiaResumo } from "@/lib/radar.functions";
-import { Newspaper } from "lucide-react";
 
 const ROTULOS_SINAL: Record<SinalRadar["tipo"], string> = {
   comprar: "Comprar",
@@ -71,32 +69,13 @@ function Distancia52s({ pct }: { pct: number | null }) {
 }
 
 
-/** Noticiário recente do ativo: chip com contagem e título das últimas manchetes. */
-function NoticiasChip({ noticias }: { noticias: NoticiaResumo[] }) {
-  if (!noticias.length) return <span className="text-xs text-muted-foreground">—</span>;
-  const urgentes = noticias.filter((n) => n.urgente).length;
-  return (
-    <span
-      title={noticias.map((n) => n.titulo).join("\n")}
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-        urgentes ? "bg-red-600/10 text-red-600" : "bg-muted/60 text-muted-foreground"
-      }`}
-    >
-      <Newspaper className="size-3" aria-hidden />
-      {noticias.length}
-      {urgentes ? <span className="font-bold">· {urgentes} urgente</span> : null}
-    </span>
-  );
-}
-
 export function TabelaRadar({
   linhas,
-  noticiasPorTicker,
   carregandoPosicoes,
   aoSelecionar,
 }: {
   linhas: (LinhaRadarBase & { sinal: SinalRadar })[];
-  noticiasPorTicker: Record<string, NoticiaResumo[]>;
+
   carregandoPosicoes: boolean;
   aoSelecionar: (linha: LinhaRadarBase) => void;
 }) {
@@ -125,7 +104,7 @@ export function TabelaRadar({
               Mín. 52s
             </TableHead>
 
-            <TableHead className="hidden w-[8%] lg:table-cell">Notícias</TableHead>
+            
             <TableHead className="w-[10%] pr-4">Sinal</TableHead>
           </TableRow>
         </TableHeader>
@@ -177,9 +156,6 @@ export function TabelaRadar({
               </TableCell>
               <TableCell className="hidden text-center xl:table-cell">
                 <Distancia52s pct={l.posicao?.distMinima52sPct ?? null} />
-              </TableCell>
-              <TableCell className="hidden lg:table-cell">
-                <NoticiasChip noticias={noticiasPorTicker[l.ticker] ?? []} />
               </TableCell>
               <TableCell className="pr-4">
                 <SinalBadge sinal={l.sinal} />
