@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CalculadoraIndependenciaFinanceiraRouteImport } from './routes/calculadora-independencia-financeira'
 import { Route as CalculadoraJurosCompostosRouteImport } from './routes/calculadora-juros-compostos'
 import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -61,6 +62,12 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalculadoraIndependenciaFinanceiraRoute =
+  CalculadoraIndependenciaFinanceiraRouteImport.update({
+    id: '/calculadora-independencia-financeira',
+    path: '/calculadora-independencia-financeira',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CalculadoraJurosCompostosRoute =
   CalculadoraJurosCompostosRouteImport.update({
     id: '/calculadora-juros-compostos',
@@ -245,6 +252,7 @@ const ApiPublicStreamCotacoesRoute = ApiPublicStreamCotacoesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/calculadora-independencia-financeira': typeof CalculadoraIndependenciaFinanceiraRoute
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
@@ -283,6 +291,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/calculadora-independencia-financeira': typeof CalculadoraIndependenciaFinanceiraRoute
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
@@ -323,6 +332,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/calculadora-independencia-financeira': typeof CalculadoraIndependenciaFinanceiraRoute
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
@@ -363,6 +373,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/calculadora-independencia-financeira'
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
@@ -401,6 +412,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/calculadora-independencia-financeira'
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
@@ -440,6 +452,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/calculadora-independencia-financeira'
     | '/calculadora-juros-compostos'
     | '/guia-liberdade-financeira'
     | '/mcp'
@@ -480,6 +493,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CalculadoraIndependenciaFinanceiraRoute: typeof CalculadoraIndependenciaFinanceiraRoute
   CalculadoraJurosCompostosRoute: typeof CalculadoraJurosCompostosRoute
   GuiaLiberdadeFinanceiraRoute: typeof GuiaLiberdadeFinanceiraRoute
   McpRoute: typeof McpRoute
@@ -523,6 +537,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calculadora-independencia-financeira': {
+      id: '/calculadora-independencia-financeira'
+      path: '/calculadora-independencia-financeira'
+      fullPath: '/calculadora-independencia-financeira'
+      preLoaderRoute: typeof CalculadoraIndependenciaFinanceiraRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calculadora-juros-compostos': {
@@ -807,6 +828,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CalculadoraIndependenciaFinanceiraRoute:
+    CalculadoraIndependenciaFinanceiraRoute,
   CalculadoraJurosCompostosRoute: CalculadoraJurosCompostosRoute,
   GuiaLiberdadeFinanceiraRoute: GuiaLiberdadeFinanceiraRoute,
   McpRoute: McpRoute,
