@@ -175,7 +175,7 @@ export function TabelaRadar({
                   ) : null}
                 </div>
               </TableCell>
-              <TableCell className="hidden xl:table-cell">
+              <TableCell className="hidden text-center xl:table-cell">
                 <Distancia52s pct={l.posicao?.distMinima52sPct ?? null} />
               </TableCell>
               <TableCell className="hidden lg:table-cell">
