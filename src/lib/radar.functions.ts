@@ -391,20 +391,54 @@ export const radarDetalhe = createServerFn({ method: "GET" })
     };
   });
 
+export interface ResultadoAnaliseIA {
+  analise: AnaliseIA | null;
+  erro?: string | null;
+}
+
 /** Análise gerada pelo Técnico IA para um ativo (cache de 72h no servidor). */
 export const radarAnaliseIA = createServerFn({ method: "GET" })
-  .inputValidator((d: { ticker?: unknown } | undefined) => ({
+  .inputValidator((d: { ticker?: unknown; forcar?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
+    forcar: d?.forcar === true,
   }))
-  .handler(async ({ data }): Promise<AnaliseIA | null> => {
-    if (!data.ticker) return null;
-    const radarServer = await import("@/lib/radar.server");
-    const cache = await radarServer.lerAnaliseIA(data.ticker);
-    if (cache) return cache;
-    const lovableApiKey = process.env.LOVABLE_API_KEY;
-    if (!lovableApiKey) return null;
-    return radarServer.gerarAnaliseIA(data.ticker, lovableApiKey);
-  });
+  .handler(
+    async ({
+      data,
+    }: {
+      data: { ticker: string; forcar: boolean };
+    }): Promise<ResultadoAnaliseIA> => {
+      if (!data.ticker) return { analise: null, erro: null };
+      const radarServer = await import("@/lib/radar.server");
+      if (!data.forcar) {
+        const cache = await radarServer.lerAnaliseIA(data.ticker).catch(() => null);
+        if (cache) return { analise: cache };
+      }
+      const lovableApiKey = process.env.LOVABLE_API_KEY;
+      if (!lovableApiKey) {
+        return {
+          analise: null,
+          erro: "A geração de IA não está configurada neste ambiente. Peça ao administrador para definir a chave LOVABLE_API_KEY.",
+        };
+      }
+      try {
+        const analise = await radarServer.gerarAnaliseIA(data.ticker, lovableApiKey);
+        return {
+          analise,
+          erro: analise
+            ? null
+            : "O Técnico IA não conseguiu montar a análise agora. Tente novamente em instantes.",
+        };
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "erro desconhecido";
+        console.error(`Radar IA falhou para ${data.ticker}:`, e);
+        return {
+          analise: null,
+          erro: `Falha ao gerar a análise: ${msg}`,
+        };
+      }
+    },
+  );
 
 /** Histórico do Técnico IA para um ativo (da mais recente para a mais antiga). */
 export const radarHistoricoIA = createServerFn({ method: "GET" })

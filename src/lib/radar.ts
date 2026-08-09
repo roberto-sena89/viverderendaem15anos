@@ -67,16 +67,16 @@ export function useRadarPosicoes(tickers: string[], habilitado: boolean) {
   };
 }
 
-/** Análise do Técnico IA para o ticker selecionado (cache 72h no servidor). */
-export function useRadarAnaliseIA(ticker: string | null) {
+/** Análise do Técnico IA para o ticker selecionado (cache 72h; versao > 0 força). */
+export function useRadarAnaliseIA(ticker: string | null, versao = 0) {
   const buscar = useServerFn(radarAnaliseIA);
   return useQuery({
-    queryKey: ["radar", "ia", ticker ?? ""],
+    queryKey: ["radar", "ia", ticker ?? "", versao],
     enabled: Boolean(ticker),
-    staleTime: 72 * 60 * 60 * 1000,
+    staleTime: versao > 0 ? 0 : 72 * 60 * 60 * 1000,
     gcTime: 24 * 60 * 60 * 1000,
     refetchOnWindowFocus: false,
-    queryFn: () => buscar({ data: { ticker: ticker as string } }),
+    queryFn: () => buscar({ data: { ticker: ticker as string, forcar: versao > 0 } }),
   });
 }
 

@@ -958,6 +958,6 @@ export async function gerarAnaliseIA(
     return analise;
   } catch (e) {
     console.error(`Radar IA falhou para ${ticker}:`, e);
-    return null;
+    throw e instanceof Error ? e : new Error("Falha desconhecida do Técnico IA.");
   }
 }

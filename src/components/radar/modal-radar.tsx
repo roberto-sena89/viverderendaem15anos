@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { History, Sparkles, FlaskConical } from "lucide-react";
+import { History, Loader2, Sparkles, FlaskConical } from "lucide-react";
 import { fmtPreco } from "@/components/cotacoes/formatos";
 import { CORES_SINAL, ROTULOS_ZONA } from "@/lib/radar-base";
 import {
@@ -314,15 +314,23 @@ export function ModalRadar({
 }) {
   const ticker = aberto ? (linha?.ticker ?? null) : null;
   const detalhe = useRadarDetalhe(ticker);
-  const ia = useRadarAnaliseIA(ticker);
+  const [versaoIA, setVersaoIA] = useState(0);
+  const ia = useRadarAnaliseIA(ticker, versaoIA);
   const historico = useRadarHistoricoIA(ticker);
   const [pedidoBacktest, setPedidoBacktest] = useState(false);
   const backtestQuery = useRadarBacktest(pedidoBacktest ? ticker : null, Boolean(ticker));
+
+  // Toda ocorrência de mudança de versão pede uma análise nova, sem cache.
+  useEffect(() => {
+    setVersaoIA(0);
+  }, [ticker]);
 
   const serie = detalhe.data?.serie?.pontos ?? [];
   const posicao = detalhe.data?.posicao ?? linha?.posicao ?? null;
   const fundamentos = detalhe.data?.fundamentos ?? null;
   const noticias = detalhe.data?.noticias ?? [];
+  const analise = ia.data?.analise ?? null;
+  const erroIa = ia.data?.erro ?? null;
 
   // Mudança de veredito do Técnico IA: avisa uma única vez por par (sessão).
   const mudancaVeredito = useMemo(() => {
@@ -518,33 +526,33 @@ export function ModalRadar({
 
             <section>
               <h3 className="mb-2 text-sm font-semibold">Técnico IA</h3>
-              {ia.data ? (
+              {analise ? (
                 <div className="space-y-2 rounded-lg border p-4 text-sm">
                   <p>
                     <Badge
-                      className={`border-none ${CORES_SINAL[ia.data.veredito] ?? "bg-muted text-muted-foreground"}`}
+                      className={`border-none ${CORES_SINAL[analise.veredito] ?? "bg-muted text-muted-foreground"}`}
                     >
-                      {ROTULOS_VEREDITO[ia.data.veredito] ?? ia.data.veredito}
+                      {ROTULOS_VEREDITO[analise.veredito] ?? analise.veredito}
                     </Badge>
                   </p>
-                  {ia.data.tese ? <p>{ia.data.tese}</p> : null}
-                  {ia.data.riscos ? (
+                  {analise.tese ? <p>{analise.tese}</p> : null}
+                  {analise.riscos ? (
                     <p className="text-muted-foreground">
-                      <strong>Riscos:</strong> {ia.data.riscos}
+                      <strong>Riscos:</strong> {analise.riscos}
                     </p>
                   ) : null}
-                  {ia.data.gatilhos ? (
+                  {analise.gatilhos ? (
                     <p className="text-muted-foreground">
-                      <strong>Gatilhos:</strong> {ia.data.gatilhos}
+                      <strong>Gatilhos:</strong> {analise.gatilhos}
                     </p>
                   ) : null}
-                  {ia.data.fatoresExternos?.length ? (
+                  {analise.fatoresExternos?.length ? (
                     <div className="space-y-1">
                       <p className="font-medium text-muted-foreground">
                         Fatos externos considerados:
                       </p>
                       <ul className="list-inside list-disc space-y-1 text-muted-foreground">
-                        {ia.data.fatoresExternos.map((f, i) => (
+                        {analise.fatoresExternos.map((f, i) => (
                           <li key={`${f}-${i}`}>{f}</li>
                         ))}
                       </ul>
@@ -552,14 +560,14 @@ export function ModalRadar({
                   ) : null}
                   <p className="text-xs text-muted-foreground">
                     Análise gerada por IA em{" "}
-                    {new Date(ia.data.geradaEm).toLocaleDateString("pt-BR")}
+                    {new Date(analise.geradaEm).toLocaleDateString("pt-BR")}
                     {" — não substitui uma recomendação formal."}
                   </p>
                   <Button
                     variant="outline"
                     size="sm"
                     className="gap-2"
-                    onClick={() => ia.refetch()}
+                    onClick={() => setVersaoIA((v) => v + 1)}
                   >
                     <Sparkles className="size-4" />
                     Regenerar análise
@@ -567,15 +575,37 @@ export function ModalRadar({
                 </div>
               ) : ia.isFetching ? (
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-2/3" />
-                  <Skeleton className="h-4 w-1/2" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-2/3" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                    Técnico IA consultando histórico, ficha e noticiário em tempo real…
+                  </p>
                 </div>
               ) : ia.isError ? (
                 <div className="flex flex-col gap-2">
                   <p className="text-sm text-muted-foreground">
                     Não foi possível gerar a análise agora.
                   </p>
-                  <Button variant="outline" className="w-fit gap-2" onClick={() => ia.refetch()}>
+                  <Button
+                    variant="outline"
+                    className="w-fit gap-2"
+                    onClick={() => void ia.refetch()}
+                  >
+                    <Sparkles className="size-4" />
+                    Tentar de novo
+                  </Button>
+                </div>
+              ) : erroIa ? (
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm text-destructive">{erroIa}</p>
+                  <Button
+                    variant="outline"
+                    className="w-fit gap-2"
+                    onClick={() => void ia.refetch()}
+                  >
                     <Sparkles className="size-4" />
                     Tentar de novo
                   </Button>
@@ -586,7 +616,11 @@ export function ModalRadar({
                     Peça ao Técnico IA um veredito com base no histórico, na ficha e no noticiário
                     (com busca automática em tempo real).
                   </p>
-                  <Button variant="outline" className="w-fit gap-2" onClick={() => ia.refetch()}>
+                  <Button
+                    variant="outline"
+                    className="w-fit gap-2"
+                    onClick={() => setVersaoIA((v) => v + 1)}
+                  >
                     <Sparkles className="size-4" />
                     Gerar análise
                   </Button>
