@@ -68,6 +68,12 @@ export const Route = createFileRoute("/_authenticated/radar")({
       queryFn: () => radarVisao({ data: { categoria: "acao" } }),
       staleTime: 3 * 60 * 1000,
     });
+    // Aquece a visão de FIIs em segundo plano (sem bloquear a pintura): na
+    // primeira visita a aba FIIs esbarra em grade fria (~10s no isolado);
+    // com SWR aquecido ela responde quase de imediato ao trocar de aba.
+    void radarVisao({ data: { categoria: "fii" } })
+      .then(() => undefined)
+      .catch(() => undefined);
   },
   head: () => ({
     meta: [
@@ -230,15 +236,17 @@ function PaginaRadar() {
   );
 
   /** Preenche em lotes o histórico faltante do universo; retorna true se concluiu.
-   *  A passagem automática é curta (4 lotes) para não saturar o isolate e a fila
-   *  compartilhada do Yahoo enquanto a página ainda carrega; o manual vai até 12. */
+   *  A passagem automática cobre o universo da categoria (4–10 rodadas de 120,
+   *  proporcional ao total) para não saturar o isolate e a fila compartilhada
+   *  do Yahoo enquanto a página ainda carrega; o manual vai até 12. */
   const preencherHistoricos = async (manual: boolean) => {
     if (preenchimento?.ativo) return;
     setPreenchimento({ ativo: true, obtidos: 0, faltam: 0 });
     let faltam = 0;
     let obtidos = 0;
     try {
-      const rodadas = manual ? 12 : 4;
+      const universo = visao?.contagem?.total ?? 0;
+      const rodadas = manual ? 12 : Math.min(10, Math.max(4, Math.ceil(universo / 120)));
       for (let i = 0; i < rodadas; i++) {
         const r = await completar({ data: { categoria, limite: 120 } });
         if (!r || r.faltam <= 0) {
@@ -277,14 +285,17 @@ function PaginaRadar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [carregando, faltandoPagina, categoria, pagina]);
 
-  /* Preenchimento automático do universo, uma vez por categoria nesta sessão. */
+  /* Preenchimento automático do universo, uma vez por categoria nesta sessão.
+   *  Espera a visão carregar para dimensionar as rodadas pelo total real
+   *  (FIIs: ~858 ativos; Ações: ~400+). */
   useEffect(() => {
+    if (!visao?.contagem?.total) return;
     const chave = `radar:backfill:${categoria}`;
     if (typeof sessionStorage === "undefined" || sessionStorage.getItem(chave) === "1") return;
     sessionStorage.setItem(chave, "1");
     void preencherHistoricos(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoria]);
+  }, [categoria, visao?.contagem?.total]);
 
   const ordenadas = useMemo(() => {
     const q = [...linhasCompletas];

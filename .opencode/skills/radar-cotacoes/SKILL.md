@@ -27,16 +27,16 @@ Better-SQLite3).
 
 ## Mapa de arquivos
 
-| Arquivo | Papel |
-| --- | --- |
-| `src/lib/radar-base.ts` | Lógica pura de sinais e score (sem I/O). Exporta constantes de limites (`LIMITE_MINIMA`, `CHOQUE_DIA_PCT`, etc.). Testável via `radar-base.test.ts`. |
-| `src/lib/radar-base.test.ts` | Testes vitest da lógica pura. |
-| `src/lib/radar.server.ts` | Server functions + banco. `lerPosicoesBanco()` deve usar o cache em memória (`TTL_BANCO_POSICOES_MS` 10min + dedup de leituras concorrentes); `gravarPosicoesBanco()` atualiza o cache após upsert. |
-| `src/lib/radar.functions.ts` | Definições de `createServerFn` do radar (`radarVisao`, `radarPosicoes`, `radarAnaliseIA`, ...). |
-| `src/lib/radar.ts` | Hooks de cliente (TanStack Query) + re-export de tipos. |
-| `src/lib/brapi-quote.server.ts` / `use-market-quote.ts` | Cotações externas (Brapi) e hook de mercado. |
-| `src/components/radar/*` | UI (tabela, ranking, modal). |
-| `src/routes/_authenticated/radar.tsx` | Rota do radar, com `loader` para pré-busca SSR. |
+| Arquivo                                                 | Papel                                                                                                                                                                                               |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/radar-base.ts`                                 | Lógica pura de sinais e score (sem I/O). Exporta constantes de limites (`LIMITE_MINIMA`, `CHOQUE_DIA_PCT`, etc.). Testável via `radar-base.test.ts`.                                                |
+| `src/lib/radar-base.test.ts`                            | Testes vitest da lógica pura.                                                                                                                                                                       |
+| `src/lib/radar.server.ts`                               | Server functions + banco. `lerPosicoesBanco()` deve usar o cache em memória (`TTL_BANCO_POSICOES_MS` 10min + dedup de leituras concorrentes); `gravarPosicoesBanco()` atualiza o cache após upsert. |
+| `src/lib/radar.functions.ts`                            | Definições de `createServerFn` do radar (`radarVisao`, `radarPosicoes`, `radarAnaliseIA`, ...).                                                                                                     |
+| `src/lib/radar.ts`                                      | Hooks de cliente (TanStack Query) + re-export de tipos.                                                                                                                                             |
+| `src/lib/brapi-quote.server.ts` / `use-market-quote.ts` | Cotações externas (Brapi) e hook de mercado.                                                                                                                                                        |
+| `src/components/radar/*`                                | UI (tabela, ranking, modal).                                                                                                                                                                        |
+| `src/routes/_authenticated/radar.tsx`                   | Rota do radar, com `loader` para pré-busca SSR.                                                                                                                                                     |
 
 ## Convenções de dados
 
@@ -45,7 +45,10 @@ Better-SQLite3).
   com a mesma queryKey para preencher o cache antes do hidratar.
 - Por padrão: `refetchOnWindowFocus: false`, `staleTime`/`gcTime` generosos
   (posições 12h/24h, IA 72h).
-- Backfill automático de históricos usa 4 rodadas; manual usa 12 (`preencherHistoricos(manual: boolean)`).
+- Backfill automático de históricos é proporcional ao universo da categoria
+  (4–10 rodadas de 120, baseado em `visao.contagem.total`); manual usa 12
+  (`preencherHistoricos(manual: boolean)`). O `loader` da rota aquece a visão
+  de FIIs em segundo plano (fire-and-forget) além da de Ações.
 
 ## Validação obrigatória antes de concluir
 
