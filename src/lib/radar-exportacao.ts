@@ -144,7 +144,7 @@ async function gerarXlsx(linhas: LinhaRadarExport[]): Promise<Blob> {
     ]),
   ];
 
-  const saida = await writeXlsxFile([
+  const saida = writeXlsxFile([
     {
       sheet: "Radar",
       data: dados,
