@@ -83,13 +83,28 @@ const UA_YAHOO =
 
 type PontoPreco = { data: string; fechamento: number };
 
+/**
+ * Ticker da B3 no formato que o Yahoo reconhece: SEMPRE com o sufixo `.SA`
+ * (PETR4 -> PETR4.SA, HGLG11 -> HGLG11.SA, B3SA3 -> B3SA3.SA). O universo do
+ * radar é 100% B3, então qualquer código sem sufixo especial ganha `.SA`.
+ */
+function simboloYahooB3(ticker: string): string {
+  const t = ticker.trim().toUpperCase();
+  if (!t) return t;
+  if (t.includes(".") || t.startsWith("^") || t.includes("=") || t.includes("-")) return t;
+  return `${t}.SA`;
+}
+
 async function buscarSerieResiliente(ticker: string): Promise<PontoPreco[] | null> {
+  // B3 só existe no Yahoo com o sufixo .SA (PETR4 -> PETR4.SA). Sem ele o
+  // Yahoo responde "no data found" e o radar fica sem histórico.
+  const simbolo = simboloYahooB3(ticker);
   const intervalos: Array<"1wk" | "1mo"> = ["1wk", "1mo"];
   for (const intervalo of intervalos) {
     for (let tentativa = 0; tentativa < 3; tentativa++) {
       for (const host of HOSTS_YAHOO) {
         const url = `https://${host}/v8/finance/chart/${encodeURIComponent(
-          ticker,
+          simbolo,
         )}?range=max&interval=${intervalo}&events=div%2Csplit`;
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 15_000);
@@ -144,7 +159,7 @@ async function buscarSerieResiliente(ticker: string): Promise<PontoPreco[] | nul
   await dormir(1200);
   for (const host of HOSTS_YAHOO) {
     const url = `https://${host}/v8/finance/chart/${encodeURIComponent(
-      ticker,
+      simbolo,
     )}?range=10y&interval=1d`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 15_000);
