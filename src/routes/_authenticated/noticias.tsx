@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AbasMercado } from "@/components/abas-mercado";
 import { FitaIndices } from "@/components/noticias/fita-indices";
 import {
   CartaoHero,
