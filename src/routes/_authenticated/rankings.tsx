@@ -11,6 +11,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { AbasMercado } from "@/components/abas-mercado";
 import { Panel, TickerMark } from "@/components/panel";
 import { PainelPanoramaMercado } from "@/components/painel-panorama-mercado";
 import { Button } from "@/components/ui/button";
@@ -229,6 +230,7 @@ function RankingsPage() {
       title="Ranking de Ativos"
       description="Maiores dividend yield, valor de mercado e receitas da B3"
     >
+      <AbasMercado />
       <PainelPanoramaMercado />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
