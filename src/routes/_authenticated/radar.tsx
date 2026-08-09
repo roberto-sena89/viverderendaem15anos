@@ -48,12 +48,14 @@ import {
   ChevronRight,
   DatabaseZap,
   Download,
+  LayoutGrid,
   Loader2,
   Radar,
   RefreshCw,
   Search,
   SlidersHorizontal,
   Sparkles,
+  Trophy,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/radar")({
@@ -383,9 +385,26 @@ function PaginaRadar() {
         onValueChange={(v) => setAbaVisao(v as "cotacoes" | "ranking")}
         className="w-full"
       >
-        <TabsList className="w-full justify-start sm:w-auto">
-          <TabsTrigger value="cotacoes">Cotações</TabsTrigger>
-          <TabsTrigger value="ranking">Ranking de ativos</TabsTrigger>
+        <TabsList className="h-auto w-full justify-start gap-1 rounded-xl bg-muted/60 p-1 sm:w-auto">
+          <TabsTrigger
+            value="cotacoes"
+            className="h-9 gap-2 rounded-lg px-3.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary/10 data-[state=active]:to-transparent"
+          >
+            <LayoutGrid className="size-4" aria-hidden />
+            Cotações
+          </TabsTrigger>
+          <TabsTrigger
+            value="ranking"
+            className="h-9 gap-2 rounded-lg px-3.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary/10 data-[state=active]:to-transparent"
+          >
+            <Trophy className="size-4" aria-hidden />
+            Ranking de ativos
+            {visao ? (
+              <span className="ml-0.5 rounded-full bg-primary/15 px-1.5 text-[0.65rem] font-bold tabular-nums text-primary">
+                {visao.contagem.total.toLocaleString("pt-BR")}
+              </span>
+            ) : null}
+          </TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -480,6 +499,14 @@ function PaginaRadar() {
           <RankingRadar
             linhas={aplicarPosicoes(linhasFiltradas, posicoes)}
             carteira={carteiraPorTicker}
+            categoria={categoria}
+            totalUniverso={visao.contagem.total}
+            baseEm={visao.baseEm}
+            atualizadoEm={visao.atualizado}
+            aoTrocarCategoria={(c) => {
+              setCategoria(c);
+              setFiltroSetor("todos");
+            }}
             aoSelecionar={setSelecionado}
           />
         ) : (
