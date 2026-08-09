@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AbasMercado } from "@/components/abas-mercado";
 import { FitaIndices } from "@/components/noticias/fita-indices";
 import {
   CartaoHero,
@@ -320,7 +321,9 @@ function PaginaNoticias() {
       title="Notícias de Mercado"
       description="Manchetes das principais fontes financeiras, com radar da sua carteira"
     >
+      <AbasMercado />
       <FitaIndices />
+
 
       {/* Busca + filtros */}
       <Panel bodyClassName="flex flex-col gap-3 p-3 sm:p-4">
