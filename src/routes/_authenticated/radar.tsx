@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
-import { radarAnaliseIA, radarCompletarCache } from "@/lib/radar.functions";
+import { radarAnaliseIA, radarCompletarCache, radarVisao } from "@/lib/radar.functions";
 import { exportarRadar, type FormatoExportacaoRadar } from "@/lib/radar-exportacao";
 import { useAtivos } from "@/lib/data";
 import type { LinhaRadarBase } from "@/lib/radar.server";
@@ -59,6 +59,16 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/radar")({
+  // Pré-busca a visão de Ações antes da pintura: na primeira visita o SSR
+  // monta o HTML já com os dados (sem skeleton), e nas navegações seguintes
+  // o router reusa o cache do TanStack Query enquanto estiver fresco.
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData({
+      queryKey: ["radar", "visao", "acao"],
+      queryFn: () => radarVisao({ data: { categoria: "acao" } }),
+      staleTime: 3 * 60 * 1000,
+    });
+  },
   head: () => ({
     meta: [
       { title: "Radar de Oportunidades · Investidor em 15 Anos" },
@@ -219,14 +229,17 @@ function PaginaRadar() {
     [linhasCompletas],
   );
 
-  /** Preenche em lotes o histórico faltante do universo; retorna true se concluiu. */
+  /** Preenche em lotes o histórico faltante do universo; retorna true se concluiu.
+   *  A passagem automática é curta (4 lotes) para não saturar o isolate e a fila
+   *  compartilhada do Yahoo enquanto a página ainda carrega; o manual vai até 12. */
   const preencherHistoricos = async (manual: boolean) => {
     if (preenchimento?.ativo) return;
     setPreenchimento({ ativo: true, obtidos: 0, faltam: 0 });
     let faltam = 0;
     let obtidos = 0;
     try {
-      for (let i = 0; i < 12; i++) {
+      const rodadas = manual ? 12 : 4;
+      for (let i = 0; i < rodadas; i++) {
         const r = await completar({ data: { categoria, limite: 120 } });
         if (!r || r.faltam <= 0) {
           faltam = r?.faltam ?? 0;
@@ -234,7 +247,7 @@ function PaginaRadar() {
         }
         faltam = r.faltam;
         obtidos += r.obtidos;
-        setPreenchimento({ ativo: i < 11, obtidos, faltam });
+        setPreenchimento({ ativo: i < rodadas - 1, obtidos, faltam });
       }
       if (manual) {
         if (faltam > 0)

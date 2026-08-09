@@ -303,11 +303,38 @@ function posicaoDeHistorico(ticker: string, h: Historico): PosicaoHistorica {
   };
 }
 
-/** Posições históricas salvas no banco (payload completo da chave `radar:posicao`). */
-export async function lerPosicoesBanco(): Promise<{
+/** TTL do cache em memória do mapa de posições no banco (leitura foi o
+ * gargalo de latência: era refeita a cada chamada de radarVisao/radarPosicoes). */
+const TTL_BANCO_POSICOES_MS = 10 * 60 * 1000;
+
+type PosicoesBanco = {
   posicoes: Record<string, PosicaoHistorica>;
   atualizadoEm: string | null;
-}> {
+};
+
+let bancoPosicoesCache: { valor: PosicoesBanco; em: number } | null = null;
+let bancoPosicoesEmVoo: Promise<PosicoesBanco> | null = null;
+
+/** Posições históricas salvas no banco (payload completo da chave `radar:posicao`),
+ *  com cache em memória (TTL 10min) e deduplicação de leituras concorrentes. */
+export async function lerPosicoesBanco(): Promise<PosicoesBanco> {
+  if (bancoPosicoesCache && Date.now() - bancoPosicoesCache.em < TTL_BANCO_POSICOES_MS) {
+    return bancoPosicoesCache.valor;
+  }
+  if (!bancoPosicoesEmVoo) {
+    bancoPosicoesEmVoo = lerPosicoesBancoDireto()
+      .then((valor) => {
+        bancoPosicoesCache = { valor, em: Date.now() };
+        return valor;
+      })
+      .finally(() => {
+        bancoPosicoesEmVoo = null;
+      });
+  }
+  return bancoPosicoesEmVoo;
+}
+
+async function lerPosicoesBancoDireto(): Promise<PosicoesBanco> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
@@ -340,10 +367,12 @@ async function gravarPosicoesBanco(
       parcial: boolean;
       atualizado_em: string;
     }> = [];
+    let posicoesAtualizadas: Record<string, PosicaoHistorica> | null = null;
 
     if (adicionadas.size) {
       const { posicoes } = await lerPosicoesBanco();
       for (const [ticker, posicao] of adicionadas) posicoes[ticker] = posicao;
+      posicoesAtualizadas = posicoes;
       linhas.push({
         categoria: "radar:posicao",
         payload: JSON.parse(JSON.stringify(posicoes)) as Json,
@@ -360,6 +389,12 @@ async function gravarPosicoesBanco(
       });
     }
     await supabaseAdmin.from("cotacoes_cache").upsert(linhas, { onConflict: "categoria" });
+    if (posicoesAtualizadas) {
+      bancoPosicoesCache = {
+        valor: { posicoes: posicoesAtualizadas, atualizadoEm: agora },
+        em: Date.now(),
+      };
+    }
   } catch {
     /* best-effort: memória cobre a sessão */
   }
