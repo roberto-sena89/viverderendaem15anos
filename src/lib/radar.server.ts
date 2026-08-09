@@ -925,7 +925,9 @@ export async function gerarAnaliseIA(
     const resultadoIA = await generateText({
       model: gateway("openai/gpt-5.5"),
       temperature: 0.3,
-      maxOutputTokens: 640,
+      providerOptions: {
+        lovable: { max_completion_tokens: 640 },
+      },
       system,
       prompt,
     });
