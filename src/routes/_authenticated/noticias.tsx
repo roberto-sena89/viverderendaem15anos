@@ -320,7 +320,9 @@ function PaginaNoticias() {
       title="Notícias de Mercado"
       description="Manchetes das principais fontes financeiras, com radar da sua carteira"
     >
+      <AbasMercado />
       <FitaIndices />
+
 
       {/* Busca + filtros */}
       <Panel bodyClassName="flex flex-col gap-3 p-3 sm:p-4">
