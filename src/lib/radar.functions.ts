@@ -6,6 +6,7 @@
  */
 
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { LinhaAcao } from "@/lib/acoes-base";
 import type { LinhaFii } from "@/lib/fiis-base";
 import type {
@@ -410,16 +411,20 @@ export interface ResultadoAnaliseIA {
   erro?: string | null;
 }
 
-/** Análise gerada pelo Técnico IA para um ativo (cache de 72h no servidor). */
+/** Análise gerada pelo Técnico IA para um ativo (cache de 72h no servidor).
+ *  Autenticado: geração de análise consome cota paga de LLM. */
 export const radarAnaliseIA = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: { ticker?: unknown; forcar?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
     forcar: d?.forcar === true,
   }))
   .handler(
     async ({
+      context,
       data,
     }: {
+      context: { userId: string };
       data: { ticker: string; forcar: boolean };
     }): Promise<ResultadoAnaliseIA> => {
       if (!data.ticker) return { analise: null, erro: null };
@@ -427,6 +432,12 @@ export const radarAnaliseIA = createServerFn({ method: "GET" })
       if (!data.forcar) {
         const cache = await radarServer.lerAnaliseIA(data.ticker).catch(() => null);
         if (cache) return { analise: cache };
+      }
+      if (!radarServer.limitePorUsuario("radar:ia", context.userId, 10, 10 * 60_000)) {
+        return {
+          analise: null,
+          erro: "Muitas análises em pouco tempo. Aguarde alguns minutos e tente de novo.",
+        };
       }
       const lovableApiKey = process.env.LOVABLE_API_KEY;
       if (!lovableApiKey) {
@@ -465,8 +476,10 @@ export const radarHistoricoIA = createServerFn({ method: "GET" })
     return radarServer.lerHistoricoIA(data.ticker);
   });
 
-/** Preenche em lotes o histórico que falta no universo da categoria (idempotente). */
+/** Preenche em lotes o histórico que falta no universo da categoria (idempotente).
+ *  Autenticado + limitado: cada chamada pode disparar até 120 fetches ao Yahoo. */
 export const radarCompletarCache = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: { categoria?: unknown; limite?: unknown } | undefined) => ({
     categoria: d?.categoria === "fii" ? ("fii" as const) : ("acao" as const),
     limite: Number.isFinite(Number(d?.limite))
@@ -475,11 +488,16 @@ export const radarCompletarCache = createServerFn({ method: "POST" })
   }))
   .handler(
     async ({
+      context,
       data,
     }: {
+      context: { userId: string };
       data: { categoria: "acao" | "fii"; limite: number };
     }): Promise<{ buscados: number; obtidos: number; faltam: number }> => {
       const radarServer = await import("@/lib/radar.server");
+      if (!radarServer.limitePorUsuario("radar:backfill", context.userId, 30, 5 * 60_000)) {
+        return { buscados: 0, obtidos: 0, faltam: 0 };
+      }
       return radarServer.completarFaltasRadar(data.categoria, data.limite);
     },
   );

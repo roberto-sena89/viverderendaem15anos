@@ -38,6 +38,7 @@ import {
 import { toast } from "sonner";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
 import { radarAnaliseIA, radarCompletarCache, radarVisao } from "@/lib/radar.functions";
+import { AVISO_DIA_PCT } from "@/lib/radar-base";
 import { exportarRadar, type FormatoExportacaoRadar } from "@/lib/radar-exportacao";
 import { useAtivos } from "@/lib/data";
 import type { LinhaRadarBase } from "@/lib/radar.server";
@@ -102,6 +103,29 @@ export const Route = createFileRoute("/_authenticated/radar")({
 });
 
 const TAMANHO_PAGINA = 50;
+
+/** Percentil máximo para o ativo entrar no "foco de compra" do topo. */
+const FOCO_COMPRA_PERCENTIL_MAX = 45;
+/** Tamanho do lote de análises do Técnico IA (top pelo score). */
+const ALVO_LOTE_IA = 20;
+const TOP_ALERTAS = 5;
+
+/** Top N de um critério (maior ou menor) — ativos sem valor ficam fora. */
+function topPorCritério<T>(
+  lista: T[],
+  obter: (item: T) => number | null,
+  sentido: "maior" | "menor",
+  n: number,
+): T[] {
+  return lista
+    .filter((item) => obter(item) !== null)
+    .sort((a, b) => {
+      const va = obter(a) as number;
+      const vb = obter(b) as number;
+      return sentido === "maior" ? vb - va : va - vb;
+    })
+    .slice(0, n);
+}
 
 type Ordenacao = "sinal" | "dy" | "queda" | "minima52" | "score";
 type FiltroSinal = "todos" | "comprar" | "manter" | "vender" | "observar" | "sem-dados";
@@ -337,30 +361,31 @@ function PaginaRadar() {
   /** Foco de compra: melhores relações preço/história do universo inteiro. */
   const focoCompra = useMemo(() => {
     const base = visao?.linhas ?? [];
-    return base
-      .filter((l) => l.sinal.tipo === "comprar" || l.sinal.tipo === "observar")
-      .filter((l) => l.posicao && l.posicao.percentil !== null && l.posicao.percentil <= 45)
-      .sort((a, b) => (a.posicao?.percentil ?? 999) - (b.posicao?.percentil ?? 999))
-      .slice(0, 5);
+    const candidatas = base.filter(
+      (l) =>
+        (l.sinal.tipo === "comprar" || l.sinal.tipo === "observar") &&
+        l.posicao != null &&
+        l.posicao.percentil !== null &&
+        l.posicao.percentil <= FOCO_COMPRA_PERCENTIL_MAX,
+    );
+    return topPorCritério(candidatas, (l) => l.posicao?.percentil ?? null, "menor", TOP_ALERTAS);
   }, [visao]);
 
   /** Alerta de venda: choque do dia ou notícia urgente associada. */
   const alertaVenda = useMemo(() => {
     const base = visao?.linhas ?? [];
-    return base
-      .filter((l) => l.sinal.tipo === "vender" || (l.variacaoDia !== null && l.variacaoDia <= -6))
-      .sort((a, b) => (a.variacaoDia ?? 0) - (b.variacaoDia ?? 0))
-      .slice(0, 5);
+    const candidatas = base.filter(
+      (l) =>
+        l.sinal.tipo === "vender" || (l.variacaoDia !== null && l.variacaoDia <= AVISO_DIA_PCT),
+    );
+    return topPorCritério(candidatas, (l) => l.variacaoDia ?? 0, "menor", TOP_ALERTAS);
   }, [visao]);
 
   /** Melhores oportunidades pelo score composto (0–100). */
-  const melhoresScore = useMemo(() => {
-    const base = visao?.linhas ?? [];
-    return base
-      .filter((l) => l.score !== null)
-      .sort((a, b) => (b.score ?? -1) - (a.score ?? -1))
-      .slice(0, 5);
-  }, [visao]);
+  const melhoresScore = useMemo(
+    () => topPorCritério(visao?.linhas ?? [], (l) => l.score, "maior", TOP_ALERTAS),
+    [visao],
+  );
 
   const exportarVisao = async (formato: FormatoExportacaoRadar) => {
     try {
@@ -375,10 +400,7 @@ function PaginaRadar() {
   const analisarLote = async () => {
     const visaoAtual = visao;
     if (!visaoAtual) return;
-    const alvo = visaoAtual.linhas
-      .filter((l) => l.score !== null)
-      .sort((a, b) => (b.score ?? -1) - (a.score ?? -1))
-      .slice(0, 20);
+    const alvo = topPorCritério(visaoAtual.linhas, (l) => l.score, "maior", ALVO_LOTE_IA);
     if (!alvo.length) {
       toast.info("Nenhum ativo com score disponível para analisar.");
       return;

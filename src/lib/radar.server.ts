@@ -247,6 +247,32 @@ function serieDePontos(pontos: PontoPreco[]): PosicaoSerie {
 let posicaoMemoria = new Map<string, { posicao: PosicaoHistorica; em: number }>();
 const serieMemoria = new Map<string, { serie: PosicaoSerie; em: number }>();
 
+const janelasLimite = new Map<string, { contador: number; inicio: number }>();
+
+/** Limite de taxa em memória por usuário (isolate): barato e suficiente
+ *  para frear abuso em operações caras (backfill do Yahoo / geração de IA). */
+export function limitePorUsuario(
+  alcance: string,
+  userId: string,
+  maxPorJanela: number,
+  janelaMs: number,
+): boolean {
+  const chave = `${alcance}:${userId}`;
+  const agora = Date.now();
+  const atual = janelasLimite.get(chave);
+  if (!atual || agora - atual.inicio >= janelaMs) {
+    if (janelasLimite.size > 2_000) {
+      for (const [k, v] of janelasLimite) {
+        if (agora - v.inicio >= janelaMs) janelasLimite.delete(k);
+      }
+    }
+    janelasLimite.set(chave, { contador: 1, inicio: agora });
+    return true;
+  }
+  atual.contador++;
+  return atual.contador <= maxPorJanela;
+}
+
 /** Carregamentos do Yahoo em andamento por ticker: cacifos concorrentes
  * (posições e sparklines) compartilham a mesma requisição em vez de duplicá-la. */
 const cargasEmVoo = new Map<string, Promise<PontoPreco[] | null>>();
