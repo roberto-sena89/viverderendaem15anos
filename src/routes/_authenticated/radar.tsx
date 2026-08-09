@@ -12,6 +12,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/app-shell";
 import { TabelaRadar } from "@/components/radar/tabela-radar";
+import { RankingRadar } from "@/components/radar/ranking-radar";
 import { ModalRadar } from "@/components/radar/modal-radar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,6 +120,7 @@ function paginasNumeradas(total: number, atual: number): (number | "…")[] {
 
 function PaginaRadar() {
   const [categoria, setCategoria] = useState<"acao" | "fii">("acao");
+  const [abaVisao, setAbaVisao] = useState<"cotacoes" | "ranking">("cotacoes");
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState<Ordenacao>("sinal");
   const [direcao, setDirecao] = useState<"desc" | "asc">("desc");
@@ -376,6 +378,17 @@ function PaginaRadar() {
       title="Radar de Oportunidades"
       description="Todas as ações e FIIs da B3 comparados com a própria história — mínimas indicam oportunidade, choques exigem cautela."
     >
+      <Tabs
+        value={abaVisao}
+        onValueChange={(v) => setAbaVisao(v as "cotacoes" | "ranking")}
+        className="w-full"
+      >
+        <TabsList className="w-full justify-start sm:w-auto">
+          <TabsTrigger value="cotacoes">Cotações</TabsTrigger>
+          <TabsTrigger value="ranking">Ranking de ativos</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <Tabs
@@ -463,378 +476,388 @@ function PaginaRadar() {
           </Button>
         </div>
       ) : visao ? (
-        <>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
-            <ResumoCard rotulo="Total de ativos" valor={String(visao.contagem.total)} />
-            <ResumoCard
-              rotulo="Sinal de compra"
-              valor={String(visao.contagem.comprar)}
-              cor="text-emerald-600"
-            />
-            <ResumoCard
-              rotulo="Alertas de venda"
-              valor={String(alertaVenda.length)}
-              cor="text-red-600"
-            />
-            <ResumoCard
-              rotulo="Nas mínimas 52s"
-              valor={String(visao.contagem.minimas52)}
-              cor="text-sky-600"
-            />
-            <ResumoCard
-              rotulo="Com posição histórica"
-              valor={`${visao.contagem.comPosicao}/${visao.contagem.total}`}
-            />
-            <ResumoCard
-              rotulo="Base fundamentalista"
-              valor={visao.baseEm ? new Date(visao.baseEm).toLocaleDateString("pt-BR") : "—"}
-            />
-          </div>
-
-          {visao.macro.selic !== null || visao.macro.ipca !== null ? (
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-medium text-foreground">Contexto macro:</span>
-              {visao.macro.selic !== null ? (
-                <Badge variant="secondary">
-                  Meta Selic: {visao.macro.selic.toLocaleString("pt-BR")}%
-                </Badge>
-              ) : null}
-              {visao.macro.ipca !== null ? (
-                <Badge variant="secondary">
-                  IPCA mensal: {visao.macro.ipca.toLocaleString("pt-BR")}%
-                </Badge>
-              ) : null}
+        abaVisao === "ranking" ? (
+          <RankingRadar
+            linhas={aplicarPosicoes(linhasFiltradas, posicoes)}
+            aoSelecionar={setSelecionado}
+          />
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
+              <ResumoCard rotulo="Total de ativos" valor={String(visao.contagem.total)} />
+              <ResumoCard
+                rotulo="Sinal de compra"
+                valor={String(visao.contagem.comprar)}
+                cor="text-emerald-600"
+              />
+              <ResumoCard
+                rotulo="Alertas de venda"
+                valor={String(alertaVenda.length)}
+                cor="text-red-600"
+              />
+              <ResumoCard
+                rotulo="Nas mínimas 52s"
+                valor={String(visao.contagem.minimas52)}
+                cor="text-sky-600"
+              />
+              <ResumoCard
+                rotulo="Com posição histórica"
+                valor={`${visao.contagem.comPosicao}/${visao.contagem.total}`}
+              />
+              <ResumoCard
+                rotulo="Base fundamentalista"
+                valor={visao.baseEm ? new Date(visao.baseEm).toLocaleDateString("pt-BR") : "—"}
+              />
             </div>
-          ) : null}
 
-          {visao.noticiasUrgentes.length ? (
-            <div className="rounded-xl border border-red-600/20 bg-red-600/5 p-4">
-              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-red-600">
-                <Radar className="size-4" aria-hidden />
-                Notícias de alto impacto agora
-              </h3>
-              <ul className="space-y-1.5">
-                {visao.noticiasUrgentes.map((n) => (
-                  <li key={n.id} className="text-sm">
-                    <span className="font-medium">{n.titulo}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      {n.fonte} ·{" "}
-                      {new Date(n.publicadoEm).toLocaleString("pt-BR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+            {visao.macro.selic !== null || visao.macro.ipca !== null ? (
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">Contexto macro:</span>
+                {visao.macro.selic !== null ? (
+                  <Badge variant="secondary">
+                    Meta Selic: {visao.macro.selic.toLocaleString("pt-BR")}%
+                  </Badge>
+                ) : null}
+                {visao.macro.ipca !== null ? (
+                  <Badge variant="secondary">
+                    IPCA mensal: {visao.macro.ipca.toLocaleString("pt-BR")}%
+                  </Badge>
+                ) : null}
+              </div>
+            ) : null}
 
-          {focoCompra.length || alertaVenda.length || melhoresScore.length ? (
-            <div className="grid gap-4 lg:grid-cols-3">
-              {focoCompra.length ? (
-                <div className="rounded-xl border bg-card p-4">
-                  <h3 className="mb-3 text-sm font-semibold text-emerald-600">
-                    Foco de compra — nas mínimas da própria história
-                  </h3>
-                  <ul className="space-y-2">
-                    {focoCompra.map((l) => (
-                      <li key={l.ticker}>
-                        <button
-                          type="button"
-                          onClick={() => setSelecionado(l)}
-                          className="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
-                        >
-                          <span className="font-medium">{l.ticker}</span>
-                          <span className="text-xs text-muted-foreground">{l.nome}</span>
-                          <span className="ml-auto text-xs tabular-nums text-emerald-600">
-                            {l.posicao?.percentil?.toFixed(0) ?? "—"}% do range
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {melhoresScore.length ? (
-                <div className="rounded-xl border bg-card p-4">
-                  <h3 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-sky-600">
-                    <Sparkles className="size-4" aria-hidden />
-                    Melhores oportunidades pelo score
-                  </h3>
-                  <ul className="space-y-2">
-                    {melhoresScore.map((l) => (
-                      <li key={l.ticker}>
-                        <button
-                          type="button"
-                          onClick={() => setSelecionado(l)}
-                          className="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
-                        >
-                          <span className="font-medium">{l.ticker}</span>
-                          <span className="text-xs text-muted-foreground">{l.nome}</span>
-                          <span className="ml-auto text-xs font-semibold tabular-nums text-sky-600">
-                            {l.score ?? "—"}
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {alertaVenda.length ? (
-                <div className="rounded-xl border bg-card p-4">
-                  <h3 className="mb-3 text-sm font-semibold text-red-600">
-                    Alertas de venda — choque ou deterioração no dia
-                  </h3>
-                  <ul className="space-y-2">
-                    {alertaVenda.map((l) => (
-                      <li key={l.ticker}>
-                        <button
-                          type="button"
-                          onClick={() => setSelecionado(l)}
-                          className="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
-                        >
-                          <span className="font-medium">{l.ticker}</span>
-                          <span className="text-xs text-muted-foreground">{l.nome}</span>
-                          <span
-                            className={`text-xs tabular-nums ${
-                              l.variacaoDia !== null && l.variacaoDia < 0
-                                ? "text-red-600"
-                                : "text-muted-foreground"
-                            }`}
+            {visao.noticiasUrgentes.length ? (
+              <div className="rounded-xl border border-red-600/20 bg-red-600/5 p-4">
+                <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-red-600">
+                  <Radar className="size-4" aria-hidden />
+                  Notícias de alto impacto agora
+                </h3>
+                <ul className="space-y-1.5">
+                  {visao.noticiasUrgentes.map((n) => (
+                    <li key={n.id} className="text-sm">
+                      <span className="font-medium">{n.titulo}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {n.fonte} ·{" "}
+                        {new Date(n.publicadoEm).toLocaleString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {focoCompra.length || alertaVenda.length || melhoresScore.length ? (
+              <div className="grid gap-4 lg:grid-cols-3">
+                {focoCompra.length ? (
+                  <div className="rounded-xl border bg-card p-4">
+                    <h3 className="mb-3 text-sm font-semibold text-emerald-600">
+                      Foco de compra — nas mínimas da própria história
+                    </h3>
+                    <ul className="space-y-2">
+                      {focoCompra.map((l) => (
+                        <li key={l.ticker}>
+                          <button
+                            type="button"
+                            onClick={() => setSelecionado(l)}
+                            className="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
                           >
-                            {l.variacaoDia?.toFixed(2).replace(".", ",") ?? "—"}%
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
+                            <span className="font-medium">{l.ticker}</span>
+                            <span className="text-xs text-muted-foreground">{l.nome}</span>
+                            <span className="ml-auto text-xs tabular-nums text-emerald-600">
+                              {l.posicao?.percentil?.toFixed(0) ?? "—"}% do range
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {melhoresScore.length ? (
+                  <div className="rounded-xl border bg-card p-4">
+                    <h3 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-sky-600">
+                      <Sparkles className="size-4" aria-hidden />
+                      Melhores oportunidades pelo score
+                    </h3>
+                    <ul className="space-y-2">
+                      {melhoresScore.map((l) => (
+                        <li key={l.ticker}>
+                          <button
+                            type="button"
+                            onClick={() => setSelecionado(l)}
+                            className="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
+                          >
+                            <span className="font-medium">{l.ticker}</span>
+                            <span className="text-xs text-muted-foreground">{l.nome}</span>
+                            <span className="ml-auto text-xs font-semibold tabular-nums text-sky-600">
+                              {l.score ?? "—"}
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {alertaVenda.length ? (
+                  <div className="rounded-xl border bg-card p-4">
+                    <h3 className="mb-3 text-sm font-semibold text-red-600">
+                      Alertas de venda — choque ou deterioração no dia
+                    </h3>
+                    <ul className="space-y-2">
+                      {alertaVenda.map((l) => (
+                        <li key={l.ticker}>
+                          <button
+                            type="button"
+                            onClick={() => setSelecionado(l)}
+                            className="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
+                          >
+                            <span className="font-medium">{l.ticker}</span>
+                            <span className="text-xs text-muted-foreground">{l.nome}</span>
+                            <span
+                              className={`text-xs tabular-nums ${
+                                l.variacaoDia !== null && l.variacaoDia < 0
+                                  ? "text-red-600"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {l.variacaoDia?.toFixed(2).replace(".", ",") ?? "—"}%
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
-          <section
-            aria-label="Filtros do radar"
-            className="w-full max-w-full overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/60"
-          >
-            <div className="flex flex-col gap-4 p-4">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
-                <div className="relative min-w-0">
-                  <Search
-                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                    aria-hidden
-                  />
-                  <Input
-                    placeholder="Buscar ativo (ex.: TASY3, Itaú)…"
-                    value={busca}
-                    onChange={(e) => {
-                      setBusca(e.target.value);
-                    }}
-                    aria-label="Buscar ativo"
-                    className="w-full min-w-0 pl-9"
-                  />
-                </div>
+            <section
+              aria-label="Filtros do radar"
+              className="w-full max-w-full overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/60"
+            >
+              <div className="flex flex-col gap-4 p-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
+                  <div className="relative min-w-0">
+                    <Search
+                      className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                      aria-hidden
+                    />
+                    <Input
+                      placeholder="Buscar ativo (ex.: TASY3, Itaú)…"
+                      value={busca}
+                      onChange={(e) => {
+                        setBusca(e.target.value);
+                      }}
+                      aria-label="Buscar ativo"
+                      className="w-full min-w-0 pl-9"
+                    />
+                  </div>
 
-                <Select value={filtroSinal} onValueChange={(v) => setFiltroSinal(v as FiltroSinal)}>
-                  <SelectTrigger className="w-full min-w-0">
-                    <SelectValue placeholder="Sinal" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(Object.keys(ROTULOS_SINAL_FILTRO) as FiltroSinal[]).map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {ROTULOS_SINAL_FILTRO[s]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {setoresDisponiveis.length ? (
-                  <Select value={filtroSetor} onValueChange={setFiltroSetor}>
+                  <Select
+                    value={filtroSinal}
+                    onValueChange={(v) => setFiltroSinal(v as FiltroSinal)}
+                  >
                     <SelectTrigger className="w-full min-w-0">
-                      <SelectValue placeholder="Setor / Tipo" />
+                      <SelectValue placeholder="Sinal" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="todos">Todos os setores</SelectItem>
-                      {setoresDisponiveis.map((s) => (
+                      {(Object.keys(ROTULOS_SINAL_FILTRO) as FiltroSinal[]).map((s) => (
                         <SelectItem key={s} value={s}>
-                          {s}
+                          {ROTULOS_SINAL_FILTRO[s]}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                ) : null}
 
-                <Select value={ordem} onValueChange={(v) => setOrdem(v as Ordenacao)}>
-                  <SelectTrigger className="w-full min-w-0">
-                    <SelectValue placeholder="Ordenar por" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sinal">Por sinal do radar</SelectItem>
-                    <SelectItem value="score">Melhor score de oportunidade</SelectItem>
-                    <SelectItem value="dy">Maior DY 12m</SelectItem>
-                    <SelectItem value="queda">Maior queda do dia</SelectItem>
-                    <SelectItem value="minima52">Mais perto da mín. 52s</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {setoresDisponiveis.length ? (
+                    <Select value={filtroSetor} onValueChange={setFiltroSetor}>
+                      <SelectTrigger className="w-full min-w-0">
+                        <SelectValue placeholder="Setor / Tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos os setores</SelectItem>
+                        {setoresDisponiveis.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : null}
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setDirecao((d) => (d === "desc" ? "asc" : "desc"))}
-                  title="Inverter a ordem da página"
-                  aria-label={`Ordenar página: ${direcao === "desc" ? "decrescente" : "crescente"}`}
-                  className="w-full justify-center whitespace-nowrap sm:w-auto"
-                >
-                  {direcao === "desc" ? (
-                    <ArrowDownWideNarrow className="mr-1 size-4 shrink-0" aria-hidden />
-                  ) : (
-                    <ArrowUpNarrowWide className="mr-1 size-4 shrink-0" aria-hidden />
-                  )}
-                  Ordenar
-                </Button>
-              </div>
+                  <Select value={ordem} onValueChange={(v) => setOrdem(v as Ordenacao)}>
+                    <SelectTrigger className="w-full min-w-0">
+                      <SelectValue placeholder="Ordenar por" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sinal">Por sinal do radar</SelectItem>
+                      <SelectItem value="score">Melhor score de oportunidade</SelectItem>
+                      <SelectItem value="dy">Maior DY 12m</SelectItem>
+                      <SelectItem value="queda">Maior queda do dia</SelectItem>
+                      <SelectItem value="minima52">Mais perto da mín. 52s</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">
-                {faltandoPagina > 0 ? (
-                  <p className="min-w-0 text-xs text-muted-foreground">
-                    {faltandoPagina} ativo{faltandoPagina > 1 ? "s" : ""} desta página
-                    {carregando
-                      ? " carregando histórico…"
-                      : " ainda sem histórico — tentando novamente…"}
-                  </p>
-                ) : (
-                  <span className="text-xs text-muted-foreground">
-                    Página {paginaSegura}/{totalPaginas} — histórico próprio carregado
-                  </span>
-                )}
-                {!preenchimento || preenchimento.faltam > 0 ? (
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
-                    className="h-8 gap-1.5"
-                    onClick={() => void preencherHistoricos(true)}
-                    disabled={preenchimento?.ativo ?? false}
+                    onClick={() => setDirecao((d) => (d === "desc" ? "asc" : "desc"))}
+                    title="Inverter a ordem da página"
+                    aria-label={`Ordenar página: ${direcao === "desc" ? "decrescente" : "crescente"}`}
+                    className="w-full justify-center whitespace-nowrap sm:w-auto"
                   >
-                    {preenchimento?.ativo ? (
-                      <Loader2 className="size-3.5 shrink-0 animate-spin" aria-hidden />
+                    {direcao === "desc" ? (
+                      <ArrowDownWideNarrow className="mr-1 size-4 shrink-0" aria-hidden />
                     ) : (
-                      <DatabaseZap className="size-3.5 shrink-0" aria-hidden />
+                      <ArrowUpNarrowWide className="mr-1 size-4 shrink-0" aria-hidden />
                     )}
-                    {preenchimento?.ativo
-                      ? preenchimento.obtidos > 0
-                        ? `Preenchendo… ${preenchimento.obtidos} ok`
-                        : "Preparando…"
-                      : `Completar histórico de ${categoria === "acao" ? "ações" : "FIIs"}${
-                          preenchimento && preenchimento.faltam > 0
-                            ? ` (${preenchimento.faltam.toLocaleString("pt-BR")})`
-                            : ""
-                        }`}
+                    Ordenar
                   </Button>
-                ) : null}
-              </div>
+                </div>
 
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-border/60 pt-3">
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                  <SlidersHorizontal className="size-3.5 shrink-0" aria-hidden />
-                  Refinar
-                </span>
-                <label className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
-                  <Switch checked={apenasPosicao} onCheckedChange={setApenasPosicao} />
-                  Com histórico
-                </label>
-                <label className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
-                  <Switch checked={apenasMinimas52} onCheckedChange={setApenasMinimas52} />
-                  ≤5% da mín. 52s
-                </label>
-                <p className="ml-auto inline-flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
-                  <Radar className="size-3.5 shrink-0" aria-hidden />
-                  <span className="truncate">
-                    Percentil 0 = menor preço histórico · 100 = maior
-                  </span>
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <TabelaRadar
-            linhas={ordenadas}
-            sparklines={sparklines}
-            carteira={carteiraPorTicker}
-            carregandoPosicoes={carregando}
-            aoSelecionar={setSelecionado}
-          />
-
-          {totalPaginas > 1 ? (
-            <nav
-              aria-label="Paginação do radar"
-              className="flex flex-col items-center gap-2 border-t border-border/60 pt-4"
-            >
-              <div className="flex flex-wrap items-center justify-center gap-1">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  disabled={paginaSegura <= 1}
-                  onClick={() => setPagina(paginaSegura - 1)}
-                  aria-label="Página anterior"
-                >
-                  <ChevronLeft className="size-4" />
-                </Button>
-                {paginasNumeradas(totalPaginas, paginaSegura).map((item, i) =>
-                  item === "…" ? (
-                    <span
-                      key={`elipse-${i}`}
-                      aria-hidden
-                      className="flex size-9 items-center justify-center text-muted-foreground"
-                    >
-                      …
-                    </span>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">
+                  {faltandoPagina > 0 ? (
+                    <p className="min-w-0 text-xs text-muted-foreground">
+                      {faltandoPagina} ativo{faltandoPagina > 1 ? "s" : ""} desta página
+                      {carregando
+                        ? " carregando histórico…"
+                        : " ainda sem histórico — tentando novamente…"}
+                    </p>
                   ) : (
+                    <span className="text-xs text-muted-foreground">
+                      Página {paginaSegura}/{totalPaginas} — histórico próprio carregado
+                    </span>
+                  )}
+                  {!preenchimento || preenchimento.faltam > 0 ? (
                     <Button
-                      key={item}
                       type="button"
-                      variant={item === paginaSegura ? "outline" : "ghost"}
-                      size="icon"
-                      onClick={() => setPagina(item)}
-                      aria-current={item === paginaSegura ? "page" : undefined}
-                      className={
-                        item === paginaSegura
-                          ? "border-emerald-600/50 font-semibold text-emerald-600"
-                          : "text-muted-foreground"
-                      }
+                      variant="outline"
+                      size="sm"
+                      className="h-8 gap-1.5"
+                      onClick={() => void preencherHistoricos(true)}
+                      disabled={preenchimento?.ativo ?? false}
                     >
-                      {item}
+                      {preenchimento?.ativo ? (
+                        <Loader2 className="size-3.5 shrink-0 animate-spin" aria-hidden />
+                      ) : (
+                        <DatabaseZap className="size-3.5 shrink-0" aria-hidden />
+                      )}
+                      {preenchimento?.ativo
+                        ? preenchimento.obtidos > 0
+                          ? `Preenchendo… ${preenchimento.obtidos} ok`
+                          : "Preparando…"
+                        : `Completar histórico de ${categoria === "acao" ? "ações" : "FIIs"}${
+                            preenchimento && preenchimento.faltam > 0
+                              ? ` (${preenchimento.faltam.toLocaleString("pt-BR")})`
+                              : ""
+                          }`}
                     </Button>
-                  ),
-                )}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  disabled={paginaSegura >= totalPaginas}
-                  onClick={() => setPagina(paginaSegura + 1)}
-                  aria-label="Próxima página"
-                >
-                  <ChevronRight className="size-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Página {paginaSegura} de {totalPaginas} ·{" "}
-                {linhasFiltradas.length.toLocaleString("pt-BR")} ativos
-              </p>
-            </nav>
-          ) : null}
+                  ) : null}
+                </div>
 
-          <p className="text-xs text-muted-foreground">
-            O Radar é educacional: usa apenas o histórico de preços (Yahoo Finance), a base
-            fundamentalista diária, o feed público de notícias e o contexto macro do Banco Central.
-            Não constitui recomendação de investimento — cada decisão é sua.
-          </p>
-        </>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-border/60 pt-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <SlidersHorizontal className="size-3.5 shrink-0" aria-hidden />
+                    Refinar
+                  </span>
+                  <label className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
+                    <Switch checked={apenasPosicao} onCheckedChange={setApenasPosicao} />
+                    Com histórico
+                  </label>
+                  <label className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
+                    <Switch checked={apenasMinimas52} onCheckedChange={setApenasMinimas52} />
+                    ≤5% da mín. 52s
+                  </label>
+                  <p className="ml-auto inline-flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+                    <Radar className="size-3.5 shrink-0" aria-hidden />
+                    <span className="truncate">
+                      Percentil 0 = menor preço histórico · 100 = maior
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <TabelaRadar
+              linhas={ordenadas}
+              sparklines={sparklines}
+              carteira={carteiraPorTicker}
+              carregandoPosicoes={carregando}
+              aoSelecionar={setSelecionado}
+            />
+
+            {totalPaginas > 1 ? (
+              <nav
+                aria-label="Paginação do radar"
+                className="flex flex-col items-center gap-2 border-t border-border/60 pt-4"
+              >
+                <div className="flex flex-wrap items-center justify-center gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={paginaSegura <= 1}
+                    onClick={() => setPagina(paginaSegura - 1)}
+                    aria-label="Página anterior"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </Button>
+                  {paginasNumeradas(totalPaginas, paginaSegura).map((item, i) =>
+                    item === "…" ? (
+                      <span
+                        key={`elipse-${i}`}
+                        aria-hidden
+                        className="flex size-9 items-center justify-center text-muted-foreground"
+                      >
+                        …
+                      </span>
+                    ) : (
+                      <Button
+                        key={item}
+                        type="button"
+                        variant={item === paginaSegura ? "outline" : "ghost"}
+                        size="icon"
+                        onClick={() => setPagina(item)}
+                        aria-current={item === paginaSegura ? "page" : undefined}
+                        className={
+                          item === paginaSegura
+                            ? "border-emerald-600/50 font-semibold text-emerald-600"
+                            : "text-muted-foreground"
+                        }
+                      >
+                        {item}
+                      </Button>
+                    ),
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={paginaSegura >= totalPaginas}
+                    onClick={() => setPagina(paginaSegura + 1)}
+                    aria-label="Próxima página"
+                  >
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Página {paginaSegura} de {totalPaginas} ·{" "}
+                  {linhasFiltradas.length.toLocaleString("pt-BR")} ativos
+                </p>
+              </nav>
+            ) : null}
+
+            <p className="text-xs text-muted-foreground">
+              O Radar é educacional: usa apenas o histórico de preços (Yahoo Finance), a base
+              fundamentalista diária, o feed público de notícias e o contexto macro do Banco
+              Central. Não constitui recomendação de investimento — cada decisão é sua.
+            </p>
+          </>
+        )
       ) : null}
 
       <ModalRadar
