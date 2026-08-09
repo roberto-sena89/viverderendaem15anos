@@ -4,6 +4,7 @@ import { MailCheck, Loader2, RefreshCw, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { CabecalhoPublico } from "@/components/cabecalho-publico";
 import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/verificar-email")({
@@ -12,13 +13,13 @@ export const Route = createFileRoute("/verificar-email")({
   }),
   head: () => ({
     meta: [
-      { title: "Confirme seu e-mail | Investidor em 15 Anos" },
+      { title: "Confirme seu e-mail | Viver de Renda em 15 Anos" },
       {
         name: "description",
         content:
           "Confirme seu endereço de e-mail para liberar o acesso ao painel de carteira, dividendos e metas.",
       },
-      { property: "og:title", content: "Confirme seu e-mail | Investidor em 15 Anos" },
+      { property: "og:title", content: "Confirme seu e-mail | Viver de Renda em 15 Anos" },
       {
         property: "og:description",
         content: "Verifique sua caixa de entrada e ative sua conta para acessar a plataforma.",
@@ -126,59 +127,62 @@ function VerifyEmailPage() {
   const bloqueado = sending || cooldown > 0 || restantes <= 0;
 
   return (
-    <main className="grid min-h-dvh place-items-center bg-background px-5 py-12">
-      <div className="w-full max-w-md text-center">
-        <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-brand text-primary-foreground">
-          <MailCheck className="size-6" />
-        </span>
-        <h1 className="mt-6 font-display text-2xl font-semibold">Confirme seu e-mail</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Enviamos um link de confirmação
-          {email ? (
-            <>
-              {" "}
-              para <span className="font-medium text-foreground">{email}</span>
-            </>
-          ) : null}
-          . O acesso ao painel é liberado assim que você confirmar.
-        </p>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Não encontrou? Verifique a caixa de spam ou promoções antes de reenviar.
-        </p>
-
-        <div className="mt-8 space-y-3">
-          <Button className="w-full" onClick={checkNow} disabled={checking}>
-            {checking ? (
+    <div className="min-h-dvh bg-background">
+      <CabecalhoPublico />
+      <main className="grid min-h-[calc(100dvh-4rem)] place-items-center bg-background px-5 py-12">
+        <div className="w-full max-w-md text-center">
+          <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-brand text-primary-foreground shadow-[var(--shadow-lift)]">
+            <MailCheck className="size-6" />
+          </span>
+          <h1 className="mt-6 font-display text-2xl font-semibold">Confirme seu e-mail</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Enviamos um link de confirmação
+            {email ? (
               <>
-                <Loader2 className="size-4 animate-spin" /> Verificando…
+                {" "}
+                para <span className="font-medium text-foreground">{email}</span>
               </>
-            ) : (
-              "Já confirmei, continuar"
-            )}
-          </Button>
-          <Button variant="outline" className="w-full" onClick={resend} disabled={bloqueado}>
-            {sending ? (
-              <>
-                <Loader2 className="size-4 animate-spin" /> Enviando…
-              </>
-            ) : cooldown > 0 ? (
-              `Reenviar em ${cooldown}s`
-            ) : (
-              <>
-                <RefreshCw className="size-4" /> Reenviar e-mail
-              </>
-            )}
-          </Button>
-          <p className="text-xs text-muted-foreground" aria-live="polite">
-            {restantes > 0
-              ? `Você ainda pode reenviar ${restantes} ${restantes === 1 ? "vez" : "vezes"}.`
-              : "Limite de reenvios atingido nesta sessão."}
+            ) : null}
+            . O acesso ao painel é liberado assim que você confirmar.
           </p>
-          <Button variant="ghost" className="w-full" onClick={signOut}>
-            <LogOut className="size-4" /> Usar outra conta
-          </Button>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Não encontrou? Verifique a caixa de spam ou promoções antes de reenviar.
+          </p>
+
+          <div className="mt-8 space-y-3">
+            <Button className="w-full" onClick={checkNow} disabled={checking}>
+              {checking ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" /> Verificando…
+                </>
+              ) : (
+                "Já confirmei, continuar"
+              )}
+            </Button>
+            <Button variant="outline" className="w-full" onClick={resend} disabled={bloqueado}>
+              {sending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" /> Enviando…
+                </>
+              ) : cooldown > 0 ? (
+                `Reenviar em ${cooldown}s`
+              ) : (
+                <>
+                  <RefreshCw className="size-4" /> Reenviar e-mail
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-muted-foreground" aria-live="polite">
+              {restantes > 0
+                ? `Você ainda pode reenviar ${restantes} ${restantes === 1 ? "vez" : "vezes"}.`
+                : "Limite de reenvios atingido nesta sessão."}
+            </p>
+            <Button variant="ghost" className="w-full" onClick={signOut}>
+              <LogOut className="size-4" /> Usar outra conta
+            </Button>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

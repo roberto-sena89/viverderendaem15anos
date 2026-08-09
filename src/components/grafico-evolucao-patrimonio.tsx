@@ -38,7 +38,7 @@ function FiltroSelect({
   return (
     <Select value={valor} onValueChange={onChange}>
       <SelectTrigger aria-label={rotuloAcessivel} className="h-9 w-[9.5rem] gap-2 text-xs">
-        <Icone className="size-8! shrink-0 text-muted-foreground" />
+        <Icone className="size-4 shrink-0 text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -163,14 +163,14 @@ export function GraficoEvolucaoPatrimonio() {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="mes"
-                tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
                 axisLine={{ stroke: "var(--color-border)" }}
                 tickMargin={8}
               />
               <YAxis
                 tickFormatter={(v: number) => brl(v, 0)}
-                tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
                 axisLine={false}
                 width={78}

@@ -19,6 +19,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { Panel } from "@/components/panel";
+import { EstadoVazio } from "@/components/estado-vazio";
 import { PainelTributacao } from "@/components/painel-tributacao";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { Button } from "@/components/ui/button";
@@ -575,7 +576,7 @@ function HistoricoAportesPage() {
               aria-expanded={aberto}
             >
               <ChevronDown className={cn("size-4 transition-transform", !aberto && "-rotate-90")} />
-              <h2 className="truncate font-display text-lg font-bold">
+              <h2 className="min-w-0 truncate font-display text-lg font-bold">
                 {modo === "mensal" ? rotuloMes(mes) : `Ano de ${ano}`}
               </h2>
             </button>
@@ -595,12 +596,8 @@ function HistoricoAportesPage() {
             </div>
           </div>
           <div className="shrink-0 text-right">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">
-              Total aportado
-            </p>
-            <p className="font-display text-2xl font-bold text-primary sm:text-3xl">
-              {brl(totalPeriodo)}
-            </p>
+            <p className="t-label">Total aportado</p>
+            <p className="t-metric text-primary">{brl(totalPeriodo)}</p>
           </div>
         </div>
 
@@ -656,9 +653,10 @@ function HistoricoAportesPage() {
                 <Tooltip
                   formatter={(v) => brl(Number(v))}
                   contentStyle={{
-                    background: "var(--color-card)",
+                    background: "var(--color-popover)",
                     border: "1px solid var(--color-border)",
-                    borderRadius: 8,
+                    borderRadius: 12,
+                    fontSize: 12,
                   }}
                 />
                 <Bar dataKey="valor" fill="var(--color-serie-investido)" radius={[4, 4, 0, 0]} />
@@ -678,14 +676,12 @@ function HistoricoAportesPage() {
           {isLoading ? (
             <p className="p-6 text-sm text-muted-foreground">Carregando lançamentos…</p>
           ) : filtrados.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 p-10 text-center">
-              <PiggyBank className="size-10 text-muted-foreground" />
-              <p className="font-display text-base font-semibold">Nenhum aporte neste período</p>
-              <p className="max-w-sm text-sm text-muted-foreground">
-                Registre seu primeiro lançamento para acompanhar a evolução do seu patrimônio mês a
-                mês.
-              </p>
-            </div>
+            <EstadoVazio
+              compacto
+              icone={PiggyBank}
+              titulo="Nenhum aporte neste período"
+              descricao="Registre seu primeiro lançamento para acompanhar a evolução do seu patrimônio mês a mês."
+            />
           ) : (
             <>
               {/* Desktop */}

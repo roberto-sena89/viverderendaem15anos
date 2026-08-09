@@ -456,7 +456,7 @@ export function CarteiraGrupos({
                     <span className="text-sm font-bold tabular-nums sm:text-base lg:text-lg">
                       {brl(g.total, 2)}
                     </span>
-                    <span className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                    <span className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Saldo atual
                     </span>
                   </div>
@@ -464,19 +464,19 @@ export function CarteiraGrupos({
 
                 <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
                   <div className="min-w-0">
-                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                    <dt className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Ativos
                     </dt>
                     <dd className="text-sm font-semibold tabular-nums">{g.ativos.length}</dd>
                   </div>
                   <div className="min-w-0">
-                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                    <dt className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Investido
                     </dt>
                     <dd className="text-sm font-semibold tabular-nums">{brl(g.investido, 2)}</dd>
                   </div>
                   <div className="min-w-0">
-                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                    <dt className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Var. dia
                     </dt>
                     <dd className="text-sm">
@@ -488,7 +488,7 @@ export function CarteiraGrupos({
                     </dd>
                   </div>
                   <div className="min-w-0">
-                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                    <dt className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Variação (%)
                     </dt>
                     <dd className="text-sm">
@@ -496,7 +496,7 @@ export function CarteiraGrupos({
                     </dd>
                   </div>
                   <div className="min-w-0">
-                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                    <dt className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       Rentabilidade
                     </dt>
                     <dd className="text-sm">
@@ -505,7 +505,7 @@ export function CarteiraGrupos({
                   </div>
 
                   <div className="min-w-0">
-                    <dt className="text-[0.68rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                    <dt className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                       % na carteira
                     </dt>
                     <dd className="text-sm font-semibold tabular-nums">
@@ -554,7 +554,7 @@ export function CarteiraGrupos({
                           <div className="flex shrink-0 items-center gap-1.5">
                             <div className="text-right leading-tight">
                               <p className="text-sm font-bold tabular-nums">{brl(saldo, 2)}</p>
-                              <p className="text-[0.65rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                              <p className="text-[0.7rem] font-semibold tracking-wide text-muted-foreground uppercase">
                                 Saldo
                               </p>
                             </div>
@@ -601,7 +601,7 @@ export function CarteiraGrupos({
 
                         <dl className="mt-2.5 grid grid-cols-3 gap-x-2 gap-y-2 border-t pt-2.5">
                           <div className="min-w-0">
-                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
                               P. atual
                             </dt>
                             <dd className="text-[0.8rem] font-semibold tabular-nums">
@@ -634,7 +634,7 @@ export function CarteiraGrupos({
                             </dd>
                           </div>
                           <div className="min-w-0">
-                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
                               Var. dia
                             </dt>
                             <dd className="text-[0.8rem]">
@@ -646,7 +646,7 @@ export function CarteiraGrupos({
                             </dd>
                           </div>
                           <div className="min-w-0">
-                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
                               Rent.
                             </dt>
                             <dd className="text-[0.8rem]">
@@ -654,19 +654,19 @@ export function CarteiraGrupos({
                             </dd>
                           </div>
                           <div className="min-w-0">
-                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
                               Quant.
                             </dt>
                             <dd className="text-[0.8rem] tabular-nums">{num(a.quantidade)}</dd>
                           </div>
                           <div className="min-w-0">
-                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
                               P. médio
                             </dt>
                             <dd className="text-[0.8rem] tabular-nums">{brl(a.precoMedio, 2)}</dd>
                           </div>
                           <div className="min-w-0">
-                            <dt className="text-[0.6rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
                               % Cart. / Ideal
                             </dt>
                             <dd className="text-[0.8rem] tabular-nums">
@@ -689,7 +689,7 @@ export function CarteiraGrupos({
                 <div className="hidden border-t md:block">
                   <Table
                     wrapperClassName="w-full max-w-full overflow-x-auto overscroll-x-contain scrollbar-none"
-                    className="w-full min-w-0 table-auto text-[0.8rem] sm:text-sm [&_th]:px-1.5 [&_td]:px-1.5 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:text-[0.62rem] sm:[&_th]:text-[0.7rem] [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
+                    className="w-full min-w-0 table-auto text-[0.8rem] sm:text-sm [&_th]:px-1.5 [&_td]:px-1.5 sm:[&_th]:px-2.5 sm:[&_td]:px-2.5 [&_th]:leading-tight [&_th]:whitespace-nowrap [&_td]:whitespace-nowrap [&_th]:font-semibold [&_th]:tracking-wide [&_th]:uppercase"
                   >
                     <TableHeader>
                       <TableRow className="bg-muted/40">

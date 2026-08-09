@@ -202,9 +202,7 @@ export function SaudeCarteira({ carteira }: { carteira: Ativo[] }) {
 
         <div className="grid w-full flex-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2 text-xs">
-            <p className="text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">
-              Concentração
-            </p>
+            <p className="t-label">Concentração</p>
             <div className="space-y-1.5">
               <BarraProgresso
                 rotulo={analise.top1 ? `Maior posição (${analise.top1.ticker})` : "Maior posição"}
@@ -230,9 +228,7 @@ export function SaudeCarteira({ carteira }: { carteira: Ativo[] }) {
           </div>
 
           <div className="space-y-2 text-xs">
-            <p className="text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">
-              Indicadores
-            </p>
+            <p className="t-label">Indicadores</p>
             <div className="grid grid-cols-2 gap-2">
               <IndicadorValor rotulo="Patrimônio" valor={brl(analise.totalAtual, 2)} />
               <IndicadorValor rotulo="DY estimado" valor={pct(analise.dy, 2)} />
@@ -278,9 +274,7 @@ export function SaudeCarteira({ carteira }: { carteira: Ativo[] }) {
 
       {analise.classes.length > 0 ? (
         <div className="mt-5">
-          <p className="mb-2 text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">
-            Alocação por classe vs. alvo
-          </p>
+          <p className="t-label mb-2">Alocação por classe vs. alvo</p>
           <div className="space-y-2">
             {analise.classes.map((c) => (
               <div key={c.classe} className="space-y-1">

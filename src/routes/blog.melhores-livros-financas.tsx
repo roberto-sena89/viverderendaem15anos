@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme";
+import { CabecalhoPublico } from "@/components/cabecalho-publico";
+import { RodapePublico } from "@/components/rodape-publico";
 import {
   Table,
   TableBody,
@@ -211,8 +212,8 @@ export const Route = createFileRoute("/blog/melhores-livros-financas")({
           description: DESCRIPTION,
           mainEntityOfPage: URL,
           inLanguage: "pt-BR",
-          author: { "@type": "Organization", name: "Investidor em 15 Anos" },
-          publisher: { "@type": "Organization", name: "Investidor em 15 Anos" },
+          author: { "@type": "Organization", name: "Viver de Renda em 15 Anos" },
+          publisher: { "@type": "Organization", name: "Viver de Renda em 15 Anos" },
         }),
       },
       {
@@ -272,26 +273,9 @@ function LivrosPage() {
       <a href="#conteudo" className="link-pular">
         Pular para o conteúdo
       </a>
-      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="font-display text-sm font-semibold">Investidor em 15 Anos</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button asChild size="sm">
-              <Link to="/dashboard">
-                Entrar <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <CabecalhoPublico />
 
-      <main id="conteudo" className="mx-auto max-w-4xl px-5 py-12">
+      <main id="conteudo" className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
         <article>
           <nav aria-label="Trilha de navegação" className="text-xs text-muted-foreground">
             <Link to="/" className="hover:text-foreground">
@@ -300,11 +284,11 @@ function LivrosPage() {
             / <span>Melhores livros de finanças</span>
           </nav>
 
-          <p className="mt-4 inline-flex items-center gap-2 text-xs tracking-wide text-muted-foreground uppercase">
-            <BookOpen className="size-4" /> Guia de leitura
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold tracking-[0.16em] text-primary uppercase">
+            <BookOpen className="size-3.5" /> Guia de leitura
           </p>
-          <h1 className="mt-3 text-4xl leading-tight font-semibold">{TITLE}</h1>
-          <p className="mt-5 text-lg text-muted-foreground">
+          <h1 className="text-h1-lg mt-4 text-balance">{TITLE}</h1>
+          <p className="mt-5 text-lg leading-relaxed text-muted-foreground text-pretty">
             Escolher entre os melhores livros de finanças fica mais fácil quando você sabe qual
             problema cada um resolve. Abaixo estão dez livros sobre investimentos organizados por
             foco — comportamento, análise fundamentalista, análise técnica e renda passiva — com
@@ -312,8 +296,8 @@ function LivrosPage() {
           </p>
 
           <section className="mt-12">
-            <h2 className="text-2xl font-semibold">Comparativo rápido</h2>
-            <div className="mt-4 overflow-auto rounded-2xl border border-border">
+            <h2 className="t-h2">Comparativo rápido</h2>
+            <div className="mt-4 overflow-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-soft)]">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -340,40 +324,42 @@ function LivrosPage() {
             </div>
           </section>
 
-          <section className="mt-12 space-y-8">
-            <h2 className="text-2xl font-semibold">
-              Os 10 melhores livros de finanças e investimentos
-            </h2>
+          <section className="mt-14 space-y-8">
+            <h2 className="t-h2">Os 10 melhores livros de finanças e investimentos</h2>
             {livros.map((l, i) => (
-              <div key={l.titulo} className="rounded-2xl border border-border bg-card p-6">
-                <h3 className="text-xl font-semibold">
+              <div
+                key={l.titulo}
+                className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] transition-colors hover:border-primary/40"
+              >
+                <h3 className="t-h3">
                   {i + 1}. {l.titulo}
                 </h3>
-                <p className="mt-1 text-xs tracking-wide text-muted-foreground uppercase">
+                <p className="mt-1.5 text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
                   {l.autor} · {l.foco} · {l.nivel}
                 </p>
-                <p className="mt-3 text-muted-foreground">{l.resumo}</p>
+                <p className="mt-3 leading-relaxed text-muted-foreground">{l.resumo}</p>
               </div>
             ))}
           </section>
 
-          <section className="mt-12 space-y-6">
-            <h2 className="text-2xl font-semibold">
-              Qual escola escolher: comparação por intenção
-            </h2>
+          <section className="mt-14 space-y-6">
+            <h2 className="t-h2">Qual escola escolher: comparação por intenção</h2>
             {comparacoes.map((c) => (
               <div key={c.titulo}>
-                <h3 className="font-medium">{c.titulo}</h3>
-                <p className="mt-1 text-muted-foreground">{c.texto}</p>
+                <h3 className="t-h3">{c.titulo}</h3>
+                <p className="mt-1.5 leading-relaxed text-muted-foreground">{c.texto}</p>
               </div>
             ))}
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-2xl font-semibold">Trilha de leitura em 4 etapas</h2>
+          <section className="mt-14">
+            <h2 className="t-h2">Trilha de leitura em 4 etapas</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {trilha.map((t) => (
-                <div key={t.etapa} className="rounded-2xl border border-border bg-card p-5">
+                <div
+                  key={t.etapa}
+                  className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]"
+                >
                   <h3 className="font-semibold">{t.etapa}</h3>
                   <p className="mt-2 text-sm">{t.livros}</p>
                   <p className="mt-2 text-sm text-muted-foreground">{t.objetivo}</p>
@@ -382,37 +368,38 @@ function LivrosPage() {
             </div>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-2xl font-semibold">Perguntas frequentes</h2>
-            <div className="mt-4 space-y-6">
+          <section className="mt-14">
+            <h2 className="t-h2">Perguntas frequentes</h2>
+            <div className="mt-5 space-y-6">
               {faqs.map((f) => (
                 <div key={f.q}>
-                  <h3 className="font-medium">{f.q}</h3>
-                  <p className="mt-1 text-muted-foreground">{f.a}</p>
+                  <h3 className="t-h3">{f.q}</h3>
+                  <p className="mt-1.5 leading-relaxed text-muted-foreground">{f.a}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          <div className="mt-12 rounded-2xl border border-border bg-card p-6">
-            <h2 className="text-xl font-semibold">Da leitura para a prática</h2>
-            <p className="mt-2 text-muted-foreground">
+          <div className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+            <h2 className="t-h2">Da leitura para a prática</h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
               Depois de escolher a estratégia, simule quanto tempo falta para viver de renda com os
               seus aportes reais — ou continue no guia completo de liberdade financeira.
             </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button asChild>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Button asChild className="rounded-xl">
                 <Link to="/calculadora-juros-compostos">
                   Calculadora de juros compostos <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="rounded-xl">
                 <Link to="/guia-liberdade-financeira">Guia de liberdade financeira</Link>
               </Button>
             </div>
           </div>
         </article>
       </main>
+      <RodapePublico />
     </div>
   );
 }

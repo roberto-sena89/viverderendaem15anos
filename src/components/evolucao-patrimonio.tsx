@@ -353,7 +353,7 @@ function TooltipEvolucao({
           >
             {brl(ganho, 2)}
             {ganhoPct !== null ? (
-              <span className="ml-1 text-[0.68rem]">({fmtPct(ganhoPct)})</span>
+              <span className="ml-1 text-[0.6875rem]">({fmtPct(ganhoPct)})</span>
             ) : null}
           </span>
         </div>
@@ -371,7 +371,7 @@ function TooltipEvolucao({
               {deltaAbs >= 0 ? "+" : ""}
               {brl(deltaAbs, 2)}
               {deltaPct !== null ? (
-                <span className="ml-1 text-[0.68rem]">({fmtPct(deltaPct)})</span>
+                <span className="ml-1 text-[0.6875rem]">({fmtPct(deltaPct)})</span>
               ) : null}
             </span>
           )}
@@ -676,9 +676,7 @@ export function EvolucaoPatrimonio() {
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-center">
           <div className="min-w-0">
             <p className="t-label text-foreground">Patrimônio total atual</p>
-            <p className="font-display text-3xl font-black tracking-tight text-serie-patrimonio sm:text-4xl">
-              {brl(resumo.totalAtual, 2)}
-            </p>
+            <p className="t-metric text-serie-patrimonio">{brl(resumo.totalAtual, 2)}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Investido: {brl(resumo.totalInvestido, 2)} · Rendimento: {brl(resumo.lucroTotal, 2)} (
               {pct(resumo.rentabilidade)})
@@ -937,7 +935,7 @@ export function EvolucaoPatrimonio() {
                 />
 
                 <YAxis
-                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                  tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
                   tickLine={false}
                   axisLine={false}
                   width={52}
@@ -971,7 +969,7 @@ export function EvolucaoPatrimonio() {
                       offset={6}
                       formatter={(v: number) => compacto(Number(v))}
                       style={{
-                        fontSize: 10,
+                        fontSize: 11,
                         fontWeight: destaque === "patrimonio" ? 700 : 600,
                         fill: "var(--color-serie-patrimonio)",
                       }}
@@ -998,7 +996,7 @@ export function EvolucaoPatrimonio() {
                       offset={6}
                       formatter={(v: number) => compacto(Number(v))}
                       style={{
-                        fontSize: 10,
+                        fontSize: 11,
                         fontWeight: destaque === "aportadoAcum" ? 700 : 600,
                         fill: "var(--color-serie-investido)",
                       }}
@@ -1063,7 +1061,7 @@ export function EvolucaoPatrimonio() {
             <div className="-mx-4 hidden overflow-x-auto px-4 md:block sm:-mx-5 sm:px-5">
               <table className="w-full min-w-[46rem] table-auto text-sm">
                 <thead>
-                  <tr className="text-left text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+                  <tr className="text-left text-[0.6875rem] uppercase tracking-wide text-muted-foreground">
                     <th className="py-2 font-semibold">Período</th>
                     <th className="py-2 text-right font-semibold">Patrimônio final</th>
                     <th className="py-2 text-right font-semibold">Aportado</th>
@@ -1271,7 +1269,7 @@ export function EvolucaoPatrimonio() {
                     />
                     <span className="min-w-0 truncate font-medium">{d.categoria}</span>
                     <span className="shrink-0 tabular-nums font-semibold">{pct(d.parte)}</span>
-                    <span className="col-start-2 col-span-2 text-[0.65rem] text-muted-foreground tabular-nums">
+                    <span className="col-start-2 col-span-2 text-[0.6875rem] text-muted-foreground tabular-nums">
                       {pct(d.antes)} → {pct(d.parte)}
                     </span>
                   </button>

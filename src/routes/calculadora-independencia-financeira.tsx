@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight, Sparkles, Target } from "lucide-react";
+import { ArrowRight, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ThemeToggle } from "@/components/theme";
+import { CabecalhoPublico } from "@/components/cabecalho-publico";
+import { RodapePublico } from "@/components/rodape-publico";
 import ogImagem from "@/assets/og-calculadora.jpg.asset.json";
 import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 
@@ -18,7 +19,7 @@ const faqs = [
   {
     q: "O que é a regra dos 4% (taxa segura de retirada)?",
     a: "A regra dos 4% diz que é possível retirar 4% do patrimônio no primeiro ano de aposentadoria e corrigir esse valor pela inflação nos anos seguintes com baixa probabilidade de o dinheiro acabar em 30 anos. Na prática, ela equivale a acumular 25 vezes o seu custo de vida anual.",
-    },
+  },
   {
     q: "Como calcular o meu 'número' da independência financeira?",
     a: "Multiplique o seu custo de vida mensal por 12 e divida pela taxa segura de retirada. Com R$ 8.000 por mês e taxa de 4%, o número é (8.000 × 12) / 0,04 = R$ 2,4 milhões — exatamente 25 vezes o gasto anual.",
@@ -134,33 +135,16 @@ function CalculadoraIndependencia() {
       <a href="#conteudo" className="link-pular">
         Pular para o conteúdo
       </a>
-      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="font-display text-sm font-semibold">Investidor em 15 Anos</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button asChild size="sm">
-              <Link to="/dashboard">
-                Entrar <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <CabecalhoPublico />
 
-      <main id="conteudo" className="mx-auto max-w-5xl px-5 py-12">
-        <p className="flex items-center gap-2 text-xs tracking-wide text-muted-foreground uppercase">
+      <main id="conteudo" className="mx-auto max-w-5xl px-5 py-10 sm:py-14">
+        <p className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold tracking-[0.16em] text-primary uppercase">
           <Target className="size-3.5" /> Ferramenta gratuita
         </p>
-        <h1 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
+        <h1 className="t-h1 mt-4 max-w-3xl text-balance">
           Calculadora de independência financeira
         </h1>
-        <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground text-pretty">
           Descubra o patrimônio necessário para viver de renda aplicando a regra dos 4% e veja em
           quantos anos os seus aportes chegam lá — em valores de hoje, já descontada a inflação.
         </p>
@@ -322,45 +306,45 @@ function CalculadoraIndependencia() {
         </section>
 
         <section className="mt-14 max-w-3xl">
-          <h2 className="text-2xl font-semibold">A matemática por trás do seu “número”</h2>
-          <p className="mt-4 text-muted-foreground">
+          <h2 className="t-h2">A matemática por trás do seu “número”</h2>
+          <p className="mt-4 leading-relaxed text-muted-foreground">
             Independência financeira é o ponto em que a renda gerada pelos seus investimentos cobre
             o seu custo de vida. O cálculo parte de uma taxa segura de retirada: o percentual do
             patrimônio que você pode consumir por ano sem consumir o principal em termos reais. Com
             4%, o alvo é 25 vezes o gasto anual; com 3,5%, sobe para cerca de 29 vezes; com 5%, cai
             para 20 vezes.
           </p>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-4 leading-relaxed text-muted-foreground">
             A segunda metade da conta é o tempo. Usando a rentabilidade real — o retorno acima da
-            inflação — os aportes mensais compõem até cruzarem o alvo. Por isso três alavancas
-            mudam a sua data: reduzir o custo de vida (que diminui o alvo em 25 vezes o corte),
-            aumentar o aporte e manter a carteira investida por mais tempo.
+            inflação — os aportes mensais compõem até cruzarem o alvo. Por isso três alavancas mudam
+            a sua data: reduzir o custo de vida (que diminui o alvo em 25 vezes o corte), aumentar o
+            aporte e manter a carteira investida por mais tempo.
           </p>
 
-          <h2 className="mt-10 text-2xl font-semibold">Perguntas frequentes</h2>
-          <dl className="mt-4 space-y-6">
+          <h2 className="t-h2 mt-12">Perguntas frequentes</h2>
+          <dl className="mt-5 space-y-6">
             {faqs.map((f) => (
               <div key={f.q}>
-                <dt className="font-medium">{f.q}</dt>
-                <dd className="mt-1 text-muted-foreground">{f.a}</dd>
+                <dt className="t-h3">{f.q}</dt>
+                <dd className="mt-1.5 leading-relaxed text-muted-foreground">{f.a}</dd>
               </div>
             ))}
           </dl>
 
-          <div className="mt-12 rounded-2xl border border-border bg-card p-6">
-            <h2 className="text-lg font-semibold">Do número à carteira real</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+          <div className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+            <h2 className="t-h2">Do número à carteira real</h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               No painel Viver de Renda em 15 Anos você acompanha aportes, dividendos e o progresso
               rumo ao seu número mês a mês, com o planejador de independência financeira integrado à
               sua carteira.
             </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button asChild>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Button asChild className="rounded-xl">
                 <Link to="/auth">
                   Criar conta gratuita <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="rounded-xl">
                 <Link to="/dashboard">Acessar o painel</Link>
               </Button>
             </div>
@@ -383,6 +367,7 @@ function CalculadoraIndependencia() {
           </p>
         </section>
       </main>
+      <RodapePublico />
     </div>
   );
 }

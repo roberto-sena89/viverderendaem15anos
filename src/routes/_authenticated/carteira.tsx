@@ -123,7 +123,7 @@ function CarteiraPage() {
                 >
                   <span className="w-full break-words">{f}</span>
                   <span
-                    className={`text-[10px] tabular-nums ${ativo ? "opacity-90" : "opacity-60"}`}
+                    className={`text-[0.6875rem] tabular-nums ${ativo ? "opacity-90" : "opacity-60"}`}
                   >
                     {qtd}
                   </span>
@@ -173,9 +173,7 @@ function CarteiraPage() {
 
           <form onSubmit={handleSubmit} className="grid gap-6">
             <section className="grid gap-3">
-              <h3 className="text-[0.7rem] font-semibold tracking-widest text-muted-foreground uppercase">
-                Identificação
-              </h3>
+              <h3 className="t-label">Identificação</h3>
               <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
                 <div className="grid gap-2">
                   <Label htmlFor="ticker">Ticker *</Label>
@@ -200,9 +198,7 @@ function CarteiraPage() {
             </section>
 
             <section className="grid gap-3">
-              <h3 className="text-[0.7rem] font-semibold tracking-widest text-muted-foreground uppercase">
-                Classificação
-              </h3>
+              <h3 className="t-label">Classificação</h3>
               <div className="grid gap-2">
                 <Label htmlFor="categoria">Categoria</Label>
                 <select
@@ -224,9 +220,7 @@ function CarteiraPage() {
             </section>
 
             <section className="grid gap-3">
-              <h3 className="text-[0.7rem] font-semibold tracking-widest text-muted-foreground uppercase">
-                Posição
-              </h3>
+              <h3 className="t-label">Posição</h3>
               <div className="grid gap-4 rounded-lg border bg-muted/30 p-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="grid gap-2">
                   <Label htmlFor="quantidade">Quantidade *</Label>

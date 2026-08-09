@@ -11,8 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { retornoPonderado12m } from "@/lib/analise-carteira";
 import { chaveTicker, useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 import { useDividendos } from "@/lib/data";
+import { useDesempenho12m } from "@/lib/desempenho-12m";
 import { brl, dividendos12m, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
 function Indicador({
@@ -49,16 +51,13 @@ function CartaoResumo({
   titulo,
   icone: Icone,
   onClick,
-  serie,
   children,
 }: {
   titulo: string;
   icone: typeof Wallet;
   onClick: () => void;
-  serie?: "patrimonio" | "investido";
   children: React.ReactNode;
 }) {
-  void serie;
   return (
     <button
       type="button"
@@ -68,7 +67,7 @@ function CartaoResumo({
     >
       <div className="flex items-start gap-2">
         <Icone className="size-8! shrink-0 text-foreground" />
-        <p className="min-w-0 flex-1 text-[0.82rem] leading-snug font-bold tracking-[0.06em] break-words text-balance text-foreground uppercase">
+        <p className="min-w-0 flex-1 text-[0.875rem] leading-snug font-bold tracking-[0.06em] break-words text-balance text-foreground uppercase">
           {titulo}
         </p>
 
@@ -141,6 +140,15 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
   const { data: proventos = [] } = useDividendos();
   const { mapa } = useCotacoesTempoReal();
   const [aberto, setAberto] = useState<Detalhe | null>(null);
+
+  const tickers = useMemo(() => ativos.map((a) => a.ticker), [ativos]);
+  const { porTicker } = useDesempenho12m(tickers);
+  const ponderado12m = useMemo(() => {
+    const retornos = new Map<string, number | null>();
+    for (const [ticker, nota] of porTicker) retornos.set(ticker, nota.retorno12m);
+    return retornoPonderado12m(ativos, retornos);
+  }, [ativos, porTicker]);
+  const retorno12m = ponderado12m.retornoPct;
 
   const resumo = resumoCarteira(ativos);
   const recebidos12m = dividendos12m(proventos);
@@ -295,6 +303,16 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         formula: "(valor de mercado − valor investido) ÷ valor investido × 100",
         tom: resumo.rentabilidade >= 0 ? "positive" : "negative",
       },
+      ...(retorno12m !== null
+        ? [
+            {
+              rotulo: "Rentabilidade 12 meses",
+              valor: pct(retorno12m, 2),
+              formula: "média ponderada pelo valor atual do retorno 12M dos ativos",
+              tom: retorno12m >= 0 ? ("positive" as const) : ("negative" as const),
+            },
+          ]
+        : []),
       {
         rotulo: "Rentabilidade com proventos",
         valor: pct(rentComProventos, 2),
@@ -334,13 +352,10 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         <CartaoResumo
           titulo="Patrimônio total"
           icone={Wallet}
-          serie="patrimonio"
           onClick={() => setAberto(detalhePatrimonio)}
         >
           <div className="flex flex-wrap items-center gap-2">
-            <p className="num font-display serie-patrimonio text-[1.6rem] leading-none font-bold">
-              {brl(resumo.totalAtual, 2)}
-            </p>
+            <p className="t-metric serie-patrimonio">{brl(resumo.totalAtual, 2)}</p>
             <DeltaChip value={resumo.rentabilidade} />
           </div>
           <div className={`mt-3 ${variacaoHoje ? "grid grid-cols-2 gap-3" : ""}`}>
@@ -364,11 +379,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={PiggyBank}
           onClick={() => setAberto(detalheLucro)}
         >
-          <p
-            className={`num font-display text-[1.6rem] leading-none font-bold ${
-              resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
-            }`}
-          >
+          <p className={`t-metric ${resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"}`}>
             {brl(resumo.lucroTotal, 2)}
           </p>
           <div className="mt-3 grid grid-cols-2 gap-3">
@@ -386,9 +397,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={Coins}
           onClick={() => setAberto(detalheProventos)}
         >
-          <p className="num font-display text-[1.6rem] leading-none font-bold">
-            {brl(recebidos12m, 2)}
-          </p>
+          <p className="t-metric">{brl(recebidos12m, 2)}</p>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <Indicador rotulo="Total" valor={brl(totalProventos, 2)} />
             <Indicador rotulo="Média mensal" valor={brl(recebidos12m / 12, 2)} />
@@ -401,20 +410,24 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           onClick={() => setAberto(detalheRentabilidade)}
         >
           <div className="grid grid-cols-2 gap-3">
-            <div>
+            <div className="min-w-0">
               <p className="text-[0.875rem] text-foreground">12 meses</p>
               <p
-                className={`num font-display text-xl font-bold ${
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
+                className={`t-metric-sm truncate ${
+                  retorno12m === null
+                    ? "text-muted-foreground"
+                    : retorno12m >= 0
+                      ? "text-success"
+                      : "text-destructive"
                 }`}
               >
-                {pct(resumo.rentabilidade, 2)}
+                {retorno12m === null ? "—" : pct(retorno12m, 2)}
               </p>
             </div>
-            <div className="border-l border-border pl-3">
+            <div className="min-w-0 border-l border-border pl-3">
               <p className="text-[0.875rem] text-foreground">Total</p>
               <p
-                className={`num font-display text-xl font-bold ${
+                className={`t-metric-sm truncate ${
                   resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
                 }`}
               >

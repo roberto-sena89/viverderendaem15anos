@@ -4,6 +4,7 @@ import { ArrowRight, LineChart, PiggyBank, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
 import { FormularioNewsletter } from "@/components/formulario-newsletter";
+import { RodapePublico } from "@/components/rodape-publico";
 import { CONTEUDOS } from "@/lib/conteudo-publico";
 import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 import logoIcone from "@/assets/logo-icone.webp";
@@ -236,12 +237,14 @@ function HomePage() {
               alt="Logo Viver de Renda em 15 Anos"
               width={40}
               height={40}
-              className="size-9 shrink-0 rounded-full"
+              className="size-9 shrink-0 rounded-xl object-contain"
             />
-            <span className="font-hero text-[0.68rem] leading-tight font-bold tracking-wide uppercase sm:text-[0.72rem]">
+            <span className="font-brand text-sm leading-[1.15] font-bold text-foreground uppercase">
               Viver de Renda
               <br />
-              em 15 Anos
+              <span className="text-[0.68rem] font-semibold tracking-[0.1em] text-muted-foreground">
+                em 15 Anos
+              </span>
             </span>
           </Link>
           <nav
@@ -267,7 +270,9 @@ function HomePage() {
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <Button asChild size="sm" className="rounded-full px-5 text-xs font-bold">
-              <Link to="/auth">Entrar</Link>
+              <Link to="/auth">
+                Entrar <ArrowRight className="size-3.5" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -478,77 +483,7 @@ function HomePage() {
         </section>
       </main>
 
-      <footer className="border-border/60 border-t">
-        <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 pt-14 pb-8 sm:px-6 md:flex-row md:justify-between">
-          <div className="flex min-w-0 max-w-xs items-start gap-3">
-            <img
-              src={logoIcone}
-              alt=""
-              aria-hidden
-              width={32}
-              height={32}
-              className="size-8 shrink-0 rounded-lg"
-            />
-            <p className="text-muted-foreground text-xs leading-relaxed">
-              <span className="text-foreground font-hero font-bold">Viver de Renda em 15 Anos</span>
-              <br />
-              Conteúdo educacional. Não é recomendação de investimento.
-            </p>
-          </div>
-          <nav
-            aria-label="Links do rodapé"
-            className="grid grid-cols-2 gap-x-12 gap-y-8 sm:grid-cols-2"
-          >
-            <div>
-              <h3 className="text-foreground/80 mb-4 text-[0.62rem] font-bold tracking-[0.2em] uppercase">
-                Conteúdo
-              </h3>
-              <ul className="text-muted-foreground space-y-3 text-xs">
-                <li>
-                  <Link className="hover:text-primary" to="/guia-liberdade-financeira">
-                    Guia
-                  </Link>
-                </li>
-                <li>
-                  <Link className="hover:text-primary" to="/calculadora-juros-compostos">
-                    Calculadora
-                  </Link>
-                </li>
-                <li>
-                  <Link className="hover:text-primary" to="/blog/melhores-livros-financas">
-                    Blog
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-foreground/80 mb-4 text-[0.62rem] font-bold tracking-[0.2em] uppercase">
-                Plataforma
-              </h3>
-              <ul className="text-muted-foreground space-y-3 text-xs">
-                <li>
-                  <Link className="hover:text-primary" to="/o-que-e-renda-passiva">
-                    Renda passiva
-                  </Link>
-                </li>
-                <li>
-                  <Link className="hover:text-primary" to="/quanto-rende-1-milhao-por-mes">
-                    Simulações
-                  </Link>
-                </li>
-                <li>
-                  <Link className="hover:text-primary" to="/auth">
-                    Entrar
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </nav>
-        </div>
-        <div className="border-border/60 text-muted-foreground mx-auto mt-6 max-w-6xl border-t px-5 py-6 text-center text-[0.6rem] tracking-[0.2em] uppercase sm:px-6">
-          © {new Date().getFullYear()} Viver de Renda em 15 Anos
-        </div>
-      </footer>
+      <RodapePublico />
     </div>
   );
 }

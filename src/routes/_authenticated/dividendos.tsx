@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { EstadoVazio } from "@/components/estado-vazio";
 import { StatCard } from "@/components/stat-card";
 import { InputNumeroBR } from "@/components/input-numero-br";
 import { Button } from "@/components/ui/button";
@@ -132,7 +133,7 @@ function DividendosPage() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="size-8!" /> Novo provento
+              <Plus className="size-5" /> Novo provento
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
@@ -205,13 +206,13 @@ function DividendosPage() {
                 dataKey="mes"
                 tickLine={false}
                 axisLine={false}
-                fontSize={13}
+                fontSize={12}
                 stroke="var(--color-muted-foreground)"
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                fontSize={13}
+                fontSize={12}
                 stroke="var(--color-muted-foreground)"
               />
               <Tooltip
@@ -220,7 +221,7 @@ function DividendosPage() {
                   backgroundColor: "var(--color-popover)",
                   border: "1px solid var(--color-border)",
                   borderRadius: "12px",
-                  fontSize: "13px",
+                  fontSize: "12px",
                 }}
                 formatter={(v: number) => brl(v)}
               />
@@ -296,7 +297,7 @@ function DividendosPage() {
                         })
                       }
                     >
-                      <Trash2 className="size-8! text-destructive" />
+                      <Trash2 className="size-4 text-destructive" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -414,7 +415,7 @@ function FiltroPeriodo({
           className="h-9 gap-2 text-xs font-normal"
           aria-label="Período dos proventos"
         >
-          <Calendar className="size-8! shrink-0 text-muted-foreground" />
+          <Calendar className="size-4 shrink-0 text-muted-foreground" />
           {rotuloPeriodo(valor)}
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </Button>
@@ -529,7 +530,7 @@ function FiltroAtivos({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" className="h-9 gap-2 text-xs font-normal" aria-label="Ativos">
-          <CircleDollarSign className="size-8! shrink-0 text-muted-foreground" />
+          <CircleDollarSign className="size-4 shrink-0 text-muted-foreground" />
           {valor === "todos" ? "Ativos" : valor}
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </Button>
@@ -667,12 +668,11 @@ function HistoricoMensal({ proventos, carteira }: { proventos: Dividendo[]; cart
           </TableBody>
         </Table>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-1 py-16 text-center">
-          <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
-          <p className="text-sm text-muted-foreground">
-            Ainda não há dados disponíveis para exibição.
-          </p>
-        </div>
+        <EstadoVazio
+          compacto
+          titulo="Nenhum resultado encontrado"
+          descricao="Ainda não há dados disponíveis para exibição."
+        />
       )}
     </div>
   );
@@ -754,12 +754,11 @@ function MeusProventos({ proventos, carteira }: { proventos: Dividendo[]; cartei
           </TableBody>
         </Table>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-1 py-16 text-center">
-          <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
-          <p className="text-sm text-muted-foreground">
-            Ainda não há dados disponíveis para exibição.
-          </p>
-        </div>
+        <EstadoVazio
+          compacto
+          titulo="Nenhum resultado encontrado"
+          descricao="Ainda não há dados disponíveis para exibição."
+        />
       )}
     </div>
   );
@@ -787,7 +786,7 @@ function SeletorFiltro({
   return (
     <Select value={valor} onValueChange={onChange}>
       <SelectTrigger aria-label={rotuloAcessivel} className="h-9 w-[10.5rem] gap-2 text-xs">
-        <Icone className="size-8! shrink-0 text-muted-foreground" />
+        <Icone className="size-4 shrink-0 text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -872,7 +871,7 @@ function PainelProventos({
           <p className="font-display text-lg font-semibold">Resumo</p>
           <p className="mt-3 text-xs text-muted-foreground">Média Mensal (últ. 12 meses)</p>
           <div className="mt-1 flex items-baseline justify-between gap-2">
-            <p className="text-2xl font-semibold tabular-nums">
+            <p className="t-metric-sm">
               {brl(media, 2)}{" "}
               <span className="text-sm font-normal text-muted-foreground">
                 / {brl(META_MENSAL, 2)}
@@ -905,13 +904,11 @@ function PainelProventos({
               </SelectContent>
             </Select>
           </div>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">{brl(totalEscopo, 2)}</p>
+          <p className="t-metric-sm mt-1">{brl(totalEscopo, 2)}</p>
         </div>
         <div className="p-5">
           <p className="text-xs text-muted-foreground">Saldo total da carteira</p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums">
-            {brl(totalCarteira + totalProventos, 2)}
-          </p>
+          <p className="t-metric-sm mt-1">{brl(totalCarteira + totalProventos, 2)}</p>
           <dl className="mt-2 space-y-1 text-xs text-muted-foreground">
             <div className="serie-patrimonio flex items-center justify-between gap-2">
               <dt className="rotulo-serie">Patrimônio</dt>
@@ -984,13 +981,13 @@ function PainelProventos({
                   dataKey="mes"
                   tickLine={false}
                   axisLine={false}
-                  fontSize={13}
+                  fontSize={12}
                   stroke="var(--color-muted-foreground)"
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  fontSize={13}
+                  fontSize={12}
                   stroke="var(--color-muted-foreground)"
                 />
                 <Tooltip
@@ -999,7 +996,7 @@ function PainelProventos({
                     backgroundColor: "var(--color-popover)",
                     border: "1px solid var(--color-border)",
                     borderRadius: "12px",
-                    fontSize: "13px",
+                    fontSize: "12px",
                   }}
                   formatter={(v: number) => brl(v, 2)}
                 />
@@ -1007,30 +1004,27 @@ function PainelProventos({
               </BarChart>
             </ResponsiveContainer>
           ) : proventos.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-muted/30 px-6 text-center">
-              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <CircleDollarSign className="size-6!" />
-              </div>
-              <div className="space-y-1">
-                <p className="font-display text-lg font-semibold">Nenhum provento registrado</p>
-                <p className="mx-auto max-w-sm text-sm text-muted-foreground">
-                  Registre dividendos, JCP e rendimentos para acompanhar a evolução da sua renda
-                  passiva mês a mês.
-                </p>
-              </div>
-              {onRegistrar ? (
-                <Button onClick={onRegistrar} className="mt-1">
-                  <Plus className="size-4!" /> Registrar primeiro provento
-                </Button>
-              ) : null}
-            </div>
+            <EstadoVazio
+              compacto
+              className="h-full"
+              icone={CircleDollarSign}
+              titulo="Nenhum provento registrado"
+              descricao="Registre dividendos, JCP e rendimentos para acompanhar a evolução da sua renda passiva mês a mês."
+              acao={
+                onRegistrar ? (
+                  <Button onClick={onRegistrar}>
+                    <Plus className="size-4" /> Registrar primeiro provento
+                  </Button>
+                ) : undefined
+              }
+            />
           ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-1 text-center">
-              <p className="font-display text-lg font-semibold">Nenhum resultado encontrado</p>
-              <p className="text-sm text-muted-foreground">
-                Ajuste os filtros de período, tipo ou ativo para visualizar seus proventos.
-              </p>
-            </div>
+            <EstadoVazio
+              compacto
+              className="h-full"
+              titulo="Nenhum resultado encontrado"
+              descricao="Ajuste os filtros de período, tipo ou ativo para visualizar seus proventos."
+            />
           )}
         </div>
       </div>

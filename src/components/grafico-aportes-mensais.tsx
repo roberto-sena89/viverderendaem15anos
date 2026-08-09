@@ -107,9 +107,9 @@ export function GraficoAportesMensais({ meses }: { meses: PontoAporte[] }) {
             <Tooltip
               cursor={{ fill: "color-mix(in oklab, var(--muted) 55%, transparent)" }}
               contentStyle={{
-                background: "var(--popover)",
+                background: "var(--color-popover)",
                 border: "1px solid var(--border)",
-                borderRadius: 8,
+                borderRadius: 12,
                 fontSize: 12,
               }}
               labelFormatter={(

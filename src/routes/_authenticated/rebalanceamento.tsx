@@ -92,7 +92,7 @@ function Rebalanceamento() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2.5">
-        <DollarSign className="size-4! shrink-0 text-muted-foreground" />
+        <DollarSign className="size-4 shrink-0 text-muted-foreground" />
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           <Input
             aria-label="Aporte para incluir no plano"
@@ -262,24 +262,12 @@ function Rebalanceamento() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center align-middle whitespace-pre-line h-14">
-                {"CLASSE\n "}
-              </TableHead>
-              <TableHead className="text-center align-middle whitespace-pre-line h-14">
-                {"ALOCAÇÃO ATUAL\n(R$)"}
-              </TableHead>
-              <TableHead className="text-center align-middle whitespace-pre-line h-14">
-                {"ALOCAÇÃO ATUAL\n(%)"}
-              </TableHead>
-              <TableHead className="text-center align-middle whitespace-pre-line h-14">
-                {"ALOCAÇÃO IDEAL\n(%)"}
-              </TableHead>
-              <TableHead className="text-center align-middle whitespace-pre-line h-14">
-                {"DIFERENÇA\n(%)"}
-              </TableHead>
-              <TableHead className="text-center align-middle whitespace-pre-line h-14">
-                {"VALOR PARA\nREBALANCEAR"}
-              </TableHead>
+              <TableHead className="text-center">Classe</TableHead>
+              <TableHead className="text-center">Alocação atual (R$)</TableHead>
+              <TableHead className="text-center">Alocação atual (%)</TableHead>
+              <TableHead className="text-center">Alocação ideal (%)</TableHead>
+              <TableHead className="text-center">Diferença (%)</TableHead>
+              <TableHead className="text-center">Valor para rebalancear</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

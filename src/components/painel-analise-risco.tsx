@@ -105,7 +105,7 @@ function BlocoBenchmark({
 }) {
   return (
     <div className="space-y-2 text-xs">
-      <p className="flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">
+      <p className="t-label flex items-center gap-1.5">
         <Globe2 className="size-3.5" /> Benchmark global (12m)
       </p>
       <div className="space-y-1.5">
@@ -131,8 +131,8 @@ function LinhaBenchmark({
   destaque?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="truncate text-muted-foreground">{rotulo}</span>
+    <div className="flex min-w-0 items-center justify-between gap-2">
+      <span className="min-w-0 truncate text-muted-foreground">{rotulo}</span>
       {valor === null ? (
         <span className="num text-muted-foreground">—</span>
       ) : (
@@ -184,7 +184,7 @@ function BlocoMoeda({ exposicao }: { exposicao: ExposicaoMoeda[] }) {
         : "var(--color-chart-16)";
   return (
     <div className="space-y-2 text-xs">
-      <p className="flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">
+      <p className="t-label flex items-center gap-1.5">
         <Globe2 className="size-3.5" /> Exposição por moeda
       </p>
       {exposicao.length === 0 ? (
@@ -224,7 +224,7 @@ function BlocoMoeda({ exposicao }: { exposicao: ExposicaoMoeda[] }) {
 function BlocoRisco({ risco, divers }: { risco: MetricasRisco; divers: Diversidade }) {
   return (
     <div className="space-y-2 text-xs">
-      <p className="flex items-center gap-1.5 text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">
+      <p className="t-label flex items-center gap-1.5">
         <ShieldCheck className="size-3.5" /> Risco (série mensal)
       </p>
       <div className="grid grid-cols-2 gap-2">

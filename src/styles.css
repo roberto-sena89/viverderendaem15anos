@@ -224,6 +224,12 @@
   --text-h1--letter-spacing: var(--tracking-heading);
   --text-h1--font-weight: var(--fw-semibold);
 
+  /* Título de página de leitura/artigo: maior que o h1 de tela, menor que o display */
+  --text-h1-lg: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
+  --text-h1-lg--line-height: var(--lh-tight);
+  --text-h1-lg--letter-spacing: var(--tracking-heading);
+  --text-h1-lg--font-weight: var(--fw-bold);
+
   --text-h2: var(--fs-h2);
   --text-h2--line-height: var(--lh-snug);
   --text-h2--letter-spacing: var(--tracking-heading);
@@ -1049,8 +1055,7 @@ html {
 /* Scrollbars finas e discretas em todo o app (terminal de dados). */
 * {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--color-muted-foreground) 40%, transparent)
-    transparent;
+  scrollbar-color: color-mix(in oklab, var(--color-muted-foreground) 40%, transparent) transparent;
 }
 
 ::-webkit-scrollbar {

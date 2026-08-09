@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ThemeToggle } from "@/components/theme";
+import { CabecalhoPublico } from "@/components/cabecalho-publico";
+import { RodapePublico } from "@/components/rodape-publico";
 import { urlAbsoluta } from "@/lib/seo";
 
 const TITLE = "Renda Passiva: O Que É, Como Funciona e Quanto Investir";
@@ -158,31 +159,17 @@ function RendaPassivaPage() {
       <a href="#conteudo" className="link-pular">
         Pular para o conteúdo
       </a>
-      <header className="border-border bg-background/80 sticky top-0 z-30 border-b backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="bg-gradient-brand text-primary-foreground grid size-9 place-items-center rounded-xl">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="font-display text-sm font-semibold">Investidor em 15 Anos</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button asChild size="sm">
-              <Link to="/auth">
-                Entrar <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <CabecalhoPublico />
 
-      <main id="conteudo" className="mx-auto max-w-5xl px-5 py-12">
+      <main id="conteudo" className="mx-auto max-w-5xl px-5 py-10 sm:py-14">
         <article>
-          <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance sm:text-4xl">
+          <p className="text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+            Educação financeira
+          </p>
+          <h1 className="t-h1 mt-4 max-w-3xl text-balance">
             Renda passiva: o que é, quais ativos pagam e quanto você precisa investir
           </h1>
-          <p className="text-muted-foreground mt-5 text-lg leading-relaxed">
+          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted-foreground text-pretty">
             Renda passiva é o dinheiro que a sua carteira paga sem depender do seu trabalho:{" "}
             <strong className="text-foreground">
               dividendos, proventos de FIIs, juros e aluguéis
@@ -193,10 +180,8 @@ function RendaPassivaPage() {
           </p>
 
           <section className="mt-10">
-            <div className="bg-card rounded-xl border p-5">
-              <h2 className="text-xl font-semibold tracking-tight">
-                Quanto preciso investir para viver de renda?
-              </h2>
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+              <h2 className="t-h2">Quanto preciso investir para viver de renda?</h2>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="custo" className="text-sm font-semibold">
@@ -242,11 +227,14 @@ function RendaPassivaPage() {
             </div>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-xl font-semibold tracking-tight">Onde a renda passiva é gerada</h2>
+          <section className="mt-14">
+            <h2 className="t-h2">Onde a renda passiva é gerada</h2>
             <div className="mt-4 grid gap-3">
               {fontes.map((f) => (
-                <div key={f.nome} className="bg-card rounded-xl border p-5">
+                <div
+                  key={f.nome}
+                  className="rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+                >
                   <div className="flex flex-wrap items-baseline justify-between gap-3">
                     <h3 className="text-base font-semibold">{f.nome}</h3>
                     <p className="text-primary num text-lg font-bold">
@@ -265,10 +253,8 @@ function RendaPassivaPage() {
             </div>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-xl font-semibold tracking-tight">
-              Como construir a sua em 4 passos
-            </h2>
+          <section className="mt-14">
+            <h2 className="t-h2">Como construir a sua em 4 passos</h2>
             <ol className="text-muted-foreground mt-4 grid list-decimal gap-3 pl-5 text-sm leading-relaxed">
               <li>
                 Descubra o seu número: custo de vida mensal × 300. É ele que define a meta, não um
@@ -288,31 +274,34 @@ function RendaPassivaPage() {
               </li>
             </ol>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="rounded-xl">
                 <Link to="/auth">
                   Acompanhar minha renda passiva grátis <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild size="lg" variant="outline" className="rounded-xl">
                 <Link to="/calculadora-juros-compostos">Simular juros compostos com aportes</Link>
               </Button>
             </div>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-xl font-semibold tracking-tight">Perguntas frequentes</h2>
+          <section className="mt-14">
+            <h2 className="t-h2">Perguntas frequentes</h2>
             <dl className="mt-4 grid gap-4">
               {faqs.map((f) => (
-                <div key={f.q} className="bg-card rounded-xl border p-5">
-                  <dt className="text-base font-semibold">{f.q}</dt>
+                <div
+                  key={f.q}
+                  className="rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+                >
+                  <dt className="t-h3">{f.q}</dt>
                   <dd className="text-muted-foreground mt-2 text-sm leading-relaxed">{f.a}</dd>
                 </div>
               ))}
             </dl>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-xl font-semibold tracking-tight">Continue lendo</h2>
+          <section className="mt-14">
+            <h2 className="t-h2">Continue lendo</h2>
             <ul className="mt-4 grid gap-2 text-sm">
               <li>
                 <Link className="text-primary hover:underline" to="/quanto-rende-1-milhao-por-mes">
@@ -338,6 +327,7 @@ function RendaPassivaPage() {
           </p>
         </article>
       </main>
+      <RodapePublico />
     </div>
   );
 }

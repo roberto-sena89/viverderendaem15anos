@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight, Calculator, Sparkles } from "lucide-react";
+import { ArrowRight, Calculator } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -13,7 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ThemeToggle } from "@/components/theme";
+import { CabecalhoPublico } from "@/components/cabecalho-publico";
+import { RodapePublico } from "@/components/rodape-publico";
 import ogImagem from "@/assets/og-calculadora.jpg.asset.json";
 import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 
@@ -131,33 +132,14 @@ function CalculadoraPage() {
       <a href="#conteudo" className="link-pular">
         Pular para o conteúdo
       </a>
-      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="font-display text-sm font-semibold">Investidor em 15 Anos</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button asChild size="sm">
-              <Link to="/dashboard">
-                Entrar <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <CabecalhoPublico />
 
-      <main id="conteudo" className="mx-auto max-w-5xl px-5 py-12">
-        <p className="flex items-center gap-2 text-xs tracking-wide text-muted-foreground uppercase">
+      <main id="conteudo" className="mx-auto max-w-5xl px-5 py-10 sm:py-14">
+        <p className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold tracking-[0.16em] text-primary uppercase">
           <Calculator className="size-3.5" /> Ferramenta gratuita
         </p>
-        <h1 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
-          Calculadora de juros compostos
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+        <h1 className="t-h1 mt-4 max-w-3xl text-balance">Calculadora de juros compostos</h1>
+        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground text-pretty">
           Simule quanto o seu dinheiro rende com aportes mensais. Informe o capital inicial, o valor
           investido por mês, o prazo e a taxa de juros anual para ver a projeção do patrimônio ano a
           ano.
@@ -314,8 +296,8 @@ function CalculadoraPage() {
         </section>
 
         <section className="mt-14 max-w-3xl">
-          <h2 className="text-2xl font-semibold">Como funcionam os juros compostos</h2>
-          <p className="mt-4 text-muted-foreground">
+          <h2 className="t-h2">Como funcionam os juros compostos</h2>
+          <p className="mt-4 leading-relaxed text-muted-foreground">
             Nos juros compostos, o rendimento de cada mês passa a render também no mês seguinte. Por
             isso a curva do patrimônio é exponencial: nos primeiros anos o total investido domina o
             resultado, mas depois de uma década os juros acumulados costumam superar tudo o que você
@@ -323,23 +305,23 @@ function CalculadoraPage() {
             taxa —, e o tempo é a mais poderosa delas.
           </p>
 
-          <h2 className="mt-10 text-2xl font-semibold">Perguntas frequentes</h2>
-          <dl className="mt-4 space-y-6">
+          <h2 className="t-h2 mt-12">Perguntas frequentes</h2>
+          <dl className="mt-5 space-y-6">
             {faqs.map((f) => (
               <div key={f.q}>
-                <dt className="font-medium">{f.q}</dt>
-                <dd className="mt-1 text-muted-foreground">{f.a}</dd>
+                <dt className="t-h3">{f.q}</dt>
+                <dd className="mt-1.5 leading-relaxed text-muted-foreground">{f.a}</dd>
               </div>
             ))}
           </dl>
 
-          <div className="mt-12 rounded-2xl border border-border bg-card p-6">
-            <h2 className="text-lg font-semibold">Da simulação para a carteira real</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+          <div className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+            <h2 className="t-h2">Da simulação para a carteira real</h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Acompanhe aportes, dividendos, rentabilidade e metas da sua carteira de ações e FIIs
               em um só lugar.
             </p>
-            <Button asChild className="mt-4">
+            <Button asChild className="mt-5 rounded-xl">
               <Link to="/auth">
                 Criar conta gratuita <ArrowRight className="size-4" />
               </Link>
@@ -355,6 +337,7 @@ function CalculadoraPage() {
           </p>
         </section>
       </main>
+      <RodapePublico />
     </div>
   );
 }

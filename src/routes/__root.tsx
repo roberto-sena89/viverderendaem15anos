@@ -85,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "google-site-verification", content: "Zm3u4b3LAdGJZceGw7IWCOVo7xBy_DLn906ehE46gOs" },
-      { title: "Investidor em 15 Anos — Controle de Investimentos" },
+      { title: "Viver de Renda em 15 Anos — Controle de Investimentos" },
       {
         name: "description",
         content:

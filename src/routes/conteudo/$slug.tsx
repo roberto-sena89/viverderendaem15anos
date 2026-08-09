@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowRight, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, BookOpen, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme";
+import { CabecalhoPublico } from "@/components/cabecalho-publico";
+import { RodapePublico } from "@/components/rodape-publico";
 import { FormularioNewsletter } from "@/components/formulario-newsletter";
 import { dadosVivosConteudo } from "@/lib/dados-vivos.functions";
 import {
@@ -68,7 +69,7 @@ export const Route = createFileRoute("/conteudo/$slug")({
             mainEntityOfPage: url,
             inLanguage: "pt-BR",
             dateModified: conteudo.atualizadoEm,
-            author: { "@type": "Organization", name: "Investidor em 15 Anos" },
+            author: { "@type": "Organization", name: "Viver de Renda em 15 Anos" },
           }),
         },
         {
@@ -152,16 +153,14 @@ function BlocoRendaHoje() {
   if (amostras.length === 0) return null;
 
   return (
-    <section className="mt-10 rounded-2xl border border-border bg-card p-6">
+    <section className="mt-10 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
       <div className="flex items-center gap-2">
         <TrendingUp className="size-4 text-primary" />
-        <h2 className="text-lg font-semibold">
-          Quanto rendem R$ 100 mil com os dividendos de hoje?
-        </h2>
+        <h2 className="t-h2">Quanto rendem R$ 100 mil com os dividendos de hoje?</h2>
       </div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {amostras.map(({ rotulo, dy }) => (
-          <div key={rotulo} className="rounded-xl border border-border bg-background p-4">
+          <div key={rotulo} className="rounded-2xl border border-border bg-background p-4">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">{rotulo}</p>
             <p className="mt-2 text-2xl font-semibold">
               {formatarReais(rendaMensal(100_000, dy))}
@@ -199,26 +198,9 @@ function ConteudoPage() {
       <a href="#conteudo" className="link-pular">
         Pular para o conteúdo
       </a>
-      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="font-display text-sm font-semibold">Investidor em 15 Anos</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button asChild size="sm">
-              <Link to="/planejador">
-                Entrar <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <CabecalhoPublico />
 
-      <main id="conteudo" className="mx-auto max-w-3xl px-5 py-12">
+      <main id="conteudo" className="mx-auto max-w-3xl px-5 py-10 sm:py-14">
         <article>
           <nav aria-label="breadcrumb" className="text-xs text-muted-foreground">
             <Link to="/" className="hover:text-foreground">
@@ -230,27 +212,35 @@ function ConteudoPage() {
             <span className="text-foreground">{conteudo.categoria}</span>
           </nav>
 
-          <h1 className="mt-4 text-4xl leading-tight font-semibold">{conteudo.h1}</h1>
-          <p className="mt-2 text-xs text-muted-foreground">
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold tracking-[0.16em] text-primary uppercase">
+            <BookOpen className="size-3.5" /> Conteúdo gratuito
+          </p>
+          <h1 className="text-h1-lg mt-4 text-balance">{conteudo.h1}</h1>
+          <p className="mt-3 text-xs text-muted-foreground">
             Atualizado em {dataCurta(conteudo.atualizadoEm)}
           </p>
-          <p className="mt-5 text-lg text-muted-foreground">{conteudo.intro}</p>
+          <p className="mt-5 text-lg leading-relaxed text-muted-foreground text-pretty">
+            {conteudo.intro}
+          </p>
 
           <BlocoRendaHoje />
 
           <section className="mt-10 space-y-10">
             {conteudo.secoes.map((secao) => (
               <div key={secao.titulo}>
-                <h2 className="text-2xl font-semibold">{secao.titulo}</h2>
+                <h2 className="t-h2">{secao.titulo}</h2>
                 {secao.paragrafos.map((p) => (
-                  <p key={p.slice(0, 48)} className="mt-3 text-muted-foreground">
+                  <p key={p.slice(0, 48)} className="mt-3 leading-relaxed text-muted-foreground">
                     {p}
                   </p>
                 ))}
                 {secao.lista && (
                   <ul className="mt-4 space-y-3">
                     {secao.lista.map((item) => (
-                      <li key={item.titulo} className="rounded-xl border border-border bg-card p-4">
+                      <li
+                        key={item.titulo}
+                        className="rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
+                      >
                         <strong className="font-medium">{item.titulo}.</strong>{" "}
                         <span className="text-muted-foreground">{item.corpo}</span>
                       </li>
@@ -261,31 +251,31 @@ function ConteudoPage() {
             ))}
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-2xl font-semibold">Perguntas frequentes</h2>
-            <div className="mt-4 space-y-6">
+          <section className="mt-14">
+            <h2 className="t-h2">Perguntas frequentes</h2>
+            <div className="mt-5 space-y-6">
               {conteudo.faq.map((f) => (
                 <div key={f.q}>
-                  <h3 className="font-medium">{f.q}</h3>
-                  <p className="mt-1 text-muted-foreground">{f.a}</p>
+                  <h3 className="t-h3">{f.q}</h3>
+                  <p className="mt-1.5 leading-relaxed text-muted-foreground">{f.a}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          <div className="mt-12 rounded-2xl border border-border bg-card p-6">
-            <h2 className="text-xl font-semibold">Calcule o seu plano em 15 anos</h2>
-            <p className="mt-2 text-muted-foreground">
+          <div className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+            <h2 className="t-h2">Calcule o seu plano em 15 anos</h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
               Use a calculadora de juros compostos para simular o seu patrimônio e veja quantos anos
               faltam para a sua renda cobrir o seu custo de vida.
             </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button asChild>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Button asChild className="rounded-xl">
                 <Link to="/calculadora-juros-compostos">
                   Abrir a calculadora <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="rounded-xl">
                 <Link to="/guia-liberdade-financeira">Guia de liberdade financeira</Link>
               </Button>
             </div>
@@ -293,7 +283,7 @@ function ConteudoPage() {
 
           {relacionados.length > 0 && (
             <nav className="mt-12" aria-label="Mais conteúdo">
-              <h2 className="text-xl font-semibold">
+              <h2 className="t-h2">
                 {temMaisDaCategoria ? `Mais sobre ${conteudo.categoria}` : "Leia também"}
               </h2>
               <div className="mt-4 space-y-3">
@@ -301,7 +291,7 @@ function ConteudoPage() {
                   <Link
                     key={c.slug}
                     to={caminhoConteudo(c.slug)}
-                    className="block rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
+                    className="block rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
                   >
                     <span className="text-xs uppercase tracking-wide text-muted-foreground">
                       {c.categoria}
@@ -313,16 +303,19 @@ function ConteudoPage() {
             </nav>
           )}
 
-          <section className="mt-12 rounded-2xl border border-border bg-card p-6">
-            <h2 className="text-xl font-semibold">Receba o guia "Viver de Renda em 15 Anos"</h2>
-            <p className="mt-2 text-muted-foreground">
+          <section className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+            <h2 className="t-h2">Receba o guia "Viver de Renda em 15 Anos"</h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
               Conteúdo gratuito sobre renda passiva, dividendos e independência financeira — sem
               spam, cancele quando quiser.
             </p>
-            <FormularioNewsletter origem={`conteudo:${conteudo.slug}`} />
+            <div className="mt-5">
+              <FormularioNewsletter origem={`conteudo:${conteudo.slug}`} />
+            </div>
           </section>
         </article>
       </main>
+      <RodapePublico />
     </div>
   );
 }

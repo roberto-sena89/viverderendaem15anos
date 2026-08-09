@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme";
+import { CabecalhoPublico } from "@/components/cabecalho-publico";
+import { RodapePublico } from "@/components/rodape-publico";
 import ogImagem from "@/assets/og-guia-liberdade.jpg.asset.json";
 import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 
@@ -41,7 +42,7 @@ export const Route = createFileRoute("/guia-liberdade-financeira")({
           description: DESCRIPTION,
           mainEntityOfPage: URL,
           inLanguage: "pt-BR",
-          author: { "@type": "Organization", name: "Investidor em 15 Anos" },
+          author: { "@type": "Organization", name: "Viver de Renda em 15 Anos" },
         }),
       },
       {
@@ -117,51 +118,36 @@ function GuiaPage() {
       <a href="#conteudo" className="link-pular">
         Pular para o conteúdo
       </a>
-      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="font-display text-sm font-semibold">Investidor em 15 Anos</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button asChild size="sm">
-              <Link to="/dashboard">
-                Entrar <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <CabecalhoPublico />
 
-      <main id="conteudo" className="mx-auto max-w-3xl px-5 py-12">
+      <main id="conteudo" className="mx-auto max-w-3xl px-5 py-10 sm:py-14">
         <article>
-          <p className="text-xs tracking-wide text-muted-foreground uppercase">Guia completo</p>
-          <h1 className="mt-3 text-4xl leading-tight font-semibold">
+          <p className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold tracking-[0.16em] text-primary uppercase">
+            <Compass className="size-3.5" /> Guia completo
+          </p>
+          <h1 className="text-h1-lg mt-4 text-balance">
             Liberdade financeira: o guia passo a passo da alocação à renda passiva
           </h1>
-          <p className="mt-5 text-lg text-muted-foreground">
+          <p className="mt-5 text-lg leading-relaxed text-muted-foreground text-pretty">
             Independência financeira não é sorte nem um ativo mágico: é a combinação de taxa de
             poupança, alocação de ativos coerente e reinvestimento disciplinado de proventos ao
             longo de anos. Abaixo está o caminho completo, na ordem em que ele deve ser executado.
           </p>
 
-          <section className="mt-10 space-y-8">
+          <section className="mt-10 space-y-8 sm:space-y-10">
             {steps.map((s) => (
               <div key={s.title}>
-                <h2 className="text-xl font-semibold">{s.title}</h2>
-                <p className="mt-2 text-muted-foreground">{s.body}</p>
+                <h2 className="t-h2">{s.title}</h2>
+                <p className="mt-3 leading-relaxed text-muted-foreground">{s.body}</p>
               </div>
             ))}
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-2xl font-semibold">
+          <section className="mt-14">
+            <h2 className="t-h2">
               Da alocação de ativos à renda passiva: por que os dois andam juntos
             </h2>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-3 leading-relaxed text-muted-foreground">
               A alocação define o risco que você aceita correr; a renda passiva define quando você
               pode parar. Uma carteira concentrada em poucos ativos pode entregar dividendos altos
               hoje e cortar tudo no ciclo seguinte. Uma carteira alocada por classes — renda fixa,
@@ -171,25 +157,25 @@ function GuiaPage() {
             </p>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-2xl font-semibold">Perguntas frequentes</h2>
-            <div className="mt-4 space-y-6">
+          <section className="mt-14">
+            <h2 className="t-h2">Perguntas frequentes</h2>
+            <div className="mt-5 space-y-6">
               {faqs.map((f) => (
                 <div key={f.q}>
-                  <h3 className="font-medium">{f.q}</h3>
-                  <p className="mt-1 text-muted-foreground">{f.a}</p>
+                  <h3 className="t-h3">{f.q}</h3>
+                  <p className="mt-1.5 leading-relaxed text-muted-foreground">{f.a}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          <div className="mt-12 rounded-2xl border border-border bg-card p-6">
-            <h2 className="text-xl font-semibold">Calcule o seu ano da liberdade financeira</h2>
-            <p className="mt-2 text-muted-foreground">
+          <div className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+            <h2 className="t-h2">Calcule o seu ano da liberdade financeira</h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
               O planejador da plataforma projeta patrimônio, renda passiva e o ano da independência
               financeira a partir dos seus aportes e da sua alocação real.
             </p>
-            <Button asChild className="mt-4">
+            <Button asChild className="mt-5 rounded-xl">
               <Link to="/planejador">
                 Abrir o planejador <ArrowRight className="size-4" />
               </Link>
@@ -197,6 +183,7 @@ function GuiaPage() {
           </div>
         </article>
       </main>
+      <RodapePublico />
     </div>
   );
 }
