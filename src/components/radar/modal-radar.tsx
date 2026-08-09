@@ -39,6 +39,24 @@ const ROTULOS_VEREDITO: Record<string, string> = {
   observar: "Observar",
 };
 
+const ROTULOS_CONVICCAO: Record<string, string> = {
+  alta: "Convicção alta",
+  media: "Convicção média",
+  baixa: "Convicção baixa",
+};
+
+const ROTULOS_HORIZONTE: Record<string, string> = {
+  curto: "Curto prazo",
+  medio: "Médio prazo",
+  longo: "Longo prazo",
+};
+
+const CORES_CONVICCAO: Record<string, string> = {
+  alta: "border-none bg-green-600/10 text-green-600",
+  media: "border-none bg-amber-500/10 text-amber-600",
+  baixa: "border-none bg-muted text-muted-foreground",
+};
+
 const avisosVeredito = new Set<string>();
 
 const corVariacao = (v: number | null) =>
@@ -527,15 +545,51 @@ export function ModalRadar({
             <section>
               <h3 className="mb-2 text-sm font-semibold">Técnico IA</h3>
               {analise ? (
-                <div className="space-y-2 rounded-lg border p-4 text-sm">
-                  <p>
+                <div className="space-y-3 rounded-lg border p-4 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge
                       className={`border-none ${CORES_SINAL[analise.veredito] ?? "bg-muted text-muted-foreground"}`}
                     >
                       {ROTULOS_VEREDITO[analise.veredito] ?? analise.veredito}
                     </Badge>
-                  </p>
+                    {analise.conviccao ? (
+                      <Badge
+                        className={`border-none ${CORES_CONVICCAO[analise.conviccao] ?? "bg-muted text-muted-foreground"}`}
+                      >
+                        {ROTULOS_CONVICCAO[analise.conviccao] ?? analise.conviccao}
+                      </Badge>
+                    ) : null}
+                    {analise.horizonte ? (
+                      <Badge variant="outline">
+                        {ROTULOS_HORIZONTE[analise.horizonte] ?? analise.horizonte}
+                      </Badge>
+                    ) : null}
+                  </div>
                   {analise.tese ? <p>{analise.tese}</p> : null}
+                  {analise.cenarioOtimista || analise.cenarioBase || analise.cenarioPessimista ? (
+                    <div className="space-y-1.5 rounded-md bg-muted/50 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Cenários
+                      </p>
+                      {analise.cenarioOtimista ? (
+                        <p>
+                          <strong className="text-positive">Otimista:</strong>{" "}
+                          {analise.cenarioOtimista}
+                        </p>
+                      ) : null}
+                      {analise.cenarioBase ? (
+                        <p>
+                          <strong>Base:</strong> {analise.cenarioBase}
+                        </p>
+                      ) : null}
+                      {analise.cenarioPessimista ? (
+                        <p>
+                          <strong className="text-negative">Pessimista:</strong>{" "}
+                          {analise.cenarioPessimista}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
                   {analise.riscos ? (
                     <p className="text-muted-foreground">
                       <strong>Riscos:</strong> {analise.riscos}
@@ -544,6 +598,11 @@ export function ModalRadar({
                   {analise.gatilhos ? (
                     <p className="text-muted-foreground">
                       <strong>Gatilhos:</strong> {analise.gatilhos}
+                    </p>
+                  ) : null}
+                  {analise.monitorar ? (
+                    <p className="text-muted-foreground">
+                      <strong>Monitorar:</strong> {analise.monitorar}
                     </p>
                   ) : null}
                   {analise.fatoresExternos?.length ? (

@@ -19,6 +19,8 @@ import {
   type SinalRadar,
 } from "@/lib/radar-base";
 import type { Json } from "@/integrations/supabase/types";
+import type { LinhaAcao } from "@/lib/acoes-base";
+import type { LinhaFii } from "@/lib/fiis-base";
 
 export type PosicaoHistorica = {
   ticker: string;
@@ -678,9 +680,18 @@ export async function buscarFatosExternos(ticker: string, nome: string): Promise
 export interface AnaliseIA {
   ticker: string;
   veredito: "comprar" | "manter" | "vender" | "observar";
+  /** Grau de confiança do gestor na tese. */
+  conviccao: "alta" | "media" | "baixa";
+  /** Horizonte de investimento da recomendação. */
+  horizonte: "curto" | "medio" | "longo";
   tese: string;
+  cenarioOtimista: string;
+  cenarioBase: string;
+  cenarioPessimista: string;
   riscos: string;
   gatilhos: string;
+  /** O que acompanhar nos próximos meses para validar/invalidar a tese. */
+  monitorar: string;
   /** Fatos externos citados na análise (manchetes / contexto macro). */
   fatoresExternos: string[];
   geradaEm: string;
@@ -699,7 +710,11 @@ export async function lerAnaliseIA(ticker: string): Promise<AnaliseIA | null> {
     if (!data?.payload) return null;
     const vencida = Date.now() - new Date(data.atualizado_em ?? 0).getTime() > TTL_ANALISE_MS;
     if (vencida) return null;
-    return (data.payload as unknown as AnaliseIA) ?? null;
+    const analise = data.payload as unknown as AnaliseIA;
+    // Análises geradas no formato antigo (sem convicção/cenários) são
+    // descartadas para que o Técnico IA regenerre no formato profissional.
+    if (!analise?.conviccao || !analise?.cenarioBase) return null;
+    return analise;
   } catch {
     return null;
   }
@@ -729,9 +744,15 @@ async function gravarHistoricoIA(ticker: string, analise: AnaliseIA) {
     await supabaseAdmin.from("radar_analises").insert({
       ticker,
       veredito: analise.veredito,
+      conviccao: analise.conviccao,
+      horizonte: analise.horizonte,
       tese: analise.tese,
+      cenario_otimista: analise.cenarioOtimista,
+      cenario_base: analise.cenarioBase,
+      cenario_pessimista: analise.cenarioPessimista,
       riscos: analise.riscos,
       gatilhos: analise.gatilhos,
+      monitorar: analise.monitorar,
       fatores_externos: analise.fatoresExternos,
       gerada_em: analise.geradaEm,
     });
@@ -746,7 +767,9 @@ export async function lerHistoricoIA(ticker: string, qtd = 10): Promise<AnaliseI
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
       .from("radar_analises")
-      .select("ticker, veredito, tese, riscos, gatilhos, fatores_externos, gerada_em")
+      .select(
+        "ticker, veredito, conviccao, horizonte, tese, cenario_otimista, cenario_base, cenario_pessimista, riscos, gatilhos, monitorar, fatores_externos, gerada_em",
+      )
       .eq("ticker", ticker)
       .order("gerada_em", { ascending: false })
       .limit(qtd);
@@ -754,9 +777,15 @@ export async function lerHistoricoIA(ticker: string, qtd = 10): Promise<AnaliseI
     return data.map((linha) => ({
       ticker: linha.ticker,
       veredito: linha.veredito as AnaliseIA["veredito"],
+      conviccao: (linha.conviccao ?? "media") as AnaliseIA["conviccao"],
+      horizonte: (linha.horizonte ?? "medio") as AnaliseIA["horizonte"],
       tese: linha.tese ?? "",
+      cenarioOtimista: linha.cenario_otimista ?? "",
+      cenarioBase: linha.cenario_base ?? "",
+      cenarioPessimista: linha.cenario_pessimista ?? "",
       riscos: linha.riscos ?? "",
       gatilhos: linha.gatilhos ?? "",
+      monitorar: linha.monitorar ?? "",
       fatoresExternos: Array.isArray(linha.fatores_externos)
         ? (linha.fatores_externos as unknown[]).map((f) => String(f)).slice(0, 3)
         : [],
@@ -841,19 +870,34 @@ export async function backtestRadarAtivo(ticker: string): Promise<RespostaBackte
   }
 }
 
-function textoDeBase(
-  l: {
-    nome: string;
-    preco: number | null;
-    variacaoPercent: number | null;
-    dy12: number | null;
-    pvp: number | null;
-  } | null,
-): string {
-  return l
-    ? `- Preço: ${l.preco ?? "—"} | Var. dia: ${l.variacaoPercent ?? "—"}%` +
-        ` | DY 12m: ${l.dy12 ?? "—"}% | P/VPA: ${l.pvp ?? "—"}`
-    : "- Sem dados fundamentalistas na grade.";
+function fmtNum(v: number | null | undefined, casas = 2): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return "—";
+  return v.toLocaleString("pt-BR", { maximumFractionDigits: casas });
+}
+
+/** Ficha fundamentalista completa (ação ou FII) para alimentar o Técnico IA. */
+function textoDeFundamentos(l: LinhaAcao | LinhaFii | null): string {
+  if (!l) return "- Sem dados fundamentalistas na grade.";
+  if ("vacancia" in l) {
+    return [
+      `- Tipo: ${l.tipo ?? "—"} | Segmento: ${l.segmento ?? "—"}`,
+      `- Preço: ${fmtNum(l.preco)} | Var. dia: ${l.variacaoPercent ?? "—"}% | Volume: ${fmtNum(l.volume, 0)}`,
+      `- P/VPA: ${fmtNum(l.pvp)} | VPA: ${fmtNum(l.vpa)} | DY 12m: ${l.dy12 !== null ? `${fmtNum(l.dy12)}%` : "—"}`,
+      `- Vacância: ${l.vacancia !== null ? `${fmtNum(l.vacancia)}%` : "—"} | Cap rate: ${l.capRate !== null ? `${fmtNum(l.capRate)}%` : "—"}`,
+      `- Patrimônio: ${fmtNum(l.patrimonio, 0)} | Valor de mercado: ${fmtNum(l.valorMercado, 0)} | Liquidez média (R$/dia): ${fmtNum(l.liquidez, 0)}`,
+    ].join("\n");
+  }
+  return [
+    `- Setor: ${l.setor ?? "—"} | Subsetor: ${l.subsetor ?? "—"} | Segmento: ${l.segmento ?? "—"}`,
+    `- Preço: ${fmtNum(l.preco)} | Var. dia: ${l.variacaoPercent ?? "—"}% | Volume: ${fmtNum(l.volume, 0)}`,
+    `- P/L: ${fmtNum(l.pl)} | P/VPA: ${fmtNum(l.pvp)} | DY 12m: ${l.dy12 !== null ? `${fmtNum(l.dy12)}%` : "—"}`,
+    `- ROE: ${l.roe !== null ? `${fmtNum(l.roe)}%` : "—"} | ROIC: ${l.roic !== null ? `${fmtNum(l.roic)}%` : "—"}`,
+    `- Margem líquida: ${l.margemLiquida !== null ? `${fmtNum(l.margemLiquida)}%` : "—"} | Margem EBIT: ${l.margemEbit !== null ? `${fmtNum(l.margemEbit)}%` : "—"}`,
+    `- Dívida/Patrimônio: ${fmtNum(l.dividaPatrimonio)} | Cresc. receita 5a: ${l.crescReceita5a !== null ? `${fmtNum(l.crescReceita5a)}%` : "—"}`,
+    `- LPA: ${fmtNum(l.lpa)} | VPA: ${fmtNum(l.vpa)}`,
+    `- Teto de Bazin: ${fmtNum(l.precoTetoBazin)} (upside ${l.upsideBazin !== null ? `${fmtNum(l.upsideBazin)}%` : "—"}) | Preço justo Graham: ${fmtNum(l.precoJustoGraham)} (upside ${l.upsideGraham !== null ? `${fmtNum(l.upsideGraham)}%` : "—"})`,
+    `- Nota Buy & Hold: ${l.pontuacao !== null ? `${l.pontuacao}/100` : "—"} | Valor de mercado: ${fmtNum(l.valorMercado, 0)}`,
+  ].join("\n");
 }
 
 /** Gera (e persiste) a análise completa de um ativo com o Técnico IA. */
@@ -892,7 +936,9 @@ export async function gerarAnaliseIA(
 
     const prompt = [
       `Ativo: ${ticker} — ${nome}`,
-      textoDeBase(base),
+      "",
+      "Ficha fundamentalista (grade diária):",
+      textoDeFundamentos(base),
       "",
       "Posição histórica (série semanal Yahoo desde o início):",
       `- Mínimo: ${posicao?.minimo ?? "—"}`,
@@ -921,17 +967,46 @@ export async function gerarAnaliseIA(
     ].join("\n");
 
     const system =
-      "Você é o Técnico IA da mesa de tesouraria, analista de mercado brasileiro" +
-      " rigoroso e objetivo. Traduz dados, notícias e contexto macro em decisões" +
-      " claras para investidores de dividendos de longo prazo. Considere: preço" +
-      " nas mínimas históricas com DY atrativo sugere COMPRAR; choque externo," +
-      " notícia de alto impacto ou deterioração fundamental sugere VENDER;" +
-      " zona intermediária sugere OBSERVAR; topo do histórico sugere MANTER evita." +
-      " Responda SEMPRE apenas com JSON válido, sem markdown, com exatamente estas" +
+      "Você é o Técnico IA de uma mesa de tesouraria de um dos maiores bancos" +
+      " globais, gestor sênior de renda variável brasileira. Seu trabalho é" +
+      " transformar dados brutos, fundamentos, posicionamento histórico, noticiário" +
+      " e contexto macro em uma tese de investimento clara e rigorosa para um" +
+      " investidor de dividendos de longo prazo.\n\n" +
+      "Disciplina profissional:\n" +
+      "1. TOP-DOWN: primeiro o macro (juros, inflação, liquidez), depois a" +
+      " qualidade do negócio/segmento, o valuation e a posição no ciclo do preço," +
+      " e por fim o risco. Não pule etapas.\n" +
+      "2. TESE COM PREMISSAS: toda conclusão precisa citar os números que a" +
+      " sustentam. Nunca afirme sem base; se faltar dado, diga que falta.\n" +
+      "3. ASSIMETRIA: priorize cenários de risco-retorno favorável. Comprar com" +
+      " margem de segurança (região de preço barata na história) é diferente de" +
+      " comprar porque 'caiu muito'.\n" +
+      "4. GESTÃO DE RISCO: dimensione sempre o risco (drawdown, volatilidade," +
+      " alavancagem, vacância), sugira zonas de entrada/saída e o que invalida a" +
+      " tese.\n" +
+      "5. CETICISMO: distinga fato de opinião; manchete não é tese; desconfie de" +
+      " narrativas sem número. Veredito é educacional, não recomendação formal.\n" +
+      "6. Não invente preço-alvo preciso: use zonas (faixas) apenas quando os" +
+      " dados permitirem, e sempre diga que há incerteza.\n\n" +
+      "Estrutura de decisão:\n" +
+      "- Veredito global (comprar/manter/vender/observar) com convicção" +
+      " (alta/média/baixa) e horizonte (curto/médio/longo).\n" +
+      "- Tese de 2 a 3 frases citando números-chave; cenários otimista, base e" +
+      " pessimista em 1 frase cada.\n" +
+      "- Riscos e gatilhos que mudariam a visão; o que monitorar nos próximos" +
+      " meses.\n" +
+      "- Fatores externos (manchetes/macro) que pesaram na decisão.\n\n" +
+      "Responda SEMPRE apenas com JSON válido, sem markdown, com exatamente estas" +
       ' chaves: {"veredito":"comprar|manter|vender|observar",' +
-      '"tese":"2 a 3 frases com a visão geral",' +
-      '"riscos":"principais riscos em 1 frase",' +
+      '"conviccao":"alta|media|baixa",' +
+      '"horizonte":"curto|medio|longo",' +
+      '"tese":"2 a 3 frases com a visão geral e os números que a sustentam",' +
+      '"cenarioOtimista":"1 frase, o que tornaria a tese ainda melhor",' +
+      '"cenarioBase":"1 frase, o cenário mais provável nos próximos 12 meses",' +
+      '"cenarioPessimista":"1 frase, o que pode dar errado e estragar a tese",' +
+      '"riscos":"principais riscos em 1-2 frases",' +
       '"gatilhos":"o que faria mudar de ideia (1-2 frases)",' +
+      '"monitorar":"o que acompanhar nos próximos meses (1-2 frases)",' +
       '"fatoresExternos":["lista curta de manchetes/fatores que pesaram na decisão, máx 4 itens"]}.';
 
     const { generateText } = await import("ai");
@@ -940,7 +1015,7 @@ export async function gerarAnaliseIA(
     const resultadoIA = await generateText({
       model: gateway("openai/gpt-5.5"),
       providerOptions: {
-        lovable: { max_completion_tokens: 640 },
+        lovable: { max_completion_tokens: 1300 },
       },
       system,
       prompt,
@@ -954,13 +1029,25 @@ export async function gerarAnaliseIA(
     const veredito = ["comprar", "manter", "vender", "observar"].includes(String(parsed.veredito))
       ? (parsed.veredito as AnaliseIA["veredito"])
       : "observar";
+    const conviccao = ["alta", "media", "baixa"].includes(String(parsed.conviccao))
+      ? (parsed.conviccao as AnaliseIA["conviccao"])
+      : "media";
+    const horizonte = ["curto", "medio", "longo"].includes(String(parsed.horizonte))
+      ? (parsed.horizonte as AnaliseIA["horizonte"])
+      : "medio";
 
     const analise: AnaliseIA = {
       ticker,
       veredito,
-      tese: String(parsed.tese ?? "").slice(0, 600),
-      riscos: String(parsed.riscos ?? "").slice(0, 400),
-      gatilhos: String(parsed.gatilhos ?? "").slice(0, 400),
+      conviccao,
+      horizonte,
+      tese: String(parsed.tese ?? "").slice(0, 700),
+      cenarioOtimista: String(parsed.cenarioOtimista ?? "").slice(0, 300),
+      cenarioBase: String(parsed.cenarioBase ?? "").slice(0, 300),
+      cenarioPessimista: String(parsed.cenarioPessimista ?? "").slice(0, 300),
+      riscos: String(parsed.riscos ?? "").slice(0, 500),
+      gatilhos: String(parsed.gatilhos ?? "").slice(0, 500),
+      monitorar: String(parsed.monitorar ?? "").slice(0, 400),
       fatoresExternos: Array.isArray(parsed.fatoresExternos)
         ? parsed.fatoresExternos
             .map((f) => String(f).slice(0, 160))
