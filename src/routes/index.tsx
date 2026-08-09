@@ -47,15 +47,7 @@ export const Route = createFileRoute("/")({
           "Painel escuro com gráfico de valorização e indicadores de patrimônio e dividendos",
       },
     ],
-    links: [
-      { rel: "canonical", href: URL },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap",
-      },
-    ],
+    links: [{ rel: "canonical", href: URL }],
 
     scripts: [
       {
@@ -303,8 +295,8 @@ function HomePage() {
           </span>
 
           <h1 className="font-hero mx-auto mt-8 max-w-4xl text-[clamp(2.3rem,7vw,4.4rem)] leading-[1.05] font-extrabold tracking-tighter text-balance">
-            Viver de Renda em 15 Anos: organize sua carteira e descubra em quantos anos você{" "}
-            <span className="text-gradient-brand">vive de renda</span>
+            Organize sua carteira e{" "}
+            <span className="text-gradient-brand">viva de renda em 15 anos</span>
           </h1>
 
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-base leading-relaxed text-pretty sm:text-lg">
@@ -337,7 +329,7 @@ function HomePage() {
                 key={n.label}
                 className="border-border/60 bg-card/50 rounded-2xl border p-5 text-left backdrop-blur-sm transition-colors hover:border-primary/40"
               >
-                <dt className="font-hero text-foreground text-2xl font-bold tracking-tight">
+                <dt className="font-hero text-foreground text-2xl font-bold tracking-tight tabular-nums">
                   {n.valor}
                 </dt>
                 <dd className="text-muted-foreground mt-1.5 text-[0.68rem] leading-snug font-semibold tracking-wide uppercase text-pretty">

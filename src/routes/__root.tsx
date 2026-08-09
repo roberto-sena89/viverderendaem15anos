@@ -109,8 +109,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         crossOrigin: "anonymous",
         fetchPriority: "high",
       },
-      // Inter (corpo de texto) carrega sob demanda: pré-carregá-la competia
-      // banda com o CSS crítico e atrasava a pintura do H1 (elemento LCP).
+      // Manrope é a única família do app (corpo + display): o preload acima
+      // garante que ela não dispute banda com o CSS crítico antes do H1.
       {
         rel: "preconnect",
         href: "https://huyaffyqgrrsgznduwll.supabase.co",
