@@ -1,8 +1,14 @@
 import { useEffect } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, LineChart, PiggyBank, Sparkles } from "lucide-react";
+import { ArrowRight, LineChart, PiggyBank, Sparkles, TrendingUp, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { FormularioNewsletter } from "@/components/formulario-newsletter";
 import { RodapePublico } from "@/components/rodape-publico";
 import { CONTEUDOS } from "@/lib/conteudo-publico";
@@ -158,6 +164,24 @@ const recursos = [
   },
 ];
 
+const passos: { icon: typeof PiggyBank; titulo: string; body: string }[] = [
+  {
+    icon: UserPlus,
+    titulo: "Crie sua conta",
+    body: "Em menos de um minuto e sem custo. Acesso autenticado e exclusivo aos seus dados.",
+  },
+  {
+    icon: PiggyBank,
+    titulo: "Registre sua carteira",
+    body: "Adicione ações, FIIs, ETFs, renda fixa e cripto — ou comece sua primeira posição do zero.",
+  },
+  {
+    icon: TrendingUp,
+    titulo: "Projete sua independência",
+    body: "Acompanhe dividendos e rentabilidade, rebalanceie a alocação e projete em quantos anos você vive de renda.",
+  },
+];
+
 const numeros: { valor: string; label: string }[] = [
   { valor: "12+", label: "Classes de ativos suportadas" },
   { valor: "10 anos", label: "Histórico de cotações e proventos" },
@@ -177,6 +201,18 @@ const faq: { q: string; a: string }[] = [
   {
     q: "A plataforma é gratuita?",
     a: "Sim. Você pode criar sua conta e controlar carteira, aportes e dividendos sem custo.",
+  },
+  {
+    q: "Preciso entender de investimentos para usar?",
+    a: "Não. O painel mostra patrimônio, dividendos e rentabilidade em linguagem simples, e o assistente de IA explica cada indicador da sua carteira.",
+  },
+  {
+    q: "Meus dados ficam protegidos?",
+    a: "Sim. O acesso é autenticado e exclusivo da sua conta: só você vê a sua carteira, e as suas informações não são compartilhadas.",
+  },
+  {
+    q: "O assistente de IA sabe o que eu tenho investido?",
+    a: "Sim. Com o seu contexto carregado, ele responde sobre alocação, dividendos, rebalanceamento e onde aplicar o próximo aporte — sempre com foco no seu objetivo de renda.",
   },
 ];
 
@@ -418,6 +454,37 @@ function HomePage() {
             </ul>
           </section>
 
+          <section className="mt-16 sm:mt-24">
+            <h2 className="font-hero text-center text-2xl font-bold tracking-tight sm:text-4xl">
+              Como funciona
+            </h2>
+            <p className="text-muted-foreground mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-pretty sm:text-base">
+              Três passos do zero até a projeção da sua independência financeira.
+            </p>
+            <ol className="mt-10 grid gap-4 md:grid-cols-3">
+              {passos.map((p, i) => (
+                <li
+                  key={p.titulo}
+                  className="border-border/60 relative overflow-hidden rounded-3xl border bg-card p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)]"
+                >
+                  <span
+                    aria-hidden
+                    className="font-hero text-foreground/8 pointer-events-none absolute -top-3 -right-1 text-[5rem] leading-none font-extrabold tracking-tighter select-none"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="bg-primary/15 text-primary inline-flex size-12 items-center justify-center rounded-xl">
+                    <p.icon className="size-5" />
+                  </span>
+                  <h3 className="font-hero mt-5 text-lg font-bold tracking-tight">{p.titulo}</h3>
+                  <p className="text-muted-foreground mt-2 text-sm leading-relaxed text-pretty">
+                    {p.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </section>
+
           <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 md:col-span-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
               <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">
@@ -442,19 +509,22 @@ function HomePage() {
           <h2 className="font-hero text-center text-2xl font-bold tracking-tight sm:text-4xl">
             Perguntas frequentes
           </h2>
-          <dl className="mt-10 grid gap-3">
-            {faq.map((f) => (
-              <div
+          <Accordion type="single" collapsible className="mt-10 grid gap-3">
+            {faq.map((f, i) => (
+              <AccordionItem
                 key={f.q}
-                className="bg-card border-border/60 rounded-2xl border p-6 transition-colors hover:border-primary/50"
+                value={`faq-${i}`}
+                className="border-border/60 bg-card rounded-2xl border px-6"
               >
-                <dt className="font-hero text-base font-bold sm:text-lg">{f.q}</dt>
-                <dd className="text-muted-foreground mt-2 text-sm leading-relaxed text-pretty">
+                <AccordionTrigger className="font-hero py-5 text-left text-base font-bold tracking-tight hover:no-underline sm:text-lg">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-5 text-sm leading-relaxed text-pretty">
                   {f.a}
-                </dd>
-              </div>
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </dl>
+          </Accordion>
         </section>
 
         <section
