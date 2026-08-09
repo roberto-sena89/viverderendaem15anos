@@ -6,6 +6,8 @@
  */
 
 import { createServerFn } from "@tanstack/react-start";
+import type { LinhaAcao } from "@/lib/acoes-base";
+import type { LinhaFii } from "@/lib/fiis-base";
 import type {
   AnaliseIA,
   LinhaRadarBase,
@@ -262,6 +264,96 @@ export const radarSerie = createServerFn({ method: "GET" })
     return radarFx.serieParaGrafico(data.ticker);
   });
 
+/** Ficha fundamentalista completa a partir da linha da grade (ação ou FII). */
+function construirFundamentos(
+  ticker: string,
+  categoria: "acao" | "fii",
+  raw: LinhaAcao | LinhaFii,
+): DetalheFundamentos {
+  if (categoria === "acao") {
+    const a = raw as LinhaAcao;
+    return {
+      ticker,
+      nome: a.nome,
+      categoria,
+      logo: a.logo ?? null,
+      tipo: null,
+      setor: a.setor ?? null,
+      subsetor: a.subsetor ?? null,
+      segmento: a.segmento ?? null,
+      preco: a.preco ?? null,
+      fechamentoAnterior: a.fechamentoAnterior ?? null,
+      variacaoPercent: a.variacaoPercent ?? null,
+      volume: a.volume ?? null,
+      valorMercado: a.valorMercado ?? null,
+      liquidez: a.liquidez ?? null,
+      patrimonio: a.patrimonio ?? null,
+      lucro: a.lucro ?? null,
+      receita: a.receita ?? null,
+      pl: a.pl ?? null,
+      pvp: a.pvp ?? null,
+      psr: a.psr ?? null,
+      evEbit: a.evEbit ?? null,
+      dy12: a.dy12 ?? null,
+      roe: a.roe ?? null,
+      roic: a.roic ?? null,
+      margemLiquida: a.margemLiquida ?? null,
+      margemEbit: a.margemEbit ?? null,
+      dividaPatrimonio: a.dividaPatrimonio ?? null,
+      crescReceita5a: a.crescReceita5a ?? null,
+      lpa: a.lpa ?? null,
+      vpa: a.vpa ?? null,
+      precoTetoBazin: a.precoTetoBazin ?? null,
+      upsideBazin: a.upsideBazin ?? null,
+      precoJustoGraham: a.precoJustoGraham ?? null,
+      upsideGraham: a.upsideGraham ?? null,
+      pontuacao: a.pontuacao ?? null,
+      vacancia: null,
+      capRate: null,
+    };
+  }
+  const f = raw as LinhaFii;
+  return {
+    ticker,
+    nome: f.nome,
+    categoria,
+    logo: f.logo ?? null,
+    tipo: f.tipo,
+    setor: null,
+    subsetor: null,
+    segmento: f.segmento ?? null,
+    preco: f.preco ?? null,
+    fechamentoAnterior: f.fechamentoAnterior ?? null,
+    variacaoPercent: f.variacaoPercent ?? null,
+    volume: f.volume ?? null,
+    valorMercado: f.valorMercado ?? null,
+    liquidez: f.liquidez ?? null,
+    patrimonio: f.patrimonio ?? null,
+    lucro: null,
+    receita: null,
+    pl: null,
+    pvp: f.pvp ?? null,
+    psr: null,
+    evEbit: null,
+    dy12: f.dy12 ?? null,
+    roe: null,
+    roic: null,
+    margemLiquida: null,
+    margemEbit: null,
+    dividaPatrimonio: null,
+    crescReceita5a: null,
+    lpa: null,
+    vpa: f.vpa ?? null,
+    precoTetoBazin: null,
+    upsideBazin: null,
+    precoJustoGraham: null,
+    upsideGraham: null,
+    pontuacao: null,
+    vacancia: f.vacancia ?? null,
+    capRate: f.capRate ?? null,
+  };
+}
+
 /** Ficha completa de um ativo: fundamentos + série + posição + notícias. */
 export const radarDetalhe = createServerFn({ method: "GET" })
   .inputValidator((d: { ticker?: unknown } | undefined) => ({
@@ -270,111 +362,27 @@ export const radarDetalhe = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<RadarDetalhe | null> => {
     if (!data.ticker) return null;
     const radarFx = await import("@/lib/radar.server");
-    const [acoesMod, fiisMod] = await Promise.all([
-      import("@/lib/acoes.server").catch(() => null),
-      import("@/lib/fiis.server").catch(() => null),
-    ]);
-
-    const [gradeAcoes, gradeFiis] = await Promise.all([
-      acoesMod?.gradeAcoesComCache().catch(() => null) ?? null,
-      fiisMod?.gradeFiisComCache().catch(() => null) ?? null,
-    ]);
-
-    const rawAcao = gradeAcoes?.linhas.find(
-      (l: { ticker: string }) => l.ticker.toUpperCase() === data.ticker,
-    );
-    const rawFii = gradeFiis?.linhas.find(
-      (l: { ticker: string }) => l.ticker.toUpperCase() === data.ticker,
-    );
-
-    const [serie, posicoes, noticiasMod] = await Promise.all([
+    // Só a grade da categoria do ticker (FIIs terminam em 11): carregar as
+    // duas grades a cada clique era o dobro de custo (Brapi/Fundamentus).
+    const ehFii = /11$/i.test(data.ticker);
+    const [serie, posicoes, grades, noticiasMod] = await Promise.all([
       radarFx.serieParaGrafico(data.ticker),
       radarFx.posicoesParaTickers([data.ticker]),
+      (async (): Promise<{ linhas: Array<LinhaAcao | LinhaFii> }> => {
+        try {
+          const linhas = ehFii
+            ? (await (await import("@/lib/fiis.server")).gradeFiisComCache()).linhas
+            : (await (await import("@/lib/acoes.server")).gradeAcoesComCache()).linhas;
+          return { linhas };
+        } catch {
+          return { linhas: [] };
+        }
+      })(),
       import("@/lib/noticias.server").catch(() => null),
     ]);
+    const raw = grades.linhas.find((l) => l.ticker.toUpperCase() === data.ticker) ?? null;
+    const fundamentos = raw ? construirFundamentos(data.ticker, ehFii ? "fii" : "acao", raw) : null;
     const noticias = noticiasMod ? await noticiasMod.agregarNoticias().catch(() => []) : [];
-
-    const fundamentos: DetalheFundamentos | null = rawAcao
-      ? {
-          ticker: rawAcao.ticker,
-          nome: rawAcao.nome,
-          categoria: "acao",
-          logo: rawAcao.logo ?? null,
-          tipo: null,
-          setor: rawAcao.setor ?? null,
-          subsetor: rawAcao.subsetor ?? null,
-          segmento: rawAcao.segmento ?? null,
-          preco: rawAcao.preco ?? null,
-          fechamentoAnterior: rawAcao.fechamentoAnterior ?? null,
-          variacaoPercent: rawAcao.variacaoPercent ?? null,
-          volume: rawAcao.volume ?? null,
-          valorMercado: rawAcao.valorMercado ?? null,
-          liquidez: rawAcao.liquidez ?? null,
-          patrimonio: rawAcao.patrimonio ?? null,
-          lucro: rawAcao.lucro ?? null,
-          receita: rawAcao.receita ?? null,
-          pl: rawAcao.pl ?? null,
-          pvp: rawAcao.pvp ?? null,
-          psr: rawAcao.psr ?? null,
-          evEbit: rawAcao.evEbit ?? null,
-          dy12: rawAcao.dy12 ?? null,
-          roe: rawAcao.roe ?? null,
-          roic: rawAcao.roic ?? null,
-          margemLiquida: rawAcao.margemLiquida ?? null,
-          margemEbit: rawAcao.margemEbit ?? null,
-          dividaPatrimonio: rawAcao.dividaPatrimonio ?? null,
-          crescReceita5a: rawAcao.crescReceita5a ?? null,
-          lpa: rawAcao.lpa ?? null,
-          vpa: rawAcao.vpa ?? null,
-          precoTetoBazin: rawAcao.precoTetoBazin ?? null,
-          upsideBazin: rawAcao.upsideBazin ?? null,
-          precoJustoGraham: rawAcao.precoJustoGraham ?? null,
-          upsideGraham: rawAcao.upsideGraham ?? null,
-          pontuacao: rawAcao.pontuacao ?? null,
-          vacancia: null,
-          capRate: null,
-        }
-      : rawFii
-        ? {
-            ticker: rawFii.ticker,
-            nome: rawFii.nome,
-            categoria: "fii",
-            logo: rawFii.logo ?? null,
-            tipo: rawFii.tipo,
-            setor: null,
-            subsetor: null,
-            segmento: rawFii.segmento ?? null,
-            preco: rawFii.preco ?? null,
-            fechamentoAnterior: rawFii.fechamentoAnterior ?? null,
-            variacaoPercent: rawFii.variacaoPercent ?? null,
-            volume: rawFii.volume ?? null,
-            valorMercado: rawFii.valorMercado ?? null,
-            liquidez: rawFii.liquidez ?? null,
-            patrimonio: rawFii.patrimonio ?? null,
-            lucro: null,
-            receita: null,
-            pl: null,
-            pvp: rawFii.pvp ?? null,
-            psr: null,
-            evEbit: null,
-            dy12: rawFii.dy12 ?? null,
-            roe: null,
-            roic: null,
-            margemLiquida: null,
-            margemEbit: null,
-            dividaPatrimonio: null,
-            crescReceita5a: null,
-            lpa: null,
-            vpa: rawFii.vpa ?? null,
-            precoTetoBazin: null,
-            upsideBazin: null,
-            precoJustoGraham: null,
-            upsideGraham: null,
-            pontuacao: null,
-            vacancia: rawFii.vacancia ?? null,
-            capRate: rawFii.capRate ?? null,
-          }
-        : null;
 
     const noticiasDoAtivo = noticias
       .filter((n) => n.tickers.some((t) => t.toUpperCase() === data.ticker))

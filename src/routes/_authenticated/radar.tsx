@@ -166,6 +166,10 @@ function PaginaRadar() {
     faltam: number;
   } | null>(null);
   const tentouPagina = useRef(false);
+  const categoriaAtual = useRef(categoria);
+  useEffect(() => {
+    categoriaAtual.current = categoria;
+  }, [categoria]);
   const { data: ativos = [] } = useAtivos();
   const carteiraPorTicker = useMemo(
     () =>
@@ -241,6 +245,9 @@ function PaginaRadar() {
    *  do Yahoo enquanto a página ainda carrega; o manual vai até 12. */
   const preencherHistoricos = async (manual: boolean) => {
     if (preenchimento?.ativo) return;
+    // Categoria capturada no início: se o usuário trocar de aba durante o
+    // preenchimento, os lotes continuam no universo certo.
+    const alvo = categoriaAtual.current;
     setPreenchimento({ ativo: true, obtidos: 0, faltam: 0 });
     let faltam = 0;
     let obtidos = 0;
@@ -248,7 +255,7 @@ function PaginaRadar() {
       const universo = visao?.contagem?.total ?? 0;
       const rodadas = manual ? 12 : Math.min(10, Math.max(4, Math.ceil(universo / 120)));
       for (let i = 0; i < rodadas; i++) {
-        const r = await completar({ data: { categoria, limite: 120 } });
+        const r = await completar({ data: { categoria: alvo, limite: 120 } });
         if (!r || r.faltam <= 0) {
           faltam = r?.faltam ?? 0;
           break;

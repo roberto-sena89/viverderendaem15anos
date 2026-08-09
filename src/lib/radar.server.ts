@@ -97,6 +97,19 @@ function simboloYahooB3(ticker: string): string {
   return `${t}.SA`;
 }
 
+/** Descarta pontos corrompidos do Yahoo (adjclose quebrado após splits/
+ *  fractionation: mínimo irrealista tipo 0.13 reais em XPML11). Um ponto
+ *  abaixo de 5% da mediana ou acima de 50x a mediana não é preço real. */
+function sanitizarPontos(pontos: PontoPreco[]): PontoPreco[] {
+  if (pontos.length < 2) return pontos;
+  const ordenados = [...pontos].sort((a, b) => a.fechamento - b.fechamento);
+  const mediana = ordenados[Math.floor(ordenados.length / 2)].fechamento;
+  if (!(mediana > 0)) return pontos;
+  const limiteInferior = mediana * 0.05;
+  const limiteSuperior = mediana * 50;
+  return pontos.filter((p) => p.fechamento >= limiteInferior && p.fechamento <= limiteSuperior);
+}
+
 async function buscarSerieResiliente(ticker: string): Promise<PontoPreco[] | null> {
   // B3 só existe no Yahoo com o sufixo .SA (PETR4 -> PETR4.SA). Sem ele o
   // Yahoo responde "no data found" e o radar fica sem histórico.
@@ -146,7 +159,10 @@ async function buscarSerieResiliente(ticker: string): Promise<PontoPreco[] | nul
               });
             }
           }
-          if (pontos.length >= 2) return pontos;
+          if (pontos.length >= 2) {
+            const validos = sanitizarPontos(pontos);
+            if (validos.length >= 2) return validos;
+          }
         } catch {
           /* tenta a próxima combinação */
         } finally {
@@ -195,7 +211,8 @@ async function buscarSerieResiliente(ticker: string): Promise<PontoPreco[] | nul
           });
         }
       }
-      if (pontos.length >= 2) return pontos;
+      const validos = sanitizarPontos(pontos);
+      if (validos.length >= 2) return validos;
     } catch {
       /* sem série disponível mesmo na última tentativa */
     } finally {
@@ -619,31 +636,39 @@ export async function sparklinesParaTickers(tickers: string[]): Promise<Record<s
 
 let macroMemoria: { valor: { selic: number | null; ipca: number | null }; em: number } | null =
   null;
+let macroEmVoo: Promise<{ selic: number | null; ipca: number | null }> | null = null;
 
 export async function contextoMacro(): Promise<{
   selic: number | null;
   ipca: number | null;
 }> {
   if (macroMemoria && Date.now() - macroMemoria.em < 15 * 60_000) return macroMemoria.valor;
-  const resultado = { selic: null as number | null, ipca: null as number | null };
-  try {
-    const { buscarIndicador } = await import("@/lib/market.server");
-    const [selic, ipca] = await Promise.all([
-      buscarIndicador("selic", 2).catch(() => null),
-      buscarIndicador("ipca", 2).catch(() => null),
-    ]);
-    const ultimo = (arr: { valor: number }[] | undefined): number | null => {
-      if (!arr?.length) return null;
-      const v = Number(arr[arr.length - 1]?.valor);
-      return Number.isFinite(v) ? v : null;
-    };
-    resultado.selic = ultimo(selic?.serie);
-    resultado.ipca = ultimo(ipca?.serie);
-    macroMemoria = { valor: resultado, em: Date.now() };
-  } catch {
-    /* sem macro: a IA segue com o que tiver disponível */
+  if (!macroEmVoo) {
+    macroEmVoo = (async () => {
+      const resultado = { selic: null as number | null, ipca: null as number | null };
+      try {
+        const { buscarIndicador } = await import("@/lib/market.server");
+        const [selic, ipca] = await Promise.all([
+          buscarIndicador("selic", 2).catch(() => null),
+          buscarIndicador("ipca", 2).catch(() => null),
+        ]);
+        const ultimo = (arr: { valor: number }[] | undefined): number | null => {
+          if (!arr?.length) return null;
+          const v = Number(arr[arr.length - 1]?.valor);
+          return Number.isFinite(v) ? v : null;
+        };
+        resultado.selic = ultimo(selic?.serie);
+        resultado.ipca = ultimo(ipca?.serie);
+        macroMemoria = { valor: resultado, em: Date.now() };
+      } catch {
+        /* sem macro: a IA segue com o que tiver disponível */
+      }
+      return resultado;
+    })().finally(() => {
+      macroEmVoo = null;
+    });
   }
-  return resultado;
+  return macroEmVoo;
 }
 
 /* ------------------------------------------------------------------ *
