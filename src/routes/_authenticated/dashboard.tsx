@@ -101,8 +101,11 @@ function FiltroSelect({
 }) {
   return (
     <Select value={valor} onValueChange={onChange}>
-      <SelectTrigger aria-label={rotuloAcessivel} className="h-9 w-[9.5rem] gap-2 text-xs">
-        <Icone className="size-8 shrink-0 text-muted-foreground" />
+      <SelectTrigger
+        aria-label={rotuloAcessivel}
+        className="h-9 w-full gap-2 text-xs sm:w-[9.5rem]"
+      >
+        <Icone className="hidden size-8 shrink-0 text-muted-foreground sm:block" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -287,21 +290,21 @@ function Dashboard() {
                 rotuloAcessivel="Período do gráfico de evolução"
               />
               {periodo === "custom" ? (
-                <div className="flex items-center gap-1">
+                <div className="flex w-full items-center gap-1 sm:w-auto">
                   <input
                     type="month"
                     aria-label="Mês inicial"
                     value={inicioCustom}
                     onChange={(e) => setInicioCustom(e.target.value)}
-                    className="h-9 rounded-md border border-input bg-background px-2 text-xs"
+                    className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-2 text-xs"
                   />
-                  <span className="text-xs text-muted-foreground">até</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">até</span>
                   <input
                     type="month"
                     aria-label="Mês final"
                     value={fimCustom}
                     onChange={(e) => setFimCustom(e.target.value)}
-                    className="h-9 rounded-md border border-input bg-background px-2 text-xs"
+                    className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-2 text-xs"
                   />
                 </div>
               ) : null}
@@ -366,7 +369,7 @@ function Dashboard() {
             dados={dadosEvolucao}
           />
 
-          <div className="h-72">
+          <div className="h-64 sm:h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={dadosEvolucao}

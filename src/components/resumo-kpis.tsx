@@ -64,7 +64,7 @@ function CartaoResumo({
       type="button"
       onClick={onClick}
       aria-label={`Ver detalhes e fórmulas de ${titulo}`}
-      className="panel cursor-pointer p-4 text-left transition-colors hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className="panel cursor-pointer p-4 text-left transition-[box-shadow,border-color] hover:border-primary/60 hover:shadow-[var(--shadow-lift)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       <div className="flex items-start gap-2">
         <Icone className="size-8! shrink-0 text-foreground" />

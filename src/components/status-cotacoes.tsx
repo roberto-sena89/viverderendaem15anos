@@ -64,7 +64,7 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
 
   return (
     <div
-      className={`${sticky ? "sticky top-0 z-20" : ""} flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-border bg-card/95 px-3 py-2 backdrop-blur`}
+      className={`${sticky ? "sticky top-[var(--altura-cabecalho-app,0px)] z-20" : ""} flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-border bg-card/95 px-3 py-2 backdrop-blur`}
     >
       <span className="flex min-w-0 items-center gap-2">
         <span className="relative flex size-2.5 shrink-0">
