@@ -230,6 +230,20 @@ function serieDePontos(pontos: PontoPreco[]): PosicaoSerie {
 let posicaoMemoria = new Map<string, { posicao: PosicaoHistorica; em: number }>();
 const serieMemoria = new Map<string, { serie: PosicaoSerie; em: number }>();
 
+/** Carregamentos do Yahoo em andamento por ticker: cacifos concorrentes
+ * (posições e sparklines) compartilham a mesma requisição em vez de duplicá-la. */
+const cargasEmVoo = new Map<string, Promise<PontoPreco[] | null>>();
+
+async function buscarSerieDeduplicada(ticker: string): Promise<PontoPreco[] | null> {
+  const existente = cargasEmVoo.get(ticker);
+  if (existente) return existente;
+  const promessa = buscarSerieResiliente(ticker).finally(() => {
+    cargasEmVoo.delete(ticker);
+  });
+  cargasEmVoo.set(ticker, promessa);
+  return promessa;
+}
+
 /** Amostra uma série preservando o primeiro e o último ponto (preço atual). */
 export function amostrarSerie(pontos: PontoSerie[], maxPontos = MAX_PONTOS_GRAFICO): PontoSerie[] {
   if (pontos.length <= maxPontos) return pontos;
@@ -395,7 +409,7 @@ export async function posicoesParaTickers(
     corridas.push(
       (async () => {
         try {
-          const pontos = await buscarSerieResiliente(ticker);
+          const pontos = await buscarSerieDeduplicada(ticker);
           if (!pontos) return;
           const p = posicaoDeSerie(ticker, pontos);
           const serie = serieDePontos(pontos);

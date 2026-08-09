@@ -238,8 +238,14 @@ export const radarPosicoes = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<RadarPosicoesResposta> => {
     if (!data.tickers.length) return { posicoes: {}, sparklines: {} };
     const radarFx = await import("@/lib/radar.server");
+    // A posição pode vir da memória ou do cache compartilhado (radar:posicao);
+    // só busca no Yahoo o que realmente não está salvo. Sem o mapa do banco,
+    // cada request em isolate frio rebuscaria a página inteira no Yahoo.
     const [posicoes, sparklines] = await Promise.all([
-      radarFx.posicoesParaTickers(data.tickers),
+      (async () => {
+        const banco = await radarFx.lerPosicoesBanco();
+        return radarFx.posicoesParaTickers(data.tickers, banco.posicoes);
+      })(),
       radarFx.sparklinesParaTickers(data.tickers),
     ]);
     return { posicoes, sparklines };
