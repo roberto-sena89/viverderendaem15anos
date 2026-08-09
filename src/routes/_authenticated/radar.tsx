@@ -479,6 +479,7 @@ function PaginaRadar() {
         abaVisao === "ranking" ? (
           <RankingRadar
             linhas={aplicarPosicoes(linhasFiltradas, posicoes)}
+            carteira={carteiraPorTicker}
             aoSelecionar={setSelecionado}
           />
         ) : (
