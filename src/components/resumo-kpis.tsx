@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Coins, PiggyBank, Plus, TrendingUp, Wallet } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
+import { chaveTicker, useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 import { useDividendos } from "@/lib/data";
 import { brl, dividendos12m, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
@@ -139,6 +139,7 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
 export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: boolean }) {
   const { data: ativos = [] } = useAtivosAoVivo();
   const { data: proventos = [] } = useDividendos();
+  const { mapa } = useCotacoesTempoReal();
   const [aberto, setAberto] = useState<Detalhe | null>(null);
 
   const resumo = resumoCarteira(ativos);
@@ -149,6 +150,25 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
     resumo.totalInvestido > 0
       ? ((resumo.lucroTotal + totalProventos) / resumo.totalInvestido) * 100
       : 0;
+
+  /** Variação do dia da carteira em R$ e %, com o fechamento anterior por ativo. */
+  const variacaoHoje = useMemo(() => {
+    let delta = 0;
+    let valorCoberto = 0;
+    for (const a of ativos) {
+      const c = mapa.get(chaveTicker(a.ticker));
+      if (!c || c.preco === null || c.preco <= 0 || c.variacaoPercent === null) continue;
+      const valor = valorAtual(a);
+      if (valor <= 0) continue;
+      delta += (valor * c.variacaoPercent) / (100 + c.variacaoPercent);
+      valorCoberto += valor;
+    }
+    if (valorCoberto <= 0) return null;
+    return { delta, pct: (delta / (valorCoberto - delta)) * 100, cobertura: valorCoberto };
+  }, [ativos, mapa]);
+
+  const fmtDelta = (v: number) => `${v >= 0 ? "+" : ""}${brl(v, 2)}`;
+  const fmtPctDelta = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(2).replace(".", ",")}%`;
 
   const detalhePatrimonio: Detalhe = {
     titulo: "Patrimônio total",
@@ -175,6 +195,16 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         valor: String(ativos.length),
         formula: "contagem de posições ativas",
       },
+      ...(variacaoHoje
+        ? [
+            {
+              rotulo: "Variação do dia (mercado)",
+              valor: `${fmtPctDelta(variacaoHoje.pct)} · ${fmtDelta(variacaoHoje.delta)}`,
+              formula: `Σ quantidade × (preço atual − fechamento anterior) de ${variacaoHoje.cobertura.toLocaleString("pt-BR")} em ativos cotados`,
+              tom: variacaoHoje.delta >= 0 ? ("positive" as const) : ("negative" as const),
+            },
+          ]
+        : []),
       {
         rotulo: "Maior posição",
         valor: ativos.length
@@ -313,12 +343,19 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
             </p>
             <DeltaChip value={resumo.rentabilidade} />
           </div>
-          <div className="mt-3">
+          <div className={`mt-3 ${variacaoHoje ? "grid grid-cols-2 gap-3" : ""}`}>
             <Indicador
               rotulo="Valor investido"
               valor={brl(resumo.totalInvestido, 2)}
               serie="investido"
             />
+            {variacaoHoje ? (
+              <Indicador
+                rotulo="Hoje (mercado)"
+                valor={`${fmtDelta(variacaoHoje.delta)} · ${fmtPctDelta(variacaoHoje.pct)}`}
+                tom={variacaoHoje.delta >= 0 ? "positive" : "negative"}
+              />
+            ) : null}
           </div>
         </CartaoResumo>
 

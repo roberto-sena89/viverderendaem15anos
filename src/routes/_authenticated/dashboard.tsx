@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Calendar, CircleDollarSign } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Calendar, CircleDollarSign, Plus, Wallet } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -18,12 +18,15 @@ import { AppShell } from "@/components/app-shell";
 import { StatusCotacoes } from "@/components/status-cotacoes";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
+import { DialogTransacao } from "@/components/dialog-transacao";
+import { EstadoVazio } from "@/components/estado-vazio";
 import { PainelAnaliseRisco } from "@/components/painel-analise-risco";
 import { DetalheEvolucaoMensal } from "@/components/detalhe-evolucao-mensal";
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { SaudeCarteira } from "@/components/saude-carteira";
 import { TooltipEvolucao } from "@/components/tooltip-evolucao";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -35,6 +38,7 @@ import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { useAportes, useDividendos } from "@/lib/data";
 import { classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
+import { cn } from "@/lib/utils";
 import {
   brl,
   categorias,
@@ -109,6 +113,59 @@ function FiltroSelect({
         ))}
       </SelectContent>
     </Select>
+  );
+}
+
+const SECOES = [
+  { id: "resumo", rotulo: "Resumo" },
+  { id: "saude", rotulo: "Saúde" },
+  { id: "analise", rotulo: "Análise" },
+  { id: "evolucao", rotulo: "Evolução" },
+  { id: "ativos", rotulo: "Ativos" },
+] as const;
+
+/** Pílulas de âncora com scrollspy para navegar pela página longa. */
+function NavegacaoSecoes() {
+  const [ativa, setAtiva] = useState<string>("resumo");
+
+  useEffect(() => {
+    const alvos = SECOES.map((s) => document.getElementById(s.id)).filter(
+      (el): el is HTMLElement => el !== null,
+    );
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) setAtiva(e.target.id);
+      },
+      { rootMargin: "-15% 0px -65% 0px" },
+    );
+    alvos.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <nav
+      aria-label="Seções desta página"
+      className="scrollbar-none -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1"
+    >
+      {SECOES.map((s) => (
+        <button
+          key={s.id}
+          type="button"
+          onClick={() =>
+            document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+          aria-current={ativa === s.id ? "true" : undefined}
+          className={cn(
+            "shrink-0 snap-start rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+            ativa === s.id
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
+          )}
+        >
+          {s.rotulo}
+        </button>
+      ))}
+    </nav>
   );
 }
 
@@ -199,14 +256,24 @@ function Dashboard() {
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
       <StatusCotacoes />
       <AbasCarteira />
+      <NavegacaoSecoes />
 
-      <ResumoKpis />
+      <section id="resumo" className="scroll-mt-32 sm:scroll-mt-40">
+        <ResumoKpis />
+      </section>
 
-      <SaudeCarteira carteira={ativos} />
+      <section id="saude" className="scroll-mt-32 sm:scroll-mt-40">
+        <SaudeCarteira carteira={ativos} />
+      </section>
 
-      <PainelAnaliseRisco carteira={ativos} aportes={aportes} />
+      <section id="analise" className="scroll-mt-32 sm:scroll-mt-40">
+        <PainelAnaliseRisco carteira={ativos} aportes={aportes} />
+      </section>
 
-      <div className="grid gap-4 text-[12px] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div
+        id="evolucao"
+        className="scroll-mt-32 grid gap-4 text-[12px] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] sm:scroll-mt-40"
+      >
         <Panel
           title="Evolução do Patrimônio"
           action={
@@ -475,7 +542,10 @@ function Dashboard() {
         </Panel>
       </div>
 
-      <section className="panel overflow-hidden text-[12px]">
+      <section
+        id="ativos"
+        className="panel scroll-mt-32 overflow-hidden text-[12px] sm:scroll-mt-40"
+      >
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
           <h2 className="panel-title min-w-0 truncate">
             Meus ativos <span className="text-muted-foreground normal-case">({ativos.length})</span>
@@ -490,9 +560,26 @@ function Dashboard() {
         </header>
 
         {ativos.length === 0 ? (
-          <p className="px-4 py-10 text-center text-sm text-muted-foreground">
-            Nenhum ativo cadastrado ainda.
-          </p>
+          <div className="p-4 sm:p-6">
+            <EstadoVazio
+              icone={Wallet}
+              titulo="Nenhum ativo cadastrado ainda"
+              descricao="Adicione um lançamento (compra, venda ou provento) ou importe sua carteira da B3 para começar a acompanhar."
+              acao={
+                <>
+                  <DialogTransacao>
+                    <Button>
+                      <Plus className="size-4" />
+                      Adicionar lançamento
+                    </Button>
+                  </DialogTransacao>
+                  <Button asChild variant="outline">
+                    <Link to="/importar">Importar da B3</Link>
+                  </Button>
+                </>
+              }
+            />
+          </div>
         ) : (
           <div className="p-3 sm:p-4">
             <CarteiraGrupos ativos={ativos} minimal />
