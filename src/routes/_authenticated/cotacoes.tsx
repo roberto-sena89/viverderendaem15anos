@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { AbasMercado } from "@/components/abas-mercado";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -101,7 +102,9 @@ function Cotacoes() {
 
   return (
     <AppShell title="Cotações" description={legenda}>
+      <AbasMercado />
       <div className="space-y-4">
+
         {/* Status do pregão */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className="inline-flex min-w-0 items-center gap-2 text-sm">
