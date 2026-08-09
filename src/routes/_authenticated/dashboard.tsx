@@ -145,7 +145,7 @@ function NavegacaoSecoes() {
   return (
     <nav
       aria-label="Seções desta página"
-      className="scrollbar-none -mx-1 flex snap-x gap-1.5 overflow-x-auto px-1"
+      className="scrollbar-none flex w-full max-w-full min-w-0 flex-wrap gap-1.5 sm:flex-nowrap sm:snap-x sm:overflow-x-auto"
     >
       {SECOES.map((s) => (
         <button
@@ -156,7 +156,8 @@ function NavegacaoSecoes() {
           }
           aria-current={ativa === s.id ? "true" : undefined}
           className={cn(
-            "shrink-0 snap-start rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+            "shrink-0 snap-start rounded-full px-2.5 py-1.5 text-[0.7rem] font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:px-3 sm:text-xs",
+
             ativa === s.id
               ? "bg-primary text-primary-foreground"
               : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
