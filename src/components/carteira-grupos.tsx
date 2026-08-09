@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   BarChart3,
   ChevronDown,
@@ -174,11 +174,14 @@ export function CarteiraGrupos({
   const salvarAtivo = useSalvarAtivo();
 
   /** Variação do dia: prioriza o provedor em tempo real, com fallback na BRAPI. */
-  const variacaoDiaDe = (ticker: string): number | null =>
-    cotacoes.get(chaveTicker(ticker))?.variacaoPercent ??
-    brapi.get(chaveBrapi(ticker))?.variacaoPercent ??
-    salvos.get(chavePreco(ticker))?.variacaoPercent ??
-    null;
+  const variacaoDiaDe = useCallback(
+    (ticker: string): number | null =>
+      cotacoes.get(chaveTicker(ticker))?.variacaoPercent ??
+      brapi.get(chaveBrapi(ticker))?.variacaoPercent ??
+      salvos.get(chavePreco(ticker))?.variacaoPercent ??
+      null,
+    [cotacoes, brapi, salvos],
+  );
 
   /**
    * Preço atual do ativo: valor definido manualmente vem primeiro; depois BRAPI
@@ -186,12 +189,15 @@ export function CarteiraGrupos({
    * não tiver o ativo, a cotação da aba "Cotações"; e, por fim, o último preço
    * válido salvo no banco.
    */
-  const precoDe = (ticker: string) =>
-    manuais[chavePreco(ticker)] ??
-    brapi.get(chaveBrapi(ticker))?.preco ??
-    cotacoes.get(chaveTicker(ticker))?.preco ??
-    salvos.get(chavePreco(ticker))?.preco ??
-    null;
+  const precoDe = useCallback(
+    (ticker: string) =>
+      manuais[chavePreco(ticker)] ??
+      brapi.get(chaveBrapi(ticker))?.preco ??
+      cotacoes.get(chaveTicker(ticker))?.preco ??
+      salvos.get(chavePreco(ticker))?.preco ??
+      null,
+    [manuais, brapi, cotacoes, salvos],
+  );
 
   /** Origem do preço exibido, usada no tooltip da coluna "P. atual". */
   const fonteDe = (ticker: string) => {
@@ -258,7 +264,7 @@ export function CarteiraGrupos({
         const preco = precoDe(a.ticker);
         return preco && preco > 0 ? { ...a, precoAtual: preco } : a;
       }),
-    [ativosBase, brapi, cotacoes, salvos, manuais],
+    [ativosBase, precoDe],
   );
 
   const [fechados, setFechados] = useState<Record<string, boolean>>({});
@@ -315,7 +321,7 @@ export function CarteiraGrupos({
       })
       .sort((a, b) => b.total - a.total);
     return { grupos, totalCarteira };
-  }, [ativos, alvo, cotacoes]);
+  }, [ativos, alvo, variacaoDiaDe]);
 
   if (grupos.length === 0) {
     return (

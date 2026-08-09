@@ -114,7 +114,7 @@ export async function gerarXlsxCarteira({ linhas, resumo }: DadosExportacao): Pr
     ]),
   ];
 
-  const saida = await writeXlsxFile([
+  const saida = writeXlsxFile([
     {
       sheet: "Carteira",
       data: abaCarteira,

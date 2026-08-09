@@ -162,7 +162,7 @@ function PaginaNoticias() {
   const [aberta, setAberta] = useState<Noticia | null>(null);
   const [ativoSelecionado, setAtivoSelecionado] = useState<string | null>(null);
 
-  const todas = visiveis ?? [];
+  const todas = useMemo(() => visiveis ?? [], [visiveis]);
 
   const filtradas = useMemo(() => {
     const termo = normalizar(busca.trim());
@@ -323,7 +323,6 @@ function PaginaNoticias() {
     >
       <AbasMercado />
       <FitaIndices />
-
 
       {/* Busca + filtros */}
       <Panel bodyClassName="flex flex-col gap-3 p-3 sm:p-4">
