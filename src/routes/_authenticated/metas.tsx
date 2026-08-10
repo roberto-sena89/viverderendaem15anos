@@ -3,6 +3,7 @@ import { useState } from "react";
 import { CheckCircle2, Circle, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
+import { AbasPlanejamento } from "@/components/abas-planejamento";
 import { InputNumeroBR } from "@/components/input-numero-br";
 import { Button } from "@/components/ui/button";
 import {
@@ -92,6 +93,7 @@ function MetasPage() {
 
   return (
     <AppShell title="Metas" description={`Patrimônio atual: ${brl(totalAtual)}`}>
+      <AbasPlanejamento />
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>

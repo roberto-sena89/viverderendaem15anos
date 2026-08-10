@@ -41,6 +41,9 @@ export const ABAS_CARTEIRA = [
 /** Abas horizontais do grupo Mercado, na ordem exibida. */
 export const ABAS_MERCADO = ["/cotacoes", "/rankings", "/noticias", "/radar"] as const;
 
+/** Abas horizontais do grupo Planejamento, na ordem exibida. */
+export const ABAS_PLANEJAMENTO = ["/planejador", "/metas", "/chat"] as const;
+
 export function secaoPorRota(pathname: string): SecaoNav | undefined {
   return SECOES.find((s) => s.to === pathname);
 }
