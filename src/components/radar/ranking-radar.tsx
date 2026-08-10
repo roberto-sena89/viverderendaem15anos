@@ -822,7 +822,7 @@ export function RankingRadar({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {ranking.map((l, i) => {
+              {paginadas.map((l, i) => {
                 const quantidade = carteira?.get(l.ticker.toUpperCase()) ?? 0;
                 return (
                   <TableRow
@@ -835,7 +835,7 @@ export function RankingRadar({
                         aria-hidden
                         className={`absolute inset-y-0 left-0 w-[3px] ${corZona(l.posicao?.percentil ?? null)}`}
                       />
-                      <ChipPosicao posicao={i + 1} />
+                      <ChipPosicao posicao={inicio + i + 1} />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -951,7 +951,7 @@ export function RankingRadar({
 
       {/* Cartões em camadas (mobile) */}
       <ol className="space-y-2 md:hidden">
-        {ranking.map((l, i) => {
+        {paginadas.map((l, i) => {
           const v = valorCritério(l, criterio);
           const quantidade = carteira?.get(l.ticker.toUpperCase()) ?? 0;
           return (
@@ -962,7 +962,7 @@ export function RankingRadar({
                 className="panel w-full p-3 text-left transition-transform active:scale-[0.99]"
               >
                 <div className="flex items-center gap-3">
-                  <ChipPosicao posicao={i + 1} />
+                  <ChipPosicao posicao={inicio + i + 1} />
                   <LogoAtivo l={l} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold">
