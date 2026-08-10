@@ -18,7 +18,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { iniciarAnalytics } from "@/lib/analytics";
 import { SITE_URL } from "@/lib/seo";
-import { verificarConfigBackend } from "@/lib/supabase-config";
+import { useBackendPronto } from "@/lib/use-backend-pronto";
 
 function NotFoundComponent() {
   return (
