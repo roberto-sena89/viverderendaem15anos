@@ -56,7 +56,6 @@ import {
   Search,
   SlidersHorizontal,
   Sparkles,
-  Trophy,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/radar")({
@@ -162,7 +161,7 @@ function paginasNumeradas(total: number, atual: number): (number | "…")[] {
 
 function PaginaRadar() {
   const [categoria, setCategoria] = useState<"acao" | "fii">("acao");
-  const [abaVisao, setAbaVisao] = useState<"cotacoes" | "ranking">("ranking");
+  const [abaVisao] = useState<"cotacoes" | "ranking">("ranking");
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState<Ordenacao>("sinal");
   const [direcao, setDirecao] = useState<"desc" | "asc">("desc");
