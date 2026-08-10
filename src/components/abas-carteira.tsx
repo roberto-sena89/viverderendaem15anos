@@ -42,10 +42,6 @@ export function AbasCarteira() {
             </li>
           );
         })}
-
-            </li>
-          );
-        })}
       </ul>
     </nav>
   );
