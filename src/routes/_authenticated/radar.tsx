@@ -433,26 +433,6 @@ function PaginaRadar() {
       title="Radar de Oportunidades"
       description="Todas as ações e FIIs da B3 comparados com a própria história — mínimas indicam oportunidade, choques exigem cautela."
     >
-      <Tabs
-        value={abaVisao}
-        onValueChange={(v) => setAbaVisao(v as "cotacoes" | "ranking")}
-        className="w-full"
-      >
-        <TabsList className="h-auto w-full justify-start gap-1 rounded-xl bg-muted/60 p-1 sm:w-auto">
-          <TabsTrigger
-            value="ranking"
-            className="h-9 gap-2 rounded-lg px-3.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary/10 data-[state=active]:to-transparent"
-          >
-            <Trophy className="size-4" aria-hidden />
-            Ranking de ativos
-            {visao ? (
-              <span className="ml-0.5 rounded-full bg-primary/15 px-1.5 text-[0.65rem] font-bold tabular-nums text-primary">
-                {visao.contagem.total.toLocaleString("pt-BR")}
-              </span>
-            ) : null}
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
 
       <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
