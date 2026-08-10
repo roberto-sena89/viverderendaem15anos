@@ -7,6 +7,7 @@
  */
 
 import { useMemo, useState, type ReactNode } from "react";
+import { PaginacaoAtivos } from "@/components/radar/paginacao-ativos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -476,6 +477,8 @@ export function RankingRadar({
   const [criterio, setCriterio] = useState<Critério>("score");
   const [direcao, setDirecao] = useState<Direcao>("desc");
   const [abaSinal, setAbaSinal] = useState<AbaSinal>("todos");
+  const [porPagina, setPorPagina] = useState(50);
+  const [pagina, setPagina] = useState(1);
   const meta = CRITERIOS.find((c) => c.valor === criterio)!;
 
   const estatisticas = useMemo(() => {
@@ -526,6 +529,19 @@ export function RankingRadar({
   }, [linhas, criterio, direcao, abaSinal, meta.sentido]);
 
   const pódio = ranking.slice(0, 3);
+
+  const totalPaginas = Math.max(1, Math.ceil(ranking.length / porPagina));
+  const paginaAtual = Math.min(pagina, totalPaginas);
+  const inicio = (paginaAtual - 1) * porPagina;
+  const paginadas = ranking.slice(inicio, inicio + porPagina);
+  const trocarPagina = (p: number) => {
+    setPagina(Math.min(Math.max(1, p), totalPaginas));
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const trocarPorPagina = (n: number) => {
+    setPorPagina(n);
+    setPagina(1);
+  };
 
   if (!linhas.length) {
     return (
@@ -807,7 +823,7 @@ export function RankingRadar({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {ranking.map((l, i) => {
+              {paginadas.map((l, i) => {
                 const quantidade = carteira?.get(l.ticker.toUpperCase()) ?? 0;
                 return (
                   <TableRow
@@ -820,7 +836,7 @@ export function RankingRadar({
                         aria-hidden
                         className={`absolute inset-y-0 left-0 w-[3px] ${corZona(l.posicao?.percentil ?? null)}`}
                       />
-                      <ChipPosicao posicao={i + 1} />
+                      <ChipPosicao posicao={inicio + i + 1} />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -936,7 +952,7 @@ export function RankingRadar({
 
       {/* Cartões em camadas (mobile) */}
       <ol className="space-y-2 md:hidden">
-        {ranking.map((l, i) => {
+        {paginadas.map((l, i) => {
           const v = valorCritério(l, criterio);
           const quantidade = carteira?.get(l.ticker.toUpperCase()) ?? 0;
           return (
@@ -947,7 +963,7 @@ export function RankingRadar({
                 className="panel w-full p-3 text-left transition-transform active:scale-[0.99]"
               >
                 <div className="flex items-center gap-3">
-                  <ChipPosicao posicao={i + 1} />
+                  <ChipPosicao posicao={inicio + i + 1} />
                   <LogoAtivo l={l} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold">
@@ -1015,6 +1031,19 @@ export function RankingRadar({
           );
         })}
       </ol>
+
+      <PaginacaoAtivos
+        pagina={paginaAtual}
+        totalPaginas={totalPaginas}
+        totalItens={ranking.length}
+        inicio={ranking.length ? inicio + 1 : 0}
+        fim={Math.min(inicio + porPagina, ranking.length)}
+        porPagina={porPagina}
+        aoMudarPagina={trocarPagina}
+        aoMudarPorPagina={trocarPorPagina}
+      />
+
+
 
       {/* Legenda e nota */}
       <footer className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 text-xs text-muted-foreground">
