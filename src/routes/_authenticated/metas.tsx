@@ -92,6 +92,7 @@ function MetasPage() {
 
   return (
     <AppShell title="Metas" description={`Patrimônio atual: ${brl(totalAtual)}`}>
+      <AbasPlanejamento />
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
