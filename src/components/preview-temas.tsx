@@ -64,22 +64,25 @@ function MiniDashboard({ tema }: { tema: "claro" | "escuro" }) {
       >
         <div
           className={cn(
-            "grid grid-cols-3 gap-2 border-b p-3 text-[0.55rem] font-semibold uppercase tracking-wider",
+            "grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.8fr)] items-center gap-3 border-b px-4 py-2.5 text-[0.55rem] font-semibold tracking-wider uppercase",
             isDark ? "border-white/10 text-white/50" : "border-border/60 text-muted-foreground",
           )}
         >
-          <span>Ativo</span>
-          <span>Preço</span>
-          <span className="text-right">Var</span>
+          <span className="truncate">Ativo</span>
+          <span className="truncate text-right">Preço</span>
+          <span className="truncate text-right">Var</span>
         </div>
-        <ul className="divide-y divide-white/5">
+        <ul className={cn("divide-y", isDark ? "divide-white/10" : "divide-border/60")}>
           {MOCK_TICKERS.map((t) => (
-            <li key={t.ticker} className="grid grid-cols-3 gap-2 p-3 text-xs font-medium">
-              <span className="truncate font-semibold">{t.ticker}</span>
-              <span className="tabular-nums opacity-80">{t.valor}</span>
+            <li
+              key={t.ticker}
+              className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.8fr)] items-center gap-3 px-4 py-2.5 text-xs font-medium"
+            >
+              <span className="truncate font-semibold tracking-tight">{t.ticker}</span>
+              <span className="truncate text-right tabular-nums opacity-80">{t.valor}</span>
               <span
                 className={cn(
-                  "text-right font-bold tabular-nums",
+                  "truncate text-right font-bold tabular-nums",
                   t.var.startsWith("+") ? "text-success" : "text-destructive",
                 )}
               >
@@ -89,6 +92,7 @@ function MiniDashboard({ tema }: { tema: "claro" | "escuro" }) {
           ))}
         </ul>
       </div>
+
 
       {/* Badges de status */}
       <div className="mt-4 flex items-center gap-2">
