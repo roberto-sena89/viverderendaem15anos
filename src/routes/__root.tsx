@@ -184,18 +184,39 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-function AvisoBackend({ mensagem }: { mensagem: string }) {
+function ReconectandoBackend({ tentativa, total }: { tentativa: number; total: number }) {
+  return (
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
+      <div className="max-w-md text-center">
+        <div className="mx-auto size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Conectando ao servidor… (tentativa {tentativa} de {total})
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function AvisoBackend({ mensagem, onTentar }: { mensagem: string; onTentar: () => void }) {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md rounded-lg border border-border bg-card p-6 text-center">
         <h1 className="text-lg font-semibold text-foreground">Serviço temporariamente indisponível</h1>
         <p className="mt-2 text-sm text-muted-foreground">{mensagem}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          Recarregar
-        </button>
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <button
+            onClick={onTentar}
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Tentar novamente
+          </button>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          >
+            Recarregar
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -204,25 +225,26 @@ function AvisoBackend({ mensagem }: { mensagem: string }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
-  const config = verificarConfigBackend();
+  const backend = useBackendPronto();
+  const pronto = backend.status === "ok";
 
   useEffect(() => {
     iniciarAnalytics();
     // Só assina o auth quando as variáveis do backend são válidas: criar o
     // client com URL/chave inválidas derruba a aplicação inteira.
-    if (!config.ok) {
-      console.error(`[Backend] ${config.mensagem}`);
-      return;
-    }
+    if (!pronto) return;
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });
     return () => data.subscription.unsubscribe();
-  }, [router, queryClient, config]);
+  }, [router, queryClient, pronto]);
 
-  if (!config.ok) return <AvisoBackend mensagem={config.mensagem} />;
+  if (backend.status === "tentando")
+    return <ReconectandoBackend tentativa={backend.tentativa} total={backend.total} />;
+  if (backend.status === "erro")
+    return <AvisoBackend mensagem={backend.mensagem} onTentar={backend.tentarAgora} />;
 
   return (
     <QueryClientProvider client={queryClient}>
