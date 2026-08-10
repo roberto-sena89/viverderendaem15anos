@@ -7,6 +7,7 @@
  */
 
 import { useMemo, useState, type ReactNode } from "react";
+import { PaginacaoAtivos } from "@/components/radar/paginacao-ativos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
