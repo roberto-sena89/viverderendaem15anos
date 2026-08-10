@@ -149,6 +149,9 @@
    * Escala tipográfica premium (fluida, base 16px, razão ~1.2)
    * Usada por cards, tabelas, tooltips, dashboards e páginas.
    * ------------------------------------------------------------- */
+  /* Escala "mega/giga" para hero sections e números de impacto */
+  --fs-mega: clamp(2.75rem, 6vw, 5.5rem); /* headlines de impacto */
+  --fs-giga: clamp(3.5rem, 8vw, 7rem); /* números gigantes */
   --fs-display: clamp(2.125rem, 1.55rem + 2.4vw, 3.25rem);
   --fs-h1: clamp(1.625rem, 1.28rem + 1.4vw, 2.25rem);
   --fs-h2: clamp(1.3125rem, 1.14rem + 0.7vw, 1.625rem);
@@ -165,6 +168,7 @@
   --lh-normal: 1.5;
   --lh-relaxed: 1.65;
 
+  --tracking-hero: -0.04em;
   --tracking-display: -0.03em;
   --tracking-heading: -0.02em;
   --tracking-body: -0.005em;
@@ -174,6 +178,16 @@
   --fw-medium: 500;
   --fw-semibold: 600;
   --fw-bold: 700;
+  --fw-hero: 800; /* hero: mais contraste que o bold padrão */
+}
+
+/* Respeita a preferência de movimento reduzido do usuário */
+@media (prefers-reduced-motion: reduce) {
+  .hero-count,
+  .mockup-parallax {
+    animation: none;
+    transform: none;
+  }
 }
 
 /* ---------------------------------------------------------------
@@ -183,6 +197,16 @@
  * corretos — evita ajustar font-size/weight à mão em componentes.
  * --------------------------------------------------------------- */
 @theme inline {
+  --text-giga: var(--fs-giga);
+  --text-giga--line-height: 1.02;
+  --text-giga--letter-spacing: var(--tracking-hero);
+  --text-giga--font-weight: var(--fw-hero);
+
+  --text-mega: var(--fs-mega);
+  --text-mega--line-height: 1.05;
+  --text-mega--letter-spacing: var(--tracking-hero);
+  --text-mega--font-weight: var(--fw-hero);
+
   --text-display: var(--fs-display);
   --text-display--line-height: var(--lh-tight);
   --text-display--letter-spacing: var(--tracking-display);

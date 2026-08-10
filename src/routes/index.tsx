@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, LineChart, PiggyBank, Sparkles, TrendingUp, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,10 @@ import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 import logoIcone from "@/assets/logo-icone.webp";
 import heroFundo from "@/assets/hero-mercado-fundo.webp";
 import ogImagem from "@/assets/og-home.jpg.asset.json";
+import { MockupFrame } from "@/components/mockup-frame";
+import { DashboardPreview } from "@/components/dashboard-preview";
+import { NumeroAnimado } from "@/components/count-up";
+import { motion, useScroll, useTransform } from "motion/react";
 
 const TITLE = "Viver de Renda em 15 Anos — Carteira, Dividendos e Independência";
 const OG_TITLE = "Viver de Renda em 15 Anos: carteira e dividendos";
@@ -219,6 +223,15 @@ const faq: { q: string; a: string }[] = [
 function HomePage() {
   const navigate = useNavigate();
 
+  // Parallax suave no mockup do dashboard
+  const mockupRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: mockupRef,
+    offset: ["start end", "end start"],
+  });
+  const mockupY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const mockupRotate = useTransform(scrollYProgress, [0, 0.5, 1], [2, 0, -2]);
+
   useEffect(() => {
     let ativo = true;
     // Carregamento tardio do cliente de autenticação: mantém o bundle crítico
@@ -254,7 +267,7 @@ function HomePage() {
       </a>
 
       <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6">
-        <div className="border-border/60 bg-background/70 mx-auto flex w-full max-w-3xl items-center justify-between gap-3 rounded-full border py-2 pr-2 pl-2 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl">
+        <div className="border-border/80 bg-background/80 mx-auto flex w-full max-w-3xl items-center justify-between gap-3 rounded-full border py-2 pr-2 pl-2 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl">
           <Link
             to="/"
             aria-label="Viver de Renda em 15 Anos — página inicial"
@@ -330,7 +343,7 @@ function HomePage() {
             Carteira, dividendos e independência
           </span>
 
-          <h1 className="font-hero mx-auto mt-8 max-w-4xl text-[clamp(2.3rem,7vw,4.4rem)] leading-[1.05] font-extrabold tracking-tighter text-balance">
+          <h1 className="font-hero mx-auto mt-8 max-w-4xl text-mega text-balance">
             Organize sua carteira e{" "}
             <span className="text-gradient-brand">viva de renda em 15 anos</span>
           </h1>
@@ -366,7 +379,7 @@ function HomePage() {
                 className="border-border/60 bg-card/50 rounded-2xl border p-5 text-left backdrop-blur-sm transition-colors hover:border-primary/40"
               >
                 <dt className="font-hero text-foreground text-2xl font-bold tracking-tight tabular-nums">
-                  {n.valor}
+                  <NumeroAnimado texto={n.valor} />
                 </dt>
                 <dd className="text-muted-foreground mt-1.5 text-[0.68rem] leading-snug font-semibold tracking-wide uppercase text-pretty">
                   {n.label}
@@ -377,12 +390,45 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Mockup do Dashboard — showcase visual do produto */}
+      <section className="relative py-12 sm:py-20">
+        <div className="mx-auto max-w-5xl px-5 sm:px-6">
+          <div className="text-center">
+            <span className="border-primary/40 bg-card/80 text-primary inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[0.65rem] font-bold tracking-[0.2em] uppercase shadow-inner">
+              <span className="bg-primary size-2 rounded-full" />
+              Interface real
+            </span>
+            <h2 className="font-hero mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
+              Controle total do seu patrimônio
+            </h2>
+            <p className="text-muted-foreground mx-auto mt-3 max-w-lg text-sm leading-relaxed text-pretty sm:text-base">
+              Visualize sua evolução, acompanhe indicadores e receba insights para acelerar sua
+              independência financeira.
+            </p>
+          </div>
+
+          <div ref={mockupRef} className="mt-10 sm:mt-14" style={{ perspective: 1200 }}>
+            <motion.div
+              style={{ y: mockupY, rotate: mockupRotate }}
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <MockupFrame className="mx-auto max-w-4xl">
+                <DashboardPreview />
+              </MockupFrame>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       <main id="conteudo" className="mx-auto max-w-6xl px-5 pb-20 sm:px-6 sm:pb-28">
         <section id="recursos" className="grid gap-4 pt-10 sm:pt-16 md:grid-cols-3">
           {recursos.map((r, i) => (
             <article
               key={r.title}
-              className={`group border-border/60 relative overflow-hidden rounded-3xl border p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)] ${
+              className={`group border-border/60 relative overflow-hidden rounded-3xl border p-8 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)] ${
                 i === 0 ? "from-card to-background bg-gradient-to-br md:col-span-2" : "bg-card"
               }`}
             >
