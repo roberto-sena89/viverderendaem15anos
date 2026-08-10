@@ -1031,6 +1031,19 @@ export function RankingRadar({
         })}
       </ol>
 
+      <PaginacaoAtivos
+        pagina={paginaAtual}
+        totalPaginas={totalPaginas}
+        totalItens={ranking.length}
+        inicio={ranking.length ? inicio + 1 : 0}
+        fim={Math.min(inicio + porPagina, ranking.length)}
+        porPagina={porPagina}
+        aoMudarPagina={trocarPagina}
+        aoMudarPorPagina={trocarPorPagina}
+      />
+
+
+
       {/* Legenda e nota */}
       <footer className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 text-xs text-muted-foreground">
         <p className="t-label flex items-center gap-2">
