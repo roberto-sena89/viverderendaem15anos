@@ -529,6 +529,19 @@ export function RankingRadar({
 
   const pódio = ranking.slice(0, 3);
 
+  const totalPaginas = Math.max(1, Math.ceil(ranking.length / porPagina));
+  const paginaAtual = Math.min(pagina, totalPaginas);
+  const inicio = (paginaAtual - 1) * porPagina;
+  const paginadas = ranking.slice(inicio, inicio + porPagina);
+  const trocarPagina = (p: number) => {
+    setPagina(Math.min(Math.max(1, p), totalPaginas));
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const trocarPorPagina = (n: number) => {
+    setPorPagina(n);
+    setPagina(1);
+  };
+
   if (!linhas.length) {
     return (
       <div className="panel flex flex-col items-center gap-3 p-10 text-center">
