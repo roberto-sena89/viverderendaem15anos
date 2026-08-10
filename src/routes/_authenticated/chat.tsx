@@ -4,10 +4,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Eraser, FileText, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
+import { BookOpenText, Eraser, FileText, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { AbasPlanejamento } from "@/components/abas-planejamento";
+import { Switch } from "@/components/ui/switch";
 import {
   Conversation,
   ConversationContent,
@@ -81,6 +82,9 @@ function ChatPage() {
   const { perfil, salvar } = usePerfilInvestidor();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [input, setInput] = useState("");
+  const [citacoes, setCitacoes] = useState(() =>
+    typeof window !== "undefined" ? window.localStorage.getItem("chat-citacoes") === "on" : false,
+  );
   const [gerandoRelatorio, setGerandoRelatorio] = useState(false);
   const gerarRelatorio = useServerFn(gerarRelatorioAuditoria);
 
@@ -109,10 +113,11 @@ function ChatPage() {
           return {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             "X-Perfil-Investidor": perfil,
+            "X-Modo-Citacoes": citacoes ? "on" : "off",
           };
         },
       }),
-    [perfil],
+    [perfil, citacoes],
   );
 
   const { messages, sendMessage, setMessages, status } = useChat({
@@ -159,6 +164,13 @@ function ChatPage() {
       toast.error("Não foi possível apagar a conversa", {
         description: error instanceof Error ? error.message : undefined,
       });
+    }
+  }
+
+  function alternarCitacoes(valor: boolean) {
+    setCitacoes(valor);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("chat-citacoes", valor ? "on" : "off");
     }
   }
 
@@ -228,6 +240,26 @@ function ChatPage() {
               <FileText className="mr-2 size-4 shrink-0" />
               <span className="truncate">{gerandoRelatorio ? "Gerando..." : "Relatório PDF"}</span>
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              role="switch"
+              aria-checked={citacoes}
+              aria-label="Modo citações e justificativas"
+              title="Citações e justificativas: cada recomendação aponta os dados e critérios usados"
+              onClick={() => alternarCitacoes(!citacoes)}
+              className={`min-w-0 rounded-full ${citacoes ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
+            >
+              <BookOpenText className="mr-2 size-4 shrink-0" />
+              <span className="truncate">Citações</span>
+              <Switch
+                checked={citacoes}
+                onCheckedChange={alternarCitacoes}
+                onClick={(e) => e.stopPropagation()}
+                className="ml-2 scale-75"
+                aria-hidden
+              />
+            </Button>
             <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
               <SelectTrigger
                 className="w-full min-w-0 rounded-full sm:w-40"
@@ -255,7 +287,6 @@ function ChatPage() {
             </Button>
           </div>
         </div>
-
 
         <Conversation className="flex-1 rounded-xl border border-border/60 bg-card/40">
           <ConversationContent>
@@ -336,6 +367,12 @@ function ChatPage() {
               <RefreshCw className="mr-1 inline size-3" />
               Modo PRO · carteira, perfil{" "}
               {PERFIS.find((p) => p.valor === perfil)?.rotulo.toLowerCase()} e mercado em tempo real
+              {citacoes ? (
+                <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 font-semibold text-primary">
+                  <BookOpenText className="mr-1 inline size-3" />
+                  Citações ativas
+                </span>
+              ) : null}
             </span>
             <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
           </PromptInputFooter>

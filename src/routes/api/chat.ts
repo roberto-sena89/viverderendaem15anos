@@ -348,6 +348,7 @@ export const Route = createFileRoute("/api/chat")({
           request.headers.get("x-perfil-investidor")?.trim().toLowerCase() ?? "moderado";
         const perfilValido =
           perfil === "conservador" || perfil === "agressivo" ? perfil : "moderado";
+        const modoCitacoes = request.headers.get("x-modo-citacoes")?.trim().toLowerCase() === "on";
 
         const ultima = messages[messages.length - 1];
         if (ultima?.role === "user") {
@@ -1559,9 +1560,21 @@ export const Route = createFileRoute("/api/chat")({
 
         const result = streamText({
           model: gateway("openai/gpt-5.5"),
-          system: SISTEMA.replace("{PERFIL}", perfilValido).concat(
-            `\n\n### Carteira atual do usuário\n${contexto}\n\n### Metas financeiras do usuário\n${contextoMetas}\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`,
-          ),
+          system: SISTEMA.replace("{PERFIL}", perfilValido)
+            .concat(
+              modoCitacoes
+                ? "\n\n### MODE CITAÇÕES ATIVO (obrigatório)\n" +
+                    "Sempre que você apresentar uma recomendação, veredito, sugestão de ativo ou plano de ação, inclua citações e justificativas rastreáveis. Regras:\n" +
+                    "1. Cite a fonte e a data/periodo de cada numero usado (ex.: 'cotação de 10/08/2026 via cotacao', 'série de 5 anos via historico', 'grade fundamentalista da B3 atualizada em 10/08/2026 via fundamentosAcao').\n" +
+                    "2. Para cada recomendação, diga explicitamente quais dados e critérios sustentaram a decisão (ex.: 'DY 8,2% acima da média do setor', 'P/VP 0,85 indica desconto', 'percentil 23% na série histórica').\n" +
+                    "3. Não invente números: todo dado citado deve vir de uma ferramenta executada nesta conversa. Se um numero for estimativa ou premissa, rotule como tal.\n" +
+                    "4. Sempre que houver uma recomendação (comprar/vender/manter/aportar/rebalancear), encerre com uma seção '📌 Dados e critérios usados' em lista, apontando numero, fonte, data e critério aplicado.\n" +
+                    "5. Se um dado vier do contexto da carteira do usuário (patrimônio, aportes, metas), identifique a origem (ex.: 'registro de aportes do usuário')."
+                : "",
+            )
+            .concat(
+              `\n\n### Carteira atual do usuário\n${contexto}\n\n### Metas financeiras do usuário\n${contextoMetas}\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`,
+            ),
           messages: await convertToModelMessages(messages),
           tools: ferramentas,
           stopWhen: stepCountIs(50),
