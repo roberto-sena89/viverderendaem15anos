@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/accordion";
 import { FormularioNewsletter } from "@/components/formulario-newsletter";
 import { RodapePublico } from "@/components/rodape-publico";
-import { PreviewTemas } from "@/components/preview-temas";
 import { CONTEUDOS } from "@/lib/conteudo-publico";
 import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 import logoIcone from "@/assets/logo-icone.webp";
