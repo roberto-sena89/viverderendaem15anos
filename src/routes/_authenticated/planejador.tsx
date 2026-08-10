@@ -287,43 +287,89 @@ function Planejador() {
 
           <ComparadorCenarios input={input} objetivoRenda={objetivoRenda} />
 
-          <div
-            className="surface-card w-full min-w-0 max-w-full overflow-auto"
-            tabIndex={0}
-            role="region"
-            aria-label="Projeção ano a ano"
-          >
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Ano</TableHead>
-                  <TableHead>Idade</TableHead>
-                  <TableHead className="text-right">Patrimônio</TableHead>
-                  <TableHead className="text-right">Valor de hoje</TableHead>
-                  <TableHead className="text-right">Total aportado</TableHead>
-                  <TableHead className="text-right">Renda passiva</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {base.map((l) => (
-                  <TableRow key={l.ano}>
-                    <TableCell className="font-medium">{l.ano}</TableCell>
-                    <TableCell>{l.idade}</TableCell>
-                    <TableCell className="text-right">{brl(l.patrimonio)}</TableCell>
-                    <TableCell className="text-right text-muted-foreground">
-                      {brl(l.patrimonioReal)}
-                    </TableCell>
-                    <TableCell className="text-right text-muted-foreground">
-                      {brl(l.aportado)}
-                    </TableCell>
-                    <TableCell className="text-right text-success">
-                      {brl(l.rendaPassivaMensal)}
-                    </TableCell>
+          <div className="surface-card w-full min-w-0 max-w-full overflow-hidden">
+            <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3">
+              <h3 className="truncate text-sm font-semibold">Projeção ano a ano</h3>
+              <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+                {base.length} anos
+              </span>
+            </div>
+
+            {/* Mobile: cartões */}
+            <ul className="divide-y divide-border/50 md:hidden">
+              {base.map((l) => (
+                <li key={l.ano} className="px-4 py-3">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <div className="flex min-w-0 items-baseline gap-2">
+                      <span className="text-sm font-semibold">{l.ano}</span>
+                      <span className="truncate text-[11px] text-muted-foreground">
+                        {l.idade} anos
+                      </span>
+                    </div>
+                    <span className="shrink-0 text-sm font-semibold tabular-nums">
+                      {brl(l.patrimonio)}
+                    </span>
+                  </div>
+                  <dl className="grid grid-cols-3 gap-2 text-[11px]">
+                    <div className="min-w-0 rounded-lg bg-muted/40 px-2 py-1.5">
+                      <dt className="truncate text-muted-foreground">Valor hoje</dt>
+                      <dd className="truncate font-medium tabular-nums">{brl(l.patrimonioReal)}</dd>
+                    </div>
+                    <div className="min-w-0 rounded-lg bg-muted/40 px-2 py-1.5">
+                      <dt className="truncate text-muted-foreground">Aportado</dt>
+                      <dd className="truncate font-medium tabular-nums">{brl(l.aportado)}</dd>
+                    </div>
+                    <div className="min-w-0 rounded-lg bg-success/10 px-2 py-1.5">
+                      <dt className="truncate text-muted-foreground">Renda/mês</dt>
+                      <dd className="truncate font-medium tabular-nums text-success">
+                        {brl(l.rendaPassivaMensal)}
+                      </dd>
+                    </div>
+                  </dl>
+                </li>
+              ))}
+            </ul>
+
+            {/* Desktop: tabela */}
+            <div
+              className="hidden w-full min-w-0 max-w-full overflow-x-auto md:block"
+              tabIndex={0}
+              role="region"
+              aria-label="Projeção ano a ano"
+            >
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ano</TableHead>
+                    <TableHead>Idade</TableHead>
+                    <TableHead className="text-right">Patrimônio</TableHead>
+                    <TableHead className="text-right">Valor de hoje</TableHead>
+                    <TableHead className="text-right">Total aportado</TableHead>
+                    <TableHead className="text-right">Renda passiva</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {base.map((l) => (
+                    <TableRow key={l.ano}>
+                      <TableCell className="font-medium">{l.ano}</TableCell>
+                      <TableCell>{l.idade}</TableCell>
+                      <TableCell className="text-right tabular-nums">{brl(l.patrimonio)}</TableCell>
+                      <TableCell className="text-right tabular-nums text-muted-foreground">
+                        {brl(l.patrimonioReal)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums text-muted-foreground">
+                        {brl(l.aportado)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums text-success">
+                        {brl(l.rendaPassivaMensal)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
+
         </div>
       </div>
     </AppShell>
