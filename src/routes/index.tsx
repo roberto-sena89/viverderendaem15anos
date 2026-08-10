@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/accordion";
 import { FormularioNewsletter } from "@/components/formulario-newsletter";
 import { RodapePublico } from "@/components/rodape-publico";
+import { PreviewTemas } from "@/components/preview-temas";
 import { CONTEUDOS } from "@/lib/conteudo-publico";
 import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 import logoIcone from "@/assets/logo-icone.webp";
@@ -338,8 +339,11 @@ function HomePage() {
         />
 
         <div className="mx-auto max-w-5xl px-5 pt-32 pb-16 text-center sm:px-6 sm:pt-44 sm:pb-24">
-          <span className="border-primary/40 bg-card/80 text-primary inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[0.65rem] font-bold tracking-[0.2em] uppercase shadow-inner sm:text-[0.7rem]">
-            <span className="bg-primary size-2 animate-pulse rounded-full" aria-hidden />
+          <span className="border-border/60 bg-card/80 text-accent-warm-strong inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[0.65rem] font-bold tracking-[0.2em] uppercase shadow-[0_0_0_1px_color-mix(in_oklab,var(--color-accent-warm)_18%,transparent),0_10px_30px_-18px_color-mix(in_oklab,var(--color-accent-warm)_65%,transparent)] sm:text-[0.7rem]">
+            <span
+              className="bg-accent-warm size-2 animate-pulse rounded-full shadow-[0_0_12px_2px_color-mix(in_oklab,var(--color-accent-warm)_70%,transparent)]"
+              aria-hidden
+            />
             Carteira, dividendos e independência
           </span>
 
@@ -372,13 +376,17 @@ function HomePage() {
             </Button>
           </div>
 
-          <dl className="mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-3 sm:mt-20 sm:grid-cols-4 sm:gap-4">
+          <dl className="relative mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-3 rounded-3xl bg-card/40 p-3 shadow-[var(--shadow-float)] backdrop-blur-md sm:mt-20 sm:grid-cols-4 sm:gap-4 sm:p-4">
+            <div
+              aria-hidden
+              className="absolute -inset-4 -z-10 rounded-[2.5rem] bg-primary/25 blur-3xl"
+            />
             {numeros.map((n) => (
               <div
                 key={n.label}
-                className="border-border/60 bg-card/50 rounded-2xl border p-5 text-left backdrop-blur-sm transition-colors hover:border-primary/40"
+                className="border-border/60 bg-card rounded-2xl border p-5 text-left shadow-[var(--shadow-soft)] transition-colors hover:border-primary/40"
               >
-                <dt className="font-hero text-foreground text-2xl font-bold tracking-tight tabular-nums">
+                <dt className="font-hero text-accent-warm-strong text-2xl font-bold tracking-tight tabular-nums">
                   <NumeroAnimado texto={n.valor} />
                 </dt>
                 <dd className="text-muted-foreground mt-1.5 text-[0.68rem] leading-snug font-semibold tracking-wide uppercase text-pretty">
@@ -534,12 +542,14 @@ function HomePage() {
           </section>
 
 
-          <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 md:col-span-3 md:flex-row md:items-center md:justify-between">
+          <PreviewTemas />
+
+          <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 shadow-[var(--shadow-lift)] md:col-span-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
               <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">
                 Comece hoje
               </p>
-              <p className="font-hero mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+              <p className="font-hero text-accent-warm-strong mt-3 text-3xl font-extrabold tracking-tight tabular-nums sm:text-4xl">
                 R$ 0
               </p>
               <p className="text-muted-foreground mt-3 max-w-md text-sm leading-relaxed text-pretty">
