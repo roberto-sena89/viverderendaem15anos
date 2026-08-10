@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/accordion";
 import { FormularioNewsletter } from "@/components/formulario-newsletter";
 import { RodapePublico } from "@/components/rodape-publico";
-import { PreviewTemas } from "@/components/preview-temas";
 import { CONTEUDOS } from "@/lib/conteudo-publico";
 import { SITE_URL, urlAbsoluta } from "@/lib/seo";
 import logoIcone from "@/assets/logo-icone.webp";
@@ -542,7 +541,6 @@ function HomePage() {
           </section>
 
 
-          <PreviewTemas />
 
           <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 shadow-[var(--shadow-lift)] md:col-span-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
