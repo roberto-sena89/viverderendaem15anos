@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import { AppShell } from "@/components/app-shell";
+import { AbasPlanejamento } from "@/components/abas-planejamento";
 import { ComparadorCenarios } from "@/components/comparador-cenarios";
 
 import { StatCard } from "@/components/stat-card";
