@@ -23,27 +23,27 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
 /** Barra de abas da carteira, no padrão Investidor 10. */
 export function AbasCarteira() {
   return (
-    <nav aria-label="Seções da carteira" className="border-b border-border">
-      <ul className="scrollbar-none grid grid-cols-2 gap-x-1 gap-y-0.5 sm:flex sm:flex-wrap sm:items-center">
+    <nav aria-label="Seções da carteira" className="border-b border-border pb-3">
+      <ul className="mx-auto grid w-full grid-cols-2 gap-1.5 rounded-2xl border border-border/60 bg-muted/40 p-1.5 backdrop-blur-sm sm:flex sm:w-fit sm:flex-wrap sm:justify-center">
         {ABAS_CARTEIRA.map((to) => {
           const Icone = ICONES[to] ?? LayoutDashboard;
           const rotulo = secaoPorRota(to)?.rotulo ?? to;
           return (
-            <li key={to} className="min-w-0 sm:shrink">
+            <li key={to} className="min-w-0">
               <Link
                 to={to}
                 activeOptions={{ exact: true }}
                 title={rotulo}
-                className="t-aba flex h-full min-w-0 items-center gap-1.5 border-b-2 border-transparent px-2 py-2.5 text-muted-foreground transition-colors hover:text-foreground data-[status=active]:border-primary data-[status=active]:font-semibold data-[status=active]:text-foreground sm:gap-2 sm:px-3"
+                className="t-aba group flex h-full min-w-0 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-muted-foreground transition-all hover:bg-background/70 hover:text-foreground data-[status=active]:bg-background data-[status=active]:font-semibold data-[status=active]:text-foreground data-[status=active]:shadow-[var(--shadow-lift)]"
               >
-                <Icone className="size-5 shrink-0 sm:size-6" />
+                <Icone className="size-4 shrink-0 transition-colors group-data-[status=active]:text-primary sm:size-[18px]" />
                 <span className="min-w-0 truncate sm:whitespace-nowrap">{rotulo}</span>
               </Link>
             </li>
           );
         })}
       </ul>
-
     </nav>
   );
 }
+
