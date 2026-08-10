@@ -476,6 +476,8 @@ export function RankingRadar({
   const [criterio, setCriterio] = useState<Critério>("score");
   const [direcao, setDirecao] = useState<Direcao>("desc");
   const [abaSinal, setAbaSinal] = useState<AbaSinal>("todos");
+  const [porPagina, setPorPagina] = useState(50);
+  const [pagina, setPagina] = useState(1);
   const meta = CRITERIOS.find((c) => c.valor === criterio)!;
 
   const estatisticas = useMemo(() => {
