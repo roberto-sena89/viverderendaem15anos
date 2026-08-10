@@ -24,7 +24,7 @@ const ICONES: Record<string, typeof LayoutDashboard> = {
 export function AbasCarteira() {
   return (
     <nav aria-label="Seções da carteira" className="border-b border-border pb-3">
-      <ul className="mx-auto grid w-full grid-cols-2 gap-1.5 rounded-2xl border border-border/60 bg-muted/40 p-1.5 backdrop-blur-sm sm:flex sm:w-fit sm:flex-wrap sm:justify-center">
+      <ul className="grid w-full grid-cols-2 gap-1.5 rounded-2xl border border-border/60 bg-muted/40 p-1.5 backdrop-blur-sm sm:flex sm:w-fit sm:flex-wrap sm:justify-start">
         {ABAS_CARTEIRA.map((to) => {
           const Icone = ICONES[to] ?? LayoutDashboard;
           const rotulo = secaoPorRota(to)?.rotulo ?? to;
@@ -34,11 +34,15 @@ export function AbasCarteira() {
                 to={to}
                 activeOptions={{ exact: true }}
                 title={rotulo}
-                className="t-aba group flex h-full min-w-0 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-muted-foreground transition-all hover:bg-background/70 hover:text-foreground data-[status=active]:bg-background data-[status=active]:font-semibold data-[status=active]:text-foreground data-[status=active]:shadow-[var(--shadow-lift)]"
+                className="t-aba group flex h-full min-w-0 items-center justify-start gap-2 rounded-xl px-3 py-2.5 text-muted-foreground transition-all hover:bg-background/70 hover:text-foreground data-[status=active]:bg-background data-[status=active]:font-semibold data-[status=active]:text-foreground data-[status=active]:shadow-[var(--shadow-lift)]"
               >
                 <Icone className="size-4 shrink-0 transition-colors group-data-[status=active]:text-primary sm:size-[18px]" />
                 <span className="min-w-0 truncate sm:whitespace-nowrap">{rotulo}</span>
               </Link>
+            </li>
+          );
+        })}
+
             </li>
           );
         })}
