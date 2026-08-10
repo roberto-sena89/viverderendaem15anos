@@ -19,7 +19,7 @@ export const SECOES: SecaoNav[] = [
   { to: "/importar", rotulo: "Importar B3", grupo: "Carteira" },
 
   { to: "/cotacoes", rotulo: "Cotações", grupo: "MERCADO" },
-  { to: "/rankings", rotulo: "Ranking de Ativos", grupo: "MERCADO" },
+  
   { to: "/noticias", rotulo: "Notícias de Mercado", grupo: "MERCADO" },
   { to: "/radar", rotulo: "Radar de Oportunidades", grupo: "MERCADO" },
   { to: "/planejador", rotulo: "Planejador Financeiro", grupo: "Planejamento" },
@@ -39,7 +39,7 @@ export const ABAS_CARTEIRA = [
 ] as const;
 
 /** Abas horizontais do grupo Mercado, na ordem exibida. */
-export const ABAS_MERCADO = ["/cotacoes", "/rankings", "/noticias", "/radar"] as const;
+export const ABAS_MERCADO = ["/cotacoes", "/noticias", "/radar"] as const;
 
 export function secaoPorRota(pathname: string): SecaoNav | undefined {
   return SECOES.find((s) => s.to === pathname);
