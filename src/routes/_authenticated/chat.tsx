@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Eraser, FileText, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
+import { AbasPlanejamento } from "@/components/abas-planejamento";
 import {
   Conversation,
   ConversationContent,
