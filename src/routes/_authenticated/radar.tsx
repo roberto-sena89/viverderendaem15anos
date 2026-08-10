@@ -49,7 +49,7 @@ import {
   ChevronRight,
   DatabaseZap,
   Download,
-  
+  LayoutGrid,
   Loader2,
   Radar,
   RefreshCw,
@@ -439,6 +439,13 @@ function PaginaRadar() {
         className="w-full"
       >
         <TabsList className="h-auto w-full justify-start gap-1 rounded-xl bg-muted/60 p-1 sm:w-auto">
+          <TabsTrigger
+            value="cotacoes"
+            className="h-9 gap-2 rounded-lg px-3.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary/10 data-[state=active]:to-transparent"
+          >
+            <LayoutGrid className="size-4" aria-hidden />
+            Cotações
+          </TabsTrigger>
           <TabsTrigger
             value="ranking"
             className="h-9 gap-2 rounded-lg px-3.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary/10 data-[state=active]:to-transparent"
