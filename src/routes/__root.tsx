@@ -18,6 +18,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { iniciarAnalytics } from "@/lib/analytics";
 import { SITE_URL } from "@/lib/seo";
+import { verificarConfigBackend } from "@/lib/supabase-config";
 
 function NotFoundComponent() {
   return (
@@ -183,19 +184,45 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function AvisoBackend({ mensagem }: { mensagem: string }) {
+  return (
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
+      <div className="max-w-md rounded-lg border border-border bg-card p-6 text-center">
+        <h1 className="text-lg font-semibold text-foreground">Serviço temporariamente indisponível</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{mensagem}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          Recarregar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const config = verificarConfigBackend();
 
   useEffect(() => {
     iniciarAnalytics();
+    // Só assina o auth quando as variáveis do backend são válidas: criar o
+    // client com URL/chave inválidas derruba a aplicação inteira.
+    if (!config.ok) {
+      console.error(`[Backend] ${config.mensagem}`);
+      return;
+    }
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });
     return () => data.subscription.unsubscribe();
-  }, [router, queryClient]);
+  }, [router, queryClient, config]);
+
+  if (!config.ok) return <AvisoBackend mensagem={config.mensagem} />;
 
   return (
     <QueryClientProvider client={queryClient}>
