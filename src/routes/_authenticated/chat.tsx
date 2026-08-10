@@ -189,47 +189,50 @@ function ChatPage() {
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
       <AbasPlanejamento />
-      <div className="flex h-[calc(100vh-11rem)] min-h-[32rem] flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-card/60 px-4 py-3">
-          <div className="flex items-center gap-3">
+      <div className="flex h-[calc(100dvh-13rem)] min-h-[28rem] flex-col gap-4">
+        <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-card/60 p-3 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
             <img
               src={logoIA}
               alt="Técnico IA"
               width={512}
               height={512}
               loading="lazy"
-              className="size-9 rounded-lg object-contain"
+              className="size-9 shrink-0 rounded-xl object-contain ring-1 ring-border/60"
             />
-            <div>
-              <p className="text-sm font-semibold">Técnico IA</p>
-              <p className="text-xs text-muted-foreground">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">Técnico IA</p>
+              <p className="truncate text-xs text-muted-foreground">
                 Análises educativas — não é recomendação de investimento.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-end">
             <Button
               variant="default"
               size="sm"
               onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
               disabled={carregando}
-              className="hidden sm:inline-flex"
+              className="min-w-0 rounded-full shadow-[var(--shadow-lift)]"
             >
-              <ShieldCheck className="mr-2 size-4" />
-              Auditoria Premium
+              <ShieldCheck className="mr-2 size-4 shrink-0" />
+              <span className="truncate">Auditoria</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={gerarRelatorioPdf}
               disabled={gerandoRelatorio}
-              className="hidden sm:inline-flex"
+              className="min-w-0 rounded-full"
             >
-              <FileText className="mr-2 size-4" />
-              {gerandoRelatorio ? "Gerando..." : "Relatório PDF dos Auditores"}
+              <FileText className="mr-2 size-4 shrink-0" />
+              <span className="truncate">{gerandoRelatorio ? "Gerando..." : "Relatório PDF"}</span>
             </Button>
             <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
-              <SelectTrigger className="w-44" aria-label="Perfil de investidor">
+              <SelectTrigger
+                className="w-full min-w-0 rounded-full sm:w-40"
+                aria-label="Perfil de investidor"
+              >
                 <SelectValue placeholder="Perfil" />
               </SelectTrigger>
               <SelectContent>
@@ -245,12 +248,14 @@ function ChatPage() {
               size="sm"
               onClick={limpar}
               disabled={messages.length === 0 || carregando}
+              className="min-w-0 rounded-full"
             >
-              <Eraser className="mr-2 size-4" />
-              Limpar
+              <Eraser className="mr-2 size-4 shrink-0" />
+              <span className="truncate">Limpar</span>
             </Button>
           </div>
         </div>
+
 
         <Conversation className="flex-1 rounded-xl border border-border/60 bg-card/40">
           <ConversationContent>
