@@ -500,18 +500,18 @@ function HomePage() {
             </ul>
           </section>
 
-          <section className="mt-16 sm:mt-24">
-            <h2 className="font-hero text-center text-2xl font-bold tracking-tight sm:text-4xl">
+          <section className="mt-12 md:col-span-3 sm:mt-20">
+            <h2 className="font-hero text-center text-2xl font-bold tracking-tight text-balance sm:text-4xl">
               Como funciona
             </h2>
             <p className="text-muted-foreground mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-pretty sm:text-base">
               Três passos do zero até a projeção da sua independência financeira.
             </p>
-            <ol className="mt-10 grid gap-4 md:grid-cols-3">
+            <ol className="mt-10 grid items-stretch gap-4 sm:grid-cols-2 md:grid-cols-3">
               {passos.map((p, i) => (
                 <li
                   key={p.titulo}
-                  className="border-border/60 relative overflow-hidden rounded-3xl border bg-card p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)]"
+                  className="border-border/60 bg-card relative flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)]"
                 >
                   <span
                     aria-hidden
@@ -519,17 +519,20 @@ function HomePage() {
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="bg-primary/15 text-primary inline-flex size-12 items-center justify-center rounded-xl">
+                  <span className="bg-primary/15 text-primary inline-flex size-12 shrink-0 items-center justify-center rounded-xl">
                     <p.icon className="size-5" />
                   </span>
-                  <h3 className="font-hero mt-5 text-lg font-bold tracking-tight">{p.titulo}</h3>
-                  <p className="text-muted-foreground mt-2 text-sm leading-relaxed text-pretty">
+                  <h3 className="font-hero mt-5 text-lg font-bold tracking-tight text-balance">
+                    {p.titulo}
+                  </h3>
+                  <p className="text-muted-foreground mt-2 text-sm leading-relaxed text-pretty hyphens-auto">
                     {p.body}
                   </p>
                 </li>
               ))}
             </ol>
           </section>
+
 
           <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 md:col-span-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
