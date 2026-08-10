@@ -10,6 +10,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
+import { AbasMercado } from "@/components/abas-mercado";
 import { AppShell } from "@/components/app-shell";
 import { TabelaRadar } from "@/components/radar/tabela-radar";
 import { RankingRadar } from "@/components/radar/ranking-radar";
@@ -49,14 +50,13 @@ import {
   ChevronRight,
   DatabaseZap,
   Download,
-  LayoutGrid,
+  
   Loader2,
   Radar,
   RefreshCw,
   Search,
   SlidersHorizontal,
   Sparkles,
-  Trophy,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/radar")({
@@ -162,7 +162,7 @@ function paginasNumeradas(total: number, atual: number): (number | "…")[] {
 
 function PaginaRadar() {
   const [categoria, setCategoria] = useState<"acao" | "fii">("acao");
-  const [abaVisao, setAbaVisao] = useState<"cotacoes" | "ranking">("cotacoes");
+  const [abaVisao] = useState<"cotacoes" | "ranking">("ranking");
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState<Ordenacao>("sinal");
   const [direcao, setDirecao] = useState<"desc" | "asc">("desc");
@@ -433,33 +433,8 @@ function PaginaRadar() {
       title="Radar de Oportunidades"
       description="Todas as ações e FIIs da B3 comparados com a própria história — mínimas indicam oportunidade, choques exigem cautela."
     >
-      <Tabs
-        value={abaVisao}
-        onValueChange={(v) => setAbaVisao(v as "cotacoes" | "ranking")}
-        className="w-full"
-      >
-        <TabsList className="h-auto w-full justify-start gap-1 rounded-xl bg-muted/60 p-1 sm:w-auto">
-          <TabsTrigger
-            value="cotacoes"
-            className="h-9 gap-2 rounded-lg px-3.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary/10 data-[state=active]:to-transparent"
-          >
-            <LayoutGrid className="size-4" aria-hidden />
-            Cotações
-          </TabsTrigger>
-          <TabsTrigger
-            value="ranking"
-            className="h-9 gap-2 rounded-lg px-3.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary/10 data-[state=active]:to-transparent"
-          >
-            <Trophy className="size-4" aria-hidden />
-            Ranking de ativos
-            {visao ? (
-              <span className="ml-0.5 rounded-full bg-primary/15 px-1.5 text-[0.65rem] font-bold tabular-nums text-primary">
-                {visao.contagem.total.toLocaleString("pt-BR")}
-              </span>
-            ) : null}
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <AbasMercado />
+
 
       <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
