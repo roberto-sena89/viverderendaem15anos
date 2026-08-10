@@ -391,33 +391,51 @@ export type Database = {
       }
       radar_analises: {
         Row: {
+          cenario_base: string | null
+          cenario_otimista: string | null
+          cenario_pessimista: string | null
+          conviccao: string | null
           created_at: string
           fatores_externos: Json
           gatilhos: string | null
           gerada_em: string
+          horizonte: string | null
           id: string
+          monitorar: string | null
           riscos: string | null
           tese: string | null
           ticker: string
           veredito: string
         }
         Insert: {
+          cenario_base?: string | null
+          cenario_otimista?: string | null
+          cenario_pessimista?: string | null
+          conviccao?: string | null
           created_at?: string
           fatores_externos?: Json
           gatilhos?: string | null
           gerada_em?: string
+          horizonte?: string | null
           id?: string
+          monitorar?: string | null
           riscos?: string | null
           tese?: string | null
           ticker: string
           veredito: string
         }
         Update: {
+          cenario_base?: string | null
+          cenario_otimista?: string | null
+          cenario_pessimista?: string | null
+          conviccao?: string | null
           created_at?: string
           fatores_externos?: Json
           gatilhos?: string | null
           gerada_em?: string
+          horizonte?: string | null
           id?: string
+          monitorar?: string | null
           riscos?: string | null
           tese?: string | null
           ticker?: string
