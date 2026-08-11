@@ -4,7 +4,9 @@ import {
   LIMITE_ALTA,
   LIMITE_BAIXA,
   LIMITE_MEDIA,
+  PERCENTIL_DISTRIBUCIONAL_MINIMO_PONTOS,
   backtestSinal,
+  percentilDistribucional,
   posicaoPercentil,
   rotuloScore,
   scoreOportunidade,
@@ -287,6 +289,58 @@ describe("scoreOportunidade", () => {
     })!;
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);
+  });
+});
+
+describe("percentilDistribucional", () => {
+  // 30 preços distribuídos entre 40 e 60 (40..48 repetidos, 49..60 únicos).
+  const prices = Array.from({ length: 30 }, (_, i) => 40 + (i % 21));
+
+  it("mede a posição do preço atual por rank, não pela faixa", () => {
+    // Preço 50 está acima de 40..48+49+50 = 20 das 30 leituras → ~67%.
+    expect(percentilDistribucional(prices, 50)).toBe(67);
+    // No pico (60) todo o histórico está iguais ou abaixo → 100%.
+    expect(percentilDistribucional(prices, 60)).toBe(100);
+    // No fundo (40) só as 2 leituras de 40 empatam → ~7%.
+    expect(percentilDistribucional(prices, 40)).toBe(7);
+  });
+
+  it("clampa fora da faixa de preços conhecida", () => {
+    expect(percentilDistribucional(prices, 65)).toBe(100);
+    expect(percentilDistribucional(prices, 35)).toBe(0);
+  });
+
+  it("diverge do percentil de faixa quando a distribuição é assimétrica", () => {
+    // 40 leituras em 80..119 e uma ponta em 1000: a faixa manda o preço de 100
+    // para ~2% (perto da mínima), mas a distribuição o coloca no meio (51%).
+    const assimetrica = [...Array.from({ length: 40 }, (_, i) => 80 + i), 1000];
+    expect(percentilDistribucional(assimetrica, 100)).toBe(51);
+    expect(posicaoPercentil(100, 80, 1000)).toBeLessThan(5);
+  });
+
+  it("é robusto a outlier de preço corrompido", () => {
+    // Um outlier gigante quase não desloca a posição por rank e, sobretudo,
+    // não colapsa o percentil para perto de zero como a faixa faria.
+    const comOutlier = [...prices, 100_000];
+    expect(percentilDistribucional(comOutlier, 50)).toBeGreaterThanOrEqual(60);
+    expect(posicaoPercentil(50, 40, 100_000)).toBeLessThan(1);
+  });
+
+  it("ignora leituras não positivas da série", () => {
+    const suja = [0, -5, ...prices];
+    expect(percentilDistribucional(suja, 50)).toBe(67);
+  });
+
+  it("retorna null sem preço atual, série curta ou dados inválidos", () => {
+    expect(percentilDistribucional(prices, null)).toBeNull();
+    expect(percentilDistribucional(prices, 0)).toBeNull();
+    expect(percentilDistribucional([], 50)).toBeNull();
+    const curta = Array.from(
+      { length: PERCENTIL_DISTRIBUCIONAL_MINIMO_PONTOS - 1 },
+      (_, i) => i + 1,
+    );
+    expect(percentilDistribucional(curta, curta.length)).toBeNull();
+    expect(PERCENTIL_DISTRIBUCIONAL_MINIMO_PONTOS).toBe(30);
   });
 });
 

@@ -206,6 +206,8 @@ function gestorDeLinha(l: LinhaRadarBase): ScoreGestor {
     selic: l.selic,
     setor: l.setor,
     consistenciaDividendos: l.consistenciaDividendos,
+    percentilDistribucional: l.posicao?.percentilDistribucional ?? null,
+    volatilidadeAnualPct: l.posicao?.volatilidadeAnualPct ?? null,
   });
 }
 

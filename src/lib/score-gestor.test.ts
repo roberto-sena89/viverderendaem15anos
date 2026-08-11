@@ -9,6 +9,8 @@ import {
   LIMITE_RATING_B,
   LIMITE_RATING_C,
   PESO_MINIMO_NOTA,
+  VOLATILIDADE_ALERTA,
+  VOLATILIDADE_MAX,
   ajusteSetorial,
   avaliarParaGestor,
   corNotaGestor,
@@ -36,6 +38,8 @@ const base = {
   selic: 7,
   setor: null,
   consistenciaDividendos: null,
+  percentilDistribucional: null,
+  volatilidadeAnualPct: null,
 };
 
 describe("estimarPayout", () => {
@@ -212,6 +216,37 @@ describe("avaliarParaGestor", () => {
     const r = avaliarParaGestor({ ...base, payout: null });
     const dividendos = r.componentes.find((c) => c.chave === "dividendos");
     expect(dividendos!.detalhe).toContain("80%");
+  });
+
+  it("percentil distribucional caro rebaixa a oportunidade e vira bandeira", () => {
+    const r = avaliarParaGestor({ ...base, percentilDistribucional: 95 });
+    const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
+    // 75 × 0.85 + (100 − 95) × 0.15 = 64,5 → 65.
+    expect(oportunidade.nota).toBeLessThan(base.oportunidade);
+    expect(oportunidade.nota).toBe(65);
+    expect(oportunidade.detalhe).toContain("95%");
+    expect(r.alertas.some((a) => a.includes("momento caro"))).toBe(true);
+  });
+
+  it("percentil distribucional ausente preserva a oportunidade original", () => {
+    const r = avaliarParaGestor(base);
+    const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
+    expect(oportunidade.nota).toBe(75);
+  });
+
+  it("volatilidade alta vira bandeira sem bloquear o veredito", () => {
+    const r = avaliarParaGestor({ ...base, volatilidadeAnualPct: VOLATILIDADE_ALERTA });
+    expect(r.alertas.some((a) => a.includes("Volatilidade anual"))).toBe(true);
+    expect(r.alertas.some((a) => a.includes("fora da mesa"))).toBe(false);
+    expect(r.veredito).toBe("comprar");
+  });
+
+  it("volatilidade extrema bloqueia o aporte mesmo com nota alta", () => {
+    const r = avaliarParaGestor({ ...base, volatilidadeAnualPct: VOLATILIDADE_MAX + 10 });
+    expect(r.alertas.some((a) => a.includes("fora da mesa"))).toBe(true);
+    expect(r.veredito).toBe("evitar");
+    expect(vereditoGestor(90, "comprar", VOLATILIDADE_MAX + 1)).toBe("evitar");
+    expect(vereditoGestor(90, "vender", null)).toBe("evitar");
   });
 
   it("alerta endividamento alto e margem negativa", () => {

@@ -14,6 +14,7 @@
 import { buscarHistorico, type Historico } from "@/lib/market.server";
 import {
   backtestSinal,
+  percentilDistribucional,
   posicaoPercentil,
   type ResultadoBacktest,
   type SinalRadar,
@@ -37,6 +38,12 @@ export type PosicaoHistorica = {
   /** Queda máxima de um pico ao ponto seguinte, negativa, em %. */
   drawdownMaximoPct: number | null;
   volatilidadeAnualPct: number | null;
+  /**
+   * Posição do preço atual por rank na distribuição semanal (0–100): % das
+   * leituras iguais ou abaixo do preço atual. Complementa o percentil de faixa
+   * (min–max) capturando a forma da distribuição — robusto a outliers.
+   */
+  percentilDistribucional: number | null;
   atualizadoEm: string;
 };
 
@@ -354,6 +361,10 @@ function posicaoDeHistorico(ticker: string, h: Historico): PosicaoHistorica {
     distMinima52sPct,
     drawdownMaximoPct: serie.length ? drawdown * 100 : null,
     volatilidadeAnualPct: variancia > 0 ? Math.sqrt(variancia * 52) * 100 : null,
+    percentilDistribucional: percentilDistribucional(
+      serie.map((p) => p.fechamento),
+      resumo.ultimoPreco,
+    ),
     atualizadoEm: new Date().toISOString(),
   };
 }

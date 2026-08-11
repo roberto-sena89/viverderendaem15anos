@@ -134,6 +134,33 @@ export function posicaoPercentil(
   return Math.max(0, Math.min(100, pct));
 }
 
+/** Série semanal com menos pontos que isso não permite percentil confiável. */
+export const PERCENTIL_DISTRIBUCIONAL_MINIMO_PONTOS = 30;
+
+/**
+ * Percentil distribucional do preço atual na própria história (0–100), por
+ * posição/rank: % das leituras semanais iguais ou abaixo do preço de hoje.
+ * Difere do percentil de faixa (mínimo–máximo usado no radar) por levar em
+ * conta a forma da distribuição — robusto a outliers e a movimentos par.
+ * Exemplo: preço a 70% da faixa, mas acima de 90% das leituras históricas
+ * indica concentração recente no topo. Retorna null sem série suficiente.
+ */
+export function percentilDistribucional(
+  seriePrecos: number[],
+  precoAtual: number | null,
+  minimoPontos = PERCENTIL_DISTRIBUCIONAL_MINIMO_PONTOS,
+): number | null {
+  if (precoAtual === null || !Number.isFinite(precoAtual) || !(precoAtual > 0)) return null;
+  const validos: number[] = [];
+  for (const p of seriePrecos) {
+    if (Number.isFinite(p) && p > 0) validos.push(p);
+  }
+  if (validos.length < minimoPontos) return null;
+  let iguaisOuAbaixo = 0;
+  for (const p of validos) if (p <= precoAtual) iguaisOuAbaixo++;
+  return Math.max(0, Math.min(100, Math.round((iguaisOuAbaixo / validos.length) * 100)));
+}
+
 export function zonaDePercentil(percentil: number | null): ZonaHistorica {
   if (percentil === null) return "sem-dados";
   if (percentil <= LIMITE_MINIMA) return "minima";

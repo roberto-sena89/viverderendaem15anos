@@ -3,11 +3,12 @@
  *
  * Consolida em uma única nota (0–100) os pilares usados na mesa de gestão:
  * fundamentos (score Buy & Hold com ajuste setorial), oportunidade de preço
- * (radar), qualidade dos dividendos (DY + payout + consistência), prêmio da
- * renda variável sobre a renda fixa (DY vs Selic) e liquidez/endividamento —
- * e traduz a nota em rating (A/B/C/D), veredito, bandeiras de risco e limite
- * de aporte para posições de alto valor. É uma ferramenta de triagem e gestão
- * de risco, não recomendação formal de investimento.
+ * (radar, com robustez da distribuição histórica), qualidade dos dividendos
+ * (DY + payout + consistência), prêmio da renda variável sobre a renda fixa
+ * (DY vs Selic) e liquidez/endividamento — e traduz a nota em rating
+ * (A/B/C/D), veredito, bandeiras de risco (incluindo volatilidade extrema) e
+ * limite de aporte para posições de alto valor. É uma ferramenta de triagem e
+ * gestão de risco, não recomendação formal de investimento.
  */
 
 import { CORES_SCORE, type RotuloScore, type TipoSinal, rotuloScore } from "./radar-base";
@@ -49,6 +50,15 @@ export type EntradasScoreGestor = {
   setor: string | null;
   /** Anos consecutivos pagando dividendos. Null = histórico desconhecido. */
   consistenciaDividendos: number | null;
+  /**
+   * Posição do preço atual por rank na distribuição semanal (0–100; maior =
+   * mais caro). Complementa o percentil de faixa usado no score de
+   * oportunidade: na zona cara da distribuição, o papel é caro mesmo "no meio
+   * da faixa".
+   */
+  percentilDistribucional: number | null;
+  /** Volatilidade anualizada da série semanal (%). Null = sem histórico. */
+  volatilidadeAnualPct: number | null;
 };
 
 /** Componente do score com transparência de nota e peso. */
@@ -126,6 +136,15 @@ export const SELIC_ALERTA_DY_INFERIOR = 0;
 export const CONSISTENCIA_ANOS_MINIMA = 3;
 /** Anos pagando dividendos considerados "consistência plena" no componente. */
 export const CONSISTENCIA_ANOS_PLENA = 10;
+
+/** Posição por rank acima disso sinaliza preço na zona mais cara da história. */
+export const PERCENTIL_DISTRIBUCIONAL_ALERTA = 90;
+/** Peso do percentil distribucional sobre o score de oportunidade do radar. */
+export const PESO_POSICAO_DISTRIBUCIONAL = 0.15;
+/** Volatilidade anual acima disso é bandeira fora do perfil de renda passiva. */
+export const VOLATILIDADE_ALERTA = 35;
+/** Volatilidade anual acima disso bloqueia o aporte (fora da mesa). */
+export const VOLATILIDADE_MAX = 60;
 
 /**
  * Ajuste setorial aplicado à nota de fundamentos (pontos): setores defensivos
@@ -249,6 +268,35 @@ export function ajusteSetorial(setor: string | null | undefined): number {
   return AJUSTE_SETOR[setor] ?? 0;
 }
 
+/**
+ * Nota de oportunidade ajustada pelo percentil distribucional: o score do
+ * radar posiciona o preço pela faixa (mín–máx); o percentil por rank capta a
+ * forma da distribuição — preço "no meio da faixa", mas acima de 90% das
+ * leituras históricas, continua caro. Sem percentil, mantém o score original.
+ */
+export function pontosOportunidadeComDistribuicao(
+  score: number | null,
+  percentilDistribucional: number | null,
+): number | null {
+  if (score === null) return null;
+  if (
+    percentilDistribucional === null ||
+    !Number.isFinite(percentilDistribucional) ||
+    percentilDistribucional < 0 ||
+    percentilDistribucional > 100
+  ) {
+    return score;
+  }
+  const valorHistorico = 100 - percentilDistribucional;
+  return Math.round(
+    clamp(
+      score * (1 - PESO_POSICAO_DISTRIBUCIONAL) + valorHistorico * PESO_POSICAO_DISTRIBUCIONAL,
+      0,
+      100,
+    ),
+  );
+}
+
 function pontosLiquidez(liquidez: number | null): number {
   if (liquidez === null || !Number.isFinite(liquidez) || liquidez <= 0) return 0;
   const pontos = clamp((Math.log10(liquidez) - 4) / (8 - 4), 0, 1) * 100;
@@ -302,9 +350,15 @@ function ratingDaNota(nota: number): RatingGestor {
   return "D";
 }
 
-/** Veredito: qualidade + sinal do radar, com sobreposição em caso de choque. */
-export function vereditoGestor(nota: number | null, sinal: TipoSinal): VereditoGestor {
+/** Veredito: qualidade + sinal do radar, com sobreposição em caso de choque
+ *  ou volatilidade extrema (fora do perfil de renda). */
+export function vereditoGestor(
+  nota: number | null,
+  sinal: TipoSinal,
+  volatilidadeAnualPct: number | null = null,
+): VereditoGestor {
   if (sinal === "vender") return "evitar";
+  if (volatilidadeAnualPct !== null && volatilidadeAnualPct > VOLATILIDADE_MAX) return "evitar";
   if (nota === null) return "observar";
   if (nota >= LIMITE_RATING_A) return "comprar";
   if (nota >= LIMITE_RATING_B) {
@@ -343,6 +397,22 @@ function montarAlertas(e: EntradasScoreGestor): string[] {
     alertas.push(
       `Histórico curto de dividendos (${e.consistenciaDividendos} ano${e.consistenciaDividendos === 1 ? "" : "s"}) — consistência ainda não comprovada`,
     );
+  }
+  if (
+    e.percentilDistribucional !== null &&
+    e.percentilDistribucional >= PERCENTIL_DISTRIBUCIONAL_ALERTA
+  ) {
+    alertas.push(
+      `Preço acima de ${e.percentilDistribucional.toFixed(0)}% das leituras históricas — momento caro da própria série, aguarde recuo antes de aportar`,
+    );
+  }
+  if (e.volatilidadeAnualPct !== null && e.volatilidadeAnualPct >= VOLATILIDADE_ALERTA) {
+    alertas.push(
+      `Volatilidade anual de ${e.volatilidadeAnualPct.toFixed(0)}% — oscilação alta para o perfil de renda passiva`,
+    );
+  }
+  if (e.volatilidadeAnualPct !== null && e.volatilidadeAnualPct > VOLATILIDADE_MAX) {
+    alertas.push("Volatilidade extrema — papel fora da mesa de aportes");
   }
   return alertas;
 }
@@ -399,9 +469,14 @@ export function avaliarParaGestor(e: EntradasScoreGestor): ScoreGestor {
     {
       chave: "oportunidade",
       rotulo: "Oportunidade de preço",
-      nota: e.oportunidade,
+      nota: pontosOportunidadeComDistribuicao(e.oportunidade, e.percentilDistribucional),
       peso: PESO_OPORTUNIDADE,
-      detalhe: e.oportunidade === null ? null : "Posição no histórico, DY e risco (radar)",
+      detalhe:
+        e.oportunidade === null
+          ? null
+          : e.percentilDistribucional === null
+            ? "Posição no histórico, DY e risco (radar)"
+            : `Posição no histórico, DY e risco; preço acima de ${e.percentilDistribucional.toFixed(0)}% das leituras históricas`,
     },
     {
       chave: "dividendos",
@@ -447,7 +522,7 @@ export function avaliarParaGestor(e: EntradasScoreGestor): ScoreGestor {
 
   const nota = pesos >= PESO_MINIMO_NOTA ? Math.round(soma / pesos) : null;
   const rating = nota === null ? null : ratingDaNota(nota);
-  const veredito = vereditoGestor(nota, e.sinal);
+  const veredito = vereditoGestor(nota, e.sinal, e.volatilidadeAnualPct);
   const alertas = montarAlertas(e);
 
   const motivo =
