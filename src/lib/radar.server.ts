@@ -64,6 +64,10 @@ export type LinhaRadarBase = {
   dividaPatrimonio: number | null;
   /** Margem líquida em % — apenas ações. */
   margemLiquida: number | null;
+  /** Meta Selic anualizada (%) — referencial de renda fixa do rating do gestor. */
+  selic: number | null;
+  /** Anos consecutivos pagando dividendos (null = desconhecido). */
+  consistenciaDividendos: number | null;
 };
 
 /** Ponto da série semanal para o gráfico (compacto). */

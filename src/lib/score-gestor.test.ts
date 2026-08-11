@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  AJUSTE_SETOR,
+  CONSISTENCIA_ANOS_MINIMA,
   DY_ALVO_GESTOR,
   IMPACTO_VOLUME_PCT,
   LIMITE_PATRIMONIO_POR_RATING,
@@ -7,11 +9,14 @@ import {
   LIMITE_RATING_B,
   LIMITE_RATING_C,
   PESO_MINIMO_NOTA,
+  ajusteSetorial,
   avaliarParaGestor,
   corNotaGestor,
   estimarPayout,
   limiteAporte,
+  pontosConsistencia,
   pontosDividendos,
+  pontosPremio,
   rotuloGestor,
   vereditoGestor,
 } from "@/lib/score-gestor";
@@ -28,6 +33,9 @@ const base = {
   dividaPatrimonio: 0.5,
   margemLiquida: 15,
   regime: null,
+  selic: 7,
+  setor: null,
+  consistenciaDividendos: null,
 };
 
 describe("estimarPayout", () => {
@@ -59,6 +67,48 @@ describe("pontosDividendos", () => {
 
   it("sem DY não há renda para pontuar", () => {
     expect(pontosDividendos(null, 60)).toBe(40);
+  });
+
+  it("consistência conhecida compensa payout no limite", () => {
+    const semHistorico = pontosDividendos(8, 120, null);
+    const comHistorico = pontosDividendos(8, 120, 10);
+    expect(comHistorico).toBe(93);
+    expect(comHistorico).toBeGreaterThan(semHistorico);
+  });
+});
+
+describe("pontosPremio", () => {
+  it("DY muito acima da Selic vale nota cheia", () => {
+    expect(pontosPremio(12, 8)).toBe(100);
+  });
+
+  it("empate com a Selic vale metade da nota", () => {
+    expect(pontosPremio(8, 8)).toBe(50);
+  });
+
+  it("DY abaixo da Selic zera o prêmio", () => {
+    expect(pontosPremio(4, 8)).toBe(0);
+  });
+
+  it("sem Selic ou DY o prêmio não pontua", () => {
+    expect(pontosPremio(null, 8)).toBeNull();
+    expect(pontosPremio(8, null)).toBeNull();
+  });
+});
+
+describe("pontosConsistencia e ajuste setorial", () => {
+  it("10+ anos de dividendos valem consistência plena", () => {
+    expect(pontosConsistencia(10)).toBe(100);
+    expect(pontosConsistencia(5)).toBe(50);
+    expect(pontosConsistencia(null)).toBeNull();
+  });
+
+  it("setores defensivos compensam; cíclicos descontam", () => {
+    expect(ajusteSetorial("Utilidade Pública")).toBeGreaterThan(0);
+    expect(ajusteSetorial("Consumo Cíclico")).toBeLessThan(0);
+    expect(ajusteSetorial(null)).toBe(0);
+    expect(ajusteSetorial("Setor Desconhecido")).toBe(0);
+    expect(AJUSTE_SETOR["Materiais Básicos"]).toBe(-3);
   });
 });
 
@@ -106,12 +156,45 @@ describe("avaliarParaGestor", () => {
     expect(r.alertas).toHaveLength(0);
   });
 
-  it("exibe os 5 componentes com pesos e notas", () => {
+  it("exibe os 6 componentes com pesos e notas", () => {
     const r = avaliarParaGestor(base);
-    expect(r.componentes).toHaveLength(5);
+    expect(r.componentes).toHaveLength(6);
     const fundamentos = r.componentes.find((c) => c.chave === "fundamentos");
     expect(fundamentos!.nota).toBe(80);
-    expect(fundamentos!.peso).toBe(0.4);
+    expect(fundamentos!.peso).toBe(0.35);
+    const premio = r.componentes.find((c) => c.chave === "premioSelic");
+    expect(premio).toBeDefined();
+    expect(premio!.peso).toBe(0.1);
+  });
+
+  it("prêmio abaixo da Selic gera bandeira e rebaixa o componente", () => {
+    const r = avaliarParaGestor({ ...base, selic: 12 });
+    expect(r.alertas.some((a) => a.includes("Prêmio negativo"))).toBe(true);
+    const premio = r.componentes.find((c) => c.chave === "premioSelic")!;
+    expect(premio.nota).toBe(0);
+  });
+
+  it("setor defensivo compensa a nota de fundamentos", () => {
+    const r = avaliarParaGestor({ ...base, setor: "Utilidade Pública" });
+    const fundamentos = r.componentes.find((c) => c.chave === "fundamentos")!;
+    expect(fundamentos.nota).toBe(84);
+    expect(fundamentos.detalhe).toContain("defensivo");
+    expect(r.setor).toBe("Utilidade Pública");
+  });
+
+  it("histórico curto de dividendos vira bandeira", () => {
+    const anos = CONSISTENCIA_ANOS_MINIMA - 1;
+    const r = avaliarParaGestor({ ...base, consistenciaDividendos: anos });
+    expect(r.alertas.some((a) => a.includes("Histórico curto"))).toBe(true);
+  });
+
+  it("sem Selic o prêmio fica de fora e a nota é reescalada", () => {
+    const comSelic = avaliarParaGestor(base);
+    const semSelic = avaliarParaGestor({ ...base, selic: null });
+    expect(comSelic.nota).not.toBeNull();
+    expect(semSelic.nota).not.toBeNull();
+    const premio = semSelic.componentes.find((c) => c.chave === "premioSelic")!;
+    expect(premio.nota).toBeNull();
   });
 
   it("sinal de vender vira evitar mesmo com nota de compra", () => {

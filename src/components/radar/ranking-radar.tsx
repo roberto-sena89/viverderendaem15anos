@@ -70,7 +70,8 @@ const CRITERIOS: {
     valor: "gestor",
     rotulo: "Melhor rating do gestor",
     cabecalho: "Rating gestor",
-    ajuda: "Nota 0–100 combinando fundamentos, oportunidade, dividendos, liquidez e endividamento",
+    ajuda:
+      "Nota 0–100: fundamentos (com ajuste setorial), oportunidade, dividendos, prêmio do DY sobre a Selic, liquidez e endividamento",
     sentido: "maior",
   },
   {
@@ -202,6 +203,9 @@ function gestorDeLinha(l: LinhaRadarBase): ScoreGestor {
     dividaPatrimonio: l.dividaPatrimonio,
     margemLiquida: l.margemLiquida,
     regime: null,
+    selic: l.selic,
+    setor: l.setor,
+    consistenciaDividendos: l.consistenciaDividendos,
   });
 }
 
@@ -904,7 +908,7 @@ export function RankingRadar({
                 </TableHead>
                 <TableHead
                   className="w-[9%] min-w-[84px] whitespace-nowrap text-center"
-                  title="Rating do gestor: nota 0–100 de qualidade fundamentalista, oportunidade, dividendos, liquidez e endividamento"
+                  title="Rating do gestor: nota 0–100 — fundamentos (35%), oportunidade (20%), dividendos (20%), prêmio vs Selic (10%), liquidez (8%), endividamento (7%), com ajuste setorial"
                 >
                   Gestor
                 </TableHead>
@@ -1196,9 +1200,12 @@ export function RankingRadar({
           história, dividendos e risco; o <span className="font-medium text-foreground">sinal</span>{" "}
           é o veredito consolidado do radar; o{" "}
           <span className="font-medium text-foreground">rating do gestor</span> pondera fundamentos
-          (40%), oportunidade (25%), dividendos (20%), liquidez (10%) e endividamento (5%) e define
-          o limite de aporte por posição (A=8%, B=5%, C=3%, D=0% do patrimônio). Material
-          educacional de triagem — não constitui recomendação de investimento.
+          (35%, com ajuste setorial), oportunidade (20%), dividendos (20%),{" "}
+          <span className="font-medium text-foreground">prêmio do DY sobre a Selic</span> (10%),
+          liquidez (8%) e endividamento (7%) e define o limite de aporte por posição (A=8%, B=5%,
+          C=3%, D=0% do patrimônio). O prêmio negativo — DY abaixo da Selic — vira bandeira de custo
+          de oportunidade. Material educacional de triagem — não constitui recomendação de
+          investimento.
         </p>
       </footer>
     </div>

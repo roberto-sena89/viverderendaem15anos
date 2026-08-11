@@ -50,6 +50,9 @@ export function linhasParaExportacao(linhas: LinhaRadarBase[]): LinhaRadarExport
       dividaPatrimonio: l.dividaPatrimonio,
       margemLiquida: l.margemLiquida,
       regime: null,
+      selic: l.selic,
+      setor: l.setor,
+      consistenciaDividendos: l.consistenciaDividendos,
     });
     return {
       ticker: l.ticker,

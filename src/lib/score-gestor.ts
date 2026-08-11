@@ -1,12 +1,13 @@
 /**
  * Score Gestor: análise unificada de qualidade para decisão de aporte.
  *
- * Consolida em uma única nota (0–100) os quatro pilares usados na mesa de
- * gestão: fundamentos (score Buy & Hold), oportunidade de preço (radar),
- * qualidade dos dividendos (DY + payout) e liquidez/endividamento — e traduz
- * a nota em rating (A/B/C/D), veredito, bandeiras de risco e limite de aporte
- * para posições de alto valor. É uma ferramenta de triagem e gestão de risco,
- * não recomendação formal de investimento.
+ * Consolida em uma única nota (0–100) os pilares usados na mesa de gestão:
+ * fundamentos (score Buy & Hold com ajuste setorial), oportunidade de preço
+ * (radar), qualidade dos dividendos (DY + payout + consistência), prêmio da
+ * renda variável sobre a renda fixa (DY vs Selic) e liquidez/endividamento —
+ * e traduz a nota em rating (A/B/C/D), veredito, bandeiras de risco e limite
+ * de aporte para posições de alto valor. É uma ferramenta de triagem e gestão
+ * de risco, não recomendação formal de investimento.
  */
 
 import { CORES_SCORE, type RotuloScore, type TipoSinal, rotuloScore } from "./radar-base";
@@ -41,11 +42,19 @@ export type EntradasScoreGestor = {
 
   /** Regime tributário da companhia — hoje informativo, não penaliza a nota. */
   regime: RegimeTributario;
+
+  /** Meta Selic anualizada (%) — referencial de renda fixa para o prêmio do DY. */
+  selic: number | null;
+  /** Setor macro da companhia (defensivo/cíclico) — ajusta a nota de fundamentos. */
+  setor: string | null;
+  /** Anos consecutivos pagando dividendos. Null = histórico desconhecido. */
+  consistenciaDividendos: number | null;
 };
 
 /** Componente do score com transparência de nota e peso. */
 export type ComponenteScoreGestor = {
-  chave: "fundamentos" | "oportunidade" | "dividendos" | "liquidez" | "endividamento";
+  chave:
+    "fundamentos" | "oportunidade" | "dividendos" | "premioSelic" | "liquidez" | "endividamento";
   rotulo: string;
   nota: number | null;
   peso: number;
@@ -64,6 +73,8 @@ export type ScoreGestor = {
   limite: LimiteAporte | null;
   motivo: string;
   regime: RegimeTributario;
+  /** Setor usado no ajuste setorial da nota (null quando não informado). */
+  setor: string | null;
 };
 
 export type LimiteAporte = {
@@ -79,11 +90,12 @@ export type LimiteAporte = {
  * Pesos e limites
  * ------------------------------------------------------------------ */
 
-export const PESO_FUNDAMENTOS = 0.4;
-export const PESO_OPORTUNIDADE = 0.25;
+export const PESO_FUNDAMENTOS = 0.35;
+export const PESO_OPORTUNIDADE = 0.2;
 export const PESO_DIVIDENDOS = 0.2;
-export const PESO_LIQUIDEZ = 0.1;
-export const PESO_ENDIVIDAMENTO = 0.05;
+export const PESO_PREMIO_SELIC = 0.1;
+export const PESO_LIQUIDEZ = 0.08;
+export const PESO_ENDIVIDAMENTO = 0.07;
 /** Peso mínimo acumulado para emitir nota (reescala o score parcial). */
 export const PESO_MINIMO_NOTA = 0.5;
 
@@ -103,6 +115,35 @@ export const DIVIDA_ALERTA = 2;
 export const LIQUIDEZ_MINIMA_GESTOR = 5_000_000;
 /** Posição não deve ultrapassar 10% do volume diário (regra de impacto). */
 export const IMPACTO_VOLUME_PCT = 10;
+
+/** DY precisa superar a Selic nesta margem (p.p.) para nota cheia no prêmio. */
+export const PREMIO_DY_ACIMA_SELIC_PTS = 4;
+/** DY abaixo da Selic nesta margem (p.p.) zera o prêmio. */
+export const PREMIO_DY_ABAIXO_SELIC_PTS = 4;
+/** DY abaixo da Selic vira bandeira de custo de oportunidade. */
+export const SELIC_ALERTA_DY_INFERIOR = 0;
+/** Menos anos pagando dividendos que isso é bandeira de consistência. */
+export const CONSISTENCIA_ANOS_MINIMA = 3;
+/** Anos pagando dividendos considerados "consistência plena" no componente. */
+export const CONSISTENCIA_ANOS_PLENA = 10;
+
+/**
+ * Ajuste setorial aplicado à nota de fundamentos (pontos): setores defensivos
+ * (receita recorrente, menor volatilidade de lucro) ganham; cíclicos ou
+ * voláteis perdem. Fora do mapa = neutro (0).
+ */
+export const AJUSTE_SETOR: Record<string, number> = {
+  "Utilidade Pública": 4,
+  Financeiro: 3,
+  Saúde: 3,
+  "Consumo não Cíclico": 3,
+  Comunicações: 2,
+  "Consumo Cíclico": -2,
+  "Bens Industriais": -2,
+  "Petróleo, Gás e Biocombustíveis": -2,
+  "Materiais Básicos": -3,
+  "Tecnologia da Informação": -3,
+};
 
 /** Percentual máximo do patrimônio por rating. */
 export const LIMITE_PATRIMONIO_POR_RATING: Record<RatingGestor, number> = {
@@ -161,10 +202,51 @@ function pontosPayout(payout: number | null): number {
 
 /**
  * Componente de dividendos (0–100): 60% rendimento (DY rumo a 8%) e 40%
- * sustentabilidade (payout ≤ 90% = nota cheia, 100% = zero).
+ * sustentabilidade (payout ≤ 90% = nota cheia, 100% = zero). Quando a
+ * consistência é conhecida (anos pagando dividendos), ela absorve 20% do
+ * peso do payout, premiando histórico comprovado.
  */
-export function pontosDividendos(dy12: number | null, payout: number | null): number {
-  return Math.round(pontosDy(dy12) * 0.6 + pontosPayout(payout) * 0.4);
+export function pontosDividendos(
+  dy12: number | null,
+  payout: number | null,
+  consistenciaDividendos: number | null = null,
+): number {
+  const dy = pontosDy(dy12);
+  if (consistenciaDividendos === null || !Number.isFinite(consistenciaDividendos)) {
+    return Math.round(dy * 0.6 + pontosPayout(payout) * 0.4);
+  }
+  const consistencia = pontosConsistencia(consistenciaDividendos) ?? 0;
+  return Math.round(dy * 0.6 + pontosPayout(payout) * 0.2 + consistencia * 0.2);
+}
+
+/**
+ * Consistência de dividendos (0–100): anos consecutivos pagando proventos.
+ * 10+ anos valem nota cheia; escala linear até lá. Null = neutro (não pontua).
+ */
+export function pontosConsistencia(anos: number | null): number | null {
+  if (anos === null || !Number.isFinite(anos)) return null;
+  return Math.round(clamp((anos / CONSISTENCIA_ANOS_PLENA) * 100, 0, 100));
+}
+
+/**
+ * Prêmio da renda variável sobre a renda fixa (0–100): compara o DY 12m com a
+ * Selic. DY ≥ Selic + 4 p.p. = nota cheia; DY ≤ Selic − 4 p.p. = zero; no meio
+ * escala linear, com empate (DY = Selic) valendo 50. Sem Selic ou DY, null
+ * (o componente fica fora da nota e os pesos são reescalados).
+ */
+export function pontosPremio(dy12: number | null, selic: number | null): number | null {
+  if (dy12 === null || selic === null || !Number.isFinite(dy12) || !Number.isFinite(selic)) {
+    return null;
+  }
+  const premio = dy12 - selic;
+  const faixa = PREMIO_DY_ACIMA_SELIC_PTS + PREMIO_DY_ABAIXO_SELIC_PTS;
+  return Math.round(clamp(((premio + PREMIO_DY_ABAIXO_SELIC_PTS) / faixa) * 100, 0, 100));
+}
+
+/** Ajuste setorial (pontos) da nota de fundamentos; fora do mapa = neutro. */
+export function ajusteSetorial(setor: string | null | undefined): number {
+  if (!setor) return 0;
+  return AJUSTE_SETOR[setor] ?? 0;
 }
 
 function pontosLiquidez(liquidez: number | null): number {
@@ -196,6 +278,17 @@ function detalhePayout(
   if (p > PAYOUT_MAX_SUSTENTAVEL)
     return `Payout de ${p.toFixed(0)}% — próximo do limite sustentável`;
   return `Payout de ${p.toFixed(0)}% — distribuição sustentável`;
+}
+
+function detalhePremio(dy12: number | null, selic: number | null): string | null {
+  if (dy12 === null || selic === null || !Number.isFinite(dy12) || !Number.isFinite(selic)) {
+    return null;
+  }
+  const premio = dy12 - selic;
+  if (premio >= 0) {
+    return `DY de ${dy12.toFixed(1)}% vs Selic de ${selic.toFixed(1)}% — prêmio de +${premio.toFixed(1)} p.p. sobre a renda fixa`;
+  }
+  return `DY de ${dy12.toFixed(1)}% vs Selic de ${selic.toFixed(1)}% — prêmio de ${premio.toFixed(1)} p.p. (abaixo da renda fixa)`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -241,6 +334,16 @@ function montarAlertas(e: EntradasScoreGestor): string[] {
   if (e.dy12 !== null && e.dy12 < 4) {
     alertas.push("DY 12m abaixo de 4% — fraco para o objetivo de renda");
   }
+  if (e.selic !== null && e.dy12 !== null && e.dy12 < e.selic - SELIC_ALERTA_DY_INFERIOR) {
+    alertas.push(
+      `Prêmio negativo: DY de ${e.dy12.toFixed(1)}% abaixo da Selic (${e.selic.toFixed(1)}%) — ações pagando menos que a renda fixa`,
+    );
+  }
+  if (e.consistenciaDividendos !== null && e.consistenciaDividendos < CONSISTENCIA_ANOS_MINIMA) {
+    alertas.push(
+      `Histórico curto de dividendos (${e.consistenciaDividendos} ano${e.consistenciaDividendos === 1 ? "" : "s"}) — consistência ainda não comprovada`,
+    );
+  }
   return alertas;
 }
 
@@ -269,21 +372,29 @@ export function limiteAporte(
 
 /**
  * Avaliação completa do ativo na ótica do gestor: nota 0–100 ponderada por
- * fundamentos (40%), oportunidade (25%), dividendos (20%), liquidez (10%) e
- * endividamento (5%), com reescala quando faltam dados. Retorna null quando a
- * cobertura de pesos é insuficiente para uma nota confiável.
+ * fundamentos (35%, com ajuste setorial), oportunidade (20%), dividendos
+ * (20%), prêmio vs Selic (10%), liquidez (8%) e endividamento (7%), com
+ * reescala quando faltam dados. Retorna null quando a cobertura de pesos é
+ * insuficiente para uma nota confiável.
  */
 export function avaliarParaGestor(e: EntradasScoreGestor): ScoreGestor {
   const payout = e.payout ?? estimarPayout(e.dy12, e.pl);
+  const ajusteSetor = ajusteSetorial(e.setor);
 
   const componentes: ComponenteScoreGestor[] = [
     {
       chave: "fundamentos",
       rotulo: "Fundamentos",
-      nota: e.fundamentos,
+      nota: e.fundamentos === null ? null : Math.round(clamp(e.fundamentos + ajusteSetor, 0, 100)),
       peso: PESO_FUNDAMENTOS,
       detalhe:
-        e.fundamentos === null ? null : "Score Buy & Hold (rentabilidade, margem, crescimento)",
+        e.fundamentos === null
+          ? null
+          : ajusteSetor === 0
+            ? "Score Buy & Hold (rentabilidade, margem, crescimento)"
+            : ajusteSetor > 0
+              ? `Score Buy & Hold + ${ajusteSetor} pts de ajuste setorial (defensivo)`
+              : `Score Buy & Hold − ${-ajusteSetor} pts de ajuste setorial (cíclico/volátil)`,
     },
     {
       chave: "oportunidade",
@@ -295,9 +406,16 @@ export function avaliarParaGestor(e: EntradasScoreGestor): ScoreGestor {
     {
       chave: "dividendos",
       rotulo: "Dividendos",
-      nota: pontosDividendos(e.dy12, payout),
+      nota: pontosDividendos(e.dy12, payout, e.consistenciaDividendos),
       peso: PESO_DIVIDENDOS,
       detalhe: detalhePayout(e.dy12, e.pl, payout),
+    },
+    {
+      chave: "premioSelic",
+      rotulo: "Prêmio vs Selic",
+      nota: pontosPremio(e.dy12, e.selic),
+      peso: PESO_PREMIO_SELIC,
+      detalhe: detalhePremio(e.dy12, e.selic),
     },
     {
       chave: "liquidez",
@@ -353,6 +471,7 @@ export function avaliarParaGestor(e: EntradasScoreGestor): ScoreGestor {
     limite: limiteAporte(null, rating, e.liquidez),
     motivo,
     regime: e.regime,
+    setor: e.setor ?? null,
   };
 }
 

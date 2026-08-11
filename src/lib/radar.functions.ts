@@ -217,6 +217,8 @@ export const radarVisao = createServerFn({ method: "GET" })
         liquidez: "liquidez" in raw ? (raw.liquidez ?? null) : null,
         dividaPatrimonio: "dividaPatrimonio" in raw ? (raw.dividaPatrimonio ?? null) : null,
         margemLiquida: "margemLiquida" in raw ? (raw.margemLiquida ?? null) : null,
+        selic: macro.selic,
+        consistenciaDividendos: null,
       });
     }
 
