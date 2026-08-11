@@ -56,6 +56,14 @@ export type LinhaRadarBase = {
   sinal: SinalRadar;
   /** Score de oportunidade 0–100 (null sem histórico). */
   score: number | null;
+  /** Score fundamentalista Buy & Hold 0–100 (apenas ações). */
+  fundamentos: number | null;
+  /** Volume médio diário em R$ (liquidez). */
+  liquidez: number | null;
+  /** Dívida/Patrimônio (vezes) — apenas ações. */
+  dividaPatrimonio: number | null;
+  /** Margem líquida em % — apenas ações. */
+  margemLiquida: number | null;
 };
 
 /** Ponto da série semanal para o gráfico (compacto). */

@@ -213,6 +213,10 @@ export const radarVisao = createServerFn({ method: "GET" })
         posicao,
         sinal,
         score,
+        fundamentos: "pontuacao" in raw ? (raw.pontuacao ?? null) : null,
+        liquidez: "liquidez" in raw ? (raw.liquidez ?? null) : null,
+        dividaPatrimonio: "dividaPatrimonio" in raw ? (raw.dividaPatrimonio ?? null) : null,
+        margemLiquida: "margemLiquida" in raw ? (raw.margemLiquida ?? null) : null,
       });
     }
 

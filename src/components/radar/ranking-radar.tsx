@@ -35,6 +35,12 @@ import {
   type SinalRadar,
   type TipoSinal,
 } from "@/lib/radar-base";
+import {
+  CORES_RATING,
+  avaliarParaGestor,
+  type RatingGestor,
+  type ScoreGestor,
+} from "@/lib/score-gestor";
 import type { LinhaRadarBase } from "@/lib/radar.server";
 import {
   Activity,
@@ -49,7 +55,7 @@ import {
   Wallet,
 } from "lucide-react";
 
-type Critério = "dy" | "variacao" | "percentil" | "pvp" | "minima52" | "score";
+type Critério = "dy" | "variacao" | "percentil" | "pvp" | "minima52" | "score" | "gestor";
 type Direcao = "desc" | "asc";
 type AbaSinal = "todos" | TipoSinal;
 
@@ -60,6 +66,13 @@ const CRITERIOS: {
   ajuda: string;
   sentido: string;
 }[] = [
+  {
+    valor: "gestor",
+    rotulo: "Melhor rating do gestor",
+    cabecalho: "Rating gestor",
+    ajuda: "Nota 0–100 combinando fundamentos, oportunidade, dividendos, liquidez e endividamento",
+    sentido: "maior",
+  },
   {
     valor: "score",
     rotulo: "Melhor score de oportunidade",
@@ -175,7 +188,24 @@ function corZona(percentil: number | null): string {
   return "bg-red-500";
 }
 
-function valorCritério(l: LinhaRadarBase, criterio: Critério): number | null {
+/** Avalia a linha do radar na ótica do gestor (rating A/B/C/D + nota). */
+function gestorDeLinha(l: LinhaRadarBase): ScoreGestor {
+  return avaliarParaGestor({
+    ticker: l.ticker,
+    fundamentos: l.fundamentos,
+    oportunidade: l.score,
+    sinal: l.sinal.tipo,
+    dy12: l.dy12,
+    pl: l.pl,
+    payout: null,
+    liquidez: l.liquidez,
+    dividaPatrimonio: l.dividaPatrimonio,
+    margemLiquida: l.margemLiquida,
+    regime: null,
+  });
+}
+
+function valorCritério(l: LinhaRadarBase, criterio: Critério, gestor?: ScoreGestor): number | null {
   switch (criterio) {
     case "dy":
       return l.dy12;
@@ -189,6 +219,8 @@ function valorCritério(l: LinhaRadarBase, criterio: Critério): number | null {
       return l.posicao?.distMinima52sPct ?? null;
     case "score":
       return l.score;
+    case "gestor":
+      return gestor?.nota ?? null;
   }
 }
 
@@ -207,6 +239,8 @@ function formatarValor(v: number | null, criterio: Critério): string {
       return `−${v.toFixed(1).replace(".", ",")}%`;
     case "score":
       return `${v} pts`;
+    case "gestor":
+      return `${v} pts`;
   }
 }
 
@@ -221,6 +255,14 @@ function corValor(v: number | null, criterio: Critério): string {
       return v <= 5 ? "text-emerald-600" : v <= 20 ? "text-sky-600" : "text-muted-foreground";
     case "score":
       return v >= 70 ? "text-emerald-600" : v >= 50 ? "text-sky-600" : "text-muted-foreground";
+    case "gestor":
+      return v >= 75
+        ? "text-emerald-600"
+        : v >= 60
+          ? "text-sky-600"
+          : v >= 45
+            ? "text-amber-600"
+            : "text-muted-foreground";
     default:
       return "text-foreground";
   }
@@ -363,6 +405,27 @@ function ScoreCelula({ score }: { score: number | null }) {
   );
 }
 
+/** Rating do gestor: letra A–D, nota e veredito com tooltip explicativo. */
+function RatingGestorCelula({ gestor }: { gestor: ScoreGestor | null }) {
+  if (!gestor || gestor.rating === null) {
+    return <span className="text-xs text-muted-foreground">—</span>;
+  }
+  const alertas = gestor.alertas.length ? `\n\nBandeiras:\n• ${gestor.alertas.join("\n• ")}` : "";
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <Badge
+        className={`whitespace-nowrap border-none ${CORES_RATING[gestor.rating]}`}
+        title={`${gestor.motivo}${alertas}`}
+      >
+        {gestor.rating}
+      </Badge>
+      <span className="text-[0.65rem] tabular-nums text-muted-foreground">
+        {gestor.nota} pts · {gestor.veredito}
+      </span>
+    </div>
+  );
+}
+
 function Kpi({
   rotulo,
   valor,
@@ -492,9 +555,12 @@ export function RankingRadar({
       vender: 0,
       "sem-dados": 0,
     };
+    const porRating: Partial<Record<RatingGestor, number>> = {};
     const scores: number[] = [];
     for (const l of linhas) {
       porSinal[l.sinal.tipo]++;
+      const g = gestorDeLinha(l);
+      if (g.rating) porRating[g.rating] = (porRating[g.rating] ?? 0) + 1;
       if (l.posicao) {
         comHistorico++;
         if (l.posicao.distMinima52sPct !== null && l.posicao.distMinima52sPct <= 5) minimas52++;
@@ -510,23 +576,37 @@ export function RankingRadar({
       naCarteira,
       scoreMedio: scores.length > 0 ? scores.reduce((s, x) => s + x, 0) / scores.length : null,
       porSinal,
+      porRating: {
+        A: porRating.A ?? 0,
+        B: porRating.B ?? 0,
+        C: porRating.C ?? 0,
+        D: porRating.D ?? 0,
+      },
     };
   }, [linhas, carteira]);
+
+  const gestores = useMemo(() => {
+    const mapa = new Map<string, ScoreGestor>();
+    for (const l of linhas) mapa.set(l.ticker, gestorDeLinha(l));
+    return mapa;
+  }, [linhas]);
 
   const ranking = useMemo(() => {
     const alvo = abaSinal === "todos" ? linhas : linhas.filter((l) => l.sinal.tipo === abaSinal);
     const fator = direcao === "asc" ? -1 : 1;
-    const semDados = alvo.filter((l) => valorCritério(l, criterio) === null);
+    const semDados = alvo.filter(
+      (l) => valorCritério(l, criterio, gestores.get(l.ticker)) === null,
+    );
     const comDados = alvo
-      .filter((l) => valorCritério(l, criterio) !== null)
+      .filter((l) => valorCritério(l, criterio, gestores.get(l.ticker)) !== null)
       .sort((a, b) => {
-        const va = valorCritério(a, criterio) as number;
-        const vb = valorCritério(b, criterio) as number;
+        const va = valorCritério(a, criterio, gestores.get(a.ticker)) as number;
+        const vb = valorCritério(b, criterio, gestores.get(b.ticker)) as number;
         const vira = meta.sentido === "maior" ? vb - va : va - vb;
         return fator * vira;
       });
     return [...comDados, ...semDados];
-  }, [linhas, criterio, direcao, abaSinal, meta.sentido]);
+  }, [linhas, criterio, direcao, abaSinal, meta.sentido, gestores]);
 
   const pódio = ranking.slice(0, 3);
 
@@ -617,7 +697,7 @@ export function RankingRadar({
       {/* Indicadores do universo (painel do gestor) */}
       <section
         aria-label="Indicadores do universo"
-        className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6"
+        className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7"
       >
         <Kpi
           rotulo="Universo filtrado"
@@ -670,6 +750,18 @@ export function RankingRadar({
           sub={<p className="t-caption">dos ativos do universo filtrado</p>}
           cor="text-foreground"
           icone={<Wallet className="size-4" />}
+        />
+        <Kpi
+          rotulo="Rating A"
+          valor={String(estatisticas.porRating.A)}
+          sub={
+            <p className="t-caption">
+              {estatisticas.porRating.A + estatisticas.porRating.B} com A/B ·{" "}
+              {estatisticas.porRating.C} C · {estatisticas.porRating.D} D
+            </p>
+          }
+          cor="text-emerald-600"
+          icone={<Trophy className="size-4" />}
         />
       </section>
 
@@ -748,7 +840,7 @@ export function RankingRadar({
       {/* Pódio do critério (desktop) */}
       {pódio.length >= 2 ? (
         <section aria-label="Top 3 do ranking" className="hidden gap-3 md:grid md:grid-cols-3">
-          {OrdinaisPódio(pódio, criterio, carteira, aoSelecionar).map((node) => node)}
+          {OrdinaisPódio(pódio, criterio, carteira, aoSelecionar, gestores).map((node) => node)}
         </section>
       ) : null}
 
@@ -809,6 +901,12 @@ export function RankingRadar({
                 </TableHead>
                 <TableHead className="w-[8%] min-w-[72px] whitespace-nowrap text-center">
                   Score
+                </TableHead>
+                <TableHead
+                  className="w-[9%] min-w-[84px] whitespace-nowrap text-center"
+                  title="Rating do gestor: nota 0–100 de qualidade fundamentalista, oportunidade, dividendos, liquidez e endividamento"
+                >
+                  Gestor
                 </TableHead>
                 <TableHead
                   className="w-[10%] min-w-[100px] pr-4 text-right"
@@ -939,6 +1037,9 @@ export function RankingRadar({
                     <TableCell className="text-center">
                       <ScoreCelula score={l.score} />
                     </TableCell>
+                    <TableCell className="text-center">
+                      <RatingGestorCelula gestor={gestores.get(l.ticker) ?? null} />
+                    </TableCell>
                     <TableCell className="pr-4 text-right">
                       <SinalBadge sinal={l.sinal} />
                     </TableCell>
@@ -953,7 +1054,7 @@ export function RankingRadar({
       {/* Cartões em camadas (mobile) */}
       <ol className="space-y-2 md:hidden">
         {paginadas.map((l, i) => {
-          const v = valorCritério(l, criterio);
+          const v = valorCritério(l, criterio, gestores.get(l.ticker));
           const quantidade = carteira?.get(l.ticker.toUpperCase()) ?? 0;
           return (
             <li key={l.ticker}>
@@ -1008,7 +1109,7 @@ export function RankingRadar({
                   />
                   <SinalBadge sinal={l.sinal} />
                 </span>
-                <dl className="mt-2 grid grid-cols-3 gap-2 border-t border-border/60 pt-2.5 text-xs">
+                <dl className="mt-2 grid grid-cols-4 gap-2 border-t border-border/60 pt-2.5 text-xs">
                   <div>
                     <dt className="t-caption">DY 12m</dt>
                     <dd className="t-num mt-0.5 text-positive">
@@ -1024,6 +1125,10 @@ export function RankingRadar({
                   <div>
                     <dt className="t-caption">Score</dt>
                     <dd className="t-num mt-0.5">{l.score ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt className="t-caption">Gestor</dt>
+                    <dd className="t-num mt-0.5">{gestores.get(l.ticker)?.rating ?? "—"}</dd>
                   </div>
                 </dl>
               </button>
@@ -1042,8 +1147,6 @@ export function RankingRadar({
         aoMudarPagina={trocarPagina}
         aoMudarPorPagina={trocarPorPagina}
       />
-
-
 
       {/* Legenda e nota */}
       <footer className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 text-xs text-muted-foreground">
@@ -1074,12 +1177,28 @@ export function RankingRadar({
             <span aria-hidden className="h-1.5 w-6 rounded-full bg-gradient-brand" />
             faixa de 52 semanas (marcador = cotação atual)
           </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="size-2 rounded-full bg-emerald-500" />
+            Rating A ≥ 75
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="size-2 rounded-full bg-sky-500" />B ≥ 60
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="size-2 rounded-full bg-amber-500" />C ≥ 45
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="size-2 rounded-full bg-red-500" />D &lt; 45
+          </span>
         </div>
         <p className="border-t border-border/60 pt-3">
           O <span className="font-medium text-foreground">score</span> combina posição na própria
           história, dividendos e risco; o <span className="font-medium text-foreground">sinal</span>{" "}
-          é o veredito consolidado do radar. Material educacional de triagem — não constitui
-          recomendação de investimento.
+          é o veredito consolidado do radar; o{" "}
+          <span className="font-medium text-foreground">rating do gestor</span> pondera fundamentos
+          (40%), oportunidade (25%), dividendos (20%), liquidez (10%) e endividamento (5%) e define
+          o limite de aporte por posição (A=8%, B=5%, C=3%, D=0% do patrimônio). Material
+          educacional de triagem — não constitui recomendação de investimento.
         </p>
       </footer>
     </div>
@@ -1092,6 +1211,7 @@ function OrdinaisPódio(
   criterio: Critério,
   carteira: ReadonlyMap<string, number> | undefined,
   aoSelecionar: (linha: LinhaRadarBase) => void,
+  gestores?: ReadonlyMap<string, ScoreGestor>,
 ): ReactNode[] {
   return [0, 1, 2].map((i) => {
     const l = lideres[i];
@@ -1102,7 +1222,7 @@ function OrdinaisPódio(
         l={l}
         posicao={i + 1}
         criterio={criterio}
-        v={valorCritério(l, criterio)}
+        v={valorCritério(l, criterio, gestores?.get(l.ticker))}
         quantidade={carteira?.get(l.ticker.toUpperCase()) ?? 0}
         aoSelecionar={aoSelecionar}
       />

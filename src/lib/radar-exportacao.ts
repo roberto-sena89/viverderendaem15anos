@@ -5,6 +5,7 @@
 
 import { baixarArquivo, campoCsv, dataIso } from "@/lib/exportacao/formatadores";
 import type { LinhaRadarBase } from "@/lib/radar.server";
+import { avaliarParaGestor, type RatingGestor } from "@/lib/score-gestor";
 
 export type FormatoExportacaoRadar = "csv" | "xlsx" | "pdf";
 
@@ -23,6 +24,8 @@ export interface LinhaRadarExport {
   score: number | null;
   sinal: string;
   urgente: boolean;
+  rating: RatingGestor | null;
+  notaGestor: number | null;
 }
 
 const ROTULOS_SINAL: Record<string, string> = {
@@ -34,22 +37,39 @@ const ROTULOS_SINAL: Record<string, string> = {
 };
 
 export function linhasParaExportacao(linhas: LinhaRadarBase[]): LinhaRadarExport[] {
-  return linhas.map((l) => ({
-    ticker: l.ticker,
-    nome: l.nome,
-    categoria: l.categoria,
-    setor: l.setor,
-    preco: l.preco,
-    variacaoDia: l.variacaoDia,
-    dy12: l.dy12,
-    pvp: l.pvp,
-    percentil: l.posicao?.percentil ?? null,
-    distMinima52sPct: l.posicao?.distMinima52sPct ?? null,
-    drawdownMaximoPct: l.posicao?.drawdownMaximoPct ?? null,
-    score: l.score,
-    sinal: ROTULOS_SINAL[l.sinal.tipo] ?? l.sinal.tipo,
-    urgente: l.sinal.urgente,
-  }));
+  return linhas.map((l) => {
+    const gestor = avaliarParaGestor({
+      ticker: l.ticker,
+      fundamentos: l.fundamentos,
+      oportunidade: l.score,
+      sinal: l.sinal.tipo,
+      dy12: l.dy12,
+      pl: l.pl,
+      payout: null,
+      liquidez: l.liquidez,
+      dividaPatrimonio: l.dividaPatrimonio,
+      margemLiquida: l.margemLiquida,
+      regime: null,
+    });
+    return {
+      ticker: l.ticker,
+      nome: l.nome,
+      categoria: l.categoria,
+      setor: l.setor,
+      preco: l.preco,
+      variacaoDia: l.variacaoDia,
+      dy12: l.dy12,
+      pvp: l.pvp,
+      percentil: l.posicao?.percentil ?? null,
+      distMinima52sPct: l.posicao?.distMinima52sPct ?? null,
+      drawdownMaximoPct: l.posicao?.drawdownMaximoPct ?? null,
+      score: l.score,
+      sinal: ROTULOS_SINAL[l.sinal.tipo] ?? l.sinal.tipo,
+      urgente: l.sinal.urgente,
+      rating: gestor.rating,
+      notaGestor: gestor.nota,
+    };
+  });
 }
 
 const COLUNAS_CSV = [
@@ -65,6 +85,8 @@ const COLUNAS_CSV = [
   "Score",
   "Sinal",
   "Urgente",
+  "RatingGestor",
+  "NotaGestor",
 ] as const;
 
 const numero = (v: number | null | undefined): string =>
@@ -87,6 +109,8 @@ function gerarCsv(linhas: LinhaRadarExport[]): string {
         numero(l.score),
         campoCsv(l.sinal),
         l.urgente ? "1" : "",
+        campoCsv(l.rating ?? ""),
+        numero(l.notaGestor),
       ].join(","),
     );
   }
@@ -121,6 +145,8 @@ async function gerarXlsx(linhas: LinhaRadarExport[]): Promise<Blob> {
     "Percentil",
     "Score",
     "Sinal",
+    "Rating",
+    "Nota",
   ];
   const dados = [
     cabecalho.map((t) => ({
@@ -141,6 +167,8 @@ async function gerarXlsx(linhas: LinhaRadarExport[]): Promise<Blob> {
       celulaNumero(l.percentil),
       celulaNumero(l.score),
       celulaTexto(l.sinal),
+      celulaTexto(l.rating ?? ""),
+      celulaNumero(l.notaGestor),
     ]),
   ];
 
@@ -159,6 +187,8 @@ async function gerarXlsx(linhas: LinhaRadarExport[]): Promise<Blob> {
         { width: 12 },
         { width: 10 },
         { width: 14 },
+        { width: 10 },
+        { width: 10 },
       ],
       stickyRowsCount: 1,
     },
@@ -172,6 +202,13 @@ const CORES_SINAL_PDF: Record<string, [number, number, number]> = {
   Manter: [180, 133, 0],
   Observar: [14, 116, 144],
   "Sem dados": [110, 110, 110],
+};
+
+const CORES_RATING_PDF: Record<string, [number, number, number]> = {
+  A: [22, 163, 74],
+  B: [14, 116, 144],
+  C: [180, 133, 0],
+  D: [220, 38, 38],
 };
 
 async function gerarPdf(linhas: LinhaRadarExport[], tituloCategoria: string): Promise<Blob> {
@@ -202,6 +239,7 @@ async function gerarPdf(linhas: LinhaRadarExport[], tituloCategoria: string): Pr
     { titulo: "Preço", largura: 66, alinhar: "right" as const },
     { titulo: "Var %", largura: 52, alinhar: "right" as const },
     { titulo: "Score", largura: 44, alinhar: "right" as const },
+    { titulo: "Rating", largura: 46, alinhar: "center" as const },
     { titulo: "Percentil", largura: 58, alinhar: "right" as const },
     { titulo: "Sinal", largura: 76, alinhar: "left" as const },
   ];
@@ -253,11 +291,15 @@ async function gerarPdf(linhas: LinhaRadarExport[], tituloCategoria: string): Pr
     doc.setTextColor(...corScore);
     doc.text(l.score !== null ? String(l.score) : "—", x + 6, y + 10, { align: "right" });
     x += colunas[4].largura;
+    const corRating = l.rating ? (CORES_RATING_PDF[l.rating] ?? [110, 110, 110]) : [110, 110, 110];
+    doc.setTextColor(corRating[0], corRating[1], corRating[2]);
+    doc.text(l.rating ?? "—", x + 6, y + 10, { align: "center" });
+    x += colunas[5].largura;
     doc.setTextColor(60, 60, 60);
     doc.text(l.percentil !== null ? `${l.percentil.toFixed(0)}%` : "—", x + 6, y + 10, {
       align: "right",
     });
-    x += colunas[5].largura;
+    x += colunas[6].largura;
     doc.setTextColor(...(CORES_SINAL_PDF[l.sinal] ?? [110, 110, 110]));
     doc.text(l.sinal, x + 6, y + 10, { align: "left" });
     y += 16;
