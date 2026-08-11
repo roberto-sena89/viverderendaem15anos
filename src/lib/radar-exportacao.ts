@@ -55,6 +55,7 @@ export function linhasParaExportacao(linhas: LinhaRadarBase[]): LinhaRadarExport
       consistenciaDividendos: l.consistenciaDividendos,
       percentilDistribucional: l.posicao?.percentilDistribucional ?? null,
       volatilidadeAnualPct: l.posicao?.volatilidadeAnualPct ?? null,
+      percentilPlReal: l.percentilPlReal ?? null,
     });
     return {
       ticker: l.ticker,

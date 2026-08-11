@@ -75,6 +75,12 @@ export type LinhaRadarBase = {
   selic: number | null;
   /** Anos consecutivos pagando dividendos (null = desconhecido). */
   consistenciaDividendos: number | null;
+  /**
+   * Percentil do P/L real (TTM da CVM) na própria história trimestral
+   * (0–100; maior = mais caro por valuation). Preenchido quando o backfill
+   * da CVM já mapeou o ticker — fonte preferida do pilar de oportunidade.
+   */
+  percentilPlReal: number | null;
 };
 
 /** Ponto da série semanal para o gráfico (compacto). */
@@ -109,7 +115,7 @@ type PontoPreco = { data: string; fechamento: number };
  * (PETR4 -> PETR4.SA, HGLG11 -> HGLG11.SA, B3SA3 -> B3SA3.SA). O universo do
  * radar é 100% B3, então qualquer código sem sufixo especial ganha `.SA`.
  */
-function simboloYahooB3(ticker: string): string {
+export function simboloYahooB3(ticker: string): string {
   const t = ticker.trim().toUpperCase();
   if (!t) return t;
   if (t.includes(".") || t.startsWith("^") || t.includes("=") || t.includes("-")) return t;
@@ -119,7 +125,7 @@ function simboloYahooB3(ticker: string): string {
 /** Descarta pontos corrompidos do Yahoo (adjclose quebrado após splits/
  *  fractionation: mínimo irrealista tipo 0.13 reais em XPML11). Um ponto
  *  abaixo de 5% da mediana ou acima de 50x a mediana não é preço real. */
-function sanitizarPontos(pontos: PontoPreco[]): PontoPreco[] {
+export function sanitizarPontos(pontos: PontoPreco[]): PontoPreco[] {
   if (pontos.length < 2) return pontos;
   const ordenados = [...pontos].sort((a, b) => a.fechamento - b.fechamento);
   const mediana = ordenados[Math.floor(ordenados.length / 2)].fechamento;

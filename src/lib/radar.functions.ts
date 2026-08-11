@@ -111,17 +111,23 @@ export const radarVisao = createServerFn({ method: "GET" })
   }))
   .handler(async ({ data }: { data: { categoria: "acao" | "fii" } }): Promise<RadarVisao> => {
     const radarFx = await import("@/lib/radar.server");
+    const cvmServer = await import("@/lib/cvm.server");
     const gradeEmAndamento =
       data.categoria === "acao"
         ? (await import("@/lib/acoes.server")).gradeAcoesComCache()
         : (await import("@/lib/fiis.server")).gradeFiisComCache();
     const noticiasMod = await import("@/lib/noticias.server");
 
-    const [grade, banco, noticias, macro] = await Promise.all([
+    const vazioCvm = {
+      mapa: {} as Record<string, import("@/lib/cvm.server").FundamentoCvm>,
+      atualizadoEm: null as string | null,
+    };
+    const [grade, banco, noticias, macro, fundamentosCvm] = await Promise.all([
       gradeEmAndamento,
       radarFx.lerPosicoesBanco(),
       noticiasMod.agregarNoticias().catch(() => []),
       radarFx.contextoMacro(),
+      cvmServer.lerFundamentosCvm().catch(() => vazioCvm),
     ]);
 
     const noticiasPorTicker = new Map<string, NoticiaResumo[]>();
@@ -219,6 +225,7 @@ export const radarVisao = createServerFn({ method: "GET" })
         margemLiquida: "margemLiquida" in raw ? (raw.margemLiquida ?? null) : null,
         selic: macro.selic,
         consistenciaDividendos: null,
+        percentilPlReal: fundamentosCvm.mapa[ticker]?.percentilPl ?? null,
       });
     }
 
@@ -518,3 +525,37 @@ export const radarBacktest = createServerFn({ method: "GET" })
     const radarServer = await import("@/lib/radar.server");
     return radarServer.backtestRadarAtivo(data.ticker);
   });
+
+/** Preenche o percentil de P/L real (CVM) dos tickers da grade de ações.
+ *  Autenticado + limitado: cada chamada baixa arquivos da CVM (compartilhados
+ *  entre tickers) e faz 2 fetches Yahoo por ticker. Idempotente: só busca
+ *  quem está sem fundamento ou com mais de 7 dias. */
+export const cvmCompletarCache = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { limite?: unknown } | undefined) => ({
+    limite: Number.isFinite(Number(d?.limite))
+      ? Math.min(60, Math.max(1, Math.floor(Number(d?.limite))))
+      : 30,
+  }))
+  .handler(
+    async ({
+      context,
+      data,
+    }: {
+      context: { userId: string };
+      data: { limite: number };
+    }): Promise<{ buscados: number; obtidos: number; faltam: number }> => {
+      const cvmServer = await import("@/lib/cvm.server");
+      if (!(await cvmServer.limitePorUsuarioCvm(context.userId))) {
+        return { buscados: 0, obtidos: 0, faltam: 0 };
+      }
+      const grade = await (
+        await import("@/lib/acoes.server")
+      )
+        .gradeAcoesComCache()
+        .catch(() => null);
+      const tickers = (grade?.linhas ?? []).map((l: { ticker: string }) => l.ticker.toUpperCase());
+      const { buscados, obtidos } = await cvmServer.atualizarFundamentosCvm(tickers, data.limite);
+      return { buscados, obtidos, faltam: Math.max(0, tickers.length - obtidos) };
+    },
+  );

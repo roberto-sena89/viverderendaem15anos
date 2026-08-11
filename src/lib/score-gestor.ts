@@ -59,6 +59,13 @@ export type EntradasScoreGestor = {
   percentilDistribucional: number | null;
   /** Volatilidade anualizada da série semanal (%). Null = sem histórico. */
   volatilidadeAnualPct: number | null;
+  /**
+   * Percentil do P/L real (TTM da CVM) na própria história trimestral
+   * (0–100; maior = mais caro por valuation). Quando presente, é a fonte
+   * preferida do pilar de oportunidade — substitui o percentil distribucional
+   * de preço, que era uma aproximação (P/L projetado == posição do preço).
+   */
+  percentilPlReal: number | null;
 };
 
 /** Componente do score com transparência de nota e peso. */
@@ -297,6 +304,23 @@ export function pontosOportunidadeComDistribuicao(
   );
 }
 
+/**
+ * Apura o percentil que alimenta o pilar de oportunidade: o do P/L real
+ * (CVM) quando disponível — valuation de fato — e, sem ele, o da
+ * distribuição de preços (aproximação por posição do preço). Entre 0–100,
+ * maior = mais caro.
+ */
+export function percentilValorizacaoEfetivo(e: {
+  percentilDistribucional: number | null;
+  percentilPlReal: number | null;
+}): number | null {
+  const pl = e.percentilPlReal;
+  if (pl !== null && Number.isFinite(pl) && pl >= 0 && pl <= 100) return pl;
+  const pd = e.percentilDistribucional;
+  if (pd !== null && Number.isFinite(pd) && pd >= 0 && pd <= 100) return pd;
+  return null;
+}
+
 function pontosLiquidez(liquidez: number | null): number {
   if (liquidez === null || !Number.isFinite(liquidez) || liquidez <= 0) return 0;
   const pontos = clamp((Math.log10(liquidez) - 4) / (8 - 4), 0, 1) * 100;
@@ -398,12 +422,13 @@ function montarAlertas(e: EntradasScoreGestor): string[] {
       `Histórico curto de dividendos (${e.consistenciaDividendos} ano${e.consistenciaDividendos === 1 ? "" : "s"}) — consistência ainda não comprovada`,
     );
   }
-  if (
-    e.percentilDistribucional !== null &&
-    e.percentilDistribucional >= PERCENTIL_DISTRIBUCIONAL_ALERTA
-  ) {
+  const percentilEfetivo = percentilValorizacaoEfetivo(e);
+  if (percentilEfetivo !== null && percentilEfetivo >= PERCENTIL_DISTRIBUCIONAL_ALERTA) {
+    const plReal = e.percentilPlReal !== null && Number.isFinite(e.percentilPlReal);
     alertas.push(
-      `Preço acima de ${e.percentilDistribucional.toFixed(0)}% das leituras históricas — momento caro da própria série, aguarde recuo antes de aportar`,
+      plReal
+        ? `P/L real acima de ${percentilEfetivo.toFixed(0)}% da própria história (CVM) — papel caro por valuation, aguarde recuo antes de aportar`
+        : `Preço acima de ${percentilEfetivo.toFixed(0)}% das leituras históricas — momento caro da própria série, aguarde recuo antes de aportar`,
     );
   }
   if (e.volatilidadeAnualPct !== null && e.volatilidadeAnualPct >= VOLATILIDADE_ALERTA) {
@@ -450,6 +475,16 @@ export function limiteAporte(
 export function avaliarParaGestor(e: EntradasScoreGestor): ScoreGestor {
   const payout = e.payout ?? estimarPayout(e.dy12, e.pl);
   const ajusteSetor = ajusteSetorial(e.setor);
+  const percentilEfetivo = percentilValorizacaoEfetivo(e);
+  const plRealDisponivel = e.percentilPlReal !== null && Number.isFinite(e.percentilPlReal);
+  const detalheOportunidade =
+    e.oportunidade === null
+      ? null
+      : percentilEfetivo === null
+        ? "Posição no histórico, DY e risco (radar)"
+        : plRealDisponivel
+          ? `Posição no histórico, DY e risco; P/L real acima de ${percentilEfetivo.toFixed(0)}% da própria história (CVM)`
+          : `Posição no histórico, DY e risco; preço acima de ${percentilEfetivo.toFixed(0)}% das leituras históricas`;
 
   const componentes: ComponenteScoreGestor[] = [
     {
@@ -469,14 +504,9 @@ export function avaliarParaGestor(e: EntradasScoreGestor): ScoreGestor {
     {
       chave: "oportunidade",
       rotulo: "Oportunidade de preço",
-      nota: pontosOportunidadeComDistribuicao(e.oportunidade, e.percentilDistribucional),
+      nota: pontosOportunidadeComDistribuicao(e.oportunidade, percentilEfetivo),
       peso: PESO_OPORTUNIDADE,
-      detalhe:
-        e.oportunidade === null
-          ? null
-          : e.percentilDistribucional === null
-            ? "Posição no histórico, DY e risco (radar)"
-            : `Posição no histórico, DY e risco; preço acima de ${e.percentilDistribucional.toFixed(0)}% das leituras históricas`,
+      detalhe: detalheOportunidade,
     },
     {
       chave: "dividendos",

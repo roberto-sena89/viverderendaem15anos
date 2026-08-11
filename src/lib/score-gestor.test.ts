@@ -19,6 +19,7 @@ import {
   pontosConsistencia,
   pontosDividendos,
   pontosPremio,
+  percentilValorizacaoEfetivo,
   rotuloGestor,
   vereditoGestor,
 } from "@/lib/score-gestor";
@@ -40,6 +41,7 @@ const base = {
   consistenciaDividendos: null,
   percentilDistribucional: null,
   volatilidadeAnualPct: null,
+  percentilPlReal: null,
 };
 
 describe("estimarPayout", () => {
@@ -151,6 +153,29 @@ describe("limiteAporte", () => {
   });
 });
 
+describe("percentilValorizacaoEfetivo", () => {
+  it("prefere o P/L real (CVM) ao distribucional de preço", () => {
+    expect(percentilValorizacaoEfetivo({ percentilDistribucional: 95, percentilPlReal: 30 })).toBe(
+      30,
+    );
+    expect(
+      percentilValorizacaoEfetivo({ percentilDistribucional: null, percentilPlReal: 55 }),
+    ).toBe(55);
+  });
+
+  it("cai para o distribucional sem P/L real válido", () => {
+    expect(
+      percentilValorizacaoEfetivo({ percentilDistribucional: 40, percentilPlReal: null }),
+    ).toBe(40);
+    expect(percentilValorizacaoEfetivo({ percentilDistribucional: 40, percentilPlReal: 120 })).toBe(
+      40,
+    );
+    expect(
+      percentilValorizacaoEfetivo({ percentilDistribucional: null, percentilPlReal: null }),
+    ).toBeNull();
+  });
+});
+
 describe("avaliarParaGestor", () => {
   it("gera nota alta e rating A para empresa sólida", () => {
     const r = avaliarParaGestor(base);
@@ -232,6 +257,36 @@ describe("avaliarParaGestor", () => {
     const r = avaliarParaGestor(base);
     const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
     expect(oportunidade.nota).toBe(75);
+  });
+
+  it("P/L real substitui o distribucional quando disponível", () => {
+    const r = avaliarParaGestor({ ...base, percentilPlReal: 30 });
+    const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
+    // 75 × 0.85 + (100 − 30) × 0.15 = 74,3 → 74: P/L barato segura a nota
+    // mesmo que o distribucional de preço esteja caro.
+    const caro = avaliarParaGestor({ ...base, percentilDistribucional: 95, percentilPlReal: 30 });
+    expect(caro.componentes.find((c) => c.chave === "oportunidade")!.nota).toBe(74);
+    expect(caro.alertas.some((a) => a.includes("caro"))).toBe(false);
+    expect(oportunidade.detalhe).toContain("P/L real");
+  });
+
+  it("P/L real caro vira bandeira de valuation (CVM)", () => {
+    const r = avaliarParaGestor({ ...base, percentilPlReal: 95 });
+    expect(r.alertas.some((a) => a.includes("P/L real") && a.includes("valuation"))).toBe(true);
+    expect(r.alertas.some((a) => a.includes("leituras históricas"))).toBe(false);
+    const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
+    expect(oportunidade.nota).toBe(65);
+  });
+
+  it("P/L real inválido cai para o percentil distribucional", () => {
+    const r = avaliarParaGestor({
+      ...base,
+      percentilDistribucional: 40,
+      percentilPlReal: 150,
+    });
+    const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
+    // 75 × 0.85 + (100 − 40) × 0.15 = 72,8 → 73.
+    expect(oportunidade.nota).toBe(73);
   });
 
   it("volatilidade alta vira bandeira sem bloquear o veredito", () => {
