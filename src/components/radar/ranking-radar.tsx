@@ -1001,11 +1001,13 @@ export function RankingRadar({
                       {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                     </TableCell>
                     <TableCell className="hidden xl:table-cell">
-                      <BarraHistorico
-                        percentil={l.posicao?.percentil ?? null}
-                        zona={l.sinal.zona}
-                        inicioSerie={l.posicao?.inicioSerie ?? null}
-                      />
+                      <div className="flex justify-center">
+                        <BarraHistorico
+                          percentil={l.posicao?.percentil ?? null}
+                          zona={l.sinal.zona}
+                          inicioSerie={l.posicao?.inicioSerie ?? null}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell className="hidden 2xl:table-cell">
                       <Faixa52sCelula l={l} />
@@ -1115,11 +1117,13 @@ export function RankingRadar({
                       {formatarValor(v, criterio)}
                     </span>
                   </span>
-                  <BarraHistorico
-                    percentil={l.posicao?.percentil ?? null}
-                    zona={l.sinal.zona}
-                    compacto
-                  />
+                  <div className="flex justify-center">
+                    <BarraHistorico
+                      percentil={l.posicao?.percentil ?? null}
+                      zona={l.sinal.zona}
+                      compacto
+                    />
+                  </div>
                   <SinalBadge sinal={l.sinal} />
                 </span>
                 <dl className="mt-2 grid grid-cols-4 gap-2 border-t border-border/60 pt-2.5 text-xs">
