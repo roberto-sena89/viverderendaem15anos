@@ -3,6 +3,7 @@ import { brl, valorAtual } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DashboardCard } from "./dashboard-card";
 
 /**
  * Componente que exibe o resumo de lucro/prejuízo por categoria de ativos.
@@ -34,9 +35,9 @@ export function ResumoCategorias() {
   return (
     <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 px-1">
       {resumoPorCategoria.map((cat) => (
-        <div 
+        <DashboardCard 
           key={cat.nome}
-          className="bg-card/40 border-border/40 hover:bg-card/60 relative flex min-h-[152px] flex-col justify-between overflow-hidden rounded-xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-[var(--shadow-lift)] backdrop-blur-md group"
+          className="group"
         >
           {/* Indicador de cor da categoria */}
           <div 
@@ -65,7 +66,7 @@ export function ResumoCategorias() {
                 <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
               </div>
             </div>
-          </div>
+        </DashboardCard>
           
           {/* Sutil gradiente de fundo no hover */}
           <div 
