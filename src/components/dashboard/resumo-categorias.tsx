@@ -1,4 +1,5 @@
-import { useAtivosAoVivo, useCotacoesTempoReal, tempoRelativo } from "@/lib/cotacoes-tempo-real";
+import { useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+import { tempoRelativo } from "@/components/status-cotacoes";
 import { brl, valorAtual } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { TrendingDown, TrendingUp, Clock } from "lucide-react";
