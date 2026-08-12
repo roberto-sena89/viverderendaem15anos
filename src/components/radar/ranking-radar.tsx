@@ -917,35 +917,87 @@ export function RankingRadar({
                   #
                 </TableHead>
                 <TableHead className="w-[20%] min-w-[200px] lg:w-[18%]">Ativo</TableHead>
-                <TableHead
-                  className="w-[10%] whitespace-nowrap text-right"
-                  title="Último preço"
-                >
-                  Preço
+                <TableHead className="w-[10%] whitespace-nowrap text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    Preço
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[200px]">
+                          <p>Última cotação capturada no pregão.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
-                <TableHead
-                  className="w-[10%] whitespace-nowrap text-right"
-                  title="Variação percentual no pregão atual"
-                >
-                  Var. Dia %
+                <TableHead className="w-[10%] whitespace-nowrap text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    Var. Dia %
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[240px] leading-relaxed">
+                          <p className="font-semibold">Variação Diária</p>
+                          <p className="mt-1">
+                            Oscilação percentual do preço hoje em relação ao fechamento de ontem.
+                          </p>
+                          <p className="mt-1 text-[10px] text-muted-foreground">Ex: +1,50% indica alta; -0,80% indica queda.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
-                <TableHead
-                  className="w-[9%] whitespace-nowrap text-right"
-                  title="Rendimento por dividendos dos últimos 12 meses"
-                >
-                  DY 12m
+                <TableHead className="w-[9%] whitespace-nowrap text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    DY 12m
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[240px] leading-relaxed">
+                          <p className="font-semibold">Dividend Yield 12 Meses</p>
+                          <p className="mt-1 text-xs">Rendimento total pago em dividendos nos últimos 12 meses dividido pelo preço atual.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
-                <TableHead
-                  className="hidden w-[6%] whitespace-nowrap text-right lg:table-cell"
-                  title="Preço sobre valor patrimonial"
-                >
-                  P/VPA
+                <TableHead className="hidden w-[6%] whitespace-nowrap text-right lg:table-cell">
+                  <div className="flex items-center justify-end gap-1.5">
+                    P/VPA
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[220px]">
+                          <p className="font-semibold">Preço / Valor Patrimonial</p>
+                          <p className="mt-1 text-xs">Abaixo de 1,00 pode indicar que o ativo está sendo negociado com desconto sobre seu patrimônio líquido.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
-                <TableHead
-                  className="hidden w-[14%] min-w-[140px] text-center xl:table-cell"
-                  title="Posição do preço na própria história: 0% = mínima · 100% = máxima"
-                >
-                  Histórico
+                <TableHead className="hidden w-[14%] min-w-[140px] text-center xl:table-cell">
+                  <div className="flex items-center justify-center gap-1.5">
+                    Histórico
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[240px] leading-relaxed">
+                          <p className="font-semibold">Posição na História</p>
+                          <p className="mt-1 text-xs">Onde o preço atual está dentro de toda a série histórica do ativo (0% = mínima histórica, 100% = máxima).</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
                 <TableHead
                   className="hidden w-[14%] min-w-[140px] 2xl:table-cell"
