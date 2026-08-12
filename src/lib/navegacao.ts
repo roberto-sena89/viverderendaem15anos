@@ -29,7 +29,6 @@ export const SECOES: SecaoNav[] = [
 
 /** Abas horizontais da carteira, na ordem exibida. */
 export const ABAS_CARTEIRA = [
-  "/dashboard",
   "/carteira",
   "/dividendos",
   "/aportes",
