@@ -266,24 +266,24 @@ function HomePage() {
         Pular para o conteúdo
       </a>
 
-      <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6">
-        <div className="border-border/80 bg-background/80 mx-auto flex w-full max-w-3xl items-center justify-between gap-3 rounded-full border py-2 pr-2 pl-2 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-50 p-2 sm:top-4 sm:px-4">
+        <div className="border-border/80 bg-background/80 mx-auto flex w-full max-w-3xl items-center justify-between gap-2 rounded-full border p-1.5 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl sm:gap-3 sm:py-2 sm:pr-2 sm:pl-2">
           <Link
             to="/"
             aria-label="Viver de Renda em 15 Anos — página inicial"
-            className="flex min-w-0 items-center gap-2.5 rounded-full pr-3"
+            className="flex min-w-0 items-center gap-2 rounded-full pr-2 sm:gap-2.5 sm:pr-3"
           >
             <img
               src={logoIcone}
               alt="Logo Viver de Renda em 15 Anos"
               width={40}
               height={40}
-              className="size-9 shrink-0 rounded-xl object-contain"
+              className="size-8 shrink-0 rounded-lg object-contain sm:size-9 sm:rounded-xl"
             />
-            <span className="font-brand text-sm leading-[1.15] font-bold text-foreground uppercase">
+            <span className="font-brand text-[0.7rem] leading-none font-bold text-foreground uppercase sm:text-sm sm:leading-[1.15]">
               Viver de Renda
               <br />
-              <span className="text-[0.68rem] font-semibold tracking-[0.1em] text-muted-foreground">
+              <span className="text-[0.6rem] font-semibold tracking-[0.1em] text-muted-foreground sm:text-[0.68rem]">
                 em 15 Anos
               </span>
             </span>
@@ -310,9 +310,9 @@ function HomePage() {
           </nav>
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            <Button asChild size="sm" className="rounded-full px-5 text-xs font-bold">
+            <Button asChild size="sm" className="h-8 rounded-full px-3 text-[0.65rem] font-bold sm:h-9 sm:px-5 sm:text-xs">
               <Link to="/auth">
-                Entrar <ArrowRight className="size-3.5" />
+                Entrar <ArrowRight className="size-3 sm:size-3.5" />
               </Link>
             </Button>
           </div>
