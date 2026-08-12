@@ -1123,17 +1123,17 @@ export function RankingRadar({
                       <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
+                      <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
-                    </TableCell>
-                    <TableCell className="hidden text-right lg:table-cell">
                       <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
+                    </TableCell>
+                    <TableCell className="hidden text-center lg:table-cell">
+                      <div className="mx-auto h-4 w-10 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="hidden xl:table-cell">
                       <div className="flex justify-center">
-                        <div className="h-1.5 w-24 animate-pulse rounded-full bg-muted/40" />
+                        <div className="h-1.5 w-16 animate-pulse rounded-full bg-muted/40" />
                       </div>
                     </TableCell>
                     <TableCell className="hidden 2xl:table-cell">
@@ -1143,9 +1143,9 @@ export function RankingRadar({
                       <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="hidden 2xl:table-cell">
-                      <div className="space-y-1 text-right">
-                        <div className="ml-auto h-3 w-10 animate-pulse rounded bg-muted/40" />
-                        <div className="ml-auto h-3 w-12 animate-pulse rounded bg-muted/40" />
+                      <div className="space-y-1 text-center">
+                        <div className="mx-auto h-3 w-10 animate-pulse rounded bg-muted/40" />
+                        <div className="mx-auto h-3 w-12 animate-pulse rounded bg-muted/40" />
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
