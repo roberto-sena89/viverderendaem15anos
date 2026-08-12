@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-// Sincronize em tempo real os preços de ETFs internacionais (ex.: VOO, SCHD, QQQ) via SSE ou polling na página de radar.
+// Otimize a página de radar para lidar com grandes volumes de dados (lazy loading, virtualização se necessário) e garanta que as ferramentas de exportação incluam todos os dados visíveis.
 //
 // IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, não simplifique, implemente EXATAMENTE o que foi pedido.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
