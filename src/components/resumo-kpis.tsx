@@ -444,35 +444,30 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={TrendingUp}
           onClick={() => setAberto(detalheRentabilidade)}
         >
-          <div className="grid grid-cols-2 gap-3">
-            <div className="min-w-0">
-              <p className="text-[0.875rem] text-foreground">12 meses</p>
-              <p
-                className={`t-metric-sm truncate ${
-                  retorno12m === null
-                    ? "text-muted-foreground"
-                    : retorno12m >= 0
-                      ? "text-success"
-                      : "text-destructive"
-                }`}
-              >
-                {retorno12m === null ? "—" : pct(retorno12m, 2)}
-              </p>
-            </div>
-            <div className="min-w-0 border-l border-border pl-3">
-              <p className="text-[0.875rem] text-foreground">Total</p>
-              <p
-                className={`t-metric-sm truncate ${
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
-                }`}
-              >
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <p className={cn(
+                "text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none",
+                resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
+              )}>
                 {pct(resumo.rentabilidade, 2)}
               </p>
+              <span className="text-[0.62rem] font-bold text-muted-foreground uppercase tracking-widest">Total</span>
+            </div>
+            <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+              <div className="flex flex-col">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">12 Meses</span>
+                <span className={cn(
+                  "text-xs font-bold tabular-nums",
+                  retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-success/80" : "text-destructive/80"
+                )}>{retorno12m === null ? "—" : pct(retorno12m, 2)}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Yield</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{pct(resumo.dyCarteira, 2)}</span>
+              </div>
             </div>
           </div>
-          <p className="mt-3 text-[0.875rem] text-foreground">
-            DY da carteira: {pct(resumo.dyCarteira, 2)}
-          </p>
         </CartaoResumo>
       </div>
 
