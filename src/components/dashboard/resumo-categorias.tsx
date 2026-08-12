@@ -114,7 +114,7 @@ export function ResumoCategorias() {
         {resumoPorCategoria.map((cat) => (
           <DashboardCard 
             key={cat.nome}
-            className="group relative"
+            className="group relative border-transparent"
             onClick={() => {
               // Ao abrir manualmente, também destacamos os alertas recentes
               const catAtivos = ativos.filter(a => a.categoria === cat.nome);
@@ -128,15 +128,15 @@ export function ResumoCategorias() {
               setCategoriaSelecionada(cat.nome);
             }}
           >
-            {/* Indicador de cor da categoria */}
+            {/* Brilho dinâmico de fundo baseado na categoria */}
             <div 
-              className="absolute top-0 left-0 h-full w-1 opacity-60 transition-all duration-300 group-hover:w-1.5 group-hover:opacity-100" 
-              style={{ backgroundColor: cat.cor }}
+              className="absolute -inset-1 opacity-[0.03] transition-opacity duration-500 group-hover:opacity-[0.08]"
+              style={{ background: cat.cor }}
             />
             
-            <div className="flex flex-col gap-1.5 h-full text-center">
+            <div className="flex flex-col gap-2 h-full text-center relative z-10">
               <div className="flex items-center justify-center relative w-full px-4">
-                <span className="text-muted-foreground truncate text-[0.65rem] font-bold uppercase tracking-[0.15em] opacity-70 group-hover:opacity-100 transition-opacity">
+                <span className="text-muted-foreground/80 truncate text-[0.6rem] font-black uppercase tracking-[0.25em] group-hover:text-foreground transition-colors">
                   {cat.nome}
                 </span>
                 {cat.alertas > 0 && (
@@ -151,7 +151,7 @@ export function ResumoCategorias() {
               
               <div className="flex flex-col items-center justify-center -space-y-0.5">
                 <div className={cn(
-                  "text-[1.1rem] font-black tabular-nums tracking-tighter leading-none",
+                  "text-[1.25rem] font-black tabular-nums tracking-tighter leading-none drop-shadow-sm",
                   cat.lucro >= 0 ? "text-success" : "text-destructive"
                 )}>
                   {brl(cat.lucro, 2)}
@@ -167,11 +167,11 @@ export function ResumoCategorias() {
               </div>
             </div>
             
-            {/* Brilho sutil no hover */}
+            {/* Brilho radial no hover para profundidade */}
             <div 
-              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-10"
+              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-20"
               style={{ 
-                background: `radial-gradient(circle at top right, ${cat.cor}, transparent 70%)` 
+                background: `radial-gradient(600px circle at center, ${cat.cor}20, transparent 40%)` 
               }}
             />
           </DashboardCard>
