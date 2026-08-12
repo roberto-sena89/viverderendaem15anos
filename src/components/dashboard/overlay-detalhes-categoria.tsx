@@ -3,7 +3,7 @@ import { useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real
 import { brl, valorAtual, classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes } from "@/lib/data";
-import { TrendingDown, TrendingUp, Wallet, ArrowRightLeft, PieChart, Lightbulb, Target, ArrowUpRight } from "lucide-react";
+import { TrendingDown, TrendingUp, Wallet, ArrowRightLeft, PieChart, Lightbulb, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
