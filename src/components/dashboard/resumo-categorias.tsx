@@ -302,12 +302,12 @@ export function ResumoCategorias() {
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-wrap items-baseline gap-2">
                           <p className={cn(
-                            "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none group-hover:text-primary transition-colors duration-300",
-                            cat.lucro >= 0 ? "text-foreground" : "text-destructive"
+                            "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none transition-colors duration-300",
+                            cat.lucro >= 0 ? "text-positive" : "text-negative"
                           )}>
                             {brl(cat.lucro, 2)}
                           </p>
-                          <DeltaChip value={cat.lucroPct} className="bg-primary/10 text-primary border-primary/20 dark:bg-primary/20" />
+                          <DeltaChip value={cat.lucroPct} />
                         </div>
                         
                         <div className="flex items-center justify-between w-full border-t border-border/40 pt-2">
