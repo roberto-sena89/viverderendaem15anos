@@ -134,14 +134,14 @@ export function ResumoCategorias() {
               style={{ backgroundColor: cat.cor }}
             />
             
-            <div className="flex flex-col gap-1.5 h-full">
-              <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col gap-1.5 h-full text-center">
+              <div className="flex items-center justify-center relative w-full px-4">
                 <span className="text-muted-foreground truncate text-[0.65rem] font-bold uppercase tracking-[0.15em] opacity-70 group-hover:opacity-100 transition-opacity">
                   {cat.nome}
                 </span>
                 {cat.alertas > 0 && (
                   <div 
-                    className="flex size-4 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse shrink-0"
+                    className="absolute right-0 flex size-4 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse shrink-0"
                     title={`${cat.alertas} alerta(s) de variação relevante nas últimas 24h`}
                   >
                     <AlertTriangle className="size-2.5" />
@@ -149,7 +149,7 @@ export function ResumoCategorias() {
                 )}
               </div>
               
-              <div className="mt-auto space-y-0.5">
+              <div className="mt-auto space-y-0.5 pb-1">
                 <div className={cn(
                   "text-[1.05rem] font-black tabular-nums tracking-tight leading-none",
                   cat.lucro >= 0 ? "text-emerald-500" : "text-rose-500"
@@ -158,7 +158,7 @@ export function ResumoCategorias() {
                 </div>
                 
                 <div className={cn(
-                  "flex items-center gap-1 text-[0.7rem] font-bold",
+                  "flex items-center justify-center gap-1 text-[0.7rem] font-bold",
                   cat.lucro >= 0 ? "text-emerald-500/90" : "text-rose-500/90"
                 )}>
                   {cat.lucro >= 0 ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
