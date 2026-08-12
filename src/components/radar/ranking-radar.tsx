@@ -49,7 +49,6 @@ import {
   CalendarDays,
   Gauge,
   Layers,
-  Loader2,
   Radar,
   Search,
   TrendingUp,
