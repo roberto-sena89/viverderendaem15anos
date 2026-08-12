@@ -2,7 +2,7 @@ import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotaco
 import { tempoRelativo } from "@/components/status-cotacoes";
 import { brl, valorAtual, arredondar, pct } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
-import { Clock, AlertTriangle, Plus, PieChart, ChevronRight, CheckCircle2, ShieldCheck, TrendingUp, TrendingDown } from "lucide-react";
+import { Clock, AlertTriangle, Plus, PieChart, ChevronRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { getIconeCategoria } from "@/lib/icones-categorias";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
