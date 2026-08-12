@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
-import { brl, valorAtual, type Ativo } from "@/lib/portfolio";
+import { brl, valorAtual } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes } from "@/lib/data";
 import { TrendingDown, TrendingUp, Wallet, ArrowRightLeft, PieChart } from "lucide-react";
@@ -28,7 +28,6 @@ export function OverlayDetalhesCategoria({ categoria, onClose }: OverlayDetalhes
   const totalInvestido = ativosDaCat.reduce((sum, a) => sum + (Number(a.quantidade) * Number(a.precoMedio)), 0);
   const totalAtual = ativosDaCat.reduce((sum, a) => sum + valorAtual(a), 0);
   const lucro = totalAtual - totalInvestido;
-  const lucroPct = totalInvestido > 0 ? (lucro / totalInvestido) * 100 : 0;
   const cor = corCategoria(categoria);
 
   return (
