@@ -422,10 +422,20 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={Coins}
           onClick={() => setAberto(detalheProventos)}
         >
-          <p className="t-metric">{brl(recebidos12m, 2)}</p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Indicador rotulo="Total" valor={brl(totalProventos, 2)} />
-            <Indicador rotulo="Média mensal" valor={brl(recebidos12m / 12, 2)} />
+          <div className="flex flex-col gap-1">
+            <p className="text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none text-foreground">
+              {brl(recebidos12m, 2)}
+            </p>
+            <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+              <div className="flex flex-col">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Histórico</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{brl(totalProventos, 2)}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Média</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{brl(recebidos12m / 12, 2)}</span>
+              </div>
+            </div>
           </div>
         </CartaoResumo>
 
