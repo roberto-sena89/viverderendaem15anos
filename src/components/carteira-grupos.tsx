@@ -5,20 +5,12 @@ import {
   CircleCheck,
   CircleSlash,
   Pencil,
-  Settings2,
   Trash2,
 } from "lucide-react";
 
 import { TickerMark } from "@/components/panel";
+import { DialogTransacao } from "@/components/dialog-transacao";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -248,14 +240,6 @@ export function CarteiraGrupos({
     }
   }
 
-  /** Volta a seguir as cotações automáticas do ativo. */
-  function voltarAoAutomatico(ticker: string) {
-    setManuais((m) => {
-      const { [chavePreco(ticker)]: _removido, ...resto } = m;
-      return resto;
-    });
-    toast.success(`${ticker}: preço voltou a sincronizar automaticamente.`);
-  }
 
   /** Ativos com o preço atual sincronizado com a cotação de mercado. */
   const ativos = useMemo(
@@ -559,42 +543,38 @@ export function CarteiraGrupos({
                               </p>
                             </div>
                             {onEditar && onExcluir ? (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                                <div className="flex gap-1">
+                                  <DialogTransacao
+                                    aporte={{
+                                      id: a.id,
+                                      ticker: a.ticker,
+                                      categoria: a.categoria,
+                                      quantidade: a.quantidade,
+                                      preco: a.precoMedio,
+                                      data: new Date().toISOString().slice(0, 10),
+                                      corretora: "",
+                                      taxas: 0,
+                                    }}
+                                  >
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      title={`Editar ${a.ticker}`}
+                                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                    >
+                                      <Pencil className="size-4" />
+                                    </Button>
+                                  </DialogTransacao>
                                   <Button
-                                    size="sm"
-                                    variant="outline"
-                                    aria-label={`Ações de ${a.ticker}`}
-                                    className="h-7 gap-1 rounded-md px-1.5 text-[0.7rem] leading-none font-semibold"
+                                    size="icon"
+                                    variant="ghost"
+                                    title={`Excluir ${a.ticker}`}
+                                    onClick={() => onExcluir?.(a)}
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                   >
-                                    <Settings2 className="size-3.5" />
+                                    <Trash2 className="size-4" />
                                   </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-52">
-                                  <DropdownMenuLabel className="truncate text-xs text-muted-foreground">
-                                    {a.ticker}
-                                  </DropdownMenuLabel>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem onSelect={() => onEditar?.(a)}>
-                                    <Pencil className="size-4" /> Editar ativo
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => setEditando(a.id)}>
-                                    <Pencil className="size-4" /> Editar preço atual
-                                  </DropdownMenuItem>
-                                  {manuais[chavePreco(a.ticker)] !== undefined && (
-                                    <DropdownMenuItem onSelect={() => voltarAoAutomatico(a.ticker)}>
-                                      <CircleCheck className="size-4" /> Voltar preço automático
-                                    </DropdownMenuItem>
-                                  )}
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="text-destructive focus:text-destructive"
-                                    onSelect={() => onExcluir?.(a)}
-                                  >
-                                    <Trash2 className="size-4" /> Excluir ativo
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                                </div>
                             ) : null}
                           </div>
                         </div>
@@ -917,47 +897,38 @@ export function CarteiraGrupos({
 
                             {onEditar && onExcluir ? (
                               <TableCell className={`pr-2 text-center sm:pr-3 ${cel}`}>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
+                                <div className="flex justify-center gap-1.5">
+                                  <DialogTransacao
+                                    aporte={{
+                                      id: a.id,
+                                      ticker: a.ticker,
+                                      categoria: a.categoria,
+                                      quantidade: a.quantidade,
+                                      preco: a.precoMedio,
+                                      data: new Date().toISOString().slice(0, 10),
+                                      corretora: "",
+                                      taxas: 0,
+                                    }}
+                                  >
                                     <Button
-                                      size="sm"
-                                      variant="outline"
-                                      title={`Ações de ${a.ticker}`}
-                                      aria-label={`Ações de ${a.ticker}: editar ou excluir`}
-                                      className="mx-auto h-7 gap-1 rounded-md px-1.5 text-[0.7rem] leading-none font-semibold"
+                                      size="icon"
+                                      variant="ghost"
+                                      title={`Editar ${a.ticker}`}
+                                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
                                     >
-                                      <Settings2 className="size-3.5" />
-                                      <ChevronDown className="size-3 opacity-60" />
+                                      <Pencil className="size-4" />
                                     </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end" className="w-52">
-                                    <DropdownMenuLabel className="truncate text-xs text-muted-foreground">
-                                      {a.ticker}
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={() => onEditar?.(a)}>
-                                      <Pencil className="size-4" /> Editar ativo
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => setEditando(a.id)}>
-                                      <Pencil className="size-4" /> Editar preço atual
-                                    </DropdownMenuItem>
-                                    {manuais[chavePreco(a.ticker)] !== undefined && (
-                                      <DropdownMenuItem
-                                        onSelect={() => voltarAoAutomatico(a.ticker)}
-                                      >
-                                        <CircleCheck className="size-4" /> Voltar preço automático
-                                      </DropdownMenuItem>
-                                    )}
-                                    <DropdownMenuSeparator />
-
-                                    <DropdownMenuItem
-                                      className="text-destructive focus:text-destructive"
-                                      onSelect={() => onExcluir?.(a)}
-                                    >
-                                      <Trash2 className="size-4" /> Excluir ativo
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                  </DialogTransacao>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    title={`Excluir ${a.ticker}`}
+                                    onClick={() => onExcluir?.(a)}
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                  >
+                                    <Trash2 className="size-4" />
+                                  </Button>
+                                </div>
                               </TableCell>
                             ) : null}
                           </TableRow>
