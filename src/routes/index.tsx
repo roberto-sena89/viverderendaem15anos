@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-// Implemente na página de Radar uma funcionalidade de "Backtest Rápido" que permita ao usuário selecionar um ativo e ver como o sinal de "Comprar" do radar performou nos últimos 5 anos comparado ao BOVA11.
+// Otimize a página de radar e o modal do ativo para dispositivos móveis, garantindo que as tabelas sejam roláveis horizontalmente com clareza e que os gráficos do backtest sejam responsivos.
 //
 // IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, não simplifique, implemente EXATAMENTE o que foi pedido.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
