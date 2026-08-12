@@ -1233,7 +1233,7 @@ export function RankingRadar({
                       </TableCell>
                       <TableCell className="text-right">
                         <span className="block text-sm font-semibold tabular-nums text-positive">
-                          {l.dy12 !== null ? `${l.dy12.toLocaleString("pt-BR")}%` : "—"}
+                          {l.dy12 !== null ? `${l.dy12.toFixed(2).replace(".", ",")}%` : "—"}
                         </span>
                         <div className="ml-auto mt-1 h-1 w-12 overflow-hidden rounded-full bg-muted">
                           <div
