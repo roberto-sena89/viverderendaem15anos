@@ -215,6 +215,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ia_habilidades: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          criado_em: string
+          id: string
+          instrucao: string
+          nome: string
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          instrucao: string
+          nome: string
+          titulo: string
+          user_id?: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          id?: string
+          instrucao?: string
+          nome?: string
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       metas: {
         Row: {
           alvo: number
