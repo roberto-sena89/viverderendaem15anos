@@ -1,9 +1,10 @@
-import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
+import { useAtivosAoVivo, useCotacoesTempoReal, tempoRelativo } from "@/lib/cotacoes-tempo-real";
 import { brl, valorAtual } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
+import { useState, useEffect } from "react";
 
 /**
  * Componente que exibe o resumo de lucro/prejuízo por categoria de ativos.
@@ -11,6 +12,14 @@ import { DashboardCard } from "./dashboard-card";
  */
 export function ResumoCategorias() {
   const { data: ativos = [] } = useAtivosAoVivo();
+  const { atualizadoEm, status } = useCotacoesTempoReal();
+
+  // Re-renderiza para o tempo relativo
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => setTick((t) => t + 1), 10000);
+    return () => window.clearInterval(id);
+  }, []);
 
   if (ativos.length === 0) return null;
 
@@ -33,7 +42,25 @@ export function ResumoCategorias() {
   }).sort((a, b) => b.lucro - a.lucro);
 
   return (
-    <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 px-1">
+    <div className="space-y-3 mb-8">
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-[0.7rem] font-black uppercase tracking-[0.2em] text-muted-foreground/70">
+          Performance por Categoria
+        </h2>
+        <div 
+          className="flex items-center gap-1.5 text-[0.65rem] font-bold text-muted-foreground/60 transition-colors hover:text-muted-foreground"
+          title="Sincronização automática ativa"
+        >
+          <Clock className="size-3" />
+          {status === "ao-vivo" && Date.now() - (atualizadoEm || 0) < 5000 ? (
+            <span className="text-success animate-pulse">atualizado agora</span>
+          ) : (
+            tempoRelativo(atualizadoEm)
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 px-1">
       {resumoPorCategoria.map((cat) => (
         <DashboardCard 
           key={cat.nome}
@@ -75,6 +102,7 @@ export function ResumoCategorias() {
           />
         </DashboardCard>
       ))}
+      </div>
     </div>
   );
 }
