@@ -249,7 +249,7 @@ function BlocoRisco({ risco, divers }: { risco: MetricasRisco; divers: Diversida
           valor={
             risco.melhorMesPct === null || risco.piorMesPct === null
               ? "—"
-              : `+${pct(risco.melhorMesPct, 0)} / ${pct(risco.piorMesPct, 0)}`
+              : `+${pct(risco.melhorMesPct, 2)} / ${pct(risco.piorMesPct, 2)}`
           }
         />
         <MiniValor

@@ -392,7 +392,7 @@ function Dashboard() {
                   tickMargin={8}
                 />
                 <YAxis
-                  tickFormatter={(v: number) => brl(v, 0)}
+                  tickFormatter={(v: number) => brl(v, 2)}
                   tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
                   tickLine={false}
                   axisLine={false}
