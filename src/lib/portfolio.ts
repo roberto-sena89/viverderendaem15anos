@@ -1,6 +1,6 @@
 export type Categoria =
   | "Ações"
-  | "Fundos Imobiliários"
+  | "FIIS"
   | "Tesouro Direto"
   | "BDR"
   | "ETF Brasil"
@@ -18,7 +18,7 @@ export type Categoria =
 
 export const categorias: Categoria[] = [
   "Ações",
-  "Fundos Imobiliários",
+  "FIIS",
 
   "BDR",
   "ETF Brasil",
@@ -131,7 +131,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "REITs":
       return "REITs";
     case "FIIs":
-    case "Fundos Imobiliários":
+    case "FIIS":
     case "Fiagro":
       return "FIIs";
     default:
@@ -316,7 +316,7 @@ export function anosAteMeta(
 /** Rótulos exibidos para cada categoria, alinhados às classes da carteira. */
 export const rotuloCategoria: Record<string, string> = {
   Ações: "Ações",
-  "Fundos Imobiliários": "FIIs (Fundos Imobiliários)",
+  FIIS: "FIIS",
   "Tesouro Direto": "Tesouro Direto (Renda Fixa)",
   BDR: "BDRs",
   "ETF Brasil": "ETFs - Brasil",
