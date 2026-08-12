@@ -910,17 +910,18 @@ export function RankingRadar({
                 >
                   Risco 52s
                 </TableHead>
-                <TableHead className="w-[8%] min-w-[72px] whitespace-nowrap text-center">
+                <TableHead className="w-[11%] min-w-[72px] whitespace-nowrap text-center">
                   Score
                 </TableHead>
                 <TableHead
-                  className="w-[9%] min-w-[84px] whitespace-nowrap text-center"
+                  className="w-[12%] min-w-[84px] whitespace-nowrap text-center"
                   title="Rating do gestor: nota 0–100 — fundamentos (35%), oportunidade (20%), dividendos (20%), prêmio vs Selic (10%), liquidez (8%), endividamento (7%), com ajuste setorial"
                 >
                   Gestor
                 </TableHead>
                 <TableHead
-                  className="w-[10%] min-w-[100px] pr-4 text-right"
+                  className="w-[16%] min-w-[104px] pr-4 text-right"
+
                   title={meta.ajuda}
                   aria-sort={direcao === "asc" ? "ascending" : "descending"}
                 >
