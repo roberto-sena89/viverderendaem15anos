@@ -496,30 +496,30 @@ export function ModalRadar({
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                     <div className="rounded-md border p-2 text-center">
                       <p className="text-[10px] uppercase text-muted-foreground">Retorno Radar</p>
-                      <p className={`text-sm font-bold ${backtestQuery.data.retornoTotalPct >= 0 ? "text-positive" : "text-negative"}`}>
-                        {fmtPct(backtestQuery.data.retornoTotalPct, 1)}
+                      <p className={`text-sm font-bold ${(backtestQuery.data.resultado?.retornoTotalPct ?? 0) >= 0 ? "text-positive" : "text-negative"}`}>
+                        {fmtPct(backtestQuery.data.resultado?.retornoTotalPct, 1)}
                       </p>
                     </div>
                     <div className="rounded-md border p-2 text-center">
                       <p className="text-[10px] uppercase text-muted-foreground">Retorno BOVA11</p>
-                      <p className={`text-sm font-bold ${backtestQuery.data.buyHoldPct >= 0 ? "text-positive" : "text-negative"}`}>
-                        {fmtPct(backtestQuery.data.buyHoldPct, 1)}
+                      <p className={`text-sm font-bold ${(backtestQuery.data.ibov?.buyHoldPct ?? 0) >= 0 ? "text-positive" : "text-negative"}`}>
+                        {fmtPct(backtestQuery.data.ibov?.buyHoldPct, 1)}
                       </p>
                     </div>
                     <div className="rounded-md border p-2 text-center">
                       <p className="text-[10px] uppercase text-muted-foreground">Taxa Acerto</p>
                       <p className="text-sm font-bold text-primary">
-                        {fmtPct(backtestQuery.data.taxaAcertoPct, 0)}
+                        {fmtPct(backtestQuery.data.resultado?.taxaAcertoPct, 0)}
                       </p>
                     </div>
                     <div className="rounded-md border p-2 text-center">
                       <p className="text-[10px] uppercase text-muted-foreground">Negócios</p>
-                      <p className="text-sm font-bold">{backtestQuery.data.negocios}</p>
+                      <p className="text-sm font-bold">{backtestQuery.data.resultado?.negocios ?? 0}</p>
                     </div>
                   </div>
                   <p className="text-[11px] leading-relaxed text-muted-foreground italic">
                     Simulação: Compra em {ticker} quando ≤2% acima da mínima de 52s. Alvo: +20% ou Stop: -12%. 
-                    Período: ~{backtestQuery.data.anos.toFixed(1)} anos. Benchmark: Buy & Hold BOVA11.
+                    Período: ~{backtestQuery.data.resultado?.anos.toFixed(1) ?? "—"} anos. Benchmark: Buy & Hold BOVA11.
                   </p>
                 </div>
               ) : backtestQuery.isError ? (
