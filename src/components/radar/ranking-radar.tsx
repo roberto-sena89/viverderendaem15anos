@@ -1089,7 +1089,7 @@ export function RankingRadar({
                   </div>
                 </TableHead>
                 <TableHead
-                  className="w-[14%] min-w-[104px] pr-4 text-right"
+                  className="w-[10%] min-w-[80px] pr-4 text-right"
 
                   title={meta.ajuda}
                   aria-sort={direcao === "asc" ? "ascending" : "descending"}
