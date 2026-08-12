@@ -146,6 +146,7 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
 
 /** Faixa de indicadores da carteira (padrão Investidor 10). */
 export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: boolean }) {
+  const tooltipHojeId = useId();
   const { data: ativos = [] } = useAtivosAoVivo();
   const { data: proventos = [] } = useDividendos();
   const { mapa } = useCotacoesTempoReal();
