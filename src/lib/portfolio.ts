@@ -219,10 +219,13 @@ export function evolucaoPatrimonio(aportes: Aporte[], totalAtual: number) {
   });
 }
 
-import { brl as brlFormat, pct as pctFormat } from "./formato-numero";
+import { brl as brlFormat, pct as pctFormat, numeroBR as numeroBRFormat, formatarNumeroBR as formatarNumeroBRFormat } from "./formato-numero";
 
 export const brl = brlFormat;
 export const pct = pctFormat;
+export const numeroBR = numeroBRFormat;
+export const formatarNumeroBR = formatarNumeroBRFormat;
+
 
 export interface ProjecaoInput extends PlanoConfig {
   patrimonioAtual: number;
