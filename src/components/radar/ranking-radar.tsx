@@ -904,51 +904,51 @@ export function RankingRadar({
                 >
                   #
                 </TableHead>
-                <TableHead className="w-[18%] min-w-[170px] lg:w-[16%]">Ativo</TableHead>
+                <TableHead className="w-[24%] min-w-[240px] lg:w-[22%]">Ativo</TableHead>
                 <TableHead
-                  className="w-[12%] whitespace-nowrap text-right"
+                  className="w-[11%] whitespace-nowrap text-right"
                   title="Último preço e variação do dia"
                 >
                   Preço
                 </TableHead>
                 <TableHead
-                  className="w-[10%] whitespace-nowrap text-right"
+                  className="w-[9%] whitespace-nowrap text-right"
                   title="Rendimento por dividendos dos últimos 12 meses"
                 >
                   DY 12m
                 </TableHead>
                 <TableHead
-                  className="hidden w-[7%] whitespace-nowrap text-right lg:table-cell"
+                  className="hidden w-[6%] whitespace-nowrap text-right lg:table-cell"
                   title="Preço sobre valor patrimonial"
                 >
                   P/VPA
                 </TableHead>
                 <TableHead
-                  className="hidden w-[12%] min-w-[140px] text-center xl:table-cell"
+                  className="hidden w-[10%] min-w-[120px] text-center xl:table-cell"
                   title="Posição do preço na própria história: 0% = mínima · 100% = máxima"
                 >
                   Histórico
                 </TableHead>
                 <TableHead
-                  className="hidden w-[12%] min-w-[130px] 2xl:table-cell"
+                  className="hidden w-[10%] min-w-[110px] 2xl:table-cell"
                   title="Posição da cotação entre a mínima e a máxima de 52 semanas"
                 >
                   Faixa 52s
                 </TableHead>
                 <TableHead
-                  className="hidden w-[8%] whitespace-nowrap text-right xl:table-cell"
+                  className="hidden w-[7%] whitespace-nowrap text-right xl:table-cell"
                   title="Distância do preço até a mínima de 52 semanas"
                 >
                   Mín. 52s
                 </TableHead>
 
                 <TableHead
-                  className="hidden w-[9%] whitespace-nowrap text-right 2xl:table-cell"
+                  className="hidden w-[8%] whitespace-nowrap text-right 2xl:table-cell"
                   title="Risco: queda máxima desde o pico do histórico e volatilidade anual"
                 >
                   Risco 52s
                 </TableHead>
-                <TableHead className="w-[11%] min-w-[72px] whitespace-nowrap text-center">
+                <TableHead className="w-[8%] min-w-[64px] whitespace-nowrap text-center">
                   Score
                 </TableHead>
                 <TableHead
