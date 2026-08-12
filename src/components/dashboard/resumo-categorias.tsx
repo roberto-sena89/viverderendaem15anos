@@ -163,7 +163,7 @@ export function ResumoCategorias() {
                       "group relative border-border/40 hover:border-primary/20 transition-all duration-300 min-h-[152px] flex items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none",
                       categoriaSelecionada === cat.nome && "ring-2 ring-primary ring-offset-2 ring-offset-background border-primary/40 bg-primary/5"
                     )}
-                    onKeyDown={(e) => {
+                    onKeyDown={(e: React.KeyboardEvent) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
                         const catAtivos = ativos.filter(a => a.categoria === cat.nome);
