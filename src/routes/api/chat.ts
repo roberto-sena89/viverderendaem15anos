@@ -20,6 +20,7 @@ import {
   type AtivoLinha,
 } from "@/lib/auditoria";
 import { agregarNoticias } from "@/lib/noticias.server";
+import { reconciliarHistoricoAportes } from "@/lib/historico-aportes";
 import {
   diversificacao,
   exposicaoPorMoeda,
@@ -110,6 +111,13 @@ Regras de projeção e análise:
 - Ao detectar um gap no plano ou na carteira (sem reserva de emergência, concentração alta, poucos ativos, sem FIIs, DY baixo, sem metas, plano não configurado, disciplina de aporte fraca), chame educacaoPush e apresente ao usuário o conteúdo educativo e as ações do plano — isso é a entrega de valor do consultor PRO.
 - Em perguntas sobre impostos, use calcularTributos e complemente com contexto educacional de planejamento tributário.
 
+Regras de conciliação de valores (CRÍTICO em auditorias e sugestões de aporte):
+- "Patrimônio atual" e "Total investido (hoje)" vêm SEMPRE da carteira atual (posições da janela Carteira, via analisarCarteira/contexto). São os números que o usuário vê na tela — eles prevalecem sobre qualquer outro.
+- "Total aportado (histórico)" é o fluxo acumulado de compras/vendas ao longo do tempo. Ele PODE ser diferente do total investido atual (vendas parciais, taxas, ajustes de preço médio). Ao falar de aportes, traga a conciliação do historicoAportes (total_aportado_liquido vs total_investido_carteira) e explique qualquer diferença em linguagem simples — nunca apresente o valor DOBRADO com rótulos contraditórios.
+- Para sugerir aportes, use SEMPRE sugerirRebalanceamento (que calcula sobre a carteira atual: patrimônio, posições e lacunas por classe) + alocacaoRecomendada. Os valores sugeridos saem da ferramenta — nunca chute ou invente quanto aportar.
+- Nunca misture projeções futuras (projetarIndependencia usa o aporte mensal do plano) com valores reais da carteira sem deixar claro o que é projeção e o que é realidade. Em auditorias, apresente primeiro os números reais da carteira, depois as projeções do plano.
+- Se dois números divergirem, prevalecem os da carteira atual (ativos) e informe a divergência ao usuário.
+
 Como responder (estilo PRO):
 - Estruture respostas como um consultor: Diagnóstico → Números → Plano de ação (3-5 passos concretos) → Cuidados.
 - Use markdown (títulos curtos, listas, tabelas, negrito em números) e monte tabelas para comparativos.
@@ -144,6 +152,7 @@ function textoDaCarteira(
 
   const totalAtual = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
   const totalInvestido = ativos.reduce((s, a) => s + a.quantidade * a.preco_medio, 0);
+  const totalAportadoHistorico = aportes.reduce((s, a) => s + a.quantidade * a.preco, 0);
   const proventos = dividendos.reduce((s, d) => s + d.valor, 0);
 
   const porClasse = new Map<string, number>();
@@ -175,7 +184,8 @@ function textoDaCarteira(
   const dyCarteira = totalAtual > 0 ? (dividendosEstimados / totalAtual) * 100 : 0;
 
   return [
-    `Patrimônio atual: ${brl(totalAtual)} | Total investido: ${brl(totalInvestido)}`,
+    `Patrimônio atual: ${brl(totalAtual)} | Total investido (carteira): ${brl(totalInvestido)}`,
+    `Conciliação: total aportado no histórico ${brl(totalAportadoHistorico)} (pode divergir do investido atual por vendas/taxas) | Total investido hoje (carteira) ${brl(totalInvestido)}`,
     `Rentabilidade geral: ${totalInvestido > 0 ? (((totalAtual - totalInvestido) / totalInvestido) * 100).toFixed(2) : 0}%`,
     `Proventos registrados (últimos lançamentos): ${brl(proventos)} | DY estimado da carteira: ${dyCarteira.toFixed(2)}%`,
     `Alocação por classe: ${alocacao}`,
@@ -373,8 +383,7 @@ export const Route = createFileRoute("/api/chat")({
           supabase
             .from("aportes")
             .select("data, ticker, quantidade, preco")
-            .order("data", { ascending: false })
-            .limit(20),
+            .order("data", { ascending: false }),
           supabase
             .from("dividendos")
             .select("data, ticker, valor")
@@ -614,10 +623,24 @@ export const Route = createFileRoute("/api/chat")({
           }),
           sugerirRebalanceamento: tool({
             description:
-              "Compara a alocação atual da carteira com a estratégia-alvo (perfil do usuário) e indica quanto aportar em cada classe subalocada e quanto reduzir nas sobrealocadas. Use junto com alocacaoRecomendada.",
+              "Compara a alocação atual da carteira com a estratégia-alvo (perfil do usuário) e indica quanto aportar em cada classe subalocada e quanto reduzir nas sobrealocadas. Os valores são calculados sobre a carteira ATUAL do usuário (patrimônio e posições reais). Use junto com alocacaoRecomendada e apresente os números exatamente como vêm da ferramenta.",
             inputSchema: z.object({}),
-            execute: async () =>
-              planoDeRebalanceamento(ativosLinha, ALOCACAO_POR_PERFIL[perfilValido]),
+            execute: async () => {
+              const plano = planoDeRebalanceamento(ativosLinha, ALOCACAO_POR_PERFIL[perfilValido]);
+              const totalInvestido = ativosLinha.reduce(
+                (s, a) => s + a.quantidade * a.preco_medio,
+                0,
+              );
+              return {
+                ...plano,
+                base_de_calculo: {
+                  patrimonio_atual_carteira: plano.patrimonio_atual,
+                  total_investido_carteira: Math.round(totalInvestido),
+                  perfil_utilizado: perfilValido,
+                  nota: "Valores calculados sobre as posições atuais da janela Carteira (preços de hoje). Quanto_aportar é o valor necessário em cada classe para chegar ao alvo do perfil, sem considerar o empréstimo do próximo aporte.",
+                },
+              };
+            },
           }),
           alocacaoRecomendada: tool({
             description:
@@ -1237,7 +1260,7 @@ export const Route = createFileRoute("/api/chat")({
           }),
           historicoAportes: tool({
             description:
-              "Histórico completo de aportes do usuário agregado por mês e por ativo: quanto foi investido em cada mês, média mensal, constância e maiores posições construídas. Use para avaliar disciplina de aportes e evolução do investimento.",
+              "Histórico completo de aportes do usuário reconciliado com a carteira atual: quanto foi investido em cada mês, média mensal, constância, e a conciliação entre o total aportado (histórico) e o total investido/patrimônio da janela Carteira (hoje). Use para avaliar disciplina de aportes, evolução do investimento e para embasar sugestões de novos aportes sobre o que já foi aportado.",
             inputSchema: z.object({
               desde: z.string().optional().describe("Data inicial AAAA-MM-DD"),
             }),
@@ -1246,35 +1269,16 @@ export const Route = createFileRoute("/api/chat")({
               if (desde) q = q.gte("data", desde);
               const { data, error } = await q.order("data", { ascending: true });
               if (error) return { erro: error.message };
-              const linhas = (data ?? []).map((a) => ({
-                data: a.data,
-                ticker: a.ticker,
-                valor: Number(a.quantidade) * Number(a.preco),
-              }));
-              const porMes = new Map<string, number>();
-              const porTicker = new Map<string, number>();
-              for (const l of linhas) {
-                const mes = l.data.slice(0, 7);
-                porMes.set(mes, (porMes.get(mes) ?? 0) + l.valor);
-                porTicker.set(l.ticker, (porTicker.get(l.ticker) ?? 0) + l.valor);
-              }
-              const meses = [...porMes.entries()].map(([mes, valor]) => ({
-                mes,
-                total_aportado: Math.round(valor),
-              }));
-              const total = linhas.reduce((s, l) => s + l.valor, 0);
-              return {
-                total_aportado: Math.round(total),
-                numero_aportes: linhas.length,
-                media_mensal: meses.length ? Math.round(total / meses.length) : 0,
-                meses_com_aporte: meses.length,
-                primeiro_aporte: linhas[0]?.data ?? null,
-                ultimo_aporte: linhas[linhas.length - 1]?.data ?? null,
-                por_mes: meses,
-                por_ativo: [...porTicker.entries()]
-                  .map(([ticker, valor]) => ({ ticker, total_aportado: Math.round(valor) }))
-                  .sort((a, b) => b.total_aportado - a.total_aportado),
-              };
+              return reconciliarHistoricoAportes(
+                (data ?? []).map((a) => ({
+                  data: a.data,
+                  ticker: a.ticker,
+                  quantidade: Number(a.quantidade),
+                  preco: Number(a.preco),
+                })),
+                ativosLinha,
+                desde,
+              );
             },
           }),
           historicoDividendos: tool({
