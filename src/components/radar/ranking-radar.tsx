@@ -897,6 +897,37 @@ export function RankingRadar({
           ativos sem dado ficam ao final da lista.
         </p>
       </section>
+      {/* Legenda de Cores e Zonas de Preço */}
+      <section aria-label="Legenda de zonas de preço" className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-6">
+        <div className="flex items-center gap-2">
+          <div className="size-3 shrink-0 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-500/90">Oportunidade</p>
+            <p className="truncate text-[11px] font-medium text-muted-foreground">Mínima histórica / Barata</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="size-3 shrink-0 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.4)]" />
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-sky-500/90">Acompanhar</p>
+            <p className="truncate text-[11px] font-medium text-muted-foreground">Faixa de valor justo</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="size-3 shrink-0 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-500/90">Atenção</p>
+            <p className="truncate text-[11px] font-medium text-muted-foreground">Topo de canal / Médio</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="size-3 shrink-0 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]" />
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-red-500/90">Risco</p>
+            <p className="truncate text-[11px] font-medium text-muted-foreground">Máxima histórica / Cara</p>
+          </div>
+        </div>
+      </section>
 
       {/* Pódio do critério (desktop) */}
       {pódio.length >= 2 ? (
