@@ -214,17 +214,17 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       {
         rotulo: "Valor de mercado",
         valor: brl(resumo.totalAtual, 2),
-        formula: "Σ (quantidade × preço atual) de cada ativo",
+        formula: `Exemplo: ${brl(resumo.totalAtual, 2)} = Σ (quantidade × preço atual) de cada ativo`,
       },
       {
         rotulo: "Valor investido",
         valor: brl(resumo.totalInvestido, 2),
-        formula: "Σ (quantidade × preço médio) de cada ativo",
+        formula: `Exemplo: ${brl(resumo.totalInvestido, 2)} = Σ (quantidade × preço médio) de cada ativo`,
       },
       {
         rotulo: "Variação",
         valor: brl(resumo.totalAtual - resumo.totalInvestido, 2),
-        formula: "valor de mercado − valor investido",
+        formula: `Exemplo: ${brl(resumo.totalAtual - resumo.totalInvestido, 2)} = ${brl(resumo.totalAtual, 2)} (Atual) − ${brl(resumo.totalInvestido, 2)} (Investido)`,
         tom: resumo.lucroTotal >= 0 ? "positive" : "negative",
       },
       {
@@ -262,7 +262,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       {
         rotulo: "Ganho de capital",
         valor: brl(resumo.lucroTotal, 2),
-        formula: `${brl(resumo.totalAtual, 2)} − ${brl(resumo.totalInvestido, 2)}`,
+        formula: `Cálculo: ${brl(resumo.totalAtual, 2)} (Valor Atual) − ${brl(resumo.totalInvestido, 2)} (Preço Médio) = ${brl(resumo.lucroTotal, 2)}`,
         tom: resumo.lucroTotal >= 0 ? "positive" : "negative",
       },
       {
@@ -273,13 +273,13 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       {
         rotulo: "Resultado total",
         valor: brl(resumo.lucroTotal + totalProventos, 2),
-        formula: "ganho de capital + proventos acumulados",
+        formula: `Cálculo: ${brl(resumo.lucroTotal, 2)} (Ganho) + ${brl(totalProventos, 2)} (Proventos) = ${brl(resumo.lucroTotal + totalProventos, 2)}`,
         tom: resumo.lucroTotal + totalProventos >= 0 ? "positive" : "negative",
       },
       {
         rotulo: "Retorno sobre o investido",
         valor: pct(rentComProventos, 2),
-        formula: "(ganho de capital + proventos) ÷ valor investido × 100",
+        formula: `Cálculo: ((${brl(resumo.lucroTotal, 2)} + ${brl(totalProventos, 2)}) ÷ ${brl(resumo.totalInvestido, 2)}) × 100 = ${pct(rentComProventos, 2)}`,
         tom: rentComProventos >= 0 ? "positive" : "negative",
       },
     ],
@@ -329,7 +329,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       {
         rotulo: "Rentabilidade (capital)",
         valor: pct(resumo.rentabilidade, 2),
-        formula: "(valor de mercado − valor investido) ÷ valor investido × 100",
+        formula: `Cálculo: (${brl(resumo.totalAtual, 2)} − ${brl(resumo.totalInvestido, 2)}) ÷ ${brl(resumo.totalInvestido, 2)} × 100 = ${pct(resumo.rentabilidade, 2)}`,
         tom: resumo.rentabilidade >= 0 ? "positive" : "negative",
       },
       ...(retorno12m !== null
