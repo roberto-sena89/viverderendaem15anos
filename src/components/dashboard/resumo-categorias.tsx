@@ -180,7 +180,7 @@ export function ResumoCategorias() {
                       return <Icon className="size-3.5" />;
                     })()}
                   </div>
-                  <span className="text-muted-foreground font-black uppercase text-[0.62rem] tracking-[0.15em] group-hover:text-foreground transition-colors truncate max-w-[80px]">
+                  <span className="text-muted-foreground font-black uppercase text-[0.62rem] tracking-[0.15em] group-hover:text-foreground transition-colors truncate max-w-[100px]">
                     {cat.nome}
                   </span>
                 </div>
