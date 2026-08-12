@@ -49,11 +49,11 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
             </div>
             <p className="mt-1 font-bold text-sm leading-tight">{patrimonio}</p>
             <div className="mt-1 flex items-center justify-between">
-              <div className="flex items-center gap-0.5 text-emerald-500">
+              <div className="flex items-center gap-0.5 text-primary">
                 <TrendingUp className="size-3" />
                 <span className="text-[0.5rem] font-semibold">{rendimento}</span>
               </div>
-              <span className="text-[0.45rem] font-medium text-emerald-600/90 dark:text-emerald-400/90">+R$ 93.420</span>
+              <span className="text-[0.45rem] font-medium text-primary/90 dark:text-primary/90">+R$ 93.420</span>
             </div>
           </div>
 
@@ -64,8 +64,8 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
             </div>
             <p className="mt-1 font-bold text-sm leading-tight">R$ 152.480</p>
             <div className="mt-1 flex items-center justify-between">
-              <span className="text-[0.5rem] font-semibold text-emerald-500">+18,4%</span>
-              <span className="text-[0.45rem] font-medium text-emerald-600/90 dark:text-emerald-400/90">+R$ 23.150</span>
+              <span className="text-[0.5rem] font-semibold text-primary">+18,4%</span>
+              <span className="text-[0.45rem] font-medium text-primary/90 dark:text-primary/90">+R$ 23.150</span>
             </div>
           </div>
 
@@ -75,7 +75,7 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
               <span className="text-[0.5rem] font-medium uppercase tracking-wider">Dividendos</span>
             </div>
             <p className="mt-1 font-bold text-sm leading-tight">R$ 48.920</p>
-            <span className="mt-1 block text-[0.45rem] font-medium text-emerald-600/90 dark:text-emerald-400/90">YoC: 8,4%</span>
+            <span className="mt-1 block text-[0.45rem] font-medium text-primary/90 dark:text-primary/90">YoC: 8,4%</span>
           </div>
         </div>
 
@@ -119,7 +119,7 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
                 <div className="flex items-center gap-2.5">
                   <div className={cn(
                     "flex size-8 items-center justify-center rounded-lg text-[0.5rem] font-bold shadow-sm transition-transform hover:scale-105",
-                    ativo.var >= 0 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                    ativo.var >= 0 ? "bg-primary/10 text-primary dark:text-primary" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
                   )}>
                     {ativo.ticker.substring(0, 2)}
                   </div>
@@ -129,7 +129,7 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
                       <span className="text-muted-foreground font-medium">{ativo.valor}</span>
                       <span className={cn(
                         "font-bold px-1 rounded-[2px] bg-opacity-10",
-                        ativo.var >= 0 ? "text-emerald-500 bg-emerald-500" : "text-rose-500 bg-rose-500"
+                        ativo.var >= 0 ? "text-primary bg-primary" : "text-rose-500 bg-rose-500"
                       )}>
                         {ativo.var >= 0 ? "↑" : "↓"} {Math.abs(ativo.var)}%
                       </span>
@@ -139,13 +139,13 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
                 <div className="text-right flex flex-col gap-0.5">
                   <p className={cn(
                     "font-bold text-[0.65rem] tabular-nums",
-                    ativo.lucro >= 0 ? "text-emerald-500" : "text-rose-500"
+                    ativo.lucro >= 0 ? "text-primary" : "text-rose-500"
                   )}>
                     {ativo.lucro >= 0 ? "+" : "-"} R$ {Math.abs(ativo.lucro).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                   <p className="text-[0.45rem] font-bold uppercase tracking-wider text-muted-foreground/90">
                     <span className={cn(
-                      ativo.lucroPct >= 0 ? "text-emerald-500/80" : "text-rose-500/80"
+                      ativo.lucroPct >= 0 ? "text-primary/80" : "text-rose-500/80"
                     )}>
                       {ativo.lucroPct >= 0 ? "+" : ""}{ativo.lucroPct}%
                     </span>
