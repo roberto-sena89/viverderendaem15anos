@@ -270,6 +270,27 @@ export const radarPosicoes = createServerFn({ method: "GET" })
     return { posicoes, sparklines };
   });
 
+/** Busca posições históricas em lotes maiores (usado para exportação). */
+export const radarPosicoesLote = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { tickers?: unknown } | undefined) => ({
+    tickers: Array.isArray(d?.tickers)
+      ? [...new Set(d.tickers.map((t) => String(t).trim().toUpperCase()))].slice(0, 1000)
+      : [],
+  }))
+  .handler(async ({ data }): Promise<RadarPosicoesResposta> => {
+    if (!data.tickers.length) return { posicoes: {}, sparklines: {} };
+    const radarFx = await import("@/lib/radar.server");
+    const [posicoes, sparklines] = await Promise.all([
+      (async () => {
+        const banco = await radarFx.lerPosicoesBanco();
+        return radarFx.posicoesParaTickers(data.tickers, banco.posicoes);
+      })(),
+      radarFx.sparklinesParaTickers(data.tickers),
+    ]);
+    return { posicoes, sparklines };
+  });
+
 /** Série semanal (desde o início) para o gráfico de um ativo. */
 export const radarSerie = createServerFn({ method: "GET" })
   .inputValidator((d: { ticker?: unknown } | undefined) => ({
