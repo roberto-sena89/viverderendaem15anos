@@ -16,6 +16,7 @@ import {
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
+import { DialogoAprendizado } from "@/components/ai-elements/dialogo-aprendizado";
 import {
   PromptInput,
   PromptInputTextarea,
@@ -260,6 +261,7 @@ function ChatPage() {
                 aria-hidden
               />
             </Button>
+            <DialogoAprendizado />
             <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
               <SelectTrigger
                 className="w-full min-w-0 rounded-full sm:w-40"

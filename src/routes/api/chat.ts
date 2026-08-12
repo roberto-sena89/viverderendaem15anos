@@ -376,6 +376,7 @@ export const Route = createFileRoute("/api/chat")({
           { data: dividendos },
           { data: plano },
           { data: metas },
+          { data: habilidades },
         ] = await Promise.all([
           supabase
             .from("ativos")
@@ -396,6 +397,11 @@ export const Route = createFileRoute("/api/chat")({
             )
             .maybeSingle(),
           supabase.from("metas").select("nome, alvo, ordem").order("ordem", { ascending: true }),
+          supabase
+            .from("ia_habilidades")
+            .select("nome, titulo, instrucao")
+            .eq("ativo", true)
+            .order("criado_em", { ascending: true }),
         ]);
 
         const totalAtual = (ativos ?? []).reduce(
@@ -1577,8 +1583,20 @@ export const Route = createFileRoute("/api/chat")({
                 : "",
             )
             .concat(
-              `\n\n### Carteira atual do usuário\n${contexto}\n\n### Metas financeiras do usuário\n${contextoMetas}\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`,
-            ),
+              `\n\n### Carteira atual do usuário\n${contexto}\n\n### Metas financeiras do usuário\n${contextoMetas}`,
+            )
+            .concat(
+              (habilidades ?? []).length
+                ? "\n\n### Habilidades aprendidas pelo Técnico IA (ativas)\n" +
+                    (habilidades ?? [])
+                      .map(
+                        (h) =>
+                          `#### ${h.titulo}\nO usuário ensinou esta habilidade — siga-a em todas as conversas enquanto estiver ativa.\n${h.instrucao}`,
+                      )
+                      .join("\n\n")
+                : "",
+            )
+            .concat(`\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`),
           messages: await convertToModelMessages(messages),
           tools: ferramentas,
           stopWhen: stepCountIs(50),
