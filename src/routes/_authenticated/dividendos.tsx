@@ -931,7 +931,7 @@ function PainelProventos({
         </div>
       </div>
 
-      <div className="surface-card p-6 flex flex-col">
+      <div className="surface-card p-6 flex flex-col min-h-[500px]">
         <div className="flex flex-wrap items-center gap-3">
           <p className="font-display text-xl font-bold tracking-tight">Evolução de Proventos</p>
           <div className="flex rounded-md bg-muted p-1">
