@@ -346,12 +346,12 @@ function HomePage() {
             Carteira, dividendos e independência
           </span>
 
-          <h1 className="font-hero mx-auto mt-8 max-w-4xl text-mega text-balance">
+          <h1 className="font-hero mx-auto mt-6 max-w-4xl text-mega text-balance sm:mt-8">
             Organize sua carteira e{" "}
             <span className="text-gradient-brand">viva de renda em 15 anos</span>
           </h1>
 
-          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-base leading-relaxed text-pretty sm:text-lg">
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-pretty sm:mt-6 sm:text-lg">
             {DESCRIPTION}
           </p>
 
