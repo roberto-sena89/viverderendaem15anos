@@ -26,6 +26,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 import { fmtPercent, fmtPreco } from "@/components/cotacoes/formatos";
 import {
   CORES_SCORE,
@@ -942,9 +949,26 @@ export function RankingRadar({
                 </TableHead>
                 <TableHead
                   className="hidden w-[14%] min-w-[140px] 2xl:table-cell"
-                  title="Posição da cotação entre a mínima e a máxima de 52 semanas"
                 >
-                  Faixa 52s
+                  <div className="flex items-center justify-center gap-1.5">
+                    Faixa 52s
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3.5 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[280px] leading-relaxed">
+                          <p className="font-semibold">Range de 52 Semanas</p>
+                          <p className="mt-1">
+                            Indica onde o preço atual está em relação à mínima (0%) e à máxima (100%) do último ano.
+                          </p>
+                          <p className="mt-1.5 text-emerald-500/90 font-medium italic">
+                            Valores baixos sugerem que o ativo está "barato" em relação aos preços recentes.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
                 <TableHead
                   className="hidden w-[7%] whitespace-nowrap text-right xl:table-cell"
