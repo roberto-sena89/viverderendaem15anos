@@ -36,13 +36,19 @@ export function TopAlertBar() {
     <motion.div
       initial={{ height: 0, opacity: 0 }}
       animate={{ height: "auto", opacity: 1 }}
-      className="relative z-50 border-b border-emerald-500/20 bg-emerald-950/40 backdrop-blur-md"
+      className="relative z-50 border-b border-emerald-500/20 bg-emerald-950/60 backdrop-blur-xl"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 font-mono text-[11px] tracking-tight text-emerald-100">
-        <div className="flex flex-1 items-center gap-3 overflow-hidden">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <Bell className="size-3 text-emerald-400 animate-pulse" />
-            <span className="font-bold text-emerald-400 uppercase">[RADAR ALERT]</span>
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:py-4 font-mono text-[13px] sm:text-sm tracking-tight text-emerald-100">
+        <div className="flex flex-1 items-center gap-4 sm:gap-6 overflow-hidden">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="relative">
+              <Bell className="size-4 sm:size-5 text-emerald-400 animate-pulse" />
+              <div className="absolute inset-0 size-4 sm:size-5 bg-emerald-400/20 blur-sm rounded-full animate-ping" />
+            </div>
+            <span className="font-black text-emerald-400 uppercase tracking-tighter sm:tracking-widest flex items-center gap-2">
+              <span className="hidden xs:inline">RADAR</span>
+              <span className="text-emerald-500/80">ALERT</span>
+            </span>
           </div>
 
           <AnimatePresence mode="wait">
