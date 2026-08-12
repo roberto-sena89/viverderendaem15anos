@@ -154,7 +154,7 @@ export function ResumoCategorias() {
   }
 
   return (
-    <div className="space-y-4 mb-10">
+    <div className="space-y-4 mb-10 mt-6">
       <div className="flex items-center justify-between px-3 h-4">
         <TooltipProvider>
           <div className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
