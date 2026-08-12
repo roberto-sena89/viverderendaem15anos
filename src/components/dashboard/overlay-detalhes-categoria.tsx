@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotacoes-tempo-real";
-import { brl, valorAtual, classeDoAtivo } from "@/lib/portfolio";
+import { brl, valorAtual, classeDoAtivo, arredondar } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes } from "@/lib/data";
 import { TrendingDown, TrendingUp, Wallet, ArrowRightLeft, PieChart, Lightbulb, Target } from "lucide-react";
