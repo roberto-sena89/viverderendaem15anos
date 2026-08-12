@@ -124,7 +124,7 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
                       <p
                         className={`num text-base font-bold tracking-tight ${
                           l.tom === "positive"
-                            ? "text-success"
+                            ? "text-primary dark:text-primary"
                             : l.tom === "negative"
                               ? "text-destructive"
                               : "text-foreground"
@@ -389,7 +389,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
               <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
                 {brl(resumo.totalAtual, 2)}
               </p>
-              <DeltaChip value={resumo.rentabilidade} />
+              <DeltaChip value={resumo.rentabilidade} className="bg-primary/10 text-primary border-primary/20" />
             </div>
             <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
               <div className="flex flex-col">
