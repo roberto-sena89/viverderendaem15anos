@@ -560,42 +560,38 @@ export function CarteiraGrupos({
                               </p>
                             </div>
                             {onEditar && onExcluir ? (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                                <div className="flex gap-1">
+                                  <DialogTransacao
+                                    aporte={{
+                                      id: a.id,
+                                      ticker: a.ticker,
+                                      categoria: a.categoria,
+                                      quantidade: a.quantidade,
+                                      preco: a.precoMedio,
+                                      data: new Date().toISOString().slice(0, 10),
+                                      corretora: "",
+                                      taxas: 0,
+                                    }}
+                                  >
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      title={`Editar ${a.ticker}`}
+                                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                    >
+                                      <Pencil className="size-4" />
+                                    </Button>
+                                  </DialogTransacao>
                                   <Button
-                                    size="sm"
-                                    variant="outline"
-                                    aria-label={`Ações de ${a.ticker}`}
-                                    className="h-7 gap-1 rounded-md px-1.5 text-[0.7rem] leading-none font-semibold"
+                                    size="icon"
+                                    variant="ghost"
+                                    title={`Excluir ${a.ticker}`}
+                                    onClick={() => onExcluir?.(a)}
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                   >
-                                    <Settings2 className="size-3.5" />
+                                    <Trash2 className="size-4" />
                                   </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-52">
-                                  <DropdownMenuLabel className="truncate text-xs text-muted-foreground">
-                                    {a.ticker}
-                                  </DropdownMenuLabel>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem onSelect={() => onEditar?.(a)}>
-                                    <Pencil className="size-4" /> Editar ativo
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => setEditando(a.id)}>
-                                    <Pencil className="size-4" /> Editar preço atual
-                                  </DropdownMenuItem>
-                                  {manuais[chavePreco(a.ticker)] !== undefined && (
-                                    <DropdownMenuItem onSelect={() => voltarAoAutomatico(a.ticker)}>
-                                      <CircleCheck className="size-4" /> Voltar preço automático
-                                    </DropdownMenuItem>
-                                  )}
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="text-destructive focus:text-destructive"
-                                    onSelect={() => onExcluir?.(a)}
-                                  >
-                                    <Trash2 className="size-4" /> Excluir ativo
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                                </div>
                             ) : null}
                           </div>
                         </div>
