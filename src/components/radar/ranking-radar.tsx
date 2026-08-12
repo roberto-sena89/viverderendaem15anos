@@ -337,26 +337,30 @@ function BarraHistorico({
     return <span className="text-xs text-muted-foreground">Sem histórico</span>;
   const larguraBarraHistorico = compacto ? "w-12" : "w-16 xl:w-20";
   return (
-    <div className={`flex min-w-0 items-center justify-center gap-2 ${compacto ? "flex-1" : ""}`}>
-      <div
-        className={`h-1.5 shrink-0 overflow-hidden rounded-full bg-muted ${larguraBarraHistorico}`}
-        title={
-          inicioSerie
-            ? `Posição na própria história desde ${new Date(inicioSerie).toLocaleDateString("pt-BR")}`
-            : undefined
-        }
-      >
+    <div className={`flex flex-col items-center gap-1 ${compacto ? "flex-1" : ""}`}>
+      <div className="flex items-center gap-2">
         <div
-          className={`h-full rounded-full ${corZona(percentil)}`}
-          style={{ width: `${percentil}%` }}
-        />
+          className={`h-1.5 shrink-0 overflow-hidden rounded-full bg-muted ${larguraBarraHistorico}`}
+          title={
+            inicioSerie
+              ? `Posição na própria história desde ${new Date(inicioSerie).toLocaleDateString("pt-BR")}`
+              : undefined
+          }
+        >
+          <div
+            className={`h-full rounded-full ${corZona(percentil)}`}
+            style={{ width: `${percentil}%` }}
+          />
+        </div>
+        <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+          {percentil.toFixed(0)}%
+        </span>
       </div>
-      <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-        {percentil.toFixed(0)}%
-      </span>
-      <span className="hidden shrink-0 truncate text-[10px] text-muted-foreground 2xl:inline">
-        {ROTULOS_ZONA[zona]}
-      </span>
+      <div className="flex items-center justify-center gap-1.5">
+        <span className="shrink-0 truncate text-[10px] font-medium text-muted-foreground/80 uppercase tracking-tight">
+          {ROTULOS_ZONA[zona]}
+        </span>
+      </div>
     </div>
   );
 }
