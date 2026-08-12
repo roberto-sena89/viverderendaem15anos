@@ -1,8 +1,7 @@
 import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotacoes-tempo-real";
-import { tempoRelativo } from "@/components/status-cotacoes";
 import { brl, valorAtual, arredondar, pct } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
-import { Clock, AlertTriangle, Plus, PieChart, ChevronRight } from "lucide-react";
+import { AlertTriangle, Plus, PieChart, ChevronRight } from "lucide-react";
 import { getIconeCategoria } from "@/lib/icones-categorias";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
@@ -21,7 +20,7 @@ import { DeltaChip } from "@/components/panel";
  */
 export function ResumoCategorias() {
   const { data: ativos = [] } = useAtivosAoVivo();
-  const { atualizadoEm, status } = useCotacoesTempoReal();
+  useCotacoesTempoReal();
   const { alertas } = useAlertasHistorico();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
   const [destacarTickers, setDestacarTickers] = useState<string[]>([]);
@@ -137,20 +136,6 @@ export function ResumoCategorias() {
           </div>
         </TooltipProvider>
 
-        <div
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-          className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] text-muted-foreground/50"
-          title="Sincronização automática ativa"
-        >
-          <Clock className="size-2.5" />
-          {status === "ao-vivo" && Date.now() - (atualizadoEm || 0) < 5000 ? (
-            <span className="text-success font-black animate-pulse">ao vivo</span>
-          ) : (
-            tempoRelativo(atualizadoEm)
-          )}
-        </div>
 
       </div>
 
