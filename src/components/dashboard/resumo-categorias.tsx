@@ -113,14 +113,14 @@ export function ResumoCategorias() {
   }
 
   return (
-    <div className="space-y-4 mb-10">
-      <div className="flex items-center justify-between px-3">
+    <div className="space-y-2 mb-10">
+      <div className="flex items-center justify-between px-3 h-4">
         <TooltipProvider>
-          <div className="flex items-center gap-1.5 text-[0.62rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
+          <div className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/20">
             <span>Performance</span>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="size-2.5 cursor-help hover:text-muted-foreground/60 transition-colors" />
+                <Info className="size-2.5 cursor-help hover:text-muted-foreground/50 transition-colors" />
               </TooltipTrigger>
               <TooltipContent className="max-w-[200px] text-[0.7rem] bg-background/95 backdrop-blur-xl border-border/50">
                 <p>Lucro acumulado e variação percentual por classe de ativo em relação ao custo médio.</p>
@@ -130,7 +130,7 @@ export function ResumoCategorias() {
         </TooltipProvider>
 
         <div 
-          className="flex items-center gap-1.5 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-muted-foreground/40 transition-colors hover:text-muted-foreground/70"
+          className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] text-muted-foreground/30 transition-colors hover:text-muted-foreground/60"
           title="Sincronização automática ativa"
         >
           <Clock className="size-2.5" />
