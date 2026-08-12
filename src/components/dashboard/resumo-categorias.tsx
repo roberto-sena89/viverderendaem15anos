@@ -187,7 +187,7 @@ export function ResumoCategorias() {
                   "text-[1.125rem] font-bold tabular-nums tracking-tighter leading-tight sm:text-[1.25rem]",
                   cat.lucro >= 0 ? "text-success" : "text-destructive"
                 )}>
-                  {brl(cat.lucro, 0)}
+                  {brl(cat.lucro, 2)}
                 </div>
                 
                 <div className={cn(
