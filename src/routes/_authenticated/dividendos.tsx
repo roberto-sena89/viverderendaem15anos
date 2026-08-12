@@ -933,7 +933,7 @@ function PainelProventos({
 
       <div className="surface-card p-6 flex flex-col">
         <div className="flex flex-wrap items-center gap-3">
-          <p className="font-display text-lg font-semibold">Evolução de Proventos</p>
+          <p className="font-display text-xl font-bold tracking-tight">Evolução de Proventos</p>
           <div className="flex rounded-md bg-muted p-1">
             {(["mensal", "anual"] as const).map((m) => (
               <button
@@ -971,7 +971,7 @@ function PainelProventos({
           </div>
         </div>
 
-        <div className="mt-4 h-72">
+        <div className="mt-8 h-[350px] w-full">
           {temDados ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={serie}>
