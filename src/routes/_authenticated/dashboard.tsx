@@ -266,7 +266,6 @@ function Dashboard() {
         <ResumoKpis />
         <ResumoCategorias />
       </section>
-      </section>
 
       <section id="saude" className="scroll-mt-32 sm:scroll-mt-40">
         <SaudeCarteira carteira={ativos} />
