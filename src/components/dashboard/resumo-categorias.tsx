@@ -148,7 +148,10 @@ export function ResumoCategorias() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <DashboardCard 
-                  className="group relative border-transparent hover:border-border/40"
+                  className={cn(
+                    "group relative border-transparent hover:border-border/40",
+                    categoriaSelecionada === cat.nome && "ring-2 ring-primary ring-offset-2 ring-offset-background border-primary/40 bg-primary/5"
+                  )}
                   onClick={() => {
                     const catAtivos = ativos.filter(a => a.categoria === cat.nome);
                     const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
