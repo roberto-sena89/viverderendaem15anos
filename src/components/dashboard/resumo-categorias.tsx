@@ -36,7 +36,7 @@ export function ResumoCategorias() {
       {resumoPorCategoria.map((cat) => (
         <div 
           key={cat.nome}
-          className="bg-card/40 border-border/40 hover:bg-card/60 relative overflow-hidden rounded-2xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg backdrop-blur-md group"
+          className="bg-card/40 border-border/40 hover:bg-card/60 relative flex min-h-[148px] flex-col justify-between overflow-hidden rounded-2xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg backdrop-blur-md group"
         >
           {/* Indicador de cor da categoria */}
           <div 
