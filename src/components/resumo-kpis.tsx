@@ -65,10 +65,18 @@ function CartaoResumo({
       ariaLabel={`Ver detalhes e fórmulas de ${titulo}`}
     >
       <div className="flex items-start gap-2">
-        <Icone className="size-8! shrink-0 text-foreground" />
-        <p className="min-w-0 flex-1 text-[0.875rem] leading-snug font-bold tracking-[0.06em] break-words text-balance text-foreground uppercase">
-          {titulo}
-        </p>
+        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground duration-300">
+          <Icone className="size-5 shrink-0" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.68rem] font-black tracking-[0.15em] text-muted-foreground uppercase group-hover:text-foreground transition-colors">
+            {titulo}
+          </p>
+          <span className="sr-only">Ver detalhes</span>
+        </div>
+        <div className="size-5 rounded-full border border-border/40 flex items-center justify-center text-[0.6rem] text-muted-foreground/40 group-hover:border-primary/40 group-hover:text-primary/60 transition-all">
+          ?
+        </div>
 
         <span className="hidden shrink-0 text-[0.8rem] text-foreground sm:inline">detalhes</span>
       </div>
