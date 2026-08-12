@@ -588,6 +588,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         </CartaoResumo>
 
       </div>
+      )}
 
       <PainelDetalhe detalhe={aberto} onClose={() => setAberto(null)} />
     </>
