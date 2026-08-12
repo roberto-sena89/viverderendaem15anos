@@ -385,9 +385,20 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Info className="size-2.5 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                          <button
+                            type="button"
+                            aria-describedby={tooltipHojeId}
+                            className="inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
+                          >
+                            <Info className="size-2.5 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                            <span className="sr-only">Saiba mais sobre a variação de hoje</span>
+                          </button>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-[180px] text-[0.7rem]">
+                        <TooltipContent
+                          id={tooltipHojeId}
+                          role="tooltip"
+                          className="max-w-[180px] text-[0.7rem]"
+                        >
                           Variação percentual e absoluta dos ativos considerando a última cotação do dia.
                         </TooltipContent>
                       </Tooltip>
