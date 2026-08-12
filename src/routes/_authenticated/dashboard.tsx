@@ -259,10 +259,13 @@ function Dashboard() {
 
   return (
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
-      <StatusCotacoes />
-      <AbasCarteira />
-      <ResumoCategorias />
-      <NavegacaoSecoes />
+      <div className="sticky top-[var(--altura-cabecalho-app,0px)] z-20 -mx-4 space-y-0 border-b border-border bg-background/70 px-4 pt-1 pb-2 backdrop-blur-xl sm:-mx-6 sm:px-6">
+        <StatusCotacoes />
+        <AbasCarteira />
+        <ResumoCategorias />
+        <NavegacaoSecoes />
+      </div>
+
 
       <section id="resumo" className="scroll-mt-32 sm:scroll-mt-40">
         <ResumoKpis />
