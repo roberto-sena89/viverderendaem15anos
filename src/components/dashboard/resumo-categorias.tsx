@@ -130,18 +130,18 @@ export function ResumoCategorias() {
         >
           {/* Indicador de cor da categoria */}
           <div 
-            className="absolute top-0 left-0 h-full w-1.5 opacity-80 transition-opacity group-hover:opacity-100" 
+            className="absolute top-0 left-0 h-full w-1 opacity-60 transition-all duration-300 group-hover:w-1.5 group-hover:opacity-100" 
             style={{ backgroundColor: cat.cor }}
           />
           
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5 h-full">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-muted-foreground truncate text-[0.7rem] font-bold uppercase tracking-[0.15em] opacity-80 group-hover:opacity-100">
+              <span className="text-muted-foreground truncate text-[0.65rem] font-bold uppercase tracking-[0.15em] opacity-70 group-hover:opacity-100 transition-opacity">
                 {cat.nome}
               </span>
               {cat.alertas > 0 && (
                 <div 
-                  className="flex size-4 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse"
+                  className="flex size-4 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse shrink-0"
                   title={`${cat.alertas} alerta(s) de variação relevante nas últimas 24h`}
                 >
                   <AlertTriangle className="size-2.5" />
@@ -149,21 +149,33 @@ export function ResumoCategorias() {
               )}
             </div>
             
-            <div className="flex flex-col items-baseline gap-1">
-              <span className={cn(
-                "text-[1.1rem] font-black tabular-nums tracking-tight leading-none",
+            <div className="mt-auto space-y-0.5">
+              <div className={cn(
+                "text-[1.05rem] font-black tabular-nums tracking-tight leading-none",
                 cat.lucro >= 0 ? "text-emerald-500" : "text-rose-500"
               )}>
                 {brl(cat.lucro, 2)}
-              </span>
+              </div>
               
               <div className={cn(
-                "flex items-center gap-1.5 text-[0.75rem] font-bold",
+                "flex items-center gap-1 text-[0.7rem] font-bold",
                 cat.lucro >= 0 ? "text-emerald-500/90" : "text-rose-500/90"
               )}>
-                {cat.lucro >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
+                {cat.lucro >= 0 ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
                 <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
-      </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Brilho sutil no hover */}
+          <div 
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-10"
+            style={{ 
+              background: `radial-gradient(circle at top right, ${cat.cor}, transparent 70%)` 
+            }}
+          />
+        </DashboardCard>
+      ))}
 
       <OverlayDetalhesCategoria 
         categoria={categoriaSelecionada}
@@ -171,14 +183,6 @@ export function ResumoCategorias() {
         tickersDestacados={destacarTickers}
       />
     </div>
-          </div>
-          
-          {/* Sutil gradiente de fundo no hover */}
-          <div 
-            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-5"
-            style={{ backgroundColor: cat.cor }}
-          />
-        </DashboardCard>
       ))}
       </div>
     </div>
