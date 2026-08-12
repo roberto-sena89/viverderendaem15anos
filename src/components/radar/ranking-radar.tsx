@@ -857,52 +857,53 @@ export function RankingRadar({
       {/* Tabela profissional (desktop e tablet) */}
       <div className="panel hidden w-full max-w-full md:block">
         <div className="rolagem-lateral w-full">
-          <Table className="w-full min-w-[1240px] table-fixed">
+          <Table className="w-full min-w-[720px] table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
-                  className="w-[4%] min-w-[44px] pl-4 text-center"
+                  className="w-[5%] min-w-[44px] pl-4 text-center"
                   aria-label="Posição no ranking"
                 >
                   #
                 </TableHead>
-                <TableHead className="w-[17%] min-w-[160px]">Ativo</TableHead>
+                <TableHead className="w-[24%] min-w-[170px] lg:w-[20%]">Ativo</TableHead>
                 <TableHead
-                  className="w-[9%] whitespace-nowrap text-right"
+                  className="w-[12%] whitespace-nowrap text-right"
                   title="Último preço e variação do dia"
                 >
                   Preço
                 </TableHead>
                 <TableHead
-                  className="w-[8%] whitespace-nowrap text-right"
+                  className="w-[10%] whitespace-nowrap text-right"
                   title="Rendimento por dividendos dos últimos 12 meses"
                 >
                   DY 12m
                 </TableHead>
                 <TableHead
-                  className="w-[7%] whitespace-nowrap text-right"
+                  className="hidden w-[7%] whitespace-nowrap text-right lg:table-cell"
                   title="Preço sobre valor patrimonial"
                 >
                   P/VPA
                 </TableHead>
                 <TableHead
-                  className="w-[15%] min-w-[150px]"
+                  className="hidden w-[14%] min-w-[130px] xl:table-cell"
                   title="Posição do preço na própria história: 0% = mínima · 100% = máxima"
                 >
                   Histórico
                 </TableHead>
                 <TableHead
-                  className="w-[15%] min-w-[150px]"
+                  className="hidden w-[14%] min-w-[130px] 2xl:table-cell"
                   title="Posição da cotação entre a mínima e a máxima de 52 semanas"
                 >
                   Faixa 52s
                 </TableHead>
                 <TableHead
-                  className="w-[8%] whitespace-nowrap text-right"
+                  className="hidden w-[8%] whitespace-nowrap text-right xl:table-cell"
                   title="Distância do preço até a mínima de 52 semanas"
                 >
                   Mín. 52s
                 </TableHead>
+
                 <TableHead
                   className="hidden w-[9%] whitespace-nowrap text-right 2xl:table-cell"
                   title="Risco: queda máxima desde o pico do histórico e volatilidade anual"
