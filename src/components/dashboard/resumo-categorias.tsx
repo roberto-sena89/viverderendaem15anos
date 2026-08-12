@@ -57,11 +57,12 @@ export function ResumoCategorias() {
     return () => window.clearInterval(id);
   }, []);
 
-  if (ativos.length === 0) return null;
-
   // Agrupar ativos por categoria e calcular totais
-  const categoriasUnicas = Array.from(new Set(ativos.map((a) => a.categoria)));
-  
+  const categoriasUnicas = useMemo(
+    () => Array.from(new Set(ativos.map((a) => a.categoria))),
+    [ativos]
+  );
+
   const resumoPorCategoria = useMemo(() => {
     return categoriasUnicas.map((cat) => {
       const ativosDaCat = ativos.filter((a) => a.categoria === cat);
