@@ -92,7 +92,7 @@ export function ResumoCategorias() {
   if (ativos.length === 0) return null;
 
   return (
-    <div className="space-y-3 mb-8">
+    <div className="space-y-4 mb-12">
       <div className="flex items-center justify-between px-1">
         <h2 className="text-[0.7rem] font-black uppercase tracking-[0.2em] text-muted-foreground/70">
           Performance por Categoria
