@@ -337,7 +337,7 @@ export function ResumoCategorias() {
                         <div className="flex flex-wrap items-baseline gap-2">
                           <p className={cn(
                             "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none transition-colors duration-300",
-                            cat.lucro >= 0 ? "text-positive" : "text-negative"
+                            cat.lucro === 0 ? "text-foreground" : cat.lucro >= 0 ? "text-positive" : "text-negative"
                           )}>
                             {brl(cat.lucro, 2)}
                           </p>
