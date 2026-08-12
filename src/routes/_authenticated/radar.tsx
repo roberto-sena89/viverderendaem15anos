@@ -250,6 +250,19 @@ function PaginaRadar() {
     setPagina(1);
   }, [busca, filtroSinal, filtroSetor, apenasPosicao, apenasMinimas52, categoria]);
 
+  useEffect(() => {
+    const handleAbrirAtivo = (e: any) => {
+      const ticker = e.detail?.ticker;
+      if (!ticker || !visao?.linhas) return;
+      const encontrado = visao.linhas.find(l => l.ticker === ticker);
+      if (encontrado) {
+        setSelecionado(encontrado);
+      }
+    };
+    window.addEventListener('app:abrir-radar-ativo', handleAbrirAtivo);
+    return () => window.removeEventListener('app:abrir-radar-ativo', handleAbrirAtivo);
+  }, [visao]);
+
   const { posicoes, sparklines, carregando } = useRadarPosicoes(
     linhasDaPagina.map((l) => l.ticker),
     true,
