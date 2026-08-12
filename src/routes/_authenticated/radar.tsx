@@ -433,7 +433,10 @@ function PaginaRadar() {
       title="Radar de Oportunidades"
       description="Todas as ações e FIIs da B3 comparados com a própria história — mínimas indicam oportunidade, choques exigem cautela."
     >
-      <AbasMercado />
+      <div className="sticky top-[var(--altura-cabecalho-app,0px)] z-20 -mx-4 space-y-0 border-b border-border bg-background/70 px-4 pt-1 pb-2 backdrop-blur-xl sm:-mx-6 sm:px-6">
+        <AbasMercado />
+      </div>
+
 
 
       <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">

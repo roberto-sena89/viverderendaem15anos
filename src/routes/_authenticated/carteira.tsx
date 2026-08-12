@@ -99,8 +99,11 @@ function CarteiraPage() {
 
   return (
     <AppShell title="Carteira" description={`${carteira.length} ativos · ${brl(totalAtual)}`}>
-      <StatusCotacoes />
-      <AbasCarteira />
+      <div className="sticky top-[var(--altura-cabecalho-app,0px)] z-20 -mx-4 space-y-0 border-b border-border bg-background/70 px-4 pt-1 pb-2 backdrop-blur-xl sm:-mx-6 sm:px-6">
+        <StatusCotacoes />
+        <AbasCarteira />
+      </div>
+
       <ResumoKpis mostrarLancamento />
       <div className="flex flex-col gap-2 border-b pb-2 sm:flex-row sm:items-center">
         <div className="scrollbar-none -mb-px grid grid-cols-3 gap-1 sm:flex sm:flex-1 sm:items-center sm:overflow-x-auto">
