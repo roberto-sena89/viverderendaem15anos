@@ -12,8 +12,6 @@ interface DashboardPreviewProps {
 export function DashboardPreview({ className }: DashboardPreviewProps) {
   const patrimonio = "R$ 847.350";
   const rendimento = "+12,4%";
-  const meta = "R$ 2.000.000";
-  const anosRestantes = "11 anos";
 
   const dadosGrafico = [
     { mes: "Jan", valor: 65 },
@@ -50,30 +48,34 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
               <span className="text-[0.5rem] font-medium uppercase tracking-wider">Patrimônio</span>
             </div>
             <p className="mt-1 font-bold text-sm leading-tight">{patrimonio}</p>
-            <div className="mt-1 flex items-center gap-0.5 text-emerald-500">
-              <TrendingUp className="size-3" />
-              <span className="text-[0.5rem] font-semibold">{rendimento}</span>
+            <div className="mt-1 flex items-center justify-between">
+              <div className="flex items-center gap-0.5 text-emerald-500">
+                <TrendingUp className="size-3" />
+                <span className="text-[0.5rem] font-semibold">{rendimento}</span>
+              </div>
+              <span className="text-[0.45rem] font-medium text-emerald-600/90 dark:text-emerald-400/90">+R$ 93.420</span>
             </div>
           </div>
 
           <div className="bg-card/80 border-border/40 rounded-xl border p-3">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <Target className="size-3" />
-              <span className="text-[0.5rem] font-medium uppercase tracking-wider">Meta</span>
+              <span className="text-[0.5rem] font-medium uppercase tracking-wider">Lucro Total</span>
             </div>
-            <p className="mt-1 font-bold text-sm leading-tight">{meta}</p>
-            <div className="bg-muted mt-1 h-1.5 w-full overflow-hidden rounded-full">
-              <div className="bg-primary h-full w-2/5 rounded-full" />
+            <p className="mt-1 font-bold text-sm leading-tight">R$ 152.480</p>
+            <div className="mt-1 flex items-center justify-between">
+              <span className="text-[0.5rem] font-semibold text-emerald-500">+18,4%</span>
+              <span className="text-[0.45rem] font-medium text-emerald-600/90 dark:text-emerald-400/90">+R$ 23.150</span>
             </div>
           </div>
 
           <div className="bg-card/80 border-border/40 rounded-xl border p-3">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <PieChart className="size-3" />
-              <span className="text-[0.5rem] font-medium uppercase tracking-wider">Tempo</span>
+              <span className="text-[0.5rem] font-medium uppercase tracking-wider">Dividendos</span>
             </div>
-            <p className="mt-1 font-bold text-sm leading-tight">{anosRestantes}</p>
-            <span className="text-muted-foreground text-[0.45rem]">para a liberdade</span>
+            <p className="mt-1 font-bold text-sm leading-tight">R$ 48.920</p>
+            <span className="mt-1 block text-[0.45rem] font-medium text-emerald-600/90 dark:text-emerald-400/90">YoC: 8,4%</span>
           </div>
         </div>
 
