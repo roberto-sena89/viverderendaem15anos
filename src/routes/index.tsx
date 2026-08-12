@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-// Adicione tooltips explicando como a variação em % é calculada (ex.: dia, mês ou período) em cada KPI do resumo.
+// Garante regras consistentes de arredondamento (inclusive em totais, médias e gráficos) para que os números dos cards batam com os dados subjacentes.
 //
 // IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, não simplifique, implemente EXATAMENTE o que foi pedido.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
