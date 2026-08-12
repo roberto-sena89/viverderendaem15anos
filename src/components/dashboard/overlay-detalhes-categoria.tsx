@@ -3,7 +3,7 @@ import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotaco
 import { brl, valorAtual, classeDoAtivo, arredondar } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes } from "@/lib/data";
-import { TrendingDown, TrendingUp, Wallet, ArrowRightLeft, PieChart, Lightbulb, Target } from "lucide-react";
+import { TrendingDown, TrendingUp, Wallet, ArrowRightLeft, PieChart, Lightbulb, Target, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -180,6 +180,32 @@ export function OverlayDetalhesCategoria({
             </section>
 
             <Separator className="bg-border/40" />
+
+            {/* Como calculamos */}
+            <section className="space-y-4">
+              <h3 className="flex items-center gap-2 text-[0.7rem] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <HelpCircle className="size-3.5" /> Como calculamos
+              </h3>
+              <div className="p-4 rounded-xl border border-border/40 bg-muted/20 space-y-3">
+                <div className="space-y-1">
+                  <p className="text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider">Fórmula do Lucro</p>
+                  <code className="text-[0.7rem] font-mono text-primary bg-primary/5 px-2 py-0.5 rounded block">
+                    Lucro = Total Atual - Total Investido (arredondado para 2 casas)
+                  </code>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider">Exemplo com seus dados</p>
+                  <div className="text-[0.7rem] leading-relaxed text-muted-foreground bg-background/50 p-3 rounded-lg border border-border/20">
+                    <p>Total Atual: <span className="text-foreground font-bold">{brl(totalAtual)}</span></p>
+                    <p>Total Investido: <span className="text-foreground font-bold">{brl(totalInvestido)}</span></p>
+                    <p className="mt-2 pt-2 border-t border-border/20 italic">
+                      Cálculo: {brl(totalAtual)} - {brl(totalInvestido)} = <span className={cn("font-black", lucro >= 0 ? "text-emerald-500" : "text-rose-500")}>{brl(lucro)}</span>
+                    </p>
+                    <p className="text-[0.6rem] mt-1 opacity-70 italic">* Todos os valores são arredondados individualmente antes da soma para garantir precisão.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
 
             {/* Composição */}
             <section className="space-y-4">
