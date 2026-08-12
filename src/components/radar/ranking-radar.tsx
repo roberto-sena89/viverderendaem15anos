@@ -343,7 +343,7 @@ function BarraHistorico({
 }) {
   if (percentil === null)
     return <span className="text-xs text-muted-foreground">Sem histórico</span>;
-  const larguraBarraHistorico = compacto ? "w-12" : "w-16 xl:w-20";
+  const larguraBarraHistorico = compacto ? "w-12" : "w-14 xl:w-16";
   return (
     <div className={`flex flex-col items-center gap-1 ${compacto ? "flex-1" : ""}`}>
       <div className="flex items-center gap-2">
