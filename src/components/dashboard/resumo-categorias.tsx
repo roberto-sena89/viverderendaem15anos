@@ -300,13 +300,15 @@ export function ResumoCategorias() {
                         <div className="flex items-center gap-2">
                           {cat.alertas > 0 && (
                             <div 
+                              role="img"
+                              aria-label={`${cat.alertas} alerta(s) recente(s) em ${cat.nome}`}
                               className="flex size-5 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse-slow shadow-sm"
                               title={`${cat.alertas} alerta(s)`}
                             >
                               <AlertTriangle className="size-3" />
                             </div>
                           )}
-                          <div className="size-6 flex items-center justify-center rounded-full border border-border/40 text-muted-foreground/20 group-hover:border-primary/20 group-hover:text-primary/40 transition-all">
+                          <div aria-hidden="true" className="size-6 flex items-center justify-center rounded-full border border-border/40 text-muted-foreground/40 group-hover:border-primary/30 group-hover:text-primary/60 transition-all">
                             <ChevronRight className="size-3" />
                           </div>
                         </div>
