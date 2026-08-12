@@ -586,7 +586,7 @@ function HomePage() {
 
         <section
           id="newsletter"
-          className="border-primary/30 from-primary/15 to-card mx-auto mt-16 max-w-3xl rounded-3xl border bg-gradient-to-br p-8 text-left sm:mt-24 sm:p-10"
+          className="border-primary/30 from-primary/15 to-card mx-auto mt-16 max-w-3xl rounded-2xl border bg-gradient-to-br p-6 text-left sm:mt-24 sm:rounded-3xl sm:p-10"
         >
           <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">
             Conteúdo gratuito no seu e-mail
