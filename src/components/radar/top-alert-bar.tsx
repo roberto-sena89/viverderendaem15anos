@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, ChevronRight, X, Info, TrendingUp, AlertTriangle } from "lucide-react";
+import { Bell, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useServerFn } from "@tanstack/react-start";
 import { getRadarAlertas } from "@/lib/radar-alertas.functions";
