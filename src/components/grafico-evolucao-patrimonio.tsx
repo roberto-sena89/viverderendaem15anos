@@ -169,7 +169,7 @@ export function GraficoEvolucaoPatrimonio() {
                 tickMargin={8}
               />
               <YAxis
-                tickFormatter={(v: number) => brl(v, 0)}
+                tickFormatter={(v: number) => brl(v, 2)}
                 tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
                 tickLine={false}
                 axisLine={false}
