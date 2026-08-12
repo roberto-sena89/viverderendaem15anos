@@ -514,11 +514,11 @@ function HomePage() {
             <p className="text-muted-foreground mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-pretty sm:text-base">
               Três passos do zero até a projeção da sua independência financeira.
             </p>
-            <ol className="mt-10 grid items-stretch gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <ol className="mt-8 grid items-stretch gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
               {passos.map((p, i) => (
                 <li
                   key={p.titulo}
-                  className="border-border/60 bg-card relative flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)]"
+                  className="border-border/60 bg-card relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)] sm:rounded-3xl sm:p-7"
                 >
                   <span
                     aria-hidden
