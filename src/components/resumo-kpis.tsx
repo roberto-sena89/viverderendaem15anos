@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useId } from "react";
 import { Coins, PiggyBank, Plus, TrendingUp, Wallet, Info } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
@@ -38,6 +38,7 @@ function CartaoResumo({
   children: React.ReactNode;
   tooltip?: string;
 }) {
+  const tooltipId = useId();
   return (
     <DashboardCard
       onClick={onClick}
@@ -56,9 +57,20 @@ function CartaoResumo({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
-                    <Info className="size-3 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                    <button
+                      type="button"
+                      aria-describedby={tooltipId}
+                      className="inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
+                    >
+                      <Info className="size-3 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                      <span className="sr-only">Saiba mais sobre {titulo}</span>
+                    </button>
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-[200px] text-[0.75rem] leading-relaxed">
+                  <TooltipContent
+                    id={tooltipId}
+                    role="tooltip"
+                    className="max-w-[200px] text-[0.75rem] leading-relaxed"
+                  >
                     {tooltip}
                   </TooltipContent>
                 </Tooltip>
@@ -134,6 +146,7 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
 
 /** Faixa de indicadores da carteira (padrão Investidor 10). */
 export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: boolean }) {
+  const tooltipHojeId = useId();
   const { data: ativos = [] } = useAtivosAoVivo();
   const { data: proventos = [] } = useDividendos();
   const { mapa } = useCotacoesTempoReal();
@@ -372,9 +385,20 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Info className="size-2.5 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                          <button
+                            type="button"
+                            aria-describedby={tooltipHojeId}
+                            className="inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
+                          >
+                            <Info className="size-2.5 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                            <span className="sr-only">Saiba mais sobre a variação de hoje</span>
+                          </button>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-[180px] text-[0.7rem]">
+                        <TooltipContent
+                          id={tooltipHojeId}
+                          role="tooltip"
+                          className="max-w-[180px] text-[0.7rem]"
+                        >
                           Variação percentual e absoluta dos ativos considerando a última cotação do dia.
                         </TooltipContent>
                       </Tooltip>
