@@ -219,16 +219,13 @@ export function evolucaoPatrimonio(aportes: Aporte[], totalAtual: number) {
   });
 }
 
-export const brl = (v: number, digits = 2) =>
-  (Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: digits,
-    minimumFractionDigits: digits,
-  });
+import { brl as brlFormat, pct as pctFormat, numeroBR as numeroBRFormat, formatarNumeroBR as formatarNumeroBRFormat } from "./formato-numero";
 
-export const pct = (v: number, digits = 2) =>
-  `${(Number.isFinite(v) ? v : 0).toFixed(digits).replace(".", ",")}%`;
+export const brl = brlFormat;
+export const pct = pctFormat;
+export const numeroBR = numeroBRFormat;
+export const formatarNumeroBR = formatarNumeroBRFormat;
+
 
 export interface ProjecaoInput extends PlanoConfig {
   patrimonioAtual: number;
