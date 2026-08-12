@@ -967,8 +967,8 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-right lg:table-cell">
-                  <div className="flex items-center justify-end gap-1.5">
+                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-center lg:table-cell">
+                  <div className="flex items-center justify-center gap-1.5">
                     P/VPA
                     <TooltipProvider>
                       <Tooltip>
@@ -1244,7 +1244,7 @@ export function RankingRadar({
                           />
                         </div>
                       </TableCell>
-                      <TableCell className="hidden text-right tabular-nums text-muted-foreground lg:table-cell">
+                      <TableCell className="hidden text-center tabular-nums text-muted-foreground lg:table-cell">
                         {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                       </TableCell>
                       <TableCell className="hidden xl:table-cell">
@@ -1381,8 +1381,8 @@ export function RankingRadar({
                     </dd>
                   </div>
                   <div>
-                    <dt className="t-caption">P/VPA</dt>
-                    <dd className="t-num mt-0.5">
+                    <dt className="t-caption text-center">P/VPA</dt>
+                    <dd className="t-num mt-0.5 text-center">
                       {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                     </dd>
                   </div>
