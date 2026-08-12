@@ -109,19 +109,24 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
         <div className="bg-card/80 border-border/40 rounded-xl border p-3">
           <div className="space-y-2">
             {[
-              { ticker: "PETR4", valor: "R$ 42,50", var: "+2,4%" },
-              { ticker: "HGLG11", valor: "R$ 128,90", var: "+0,8%" },
-              { ticker: "IVVB11", valor: "R$ 315,20", var: "+1,2%" },
+              { ticker: "PETR4", valor: "R$ 42,50", var: "+2,4%", varReal: "+R$ 1,02" },
+              { ticker: "HGLG11", valor: "R$ 128,90", var: "+0,8%", varReal: "+R$ 1,03" },
+              { ticker: "IVVB11", valor: "R$ 315,20", var: "+1,2%", varReal: "+R$ 3,78" },
             ].map((ativo) => (
               <div key={ativo.ticker} className="flex items-center justify-between text-[0.55rem]">
                 <div className="flex items-center gap-2">
-                  <div className="bg-muted size-6 rounded" />
+                  <div className="bg-muted flex size-6 items-center justify-center rounded text-[0.4rem] font-bold">
+                    {ativo.ticker.substring(0, 2)}
+                  </div>
                   <div>
                     <p className="font-bold">{ativo.ticker}</p>
                     <p className="text-muted-foreground">{ativo.valor}</p>
                   </div>
                 </div>
-                <span className="text-emerald-500 font-semibold">{ativo.var}</span>
+                <div className="text-right">
+                  <p className="text-emerald-500 font-bold">{ativo.var}</p>
+                  <p className="text-[0.45rem] font-medium text-muted-foreground/80">{ativo.varReal}</p>
+                </div>
               </div>
             ))}
           </div>
