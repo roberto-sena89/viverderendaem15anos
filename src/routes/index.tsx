@@ -375,7 +375,7 @@ function HomePage() {
             </Button>
           </div>
 
-          <dl className="relative mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-3 rounded-3xl bg-card/40 p-3 shadow-[var(--shadow-float)] backdrop-blur-md sm:mt-20 sm:grid-cols-4 sm:gap-4 sm:p-4">
+          <dl className="relative mx-auto mt-12 grid max-w-4xl grid-cols-2 gap-2 rounded-2xl bg-card/40 p-2 shadow-[var(--shadow-float)] backdrop-blur-md sm:mt-20 sm:grid-cols-4 sm:gap-4 sm:rounded-3xl sm:p-4">
             <div
               aria-hidden
               className="absolute -inset-4 -z-10 rounded-[2.5rem] bg-primary/25 blur-3xl"
@@ -383,12 +383,12 @@ function HomePage() {
             {numeros.map((n) => (
               <div
                 key={n.label}
-                className="border-border/60 bg-card rounded-2xl border p-5 text-left shadow-[var(--shadow-soft)] transition-colors hover:border-primary/40"
+                className="border-border/60 bg-card rounded-xl border p-3.5 text-left shadow-[var(--shadow-soft)] transition-colors hover:border-primary/40 sm:rounded-2xl sm:p-5"
               >
-                <dt className="font-hero text-accent-warm-strong text-2xl font-bold tracking-tight tabular-nums">
+                <dt className="font-hero text-accent-warm-strong text-xl font-bold tracking-tight tabular-nums sm:text-2xl">
                   <NumeroAnimado texto={n.valor} />
                 </dt>
-                <dd className="text-muted-foreground mt-1.5 text-[0.68rem] leading-snug font-semibold tracking-wide uppercase text-pretty">
+                <dd className="text-muted-foreground mt-1 text-[0.6rem] leading-tight font-semibold tracking-wide uppercase text-pretty sm:mt-1.5 sm:text-[0.68rem] sm:leading-snug">
                   {n.label}
                 </dd>
               </div>
