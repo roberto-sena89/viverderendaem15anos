@@ -69,10 +69,10 @@ export function ResumoCategorias() {
   const resumoPorCategoria = useMemo(() => {
     return categoriasUnicas.map((cat) => {
       const ativosDaCat = ativos.filter((a) => a.categoria === cat);
-      const totalInvestido = ativosDaCat.reduce((sum, a) => sum + (Number(a.quantidade) * Number(a.precoMedio)), 0);
-      const totalAtual = ativosDaCat.reduce((sum, a) => sum + valorAtual(a), 0);
+      const totalInvestido = ativosDaCat.reduce((sum, a) => sum + arredondar(Number(a.quantidade) * Number(a.precoMedio)), 0);
+      const totalAtual = ativosDaCat.reduce((sum, a) => sum + arredondar(valorAtual(a)), 0);
       const lucro = arredondar(totalAtual - totalInvestido);
-      const lucroPct = totalInvestido > 0 ? (lucro / totalInvestido) * 100 : 0;
+      const lucroPct = totalInvestido > 0 ? arredondar((lucro / totalInvestido) * 100) : 0;
       
       const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
       const tickersDaCat = new Set(ativosDaCat.map(a => a.ticker.toUpperCase().replace(/\.SA$/i, "")));

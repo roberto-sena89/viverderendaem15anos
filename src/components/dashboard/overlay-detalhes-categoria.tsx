@@ -33,10 +33,10 @@ export function OverlayDetalhesCategoria({
     .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
     .slice(0, 10);
 
-  const totalInvestido = ativosDaCat.reduce((sum, a) => sum + (Number(a.quantidade) * Number(a.precoMedio)), 0);
-  const totalAtual = ativosDaCat.reduce((sum, a) => sum + valorAtual(a), 0);
-  const lucro = totalAtual - totalInvestido;
-  const lucroPct = totalInvestido > 0 ? (lucro / totalInvestido) * 100 : 0;
+  const totalInvestido = ativosDaCat.reduce((sum, a) => sum + arredondar(Number(a.quantidade) * Number(a.precoMedio)), 0);
+  const totalAtual = ativosDaCat.reduce((sum, a) => sum + arredondar(valorAtual(a)), 0);
+  const lucro = arredondar(totalAtual - totalInvestido);
+  const lucroPct = totalInvestido > 0 ? arredondar((lucro / totalInvestido) * 100) : 0;
   const cor = corCategoria(categoria);
 
   // Insights
