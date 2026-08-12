@@ -1,6 +1,6 @@
 import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotacoes-tempo-real";
 import { tempoRelativo } from "@/components/status-cotacoes";
-import { brl, valorAtual } from "@/lib/portfolio";
+import { brl, valorAtual, arredondar } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { TrendingDown, TrendingUp, Clock, AlertTriangle, Plus, PieChart, ChevronRight } from "lucide-react";
 import { getIconeCategoria } from "@/lib/icones-categorias";
@@ -71,7 +71,7 @@ export function ResumoCategorias() {
       const ativosDaCat = ativos.filter((a) => a.categoria === cat);
       const totalInvestido = ativosDaCat.reduce((sum, a) => sum + (Number(a.quantidade) * Number(a.precoMedio)), 0);
       const totalAtual = ativosDaCat.reduce((sum, a) => sum + valorAtual(a), 0);
-      const lucro = totalAtual - totalInvestido;
+      const lucro = arredondar(totalAtual - totalInvestido);
       const lucroPct = totalInvestido > 0 ? (lucro / totalInvestido) * 100 : 0;
       
       const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
