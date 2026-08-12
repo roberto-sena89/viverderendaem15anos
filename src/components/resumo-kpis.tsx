@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Coins, PiggyBank, Plus, TrendingUp, Wallet } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { DashboardCard } from "./dashboard/dashboard-card";
@@ -18,35 +19,6 @@ import { useDividendos } from "@/lib/data";
 import { useDesempenho12m } from "@/lib/desempenho-12m";
 import { brl, dividendos12m, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
-function Indicador({
-  rotulo,
-  valor,
-  tom = "default",
-  serie,
-}: {
-  rotulo: string;
-  valor: string;
-  tom?: "default" | "positive" | "negative";
-  serie?: "patrimonio" | "investido";
-}) {
-  const classeSerie =
-    serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
-  const cor = serie
-    ? classeSerie
-    : tom === "positive"
-      ? "text-success"
-      : tom === "negative"
-        ? "text-destructive"
-        : "text-foreground";
-  return (
-    <div className="min-w-0">
-      <p className={`truncate text-[0.875rem] text-foreground ${serie ? "rotulo-serie" : ""}`}>
-        {rotulo}
-      </p>
-      <p className={`num truncate text-sm font-semibold ${cor}`}>{valor}</p>
-    </div>
-  );
-}
 
 function CartaoResumo({
   titulo,
@@ -65,14 +37,19 @@ function CartaoResumo({
       ariaLabel={`Ver detalhes e fórmulas de ${titulo}`}
     >
       <div className="flex items-start gap-2">
-        <Icone className="size-8! shrink-0 text-foreground" />
-        <p className="min-w-0 flex-1 text-[0.875rem] leading-snug font-bold tracking-[0.06em] break-words text-balance text-foreground uppercase">
-          {titulo}
-        </p>
-
-        <span className="hidden shrink-0 text-[0.8rem] text-foreground sm:inline">detalhes</span>
+        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground duration-300">
+          <Icone className="size-5 shrink-0" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.68rem] font-black tracking-[0.15em] text-muted-foreground uppercase group-hover:text-foreground transition-colors">
+            {titulo}
+          </p>
+          <span className="sr-only">Ver detalhes</span>
+        </div>
+        <div className="size-5 rounded-full border border-border/40 flex items-center justify-center text-[0.6rem] text-muted-foreground/40 group-hover:border-primary/40 group-hover:text-primary/60 transition-all">
+          ?
+        </div>
       </div>
-
       <div className="mt-3">{children}</div>
     </DashboardCard>
   );
@@ -353,23 +330,30 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={Wallet}
           onClick={() => setAberto(detalhePatrimonio)}
         >
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="t-metric serie-patrimonio">{brl(resumo.totalAtual, 2)}</p>
-            <DeltaChip value={resumo.rentabilidade} />
-          </div>
-          <div className={`mt-3 ${variacaoHoje ? "grid grid-cols-2 gap-3" : ""}`}>
-            <Indicador
-              rotulo="Valor investido"
-              valor={brl(resumo.totalInvestido, 2)}
-              serie="investido"
-            />
-            {variacaoHoje ? (
-              <Indicador
-                rotulo="Hoje (mercado)"
-                valor={`${fmtDelta(variacaoHoje.delta)} · ${fmtPctDelta(variacaoHoje.pct)}`}
-                tom={variacaoHoje.delta >= 0 ? "positive" : "negative"}
-              />
-            ) : null}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
+                {brl(resumo.totalAtual, 0)}
+              </p>
+              <DeltaChip value={resumo.rentabilidade} />
+            </div>
+            <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+              <div className="flex flex-col">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Investido</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{brl(resumo.totalInvestido, 0)}</span>
+              </div>
+              {variacaoHoje ? (
+                <div className="flex flex-col items-end">
+                  <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Hoje</span>
+                  <span className={cn(
+                    "text-xs font-bold tabular-nums",
+                    variacaoHoje.delta >= 0 ? "text-success" : "text-destructive"
+                  )}>
+                    {fmtDelta(Math.round(variacaoHoje.delta))}
+                  </span>
+                </div>
+              ) : null}
+            </div>
           </div>
         </CartaoResumo>
 
@@ -378,16 +362,26 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={PiggyBank}
           onClick={() => setAberto(detalheLucro)}
         >
-          <p className={`t-metric ${resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"}`}>
-            {brl(resumo.lucroTotal, 2)}
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Indicador
-              rotulo="Ganho de capital"
-              valor={brl(resumo.lucroTotal, 2)}
-              tom={resumo.lucroTotal >= 0 ? "positive" : "negative"}
-            />
-            <Indicador rotulo="Dividendos recebidos" valor={brl(totalProventos, 2)} />
+          <div className="flex flex-col gap-2">
+            <p className={cn(
+              "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
+              resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
+            )}>
+              {brl(resumo.lucroTotal, 0)}
+            </p>
+            <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+              <div className="flex flex-col">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Capital</span>
+                <span className={cn(
+                  "text-xs font-bold tabular-nums",
+                  resumo.lucroTotal >= 0 ? "text-success/80" : "text-destructive/80"
+                )}>{brl(resumo.lucroTotal, 0)}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Dividendos</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{brl(totalProventos, 0)}</span>
+              </div>
+            </div>
           </div>
         </CartaoResumo>
 
@@ -396,10 +390,20 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={Coins}
           onClick={() => setAberto(detalheProventos)}
         >
-          <p className="t-metric">{brl(recebidos12m, 2)}</p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Indicador rotulo="Total" valor={brl(totalProventos, 2)} />
-            <Indicador rotulo="Média mensal" valor={brl(recebidos12m / 12, 2)} />
+          <div className="flex flex-col gap-2">
+            <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
+              {brl(recebidos12m, 0)}
+            </p>
+            <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+              <div className="flex flex-col">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Histórico</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{brl(totalProventos, 0)}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Média</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{brl(Math.round(recebidos12m / 12), 0)}</span>
+              </div>
+            </div>
           </div>
         </CartaoResumo>
 
@@ -408,35 +412,30 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={TrendingUp}
           onClick={() => setAberto(detalheRentabilidade)}
         >
-          <div className="grid grid-cols-2 gap-3">
-            <div className="min-w-0">
-              <p className="text-[0.875rem] text-foreground">12 meses</p>
-              <p
-                className={`t-metric-sm truncate ${
-                  retorno12m === null
-                    ? "text-muted-foreground"
-                    : retorno12m >= 0
-                      ? "text-success"
-                      : "text-destructive"
-                }`}
-              >
-                {retorno12m === null ? "—" : pct(retorno12m, 2)}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <p className={cn(
+                "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
+                resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
+              )}>
+                {pct(resumo.rentabilidade, 1)}
               </p>
+              <span className="text-[0.62rem] font-bold text-muted-foreground uppercase tracking-widest">Total</span>
             </div>
-            <div className="min-w-0 border-l border-border pl-3">
-              <p className="text-[0.875rem] text-foreground">Total</p>
-              <p
-                className={`t-metric-sm truncate ${
-                  resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
-                }`}
-              >
-                {pct(resumo.rentabilidade, 2)}
-              </p>
+            <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+              <div className="flex flex-col">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">12 Meses</span>
+                <span className={cn(
+                  "text-xs font-bold tabular-nums",
+                  retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-success/80" : "text-destructive/80"
+                )}>{retorno12m === null ? "—" : pct(retorno12m, 2)}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Yield</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{pct(resumo.dyCarteira, 2)}</span>
+              </div>
             </div>
           </div>
-          <p className="mt-3 text-[0.875rem] text-foreground">
-            DY da carteira: {pct(resumo.dyCarteira, 2)}
-          </p>
         </CartaoResumo>
       </div>
 
