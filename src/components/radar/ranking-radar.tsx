@@ -983,7 +983,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="hidden w-[14%] min-w-[140px] text-center xl:table-cell">
+                <TableHead className="hidden w-[10%] min-w-[100px] text-center xl:table-cell">
                   <div className="flex items-center justify-center gap-1.5">
                     Histórico
                     <TooltipProvider>
