@@ -459,6 +459,77 @@ export function ModalRadar({
             </section>
 
             <section className="rounded-lg border p-4">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <FlaskConical className="size-4 text-primary" aria-hidden />
+                  Backtest Rápido: Estratégia do Radar vs BOVA11
+                </h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPedidoBacktest(true)}
+                  disabled={pedidoBacktest || backtestQuery.isFetching}
+                  className="h-8 gap-1.5 text-xs font-semibold"
+                >
+                  {backtestQuery.isFetching ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <FlaskConical className="size-3.5" />
+                  )}
+                  Executar Simulação
+                </Button>
+              </div>
+
+              {!pedidoBacktest ? (
+                <div className="rounded-md bg-muted/30 p-4 text-center">
+                  <p className="text-xs text-muted-foreground">
+                    Compare a performance de comprar nas mínimas de 52 semanas deste ativo contra o índice Bovespa.
+                  </p>
+                </div>
+              ) : backtestQuery.isFetching ? (
+                <div className="flex h-24 items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="size-4 animate-spin" />
+                  Rodando simulação histórica...
+                </div>
+              ) : backtestQuery.data ? (
+                <div className="grid gap-4">
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div className="rounded-md border p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Retorno Radar</p>
+                      <p className={`text-sm font-bold ${backtestQuery.data.retornoTotalPct >= 0 ? "text-positive" : "text-negative"}`}>
+                        {fmtPct(backtestQuery.data.retornoTotalPct, 1)}
+                      </p>
+                    </div>
+                    <div className="rounded-md border p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Retorno BOVA11</p>
+                      <p className={`text-sm font-bold ${backtestQuery.data.buyHoldPct >= 0 ? "text-positive" : "text-negative"}`}>
+                        {fmtPct(backtestQuery.data.buyHoldPct, 1)}
+                      </p>
+                    </div>
+                    <div className="rounded-md border p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Taxa Acerto</p>
+                      <p className="text-sm font-bold text-primary">
+                        {fmtPct(backtestQuery.data.taxaAcertoPct, 0)}
+                      </p>
+                    </div>
+                    <div className="rounded-md border p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Negócios</p>
+                      <p className="text-sm font-bold">{backtestQuery.data.negocios}</p>
+                    </div>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-muted-foreground italic">
+                    Simulação: Compra em {ticker} quando ≤2% acima da mínima de 52s. Alvo: +20% ou Stop: -12%. 
+                    Período: ~{backtestQuery.data.anos.toFixed(1)} anos. Benchmark: Buy & Hold BOVA11.
+                  </p>
+                </div>
+              ) : backtestQuery.isError ? (
+                <div className="rounded-md bg-destructive/5 p-4 text-center text-xs text-destructive">
+                  Não foi possível processar o backtest para este ativo.
+                </div>
+              ) : null}
+            </section>
+
+            <section className="rounded-lg border p-4">
               <h3 className="mb-2 text-sm font-semibold">Janela de 52 semanas e risco</h3>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <Campo rotulo="Mínima 52 semanas" valor={fmtBrl(posicao?.minimo52s)} />
