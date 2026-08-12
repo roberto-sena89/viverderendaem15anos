@@ -3,6 +3,7 @@ import { Coins, PiggyBank, Plus, TrendingUp, Wallet } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { DialogTransacao } from "@/components/dialog-transacao";
+import { DashboardCard } from "./dashboard/dashboard-card";
 
 import {
   Dialog,
@@ -46,8 +47,6 @@ function Indicador({
     </div>
   );
 }
-
-import { DashboardCard } from "./dashboard/dashboard-card";
 
 function CartaoResumo({
   titulo,
