@@ -385,24 +385,6 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
 
   return (
     <>
-      <div
-        role="status"
-        aria-live="polite"
-        className="flex items-center justify-end gap-1.5 px-2 sm:px-0 text-[0.65rem] font-bold uppercase tracking-wider text-muted-foreground/70"
-      >
-        <span
-          className={cn(
-            "size-1.5 rounded-full",
-            atualizando ? "bg-primary animate-pulse" : "bg-positive",
-          )}
-        />
-        {atualizando
-          ? "Atualizando cotações…"
-          : atualizadoEm
-            ? `Atualizado às ${new Date(atualizadoEm).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`
-            : "Dados ao vivo"}
-      </div>
-
       {mostrarLancamento && (
         <div className="flex justify-start px-2 sm:px-0">
           <DialogTransacao>
