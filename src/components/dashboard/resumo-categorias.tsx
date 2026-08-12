@@ -2,7 +2,8 @@ import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotaco
 import { tempoRelativo } from "@/components/status-cotacoes";
 import { brl, valorAtual } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
-import { TrendingDown, TrendingUp, Clock, AlertTriangle, Plus, PieChart } from "lucide-react";
+import { TrendingDown, TrendingUp, Clock, AlertTriangle, Plus, PieChart, ChevronRight } from "lucide-react";
+import { getIconeCategoria } from "@/lib/icones-categorias";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
 import { useState, useEffect, useMemo } from "react";
@@ -170,24 +171,36 @@ export function ResumoCategorias() {
               style={{ background: `radial-gradient(circle at center, ${cat.cor}, transparent)` }}
             />
             
-            <div className="flex flex-col gap-1.5 h-full items-center justify-center relative z-10">
-              <div className="flex items-center justify-center w-full relative px-2">
-                <span className="text-muted-foreground font-black uppercase text-[0.62rem] tracking-[0.2em] group-hover:text-foreground transition-colors">
-                  {cat.nome}
-                </span>
-                {cat.alertas > 0 && (
-                  <div 
-                    className="absolute -right-1 flex size-3.5 items-center justify-center rounded-full bg-rose-500 text-rose-50 animate-pulse-slow shadow-sm"
-                    title={`${cat.alertas} alerta(s)`}
-                  >
-                    <AlertTriangle className="size-2" />
+            <div className="flex flex-col gap-2 h-full items-center justify-center relative z-10 w-full">
+              <div className="flex items-center justify-between w-full relative px-1">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-6 items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
+                    {(() => {
+                      const Icon = getIconeCategoria(cat.nome);
+                      return <Icon className="size-3.5" />;
+                    })()}
                   </div>
-                )}
+                  <span className="text-muted-foreground font-black uppercase text-[0.62rem] tracking-[0.15em] group-hover:text-foreground transition-colors truncate max-w-[80px]">
+                    {cat.nome}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  {cat.alertas > 0 && (
+                    <div 
+                      className="flex size-4 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse-slow shadow-sm"
+                      title={`${cat.alertas} alerta(s)`}
+                    >
+                      <AlertTriangle className="size-2.5" />
+                    </div>
+                  )}
+                  <ChevronRight className="size-3 text-muted-foreground/20 group-hover:text-primary/40 group-hover:translate-x-0.5 transition-all" />
+                </div>
               </div>
               
-              <div className="flex flex-col items-center justify-center -space-y-0.5">
+              <div className="flex flex-col items-center justify-center -space-y-0.5 w-full">
                 <div className={cn(
-                  "text-[1.125rem] font-bold tabular-nums tracking-tighter leading-tight sm:text-[1.25rem]",
+                  "text-[1.125rem] font-bold tabular-nums tracking-tighter leading-tight sm:text-[1.375rem] group-hover:scale-105 transition-transform duration-300",
                   cat.lucro >= 0 ? "text-success" : "text-destructive"
                 )}>
                   {brl(cat.lucro, 2)}
