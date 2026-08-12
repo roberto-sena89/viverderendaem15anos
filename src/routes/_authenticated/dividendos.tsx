@@ -132,8 +132,11 @@ function DividendosPage() {
       <div className="flex justify-start px-2 sm:px-0">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="size-5" /> Novo provento
+            <Button
+              className="font-display h-12 gap-2 bg-primary px-6 text-[15px] font-bold tracking-tight text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.98] sm:h-11"
+            >
+              <Plus className="size-5" strokeWidth={3} />
+              <span>Novo Provento</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">

@@ -368,16 +368,16 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           <DialogTransacao>
             <Button
               size="default"
-              className="font-display gap-2 bg-primary px-5 text-[15px] font-semibold tracking-[0.01em] text-primary-foreground shadow-sm hover:bg-primary/90"
+              className="font-display h-12 gap-2 bg-primary px-6 text-[15px] font-bold tracking-tight text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.98] sm:h-11"
             >
-              <Plus className="size-5" />
-              Adicionar Lançamento
+              <Plus className="size-5" strokeWidth={3} />
+              <span>Adicionar Lançamento</span>
             </Button>
           </DialogTransacao>
         </div>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0">
         <CartaoResumo
           titulo="Patrimônio total"
           icone={Wallet}
@@ -386,7 +386,10 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         >
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
-              <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
+              <p className={cn(
+                "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none group-hover:text-primary transition-colors duration-300",
+                resumo.totalAtual >= resumo.totalInvestido ? "text-foreground" : "text-destructive"
+              )}>
                 {brl(resumo.totalAtual, 2)}
               </p>
               <DeltaChip value={resumo.rentabilidade} className="bg-primary/10 text-primary border-primary/20 dark:bg-primary/20" />
@@ -424,7 +427,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                   </div>
                   <span className={cn(
                     "text-xs font-bold tabular-nums",
-                    variacaoHoje.delta >= 0 ? "text-success" : "text-destructive"
+                    variacaoHoje.delta >= 0 ? "text-primary" : "text-destructive"
                   )}>
                     {fmtDelta(variacaoHoje.delta)}
                   </span>
@@ -443,7 +446,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           <div className="flex flex-col gap-2">
             <p className={cn(
               "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
-              resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
+              resumo.lucroTotal >= 0 ? "text-primary" : "text-destructive"
             )}>
               {brl(resumo.lucroTotal, 2)}
             </p>
@@ -452,7 +455,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                 <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Capital</span>
                 <span className={cn(
                   "text-xs font-bold tabular-nums",
-                  resumo.lucroTotal >= 0 ? "text-success/80" : "text-destructive/80"
+                  resumo.lucroTotal >= 0 ? "text-primary/80" : "text-destructive/80"
                 )}>{brl(resumo.lucroTotal, 2)}</span>
               </div>
               <div className="flex flex-col items-end">
@@ -496,7 +499,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
             <div className="flex flex-wrap items-baseline gap-2">
               <p className={cn(
                 "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
-                resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
+                resumo.rentabilidade >= 0 ? "text-primary" : "text-destructive"
               )}>
                 {pct(resumo.rentabilidade, 2)}
               </p>
@@ -531,7 +534,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                 </div>
                 <span className={cn(
                   "text-xs font-bold tabular-nums",
-                  retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-success/80" : "text-destructive/80"
+                  retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-primary/80" : "text-destructive/80"
                 )}>{retorno12m === null ? "—" : pct(retorno12m, 2)}</span>
               </div>
               <div className="flex flex-col items-end">
