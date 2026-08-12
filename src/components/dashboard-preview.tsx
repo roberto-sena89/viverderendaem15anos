@@ -109,9 +109,9 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
         <div className="bg-card/80 border-border/40 rounded-xl border p-3">
           <div className="space-y-2">
             {[
-              { ticker: "PETR4", valor: "R$ 42,50", var: "+2,4%", varReal: "+R$ 1,02" },
-              { ticker: "HGLG11", valor: "R$ 128,90", var: "+0,8%", varReal: "+R$ 1,03" },
-              { ticker: "IVVB11", valor: "R$ 315,20", var: "+1,2%", varReal: "+R$ 3,78" },
+              { ticker: "PETR4", valor: "R$ 42,50", var: 2.4, varReal: 1.02 },
+              { ticker: "HGLG11", valor: "R$ 128,90", var: -0.8, varReal: -1.03 },
+              { ticker: "IVVB11", valor: "R$ 315,20", var: 1.2, varReal: 3.78 },
             ].map((ativo) => (
               <div key={ativo.ticker} className="flex items-center justify-between text-[0.55rem]">
                 <div className="flex items-center gap-2">
@@ -124,8 +124,15 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-emerald-500 font-bold">{ativo.var}</p>
-                  <p className="text-[0.45rem] font-medium text-muted-foreground/80">{ativo.varReal}</p>
+                  <p className={cn(
+                    "font-bold flex items-center justify-end gap-0.5",
+                    ativo.var >= 0 ? "text-emerald-500" : "text-rose-500"
+                  )}>
+                    {ativo.var >= 0 ? "+" : ""}{ativo.var}%
+                  </p>
+                  <p className="text-[0.45rem] font-medium text-muted-foreground/80">
+                    {ativo.varReal >= 0 ? "+" : "-"}R$ {Math.abs(ativo.varReal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </p>
                 </div>
               </div>
             ))}
