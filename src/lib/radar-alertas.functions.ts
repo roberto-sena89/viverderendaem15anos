@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 
-
 export const getRadarAlertas = createServerFn({ method: "GET" })
   .middleware([])
   .handler(async () => {
@@ -16,10 +15,10 @@ export const getRadarAlertas = createServerFn({ method: "GET" })
         detalhes: {
           ranking: { de: 12, para: 3 },
           dy12m: 14.5,
-          preco: 34.20,
+          preco: 34.2,
           zona: "Mínima",
           variacao: -2.4,
-          serie: [38, 37, 36, 35, 34.2, 34.5, 34.2]
+          serie: [38, 37, 36, 35, 34.2, 34.5, 34.2],
         },
         criadoEm: new Date().toISOString(),
       },
@@ -35,9 +34,10 @@ export const getRadarAlertas = createServerFn({ method: "GET" })
           preco: 62.15,
           zona: "Barata",
           variacao: 1.2,
-          serie: [60, 61, 59, 60, 61, 62, 62.15]
+          serie: [60, 61, 59, 60, 61, 62, 62.15],
         },
         criadoEm: new Date().toISOString(),
-      }
+      },
     ];
   });
+
