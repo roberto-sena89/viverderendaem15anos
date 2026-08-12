@@ -1,5 +1,5 @@
 import { useMemo, useState, useId } from "react";
-import { Coins, PiggyBank, Plus, TrendingUp, Wallet, Info, AlertTriangle, RefreshCw } from "lucide-react";
+import { Coins, PiggyBank, Plus, TrendingUp, Wallet, Info } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -165,31 +165,9 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
 /** Faixa de indicadores da carteira (padrão Investidor 10). */
 export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: boolean }) {
   const tooltipHojeId = useId();
-  const {
-    data: ativos = [],
-    isLoading: carregandoAtivos,
-    isError: erroAtivos,
-    isFetching: buscandoAtivos,
-    refetch: recarregarAtivos,
-  } = useAtivosAoVivo();
-  const {
-    data: proventos = [],
-    isLoading: carregandoProventos,
-    isError: erroProventos,
-    isFetching: buscandoProventos,
-    refetch: recarregarProventos,
-  } = useDividendos();
-  const { mapa, atualizadoEm, carregando: carregandoCotacoes, atualizarAgora } =
-    useCotacoesTempoReal();
-
-  const carregandoInicial = carregandoAtivos || carregandoProventos;
-  const houveErro = erroAtivos || erroProventos;
-  const atualizando = buscandoAtivos || buscandoProventos || carregandoCotacoes;
-  const recarregar = () => {
-    void recarregarAtivos();
-    void recarregarProventos();
-    atualizarAgora();
-  };
+  const { data: ativos = [] } = useAtivosAoVivo();
+  const { data: proventos = [] } = useDividendos();
+  const { mapa } = useCotacoesTempoReal();
   const [aberto, setAberto] = useState<Detalhe | null>(null);
 
   const tickers = useMemo(() => ativos.map((a) => a.ticker), [ativos]);
