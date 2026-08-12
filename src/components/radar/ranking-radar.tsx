@@ -935,7 +935,7 @@ export function RankingRadar({
                   P/VPA
                 </TableHead>
                 <TableHead
-                  className="hidden w-[10%] min-w-[120px] text-center xl:table-cell"
+                  className="hidden w-[14%] min-w-[140px] text-center xl:table-cell"
                   title="Posição do preço na própria história: 0% = mínima · 100% = máxima"
                 >
                   Histórico
