@@ -105,37 +105,55 @@ interface Detalhe {
 function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose: () => void }) {
   return (
     <Dialog open={!!detalhe} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         {detalhe && (
           <>
-            <DialogHeader>
-              <DialogTitle>{detalhe.titulo}</DialogTitle>
-              <DialogDescription>{detalhe.descricao}</DialogDescription>
+            <DialogHeader className="mb-4">
+              <DialogTitle className="text-xl">{detalhe.titulo}</DialogTitle>
+              <DialogDescription className="text-sm leading-relaxed">
+                {detalhe.descricao}
+              </DialogDescription>
             </DialogHeader>
-            <div className="divide-y divide-border rounded-md border border-border">
-              {detalhe.linhas.map((l) => (
-                <div key={l.rotulo} className="p-3">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-sm font-medium">{l.rotulo}</p>
-                    <p
-                      className={`num text-sm font-semibold ${
-                        l.tom === "positive"
-                          ? "text-success"
-                          : l.tom === "negative"
-                            ? "text-destructive"
-                            : "text-foreground"
-                      }`}
-                    >
-                      {l.valor}
-                    </p>
+
+            <div className="space-y-4">
+              <div className="divide-y divide-border rounded-xl border border-border bg-card/50">
+                {detalhe.linhas.map((l) => (
+                  <div key={l.rotulo} className="p-4 transition-colors hover:bg-muted/30">
+                    <div className="flex items-baseline justify-between gap-3 mb-1.5">
+                      <p className="text-sm font-semibold text-foreground/90">{l.rotulo}</p>
+                      <p
+                        className={`num text-base font-bold tracking-tight ${
+                          l.tom === "positive"
+                            ? "text-success"
+                            : l.tom === "negative"
+                              ? "text-destructive"
+                              : "text-foreground"
+                        }`}
+                      >
+                        {l.valor}
+                      </p>
+                    </div>
+                    {l.formula && (
+                      <div className="rounded-lg bg-background/50 p-2.5 mt-2 border border-border/40">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Info className="size-3 text-primary/60" />
+                          <span className="text-[0.65rem] font-bold uppercase tracking-wider text-muted-foreground">Fórmula e Cálculo</span>
+                        </div>
+                        <p className="font-mono text-[0.82rem] leading-relaxed text-muted-foreground/90 break-words">
+                          {l.formula}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  {l.formula && (
-                    <p className="num mt-1 text-[0.82rem] break-words text-muted-foreground">
-                      {l.formula}
-                    </p>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">Exemplo Prático</p>
+                <p className="text-sm text-muted-foreground leading-relaxed italic">
+                  Os valores acima são calculados em tempo real com base nos seus ativos atuais ({detalhe.linhas.find(l => l.rotulo === "Ativos na carteira")?.valor || "registrados"}). Ao clicar em cada card do resumo, você acessa a memória de cálculo específica daquela métrica.
+                </p>
+              </div>
             </div>
           </>
         )}
@@ -196,17 +214,17 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       {
         rotulo: "Valor de mercado",
         valor: brl(resumo.totalAtual, 2),
-        formula: "Σ (quantidade × preço atual) de cada ativo",
+        formula: `Exemplo: ${brl(resumo.totalAtual, 2)} = Σ (quantidade × preço atual) de cada ativo`,
       },
       {
         rotulo: "Valor investido",
         valor: brl(resumo.totalInvestido, 2),
-        formula: "Σ (quantidade × preço médio) de cada ativo",
+        formula: `Exemplo: ${brl(resumo.totalInvestido, 2)} = Σ (quantidade × preço médio) de cada ativo`,
       },
       {
         rotulo: "Variação",
         valor: brl(resumo.totalAtual - resumo.totalInvestido, 2),
-        formula: "valor de mercado − valor investido",
+        formula: `Exemplo: ${brl(resumo.totalAtual - resumo.totalInvestido, 2)} = ${brl(resumo.totalAtual, 2)} (Atual) − ${brl(resumo.totalInvestido, 2)} (Investido)`,
         tom: resumo.lucroTotal >= 0 ? "positive" : "negative",
       },
       {
@@ -244,7 +262,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       {
         rotulo: "Ganho de capital",
         valor: brl(resumo.lucroTotal, 2),
-        formula: `${brl(resumo.totalAtual, 2)} − ${brl(resumo.totalInvestido, 2)}`,
+        formula: `Cálculo: ${brl(resumo.totalAtual, 2)} (Valor Atual) − ${brl(resumo.totalInvestido, 2)} (Preço Médio) = ${brl(resumo.lucroTotal, 2)}`,
         tom: resumo.lucroTotal >= 0 ? "positive" : "negative",
       },
       {
@@ -255,13 +273,13 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       {
         rotulo: "Resultado total",
         valor: brl(resumo.lucroTotal + totalProventos, 2),
-        formula: "ganho de capital + proventos acumulados",
+        formula: `Cálculo: ${brl(resumo.lucroTotal, 2)} (Ganho) + ${brl(totalProventos, 2)} (Proventos) = ${brl(resumo.lucroTotal + totalProventos, 2)}`,
         tom: resumo.lucroTotal + totalProventos >= 0 ? "positive" : "negative",
       },
       {
         rotulo: "Retorno sobre o investido",
         valor: pct(rentComProventos, 2),
-        formula: "(ganho de capital + proventos) ÷ valor investido × 100",
+        formula: `Cálculo: ((${brl(resumo.lucroTotal, 2)} + ${brl(totalProventos, 2)}) ÷ ${brl(resumo.totalInvestido, 2)}) × 100 = ${pct(rentComProventos, 2)}`,
         tom: rentComProventos >= 0 ? "positive" : "negative",
       },
     ],
@@ -311,7 +329,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
       {
         rotulo: "Rentabilidade (capital)",
         valor: pct(resumo.rentabilidade, 2),
-        formula: "(valor de mercado − valor investido) ÷ valor investido × 100",
+        formula: `Cálculo: (${brl(resumo.totalAtual, 2)} − ${brl(resumo.totalInvestido, 2)}) ÷ ${brl(resumo.totalInvestido, 2)} × 100 = ${pct(resumo.rentabilidade, 2)}`,
         tom: resumo.rentabilidade >= 0 ? "positive" : "negative",
       },
       ...(retorno12m !== null
