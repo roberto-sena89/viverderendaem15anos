@@ -394,16 +394,26 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={PiggyBank}
           onClick={() => setAberto(detalheLucro)}
         >
-          <p className={`t-metric ${resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"}`}>
-            {brl(resumo.lucroTotal, 2)}
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Indicador
-              rotulo="Ganho de capital"
-              valor={brl(resumo.lucroTotal, 2)}
-              tom={resumo.lucroTotal >= 0 ? "positive" : "negative"}
-            />
-            <Indicador rotulo="Dividendos recebidos" valor={brl(totalProventos, 2)} />
+          <div className="flex flex-col gap-1">
+            <p className={cn(
+              "text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none",
+              resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
+            )}>
+              {brl(resumo.lucroTotal, 2)}
+            </p>
+            <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+              <div className="flex flex-col">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Capital</span>
+                <span className={cn(
+                  "text-xs font-bold tabular-nums",
+                  resumo.lucroTotal >= 0 ? "text-success/80" : "text-destructive/80"
+                )}>{brl(resumo.lucroTotal, 2)}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Dividendos</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{brl(totalProventos, 2)}</span>
+              </div>
+            </div>
           </div>
         </CartaoResumo>
 
