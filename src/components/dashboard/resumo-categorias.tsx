@@ -89,6 +89,8 @@ export function ResumoCategorias() {
     }).sort((a, b) => b.lucro - a.lucro);
   }, [categoriasUnicas, ativos, alertas]);
 
+  if (ativos.length === 0) return null;
+
   return (
     <div className="space-y-3 mb-8">
       <div className="flex items-center justify-between px-1">
