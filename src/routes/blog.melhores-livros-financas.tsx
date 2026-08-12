@@ -103,7 +103,7 @@ const livros: Livro[] = [
       "Organiza o caminho em gastar bem, investir melhor e ganhar mais, com exemplos do mercado brasileiro (Tesouro Direto, ações, FIIs). Linguagem acessível e aplicável ao contexto de tributação e produtos do Brasil.",
   },
   {
-    titulo: "Guia Suno Fundos Imobiliários",
+    titulo: "Guia Suno FIIS",
     autor: "Marcos Baroni e Danilo Bastos",
     foco: "Renda passiva / FIIs",
     nivel: "Intermediário",
@@ -158,7 +158,7 @@ const trilha = [
   },
   {
     etapa: "4. Construir renda",
-    livros: "Guia Suno Fundos Imobiliários · Investindo em Ações no Longo Prazo",
+    livros: "Guia Suno FIIS · Investindo em Ações no Longo Prazo",
     objetivo: "Transformar patrimônio em renda passiva previsível.",
   },
 ];

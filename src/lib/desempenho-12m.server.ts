@@ -206,7 +206,7 @@ export async function benchmarkCarteira(
     },
     {
       codigo: "IFIX",
-      nome: "IFIX (Fundos Imobiliários)",
+      nome: "IFIX (FIIS)",
       retorno12m: ifix,
       fonte: "Yahoo Finance",
     },

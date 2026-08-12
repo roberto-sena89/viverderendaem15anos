@@ -14,7 +14,7 @@ export type CategoriaNoticia =
   | "Mercados"
   | "Ações"
   | "Renda Fixa"
-  | "Fundos Imobiliários"
+  | "FIIS"
   | "Câmbio & Cripto"
   | "Economia"
   | "Internacional"
@@ -32,7 +32,7 @@ export const CATEGORIAS_NOTICIA: CategoriaNoticia[] = [
   "Mercados",
   "Ações",
   "Renda Fixa",
-  "Fundos Imobiliários",
+  "FIIS",
   "Câmbio & Cripto",
   "Economia",
   "Internacional",
@@ -90,7 +90,7 @@ const FONTES: FonteRss[] = [
   {
     nome: "Money Times",
     url: "https://www.moneytimes.com.br/tag/fundos-imobiliarios/feed/",
-    categoria: "Fundos Imobiliários",
+    categoria: "FIIS",
     peso: 7,
   },
   {
@@ -231,7 +231,7 @@ function extrairTickers(texto: string): string[] {
 
 const REGRAS_CATEGORIA: { categoria: CategoriaNoticia; termos: RegExp }[] = [
   {
-    categoria: "Fundos Imobiliários",
+    categoria: "FIIS",
     termos: /\bfi{1,2}s?\b|fundo imobili|fiagro|\b[a-z]{4}11\b/i,
   },
   {

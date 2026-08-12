@@ -93,7 +93,7 @@ export const alocacaoIdeal: Record<string, number> = {
   "Renda Fixa (Tesouro SELIC, IPCA+,Prefixado)\u00a0CDB, LCI, LCA": 50,
   "ETFs - Brasil": 20,
   "ETFs - Global": 20,
-  FIIs: 10,
+  FIIS: 10,
   Ações: 0,
   BDRs: 0,
   "Fundos de Investimentos": 0,
@@ -133,7 +133,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "FIIs":
     case "FIIS":
     case "Fiagro":
-      return "FIIs";
+      return "FIIS";
     default:
       return CLASSE_POS_FIXADO;
   }

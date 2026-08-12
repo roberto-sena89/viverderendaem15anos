@@ -821,7 +821,7 @@ export const Route = createFileRoute("/api/chat")({
                 .string()
                 .optional()
                 .describe(
-                  "Filtra por categoria: Mercados, Ações, Renda Fixa, Fundos Imobiliários, Câmbio & Cripto, Economia, Internacional, Empresas",
+                  "Filtra por categoria: Mercados, Ações, Renda Fixa, FIIS, Câmbio & Cripto, Economia, Internacional, Empresas",
                 ),
               limite: z.number().int().min(1).max(15).optional(),
             }),

@@ -14,7 +14,7 @@ export const COR_CATEGORIA_NOTICIA: Record<string, string> = {
   Mercados: "var(--color-chart-3)",
   Ações: COR_CLASSE["Ações"],
   "Renda Fixa": COR_CLASSE[CLASSE_POS_FIXADO],
-  "Fundos Imobiliários": COR_CLASSE.FIIs,
+  "FIIS": COR_CLASSE.FIIs,
   "Câmbio & Cripto": COR_CLASSE.Criptomoedas,
   Economia: "var(--color-chart-5)",
   Internacional: COR_CLASSE.Stocks,

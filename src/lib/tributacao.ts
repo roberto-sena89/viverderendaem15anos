@@ -3,7 +3,7 @@
  *
  * Regras aplicadas (mercado à vista / swing trade):
  * - Ações: isento quando o total vendido no mês <= R$ 20.000; acima disso 15% (código 6015).
- * - FIIs/Fiagro/Fundos Imobiliários: 20% (código 6015), sem isenção.
+ * - FIIS/Fiagro: 20% (código 6015), sem isenção.
  * - ETFs/BDRs/Stocks/REITs: 15% (código 6015), sem isenção.
  * - Criptoativos: isenção quando vendas no mês <= R$ 35.000; acima, 15% (código 4600).
  * - Renda fixa/Tesouro/Fundos: tributação na fonte/tabela regressiva — fora do modelo.
@@ -25,7 +25,7 @@ export interface RegraInfo {
 
 export const REGRAS: Record<RegraTributaria, RegraInfo> = {
   acao: { aliquota: 15, isencaoVendas: 20_000, codigoDarf: "6015", rotulo: "Ações" },
-  fii: { aliquota: 20, codigoDarf: "6015", rotulo: "FIIs / Fiagros / Fundos Imobiliários" },
+  fii: { aliquota: 20, codigoDarf: "6015", rotulo: "FIIS / Fiagros" },
   etf: { aliquota: 15, codigoDarf: "6015", rotulo: "ETFs" },
   bdr: { aliquota: 15, codigoDarf: "6015", rotulo: "BDRs" },
   stock: { aliquota: 15, codigoDarf: "6015", rotulo: "Stocks / REITs" },

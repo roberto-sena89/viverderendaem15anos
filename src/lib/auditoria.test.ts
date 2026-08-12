@@ -36,7 +36,7 @@ describe("analisarCarteiraDe", () => {
       }),
       ativo({
         ticker: "HGLG11",
-        categoria: "Fundos Imobiliários",
+        categoria: "FIIS",
         quantidade: 5,
         preco_medio: 100,
         preco_atual: 110,
@@ -100,7 +100,7 @@ describe("analisarCarteiraDe", () => {
       }),
       ativo({
         ticker: "HGLG11",
-        categoria: "Fundos Imobiliários",
+        categoria: "FIIS",
         quantidade: 10,
         preco_medio: 100,
         preco_atual: 100,
@@ -133,7 +133,7 @@ describe("planoDeRebalanceamento", () => {
       }),
       ativo({
         ticker: "HGLG11",
-        categoria: "Fundos Imobiliários",
+        categoria: "FIIS",
         quantidade: 10,
         preco_medio: 100,
         preco_atual: 100,
