@@ -427,7 +427,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                   </div>
                   <span className={cn(
                     "text-xs font-bold tabular-nums",
-                    variacaoHoje.delta >= 0 ? "text-success" : "text-destructive"
+                    variacaoHoje.delta >= 0 ? "text-primary" : "text-destructive"
                   )}>
                     {fmtDelta(variacaoHoje.delta)}
                   </span>
@@ -446,7 +446,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           <div className="flex flex-col gap-2">
             <p className={cn(
               "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
-              resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
+              resumo.lucroTotal >= 0 ? "text-primary" : "text-destructive"
             )}>
               {brl(resumo.lucroTotal, 2)}
             </p>
@@ -455,7 +455,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                 <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Capital</span>
                 <span className={cn(
                   "text-xs font-bold tabular-nums",
-                  resumo.lucroTotal >= 0 ? "text-success/80" : "text-destructive/80"
+                  resumo.lucroTotal >= 0 ? "text-primary/80" : "text-destructive/80"
                 )}>{brl(resumo.lucroTotal, 2)}</span>
               </div>
               <div className="flex flex-col items-end">
