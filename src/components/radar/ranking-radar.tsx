@@ -335,9 +335,9 @@ function BarraHistorico({
 }) {
   if (percentil === null)
     return <span className="text-xs text-muted-foreground">Sem histórico</span>;
-  const larguraBarraHistorico = compacto ? "w-12" : "w-14 xl:w-16";
+  const larguraBarraHistorico = compacto ? "w-12" : "w-16 xl:w-20";
   return (
-    <div className={`flex min-w-0 items-center gap-2 ${compacto ? "flex-1" : ""}`}>
+    <div className={`flex min-w-0 items-center justify-center gap-2 ${compacto ? "flex-1" : ""}`}>
       <div
         className={`h-1.5 shrink-0 overflow-hidden rounded-full bg-muted ${larguraBarraHistorico}`}
         title={
@@ -354,7 +354,7 @@ function BarraHistorico({
       <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
         {percentil.toFixed(0)}%
       </span>
-      <span className="hidden shrink-0 truncate text-xs text-muted-foreground xl:inline">
+      <span className="hidden shrink-0 truncate text-[10px] text-muted-foreground 2xl:inline">
         {ROTULOS_ZONA[zona]}
       </span>
     </div>
@@ -856,8 +856,8 @@ export function RankingRadar({
 
       {/* Tabela profissional (desktop e tablet) */}
       <div className="panel hidden w-full overflow-hidden md:block">
-        <div className="overflow-x-auto w-full">
-          <Table className="w-full min-w-[1000px] table-fixed">
+        <div className="overflow-x-auto">
+          <Table className="w-full min-w-[1100px] table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
@@ -886,7 +886,7 @@ export function RankingRadar({
                   P/VPA
                 </TableHead>
                 <TableHead
-                  className="hidden w-[14%] min-w-[130px] xl:table-cell"
+                  className="hidden w-[14%] min-w-[140px] text-center xl:table-cell"
                   title="Posição do preço na própria história: 0% = mínima · 100% = máxima"
                 >
                   Histórico
