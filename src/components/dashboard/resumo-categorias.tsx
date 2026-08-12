@@ -149,17 +149,17 @@ export function ResumoCategorias() {
                 )}
               </div>
               
-              <div className="mt-auto space-y-0.5 pb-1">
+              <div className="flex flex-col items-center justify-center -space-y-0.5">
                 <div className={cn(
-                  "text-[1.05rem] font-black tabular-nums tracking-tight leading-none",
-                  cat.lucro >= 0 ? "text-emerald-500" : "text-rose-500"
+                  "text-[1.1rem] font-black tabular-nums tracking-tighter leading-none",
+                  cat.lucro >= 0 ? "text-success" : "text-destructive"
                 )}>
                   {brl(cat.lucro, 2)}
                 </div>
                 
                 <div className={cn(
-                  "flex items-center justify-center gap-1 text-[0.7rem] font-bold",
-                  cat.lucro >= 0 ? "text-emerald-500/90" : "text-rose-500/90"
+                  "flex items-center justify-center gap-1 text-[0.7rem] font-bold tracking-tight",
+                  cat.lucro >= 0 ? "text-success/90" : "text-destructive/90"
                 )}>
                   {cat.lucro >= 0 ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
                   <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
