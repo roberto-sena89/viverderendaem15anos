@@ -361,23 +361,30 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={Wallet}
           onClick={() => setAberto(detalhePatrimonio)}
         >
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="t-metric serie-patrimonio">{brl(resumo.totalAtual, 2)}</p>
-            <DeltaChip value={resumo.rentabilidade} />
-          </div>
-          <div className={`mt-3 ${variacaoHoje ? "grid grid-cols-2 gap-3" : ""}`}>
-            <Indicador
-              rotulo="Valor investido"
-              valor={brl(resumo.totalInvestido, 2)}
-              serie="investido"
-            />
-            {variacaoHoje ? (
-              <Indicador
-                rotulo="Hoje (mercado)"
-                valor={`${fmtDelta(variacaoHoje.delta)} · ${fmtPctDelta(variacaoHoje.pct)}`}
-                tom={variacaoHoje.delta >= 0 ? "positive" : "negative"}
-              />
-            ) : null}
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <p className="text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none text-foreground">
+                {brl(resumo.totalAtual, 2)}
+              </p>
+              <DeltaChip value={resumo.rentabilidade} />
+            </div>
+            <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
+              <div className="flex flex-col">
+                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Investido</span>
+                <span className="text-xs font-bold tabular-nums text-foreground/80">{brl(resumo.totalInvestido, 2)}</span>
+              </div>
+              {variacaoHoje ? (
+                <div className="flex flex-col items-end">
+                  <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Hoje</span>
+                  <span className={cn(
+                    "text-xs font-bold tabular-nums",
+                    variacaoHoje.delta >= 0 ? "text-success" : "text-destructive"
+                  )}>
+                    {fmtDelta(variacaoHoje.delta)}
+                  </span>
+                </div>
+              ) : null}
+            </div>
           </div>
         </CartaoResumo>
 
