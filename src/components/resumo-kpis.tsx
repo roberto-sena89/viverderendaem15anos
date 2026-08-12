@@ -329,6 +329,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           titulo="Patrimônio total"
           icone={Wallet}
           onClick={() => setAberto(detalhePatrimonio)}
+          tooltip="A variação percentual ao lado do valor principal representa a rentabilidade total acumulada sobre o capital investido."
         >
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
@@ -344,7 +345,19 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
               </div>
               {variacaoHoje ? (
                 <div className="flex flex-col items-end">
-                  <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Hoje</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Hoje</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-2.5 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[180px] text-[0.7rem]">
+                          Variação percentual e absoluta dos ativos considerando a última cotação do dia.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <span className={cn(
                     "text-xs font-bold tabular-nums",
                     variacaoHoje.delta >= 0 ? "text-success" : "text-destructive"
@@ -361,6 +374,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           titulo="Lucro total"
           icone={PiggyBank}
           onClick={() => setAberto(detalheLucro)}
+          tooltip="Soma do ganho de capital (valor atual - valor investido) com todos os proventos recebidos."
         >
           <div className="flex flex-col gap-2">
             <p className={cn(
@@ -389,6 +403,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           titulo="Proventos recebidos (12M)"
           icone={Coins}
           onClick={() => setAberto(detalheProventos)}
+          tooltip="Total de dividendos e JCP recebidos nos últimos 12 meses corridos."
         >
           <div className="flex flex-col gap-2">
             <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
@@ -411,6 +426,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           titulo="Rentabilidade"
           icone={TrendingUp}
           onClick={() => setAberto(detalheRentabilidade)}
+          tooltip="Variação percentual total e dos últimos 12 meses da carteira."
         >
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
@@ -420,23 +436,60 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
               )}>
                 {pct(resumo.rentabilidade, 2)}
               </p>
-              <span className="text-[0.62rem] font-bold text-muted-foreground uppercase tracking-widest">Total</span>
+              <div className="flex items-center gap-1">
+                <span className="text-[0.62rem] font-bold text-muted-foreground uppercase tracking-widest">Total</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="size-2.5 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-[180px] text-[0.7rem]">
+                      Variação acumulada desde o primeiro aporte (preço atual vs preço médio).
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </div>
             <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
               <div className="flex flex-col">
-                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">12 Meses</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">12 Meses</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="size-2.5 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[180px] text-[0.7rem]">
+                        Retorno ponderado dos ativos nos últimos 12 meses.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <span className={cn(
                   "text-xs font-bold tabular-nums",
                   retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-success/80" : "text-destructive/80"
                 )}>{retorno12m === null ? "—" : pct(retorno12m, 2)}</span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Yield</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Yield</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="size-2.5 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[180px] text-[0.7rem]">
+                        Dividend Yield estimado da carteira para os próximos 12 meses.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <span className="text-xs font-bold tabular-nums text-foreground/80">{pct(resumo.dyCarteira, 2)}</span>
               </div>
             </div>
           </div>
         </CartaoResumo>
+
       </div>
 
       <PainelDetalhe detalhe={aberto} onClose={() => setAberto(null)} />
