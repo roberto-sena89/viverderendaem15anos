@@ -32,40 +32,46 @@ export function ResumoCategorias() {
   }).sort((a, b) => b.lucro - a.lucro);
 
   return (
-    <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-1">
+    <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-1">
       {resumoPorCategoria.map((cat) => (
         <div 
           key={cat.nome}
-          className="bg-card/40 border-border/40 hover:bg-card/60 relative overflow-hidden rounded-xl border p-3 transition-all backdrop-blur-sm"
+          className="bg-card/40 border-border/40 hover:bg-card/60 relative overflow-hidden rounded-2xl border p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg backdrop-blur-md group"
         >
           {/* Indicador de cor da categoria */}
           <div 
-            className="absolute top-0 left-0 h-full w-1 opacity-60" 
+            className="absolute top-0 left-0 h-full w-1.5 opacity-80 transition-opacity group-hover:opacity-100" 
             style={{ backgroundColor: cat.cor }}
           />
           
-          <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground truncate text-[0.6rem] font-bold uppercase tracking-widest">
+          <div className="flex flex-col gap-2">
+            <span className="text-muted-foreground truncate text-[0.7rem] font-bold uppercase tracking-[0.15em] opacity-80 group-hover:opacity-100">
               {cat.nome}
             </span>
             
-            <div className="flex flex-col items-baseline gap-0.5">
+            <div className="flex flex-col items-baseline gap-1">
               <span className={cn(
-                "text-[0.85rem] font-bold tabular-nums tracking-tight",
+                "text-[1.1rem] font-black tabular-nums tracking-tight leading-none",
                 cat.lucro >= 0 ? "text-emerald-500" : "text-rose-500"
               )}>
                 {brl(cat.lucro, 2)}
               </span>
               
               <div className={cn(
-                "flex items-center gap-1 text-[0.65rem] font-semibold",
-                cat.lucro >= 0 ? "text-emerald-500/80" : "text-rose-500/80"
+                "flex items-center gap-1.5 text-[0.75rem] font-bold",
+                cat.lucro >= 0 ? "text-emerald-500/90" : "text-rose-500/90"
               )}>
-                {cat.lucro >= 0 ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
-                <span>{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
+                {cat.lucro >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
+                <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
               </div>
             </div>
           </div>
+          
+          {/* Sutil gradiente de fundo no hover */}
+          <div 
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-5"
+            style={{ backgroundColor: cat.cor }}
+          />
         </div>
       ))}
     </div>
