@@ -109,39 +109,47 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
 
         {/* Lista de ativos simulada */}
         <div className="bg-card/80 border-border/40 rounded-xl border p-3">
-          <div className="space-y-2">
+          <div className="space-y-3">
             {[
               { ticker: "PETR4", valor: "R$ 42,50", var: 2.4, varReal: 1.02, lucro: 12540.50, lucroPct: 24.5 },
               { ticker: "HGLG11", valor: "R$ 128,90", var: -0.8, varReal: -1.03, lucro: 4320.15, lucroPct: 8.2 },
               { ticker: "IVVB11", valor: "R$ 315,20", var: 1.2, varReal: 3.78, lucro: -1250.40, lucroPct: -3.8 },
             ].map((ativo) => (
               <div key={ativo.ticker} className="flex items-center justify-between text-[0.55rem]">
-                <div className="flex items-center gap-2">
-                  <div className="bg-muted flex size-7 items-center justify-center rounded-lg text-[0.45rem] font-bold">
+                <div className="flex items-center gap-2.5">
+                  <div className={cn(
+                    "flex size-8 items-center justify-center rounded-lg text-[0.5rem] font-bold shadow-sm transition-transform hover:scale-105",
+                    ativo.var >= 0 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                  )}>
                     {ativo.ticker.substring(0, 2)}
                   </div>
-                  <div>
-                    <p className="font-bold text-[0.6rem]">{ativo.ticker}</p>
-                    <div className="flex items-center gap-1 text-[0.45rem] text-muted-foreground">
-                      <span>{ativo.valor}</span>
+                  <div className="flex flex-col gap-0.5">
+                    <p className="font-bold text-[0.65rem] tracking-tight">{ativo.ticker}</p>
+                    <div className="flex items-center gap-1.5 text-[0.45rem]">
+                      <span className="text-muted-foreground font-medium">{ativo.valor}</span>
                       <span className={cn(
-                        "font-medium",
-                        ativo.var >= 0 ? "text-emerald-500" : "text-rose-500"
+                        "font-bold px-1 rounded-[2px] bg-opacity-10",
+                        ativo.var >= 0 ? "text-emerald-500 bg-emerald-500" : "text-rose-500 bg-rose-500"
                       )}>
-                        ({ativo.var >= 0 ? "+" : ""}{ativo.var}%)
+                        {ativo.var >= 0 ? "↑" : "↓"} {Math.abs(ativo.var)}%
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex flex-col gap-0.5">
                   <p className={cn(
-                    "font-bold text-[0.6rem]",
+                    "font-bold text-[0.65rem] tabular-nums",
                     ativo.lucro >= 0 ? "text-emerald-500" : "text-rose-500"
                   )}>
-                    {ativo.lucro >= 0 ? "+" : "-"}R$ {Math.abs(ativo.lucro).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    {ativo.lucro >= 0 ? "+" : "-"} R$ {Math.abs(ativo.lucro).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
-                  <p className="text-[0.45rem] font-medium text-muted-foreground/80">
-                    {ativo.lucroPct >= 0 ? "+" : ""}{ativo.lucroPct}% lucro
+                  <p className="text-[0.45rem] font-bold uppercase tracking-wider text-muted-foreground/90">
+                    <span className={cn(
+                      ativo.lucroPct >= 0 ? "text-emerald-500/80" : "text-rose-500/80"
+                    )}>
+                      {ativo.lucroPct >= 0 ? "+" : ""}{ativo.lucroPct}%
+                    </span>
+                    <span className="ml-1 opacity-60">L/P</span>
                   </p>
                 </div>
               </div>
