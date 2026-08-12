@@ -1382,7 +1382,7 @@ export function RankingRadar({
                   </div>
                   <div>
                     <dt className="t-caption text-center">P/VPA</dt>
-                    <dd className="t-num mt-0.5">
+                    <dd className="t-num mt-0.5 text-center">
                       {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                     </dd>
                   </div>
