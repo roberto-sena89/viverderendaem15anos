@@ -1022,27 +1022,71 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead
-                  className="hidden w-[7%] whitespace-nowrap text-right xl:table-cell"
-                  title="Distância do preço até a mínima de 52 semanas"
-                >
-                  Mín. 52s
+                <TableHead className="hidden w-[7%] whitespace-nowrap text-right xl:table-cell">
+                  <div className="flex items-center justify-end gap-1.5">
+                    Mín. 52s
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">Distância percentual até a mínima de 52 semanas.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
 
-                <TableHead
-                  className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-right 2xl:table-cell"
-                  title="Risco: queda máxima desde o pico do histórico e volatilidade anual"
-                >
-                  Risco 52s
+                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-right 2xl:table-cell">
+                  <div className="flex items-center justify-end gap-1.5">
+                    Risco 52s
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[240px]">
+                          <p className="font-semibold">Risco e Volatilidade</p>
+                          <p className="mt-1 text-xs">Queda máxima desde o pico histórico e desvio padrão anualizado.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
                 <TableHead className="w-[8%] min-w-[64px] whitespace-nowrap text-center">
-                  Score
+                  <div className="flex items-center justify-center gap-1.5">
+                    Score
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[220px]">
+                          <p className="font-semibold">Score de Oportunidade</p>
+                          <p className="mt-1 text-xs">Nota de 0 a 100 baseada em fundamentos, preço histórico e dividendos.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
-                <TableHead
-                  className="w-[12%] min-w-[84px] whitespace-nowrap text-center"
-                  title="Rating do gestor: nota 0–100 — fundamentos (35%), oportunidade (20%), dividendos (20%), prêmio vs Selic (10%), liquidez (8%), endividamento (7%), com ajuste setorial"
-                >
-                  Gestor
+                <TableHead className="w-[12%] min-w-[84px] whitespace-nowrap text-center">
+                  <div className="flex items-center justify-center gap-1.5">
+                    Gestor
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[280px] leading-relaxed">
+                          <p className="font-semibold">Rating do Gestor</p>
+                          <p className="mt-1 text-[11px]">
+                            Nota profissional considerando: Fundamentos (35%), Oportunidade (20%), Dividendos (20%), Prêmio vs Selic (10%), Liquidez (8%) e Dívida (7%).
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableHead>
                 <TableHead
                   className="w-[14%] min-w-[104px] pr-4 text-right"
