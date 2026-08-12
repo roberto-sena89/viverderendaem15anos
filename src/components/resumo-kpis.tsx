@@ -49,8 +49,7 @@ function CartaoResumo({
         <div className="size-5 rounded-full border border-border/40 flex items-center justify-center text-[0.6rem] text-muted-foreground/40 group-hover:border-primary/40 group-hover:text-primary/60 transition-all">
           ?
         </div>
-
-
+      </div>
       <div className="mt-3">{children}</div>
     </DashboardCard>
   );
