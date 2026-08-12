@@ -137,20 +137,6 @@ export function ResumoCategorias() {
           </div>
         </TooltipProvider>
 
-        <div
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-          className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] text-muted-foreground/50"
-          title="Sincronização automática ativa"
-        >
-          <Clock className="size-2.5" />
-          {status === "ao-vivo" && Date.now() - (atualizadoEm || 0) < 5000 ? (
-            <span className="text-success font-black animate-pulse">ao vivo</span>
-          ) : (
-            tempoRelativo(atualizadoEm)
-          )}
-        </div>
 
       </div>
 
