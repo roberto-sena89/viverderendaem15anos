@@ -338,9 +338,9 @@ function HomePage() {
         />
 
         <div className="mx-auto max-w-5xl px-5 pt-32 pb-16 text-center sm:px-6 sm:pt-44 sm:pb-24">
-          <span className="border-border/60 bg-card/80 text-accent-warm-strong inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[0.65rem] font-bold tracking-[0.2em] uppercase shadow-[0_0_0_1px_color-mix(in_oklab,var(--color-accent-warm)_18%,transparent),0_10px_30px_-18px_color-mix(in_oklab,var(--color-accent-warm)_65%,transparent)] sm:text-[0.7rem]">
+          <span className="border-border/60 bg-card/80 text-accent-warm-strong inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[0.6rem] font-bold tracking-[0.15em] uppercase shadow-[0_0_0_1px_color-mix(in_oklab,var(--color-accent-warm)_18%,transparent),0_10px_30px_-18px_color-mix(in_oklab,var(--color-accent-warm)_65%,transparent)] sm:px-4 sm:text-[0.7rem] sm:tracking-[0.2em]">
             <span
-              className="bg-accent-warm size-2 animate-pulse rounded-full shadow-[0_0_12px_2px_color-mix(in_oklab,var(--color-accent-warm)_70%,transparent)]"
+              className="bg-accent-warm size-1.5 animate-pulse rounded-full shadow-[0_0_12px_2px_color-mix(in_oklab,var(--color-accent-warm)_70%,transparent)] sm:size-2"
               aria-hidden
             />
             Carteira, dividendos e independência
