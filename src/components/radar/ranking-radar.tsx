@@ -335,9 +335,9 @@ function BarraHistorico({
 }) {
   if (percentil === null)
     return <span className="text-xs text-muted-foreground">Sem histórico</span>;
-  const larguraBarraHistorico = compacto ? "w-12" : "w-14 xl:w-16";
+  const larguraBarraHistorico = compacto ? "w-12" : "w-16 xl:w-20";
   return (
-    <div className={`flex min-w-0 items-center gap-2 ${compacto ? "flex-1" : ""}`}>
+    <div className={`flex min-w-0 items-center justify-center gap-2 ${compacto ? "flex-1" : ""}`}>
       <div
         className={`h-1.5 shrink-0 overflow-hidden rounded-full bg-muted ${larguraBarraHistorico}`}
         title={
@@ -354,7 +354,7 @@ function BarraHistorico({
       <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
         {percentil.toFixed(0)}%
       </span>
-      <span className="hidden shrink-0 truncate text-xs text-muted-foreground xl:inline">
+      <span className="hidden shrink-0 truncate text-[10px] text-muted-foreground 2xl:inline">
         {ROTULOS_ZONA[zona]}
       </span>
     </div>
@@ -856,8 +856,8 @@ export function RankingRadar({
 
       {/* Tabela profissional (desktop e tablet) */}
       <div className="panel hidden w-full overflow-hidden md:block">
-        <div className="overflow-x-auto w-full">
-          <Table className="w-full min-w-[1000px] table-fixed">
+        <div className="overflow-x-auto">
+          <Table className="w-full min-w-[1100px] table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
@@ -886,7 +886,7 @@ export function RankingRadar({
                   P/VPA
                 </TableHead>
                 <TableHead
-                  className="hidden w-[14%] min-w-[130px] xl:table-cell"
+                  className="hidden w-[14%] min-w-[140px] text-center xl:table-cell"
                   title="Posição do preço na própria história: 0% = mínima · 100% = máxima"
                 >
                   Histórico
@@ -1001,11 +1001,13 @@ export function RankingRadar({
                       {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                     </TableCell>
                     <TableCell className="hidden xl:table-cell">
-                      <BarraHistorico
-                        percentil={l.posicao?.percentil ?? null}
-                        zona={l.sinal.zona}
-                        inicioSerie={l.posicao?.inicioSerie ?? null}
-                      />
+                      <div className="flex justify-center">
+                        <BarraHistorico
+                          percentil={l.posicao?.percentil ?? null}
+                          zona={l.sinal.zona}
+                          inicioSerie={l.posicao?.inicioSerie ?? null}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell className="hidden 2xl:table-cell">
                       <Faixa52sCelula l={l} />
@@ -1115,11 +1117,13 @@ export function RankingRadar({
                       {formatarValor(v, criterio)}
                     </span>
                   </span>
-                  <BarraHistorico
-                    percentil={l.posicao?.percentil ?? null}
-                    zona={l.sinal.zona}
-                    compacto
-                  />
+                  <div className="flex justify-center">
+                    <BarraHistorico
+                      percentil={l.posicao?.percentil ?? null}
+                      zona={l.sinal.zona}
+                      compacto
+                    />
+                  </div>
                   <SinalBadge sinal={l.sinal} />
                 </span>
                 <dl className="mt-2 grid grid-cols-4 gap-2 border-t border-border/60 pt-2.5 text-xs">
