@@ -468,6 +468,16 @@ function PaginaRadar() {
               </span>
             </Badge>
           ) : null}
+          <Tabs
+            value={abaVisao}
+            onValueChange={(v) => setAbaVisao(v as "cotacoes" | "ranking")}
+            className="ml-auto"
+          >
+            <TabsList>
+              <TabsTrigger value="ranking">Ranking</TabsTrigger>
+              <TabsTrigger value="cotacoes">Grade</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
