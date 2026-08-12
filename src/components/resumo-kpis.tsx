@@ -1,10 +1,16 @@
 import { useMemo, useState } from "react";
-import { Coins, PiggyBank, Plus, TrendingUp, Wallet } from "lucide-react";
+import { Coins, PiggyBank, Plus, TrendingUp, Wallet, Info } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { DashboardCard } from "./dashboard/dashboard-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   Dialog,
@@ -19,17 +25,18 @@ import { useDividendos } from "@/lib/data";
 import { useDesempenho12m } from "@/lib/desempenho-12m";
 import { brl, dividendos12m, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
-
 function CartaoResumo({
   titulo,
   icone: Icone,
   onClick,
   children,
+  tooltip,
 }: {
   titulo: string;
   icone: typeof Wallet;
   onClick: () => void;
   children: React.ReactNode;
+  tooltip?: string;
 }) {
   return (
     <DashboardCard
@@ -41,9 +48,23 @@ function CartaoResumo({
           <Icone className="size-5 shrink-0" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[0.68rem] font-black tracking-[0.15em] text-muted-foreground uppercase group-hover:text-foreground transition-colors">
-            {titulo}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-[0.68rem] font-black tracking-[0.15em] text-muted-foreground uppercase group-hover:text-foreground transition-colors">
+              {titulo}
+            </p>
+            {tooltip && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
+                    <Info className="size-3 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[200px] text-[0.75rem] leading-relaxed">
+                    {tooltip}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
           <span className="sr-only">Ver detalhes</span>
         </div>
         <div className="size-5 rounded-full border border-border/40 flex items-center justify-center text-[0.6rem] text-muted-foreground/40 group-hover:border-primary/40 group-hover:text-primary/60 transition-all">
@@ -54,6 +75,7 @@ function CartaoResumo({
     </DashboardCard>
   );
 }
+
 
 interface Linha {
   rotulo: string;
