@@ -6,6 +6,7 @@ import { TrendingDown, TrendingUp, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
 import { useState, useEffect } from "react";
+import { OverlayDetalhesCategoria } from "./overlay-detalhes-categoria";
 
 /**
  * Componente que exibe o resumo de lucro/prejuízo por categoria de ativos.
@@ -14,6 +15,7 @@ import { useState, useEffect } from "react";
 export function ResumoCategorias() {
   const { data: ativos = [] } = useAtivosAoVivo();
   const { atualizadoEm, status } = useCotacoesTempoReal();
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
 
   // Re-renderiza para o tempo relativo
   const [, setTick] = useState(0);
@@ -66,6 +68,7 @@ export function ResumoCategorias() {
         <DashboardCard 
           key={cat.nome}
           className="group"
+          onClick={() => setCategoriaSelecionada(cat.nome)}
         >
           {/* Indicador de cor da categoria */}
           <div 
@@ -92,8 +95,13 @@ export function ResumoCategorias() {
               )}>
                 {cat.lucro >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
                 <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
-              </div>
-            </div>
+      </div>
+
+      <OverlayDetalhesCategoria 
+        categoria={categoriaSelecionada}
+        onClose={() => setCategoriaSelecionada(null)}
+      />
+    </div>
           </div>
           
           {/* Sutil gradiente de fundo no hover */}
