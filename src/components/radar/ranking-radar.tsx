@@ -343,7 +343,7 @@ function BarraHistorico({
 }) {
   if (percentil === null)
     return <span className="text-xs text-muted-foreground">Sem histórico</span>;
-  const larguraBarraHistorico = compacto ? "w-12" : "w-16 xl:w-20";
+  const larguraBarraHistorico = compacto ? "w-12" : "w-14 xl:w-16";
   return (
     <div className={`flex flex-col items-center gap-1 ${compacto ? "flex-1" : ""}`}>
       <div className="flex items-center gap-2">
@@ -916,8 +916,8 @@ export function RankingRadar({
                 >
                   #
                 </TableHead>
-                <TableHead className="w-[20%] min-w-[200px] lg:w-[18%]">Ativo</TableHead>
-                <TableHead className="w-[14%] min-w-[140px] whitespace-nowrap text-right">
+                <TableHead className="w-[14%] min-w-[200px]">Ativo</TableHead>
+                <TableHead className="w-[10%] min-w-[100px] whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-1.5">
                     Preço
                     <TooltipProvider>
@@ -932,7 +932,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="w-[10%] whitespace-nowrap text-right">
+                <TableHead className="w-[8%] min-w-[80px] whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-1.5">
                     Var. Dia %
                     <TooltipProvider>
@@ -951,7 +951,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="w-[9%] whitespace-nowrap text-right">
+                <TableHead className="w-[8%] min-w-[80px] whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-1.5">
                     DY 12m
                     <TooltipProvider>
@@ -967,7 +967,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-center lg:table-cell">
+                <TableHead className="hidden w-[8%] min-w-[80px] whitespace-nowrap text-center lg:table-cell">
                   <div className="flex items-center justify-center gap-1.5">
                     P/VPA
                     <TooltipProvider>
@@ -983,7 +983,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="hidden w-[14%] min-w-[140px] text-center xl:table-cell">
+                <TableHead className="hidden w-[10%] min-w-[100px] text-center xl:table-cell">
                   <div className="flex items-center justify-center gap-1.5">
                     Histórico
                     <TooltipProvider>
@@ -1000,7 +1000,7 @@ export function RankingRadar({
                   </div>
                 </TableHead>
                 <TableHead
-                  className="hidden w-[18%] min-w-[180px] 2xl:table-cell"
+                  className="hidden w-[12%] min-w-[120px] 2xl:table-cell"
                 >
                   <div className="flex items-center justify-center gap-1.5">
                     Faixa 52s
@@ -1022,7 +1022,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-right xl:table-cell">
+                <TableHead className="hidden w-[8%] min-w-[80px] whitespace-nowrap text-right xl:table-cell">
                   <div className="flex items-center justify-end gap-1.5">
                     Mín. 52s
                     <TooltipProvider>
@@ -1038,7 +1038,7 @@ export function RankingRadar({
                   </div>
                 </TableHead>
 
-                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-center 2xl:table-cell">
+                <TableHead className="hidden w-[8%] min-w-[80px] whitespace-nowrap text-center 2xl:table-cell">
                   <div className="flex items-center justify-center gap-1.5">
                     Risco 52s
                     <TooltipProvider>
@@ -1089,7 +1089,7 @@ export function RankingRadar({
                   </div>
                 </TableHead>
                 <TableHead
-                  className="w-[14%] min-w-[104px] pr-4 text-right"
+                  className="w-[10%] min-w-[80px] pr-4 text-right"
 
                   title={meta.ajuda}
                   aria-sort={direcao === "asc" ? "ascending" : "descending"}
@@ -1123,17 +1123,17 @@ export function RankingRadar({
                       <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
+                      <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
-                    </TableCell>
-                    <TableCell className="hidden text-right lg:table-cell">
                       <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
+                    </TableCell>
+                    <TableCell className="hidden text-center lg:table-cell">
+                      <div className="mx-auto h-4 w-10 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="hidden xl:table-cell">
                       <div className="flex justify-center">
-                        <div className="h-1.5 w-24 animate-pulse rounded-full bg-muted/40" />
+                        <div className="h-1.5 w-16 animate-pulse rounded-full bg-muted/40" />
                       </div>
                     </TableCell>
                     <TableCell className="hidden 2xl:table-cell">
@@ -1143,9 +1143,9 @@ export function RankingRadar({
                       <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="hidden 2xl:table-cell">
-                      <div className="space-y-1 text-right">
-                        <div className="ml-auto h-3 w-10 animate-pulse rounded bg-muted/40" />
-                        <div className="ml-auto h-3 w-12 animate-pulse rounded bg-muted/40" />
+                      <div className="space-y-1 text-center">
+                        <div className="mx-auto h-3 w-10 animate-pulse rounded bg-muted/40" />
+                        <div className="mx-auto h-3 w-12 animate-pulse rounded bg-muted/40" />
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
@@ -1161,7 +1161,7 @@ export function RankingRadar({
                 ))
               ) : paginadas.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={13} className="h-64 text-center">
+                  <TableCell colSpan={14} className="h-64 text-center">
                     <div className="flex flex-col items-center justify-center gap-3">
                       <Search className="size-10 text-muted-foreground/40" />
                       <div className="space-y-1">
