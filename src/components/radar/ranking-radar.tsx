@@ -938,7 +938,7 @@ export function RankingRadar({
 
       <div className="panel hidden w-full overflow-hidden md:block">
         <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border/60">
-          <Table className="w-full min-w-[1200px] table-fixed">
+          <Table className="w-full min-w-[1200px] table-fixed font-mono text-xs">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
