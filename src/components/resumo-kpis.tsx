@@ -499,7 +499,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
             <div className="flex flex-wrap items-baseline gap-2">
               <p className={cn(
                 "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
-                resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
+                resumo.rentabilidade >= 0 ? "text-primary" : "text-destructive"
               )}>
                 {pct(resumo.rentabilidade, 2)}
               </p>
