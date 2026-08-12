@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-// Otimize a página de radar e o modal do ativo para dispositivos móveis, garantindo que as tabelas sejam roláveis horizontalmente com clareza e que os gráficos do backtest sejam responsivos.
+// Garantir que os tooltips dos KPIs sejam totalmente acessíveis (WCAG), com leitura por teclado e suporte a leitores de tela via aria-describedby.
 //
 // IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, não simplifique, implemente EXATAMENTE o que foi pedido.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
