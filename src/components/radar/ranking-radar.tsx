@@ -1377,7 +1377,7 @@ export function RankingRadar({
                   <div className="flex items-center justify-between gap-2">
                     <dt className="t-caption">DY 12m</dt>
                     <dd className="t-num text-positive">
-                      {l.dy12 !== null ? `${l.dy12.toLocaleString("pt-BR")}%` : "—"}
+                      {l.dy12 !== null ? `${l.dy12.toFixed(2).replace(".", ",")}%` : "—"}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between gap-2">
