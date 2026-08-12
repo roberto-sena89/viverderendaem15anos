@@ -266,24 +266,24 @@ function HomePage() {
         Pular para o conteúdo
       </a>
 
-      <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6">
-        <div className="border-border/80 bg-background/80 mx-auto flex w-full max-w-3xl items-center justify-between gap-3 rounded-full border py-2 pr-2 pl-2 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-50 p-2 sm:top-4 sm:px-4">
+        <div className="border-border/80 bg-background/80 mx-auto flex w-full max-w-3xl items-center justify-between gap-2 rounded-full border p-1.5 shadow-[0_20px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur-xl sm:gap-3 sm:py-2 sm:pr-2 sm:pl-2">
           <Link
             to="/"
             aria-label="Viver de Renda em 15 Anos — página inicial"
-            className="flex min-w-0 items-center gap-2.5 rounded-full pr-3"
+            className="flex min-w-0 items-center gap-2 rounded-full pr-2 sm:gap-2.5 sm:pr-3"
           >
             <img
               src={logoIcone}
               alt="Logo Viver de Renda em 15 Anos"
               width={40}
               height={40}
-              className="size-9 shrink-0 rounded-xl object-contain"
+              className="size-8 shrink-0 rounded-lg object-contain sm:size-9 sm:rounded-xl"
             />
-            <span className="font-brand text-sm leading-[1.15] font-bold text-foreground uppercase">
+            <span className="font-brand text-[0.7rem] leading-none font-bold text-foreground uppercase sm:text-sm sm:leading-[1.15]">
               Viver de Renda
               <br />
-              <span className="text-[0.68rem] font-semibold tracking-[0.1em] text-muted-foreground">
+              <span className="text-[0.6rem] font-semibold tracking-[0.1em] text-muted-foreground sm:text-[0.68rem]">
                 em 15 Anos
               </span>
             </span>
@@ -310,9 +310,9 @@ function HomePage() {
           </nav>
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            <Button asChild size="sm" className="rounded-full px-5 text-xs font-bold">
+            <Button asChild size="sm" className="h-8 rounded-full px-3 text-[0.65rem] font-bold sm:h-9 sm:px-5 sm:text-xs">
               <Link to="/auth">
-                Entrar <ArrowRight className="size-3.5" />
+                Entrar <ArrowRight className="size-3 sm:size-3.5" />
               </Link>
             </Button>
           </div>
@@ -338,20 +338,20 @@ function HomePage() {
         />
 
         <div className="mx-auto max-w-5xl px-5 pt-32 pb-16 text-center sm:px-6 sm:pt-44 sm:pb-24">
-          <span className="border-border/60 bg-card/80 text-accent-warm-strong inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[0.65rem] font-bold tracking-[0.2em] uppercase shadow-[0_0_0_1px_color-mix(in_oklab,var(--color-accent-warm)_18%,transparent),0_10px_30px_-18px_color-mix(in_oklab,var(--color-accent-warm)_65%,transparent)] sm:text-[0.7rem]">
+          <span className="border-border/60 bg-card/80 text-accent-warm-strong inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[0.6rem] font-bold tracking-[0.15em] uppercase shadow-[0_0_0_1px_color-mix(in_oklab,var(--color-accent-warm)_18%,transparent),0_10px_30px_-18px_color-mix(in_oklab,var(--color-accent-warm)_65%,transparent)] sm:px-4 sm:text-[0.7rem] sm:tracking-[0.2em]">
             <span
-              className="bg-accent-warm size-2 animate-pulse rounded-full shadow-[0_0_12px_2px_color-mix(in_oklab,var(--color-accent-warm)_70%,transparent)]"
+              className="bg-accent-warm size-1.5 animate-pulse rounded-full shadow-[0_0_12px_2px_color-mix(in_oklab,var(--color-accent-warm)_70%,transparent)] sm:size-2"
               aria-hidden
             />
             Carteira, dividendos e independência
           </span>
 
-          <h1 className="font-hero mx-auto mt-8 max-w-4xl text-mega text-balance">
+          <h1 className="font-hero mx-auto mt-6 max-w-4xl text-mega text-balance sm:mt-8">
             Organize sua carteira e{" "}
             <span className="text-gradient-brand">viva de renda em 15 anos</span>
           </h1>
 
-          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-base leading-relaxed text-pretty sm:text-lg">
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-pretty sm:mt-6 sm:text-lg">
             {DESCRIPTION}
           </p>
 
@@ -375,7 +375,7 @@ function HomePage() {
             </Button>
           </div>
 
-          <dl className="relative mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-3 rounded-3xl bg-card/40 p-3 shadow-[var(--shadow-float)] backdrop-blur-md sm:mt-20 sm:grid-cols-4 sm:gap-4 sm:p-4">
+          <dl className="relative mx-auto mt-12 grid max-w-4xl grid-cols-2 gap-2 rounded-2xl bg-card/40 p-2 shadow-[var(--shadow-float)] backdrop-blur-md sm:mt-20 sm:grid-cols-4 sm:gap-4 sm:rounded-3xl sm:p-4">
             <div
               aria-hidden
               className="absolute -inset-4 -z-10 rounded-[2.5rem] bg-primary/25 blur-3xl"
@@ -383,12 +383,12 @@ function HomePage() {
             {numeros.map((n) => (
               <div
                 key={n.label}
-                className="border-border/60 bg-card rounded-2xl border p-5 text-left shadow-[var(--shadow-soft)] transition-colors hover:border-primary/40"
+                className="border-border/60 bg-card rounded-xl border p-3.5 text-left shadow-[var(--shadow-soft)] transition-colors hover:border-primary/40 sm:rounded-2xl sm:p-5"
               >
-                <dt className="font-hero text-accent-warm-strong text-2xl font-bold tracking-tight tabular-nums">
+                <dt className="font-hero text-accent-warm-strong text-xl font-bold tracking-tight tabular-nums sm:text-2xl">
                   <NumeroAnimado texto={n.valor} />
                 </dt>
-                <dd className="text-muted-foreground mt-1.5 text-[0.68rem] leading-snug font-semibold tracking-wide uppercase text-pretty">
+                <dd className="text-muted-foreground mt-1 text-[0.6rem] leading-tight font-semibold tracking-wide uppercase text-pretty sm:mt-1.5 sm:text-[0.68rem] sm:leading-snug">
                   {n.label}
                 </dd>
               </div>
@@ -435,7 +435,7 @@ function HomePage() {
           {recursos.map((r, i) => (
             <article
               key={r.title}
-              className={`group border-border/60 relative overflow-hidden rounded-3xl border p-8 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)] ${
+              className={`group border-border/60 relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)] sm:rounded-3xl sm:p-8 ${
                 i === 0 ? "from-card to-background bg-gradient-to-br md:col-span-2" : "bg-card"
               }`}
             >
@@ -459,7 +459,7 @@ function HomePage() {
 
           <section
             id="conteudo-gratuito"
-            className="border-border/60 bg-card rounded-3xl border p-8 md:col-span-2"
+            className="border-border/60 bg-card rounded-2xl border p-6 sm:rounded-3xl sm:p-8 md:col-span-2"
           >
             <h2 className="font-hero flex flex-wrap items-center gap-3 text-xl font-bold tracking-tight sm:text-2xl">
               Conteúdo gratuito
@@ -514,11 +514,11 @@ function HomePage() {
             <p className="text-muted-foreground mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-pretty sm:text-base">
               Três passos do zero até a projeção da sua independência financeira.
             </p>
-            <ol className="mt-10 grid items-stretch gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <ol className="mt-8 grid items-stretch gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
               {passos.map((p, i) => (
                 <li
                   key={p.titulo}
-                  className="border-border/60 bg-card relative flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)]"
+                  className="border-border/60 bg-card relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)] sm:rounded-3xl sm:p-7"
                 >
                   <span
                     aria-hidden
@@ -542,7 +542,7 @@ function HomePage() {
 
 
 
-          <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 shadow-[var(--shadow-lift)] md:col-span-3 md:flex-row md:items-center md:justify-between">
+          <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-2xl border bg-gradient-to-br p-6 shadow-[var(--shadow-lift)] sm:rounded-3xl sm:p-8 md:col-span-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
               <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">
                 Comece hoje
@@ -566,12 +566,12 @@ function HomePage() {
           <h2 className="font-hero text-center text-2xl font-bold tracking-tight sm:text-4xl">
             Perguntas frequentes
           </h2>
-          <Accordion type="single" collapsible className="mt-10 grid gap-3">
+          <Accordion type="single" collapsible className="mt-8 grid gap-2 sm:mt-10 sm:gap-3">
             {faq.map((f, i) => (
               <AccordionItem
                 key={f.q}
                 value={`faq-${i}`}
-                className="border-border/60 bg-card rounded-2xl border px-6"
+                className="border-border/60 bg-card rounded-xl border px-4 sm:rounded-2xl sm:px-6"
               >
                 <AccordionTrigger className="font-hero py-5 text-left text-base font-bold tracking-tight hover:no-underline sm:text-lg">
                   {f.q}
@@ -586,7 +586,7 @@ function HomePage() {
 
         <section
           id="newsletter"
-          className="border-primary/30 from-primary/15 to-card mx-auto mt-16 max-w-3xl rounded-3xl border bg-gradient-to-br p-8 text-left sm:mt-24 sm:p-10"
+          className="border-primary/30 from-primary/15 to-card mx-auto mt-16 max-w-3xl rounded-2xl border bg-gradient-to-br p-6 text-left sm:mt-24 sm:rounded-3xl sm:p-10"
         >
           <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">
             Conteúdo gratuito no seu e-mail
