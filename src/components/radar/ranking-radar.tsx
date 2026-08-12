@@ -904,12 +904,18 @@ export function RankingRadar({
                 >
                   #
                 </TableHead>
-                <TableHead className="w-[24%] min-w-[240px] lg:w-[22%]">Ativo</TableHead>
+                <TableHead className="w-[20%] min-w-[200px] lg:w-[18%]">Ativo</TableHead>
                 <TableHead
-                  className="w-[11%] whitespace-nowrap text-right"
-                  title="Último preço e variação do dia"
+                  className="w-[10%] whitespace-nowrap text-right"
+                  title="Último preço"
                 >
                   Preço
+                </TableHead>
+                <TableHead
+                  className="w-[10%] whitespace-nowrap text-right"
+                  title="Variação percentual no pregão atual"
+                >
+                  Var. Dia %
                 </TableHead>
                 <TableHead
                   className="w-[9%] whitespace-nowrap text-right"
@@ -1016,8 +1022,10 @@ export function RankingRadar({
                       <span className="block text-sm tabular-nums">
                         {l.preco !== null ? fmtPreco(l.preco, "BRL") : "—"}
                       </span>
+                    </TableCell>
+                    <TableCell className="text-right">
                       <span
-                        className={`block text-xs tabular-nums ${corValor(l.variacaoDia, "variacao")}`}
+                        className={`block text-sm font-semibold tabular-nums ${corValor(l.variacaoDia, "variacao")}`}
                       >
                         {fmtPercent(l.variacaoDia)}
                       </span>
