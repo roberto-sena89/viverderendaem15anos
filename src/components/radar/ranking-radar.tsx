@@ -1022,7 +1022,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="hidden w-[7%] whitespace-nowrap text-right xl:table-cell">
+                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-right xl:table-cell">
                   <div className="flex items-center justify-end gap-1.5">
                     Mín. 52s
                     <TooltipProvider>
