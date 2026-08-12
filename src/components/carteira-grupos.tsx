@@ -240,14 +240,6 @@ export function CarteiraGrupos({
     }
   }
 
-  /** Volta a seguir as cotações automáticas do ativo. */
-  function voltarAoAutomatico(ticker: string) {
-    setManuais((m) => {
-      const { [chavePreco(ticker)]: _removido, ...resto } = m;
-      return resto;
-    });
-    toast.success(`${ticker}: preço voltou a sincronizar automaticamente.`);
-  }
 
   /** Ativos com o preço atual sincronizado com a cotação de mercado. */
   const ativos = useMemo(
