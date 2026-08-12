@@ -38,6 +38,7 @@ function CartaoResumo({
   children: React.ReactNode;
   tooltip?: string;
 }) {
+  const tooltipId = useId();
   return (
     <DashboardCard
       onClick={onClick}
@@ -56,9 +57,20 @@ function CartaoResumo({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
-                    <Info className="size-3 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                    <button
+                      type="button"
+                      aria-describedby={tooltipId}
+                      className="inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
+                    >
+                      <Info className="size-3 text-muted-foreground/40 hover:text-primary transition-colors cursor-help" />
+                      <span className="sr-only">Saiba mais sobre {titulo}</span>
+                    </button>
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-[200px] text-[0.75rem] leading-relaxed">
+                  <TooltipContent
+                    id={tooltipId}
+                    role="tooltip"
+                    className="max-w-[200px] text-[0.75rem] leading-relaxed"
+                  >
                     {tooltip}
                   </TooltipContent>
                 </Tooltip>
