@@ -1279,16 +1279,16 @@ export function RankingRadar({
                             : "—"}
                         </span>
                       </TableCell>
-                      <TableCell className="hidden 2xl:table-cell">
+                      <TableCell className="hidden text-center tabular-nums 2xl:table-cell">
                         <span
-                          className={`block text-right text-xs tabular-nums ${corDrawdown(l.posicao?.drawdownMaximoPct ?? null)}`}
+                          className={`block text-center text-xs tabular-nums ${corDrawdown(l.posicao?.drawdownMaximoPct ?? null)}`}
                         >
                           {l.posicao?.drawdownMaximoPct !== null &&
                           l.posicao?.drawdownMaximoPct !== undefined
                             ? `${l.posicao.drawdownMaximoPct.toFixed(1).replace(".", ",")}%`
                             : "—"}
                         </span>
-                        <span className="block text-right text-[0.65rem] tabular-nums text-muted-foreground">
+                        <span className="block text-center text-[0.65rem] tabular-nums text-muted-foreground">
                           {l.posicao?.volatilidadeAnualPct !== null &&
                           l.posicao?.volatilidadeAnualPct !== undefined
                             ? `vol ${l.posicao.volatilidadeAnualPct.toFixed(0)}%`
