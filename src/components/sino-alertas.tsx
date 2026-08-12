@@ -1,7 +1,8 @@
-import { Bell, BellOff, Bot, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { Bell, BellOff, Bot, Trash2, TrendingDown, TrendingUp, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAlertasHistorico } from "@/lib/alertas-historico";
+import { useState } from "react";
 
 function quando(ts: number) {
   const d = new Date(ts);
@@ -19,9 +20,20 @@ function quando(ts: number) {
 /** Sino do cabeçalho com o histórico dos alertas de variação disparados. */
 export function SinoAlertas() {
   const { alertas, naoLidos, marcarTodosLidos, limpar } = useAlertasHistorico();
+  const [aberto, setAberto] = useState(false);
+
+  const abrirCategoria = (categoria?: string) => {
+    if (!categoria) return;
+    setAberto(false);
+    // Dispara evento customizado para o Dashboard/ResumoCategorias capturar
+    window.dispatchEvent(new CustomEvent("app:abrir-categoria", { detail: { categoria } }));
+  };
 
   return (
-    <Popover onOpenChange={(aberto) => aberto && naoLidos > 0 && marcarTodosLidos()}>
+    <Popover open={aberto} onOpenChange={(val) => {
+      setAberto(val);
+      if (val && naoLidos > 0) marcarTodosLidos();
+    }}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -89,7 +101,11 @@ export function SinoAlertas() {
               }
               const alta = a.variacaoPercent >= 0;
               return (
-                <li key={a.id} className="flex items-start gap-3 px-3 py-2.5">
+                <li 
+                  key={a.id} 
+                  className="flex items-start gap-3 px-3 py-2.5 hover:bg-muted/30 cursor-pointer transition-colors group/alerta"
+                  onClick={() => abrirCategoria(a.categoria)}
+                >
                   <span
                     className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full ${
                       alta ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
@@ -118,6 +134,11 @@ export function SinoAlertas() {
                     <p className="text-[0.7rem] text-muted-foreground">
                       {quando(a.em)} · {a.canais.join(" + ")}
                     </p>
+                    {a.categoria && (
+                      <div className="mt-1 flex items-center gap-1 text-[0.6rem] font-bold text-primary opacity-0 group-hover/alerta:opacity-100 transition-opacity">
+                        Ver detalhes na categoria <ExternalLink className="size-2.5" />
+                      </div>
+                    )}
                   </div>
                 </li>
               );

@@ -308,6 +308,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
               preco: c.preco,
               limite: config.alertaPercent,
               canais: push ? ["no app", "push"] : ["no app"],
+              categoria: itens.find(i => chaveTicker(i.ticker) === chave)?.categoria
             });
           }
         }

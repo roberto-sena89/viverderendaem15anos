@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotacoes-tempo-real";
 import { brl, valorAtual, classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes } from "@/lib/data";
@@ -12,9 +12,14 @@ import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 interface OverlayDetalhesCategoriaProps {
   categoria: string | null;
   onClose: () => void;
+  tickersDestacados?: string[];
 }
 
-export function OverlayDetalhesCategoria({ categoria, onClose }: OverlayDetalhesCategoriaProps) {
+export function OverlayDetalhesCategoria({ 
+  categoria, 
+  onClose,
+  tickersDestacados = []
+}: OverlayDetalhesCategoriaProps) {
   const { data: ativos = [] } = useAtivosAoVivo();
   const { data: aportes = [] } = useAportes();
   const { mapa } = useCotacoesTempoReal();
@@ -179,10 +184,22 @@ export function OverlayDetalhesCategoria({ categoria, onClose }: OverlayDetalhes
                 {ativosDaCat.map((ativo) => {
                   const vAtual = valorAtual(ativo);
                   const peso = totalAtual > 0 ? (vAtual / totalAtual) * 100 : 0;
+                  const isDestacado = tickersDestacados.includes(chaveTicker(ativo.ticker));
                   return (
-                    <div key={ativo.id} className="flex items-center justify-between p-3 rounded-lg border border-border/40 bg-card/40">
+                    <div 
+                      key={ativo.id} 
+                      className={cn(
+                        "flex items-center justify-between p-3 rounded-lg border transition-all duration-500",
+                        isDestacado 
+                          ? "border-rose-500/50 bg-rose-500/5 shadow-[0_0_15px_-5px_rgba(239,68,68,0.3)] ring-1 ring-rose-500/20" 
+                          : "border-border/40 bg-card/40"
+                      )}
+                    >
                       <div className="flex items-center gap-3">
-                        <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-[0.7rem] font-black text-primary">
+                        <div className={cn(
+                          "flex size-8 items-center justify-center rounded-lg text-[0.7rem] font-black",
+                          isDestacado ? "bg-rose-500/20 text-rose-500 animate-pulse" : "bg-primary/10 text-primary"
+                        )}>
                           {ativo.ticker.slice(0, 4)}
                         </div>
                         <div>

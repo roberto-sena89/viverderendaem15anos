@@ -1,4 +1,4 @@
-import { useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotacoes-tempo-real";
 import { tempoRelativo } from "@/components/status-cotacoes";
 import { brl, valorAtual } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
@@ -18,6 +18,37 @@ export function ResumoCategorias() {
   const { atualizadoEm, status } = useCotacoesTempoReal();
   const { alertas } = useAlertasHistorico();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
+  const [destacarTickers, setDestacarTickers] = useState<string[]>([]);
+
+  // Escutar evento de abertura de categoria (do Sino de Alertas)
+  useEffect(() => {
+    const handleAbrir = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.categoria) {
+        setCategoriaSelecionada(detail.categoria);
+        
+        // Buscar tickers que causaram alertas nesta categoria nas últimas 24h
+        const catAtivos = ativos.filter(a => a.categoria === detail.categoria);
+        const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
+        const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
+        
+        const tickersComAlerta = alertas
+          .filter(alerta => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)))
+          .map(alerta => chaveTicker(alerta.ticker));
+        
+        setDestacarTickers(Array.from(new Set(tickersComAlerta)));
+      }
+    };
+
+    window.addEventListener("app:abrir-categoria", handleAbrir);
+    return () => window.removeEventListener("app:abrir-categoria", handleAbrir);
+  }, [ativos, alertas]);
+
+  // Limpar destaques ao fechar o overlay
+  const handleCloseOverlay = () => {
+    setCategoriaSelecionada(null);
+    setDestacarTickers([]);
+  };
 
   // Re-renderiza para o tempo relativo
   const [, setTick] = useState(0);
@@ -80,8 +111,19 @@ export function ResumoCategorias() {
       {resumoPorCategoria.map((cat) => (
         <DashboardCard 
           key={cat.nome}
-          className="group"
-          onClick={() => setCategoriaSelecionada(cat.nome)}
+          className="group relative"
+          onClick={() => {
+            // Ao abrir manualmente, também destacamos os alertas recentes
+            const catAtivos = ativos.filter(a => a.categoria === cat.nome);
+            const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
+            const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
+            const tickersComAlerta = alertas
+              .filter(alerta => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)))
+              .map(alerta => chaveTicker(alerta.ticker));
+            
+            setDestacarTickers(Array.from(new Set(tickersComAlerta)));
+            setCategoriaSelecionada(cat.nome);
+          }}
         >
           {/* Indicador de cor da categoria */}
           <div 
@@ -122,7 +164,8 @@ export function ResumoCategorias() {
 
       <OverlayDetalhesCategoria 
         categoria={categoriaSelecionada}
-        onClose={() => setCategoriaSelecionada(null)}
+        onClose={handleCloseOverlay}
+        tickersDestacados={destacarTickers}
       />
     </div>
           </div>
