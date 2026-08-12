@@ -560,6 +560,8 @@ function PaginaRadar() {
               setFiltroSetor("todos");
             }}
             aoSelecionar={setSelecionado}
+            isPending={isPending}
+            isFetching={isFetching}
           />
         ) : (
           <>

@@ -50,6 +50,7 @@ import {
   Gauge,
   Layers,
   Radar,
+  Search,
   TrendingUp,
   Trophy,
   Wallet,
@@ -539,6 +540,8 @@ export function RankingRadar({
   atualizadoEm,
   aoTrocarCategoria,
   aoSelecionar,
+  isPending,
+  isFetching,
 }: {
   linhas: (LinhaRadarBase & { sinal: SinalRadar })[];
   /** Ticker (maiúsculo) → quantidade na carteira do usuário. */
@@ -550,6 +553,8 @@ export function RankingRadar({
   atualizadoEm: string | null;
   aoTrocarCategoria: (categoria: "acao" | "fii") => void;
   aoSelecionar: (linha: LinhaRadarBase) => void;
+  isPending?: boolean;
+  isFetching?: boolean;
 }) {
   const [criterio, setCriterio] = useState<Critério>("score");
   const [direcao, setDirecao] = useState<Direcao>("desc");
@@ -977,136 +982,212 @@ export function RankingRadar({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginadas.map((l, i) => {
-                const quantidade = carteira?.get(l.ticker.toUpperCase()) ?? 0;
-                return (
-                  <TableRow
-                    key={l.ticker}
-                    onClick={() => aoSelecionar(l)}
-                    className="group relative cursor-pointer"
-                  >
-                    <TableCell className="relative pl-4 text-center">
-                      <span
-                        aria-hidden
-                        className={`absolute inset-y-0 left-0 w-[3px] ${corZona(l.posicao?.percentil ?? null)}`}
-                      />
-                      <ChipPosicao posicao={inicio + i + 1} />
+              {isPending ? (
+                Array.from({ length: 10 }).map((_, idx) => (
+                  <TableRow key={`skeleton-${idx}`}>
+                    <TableCell className="pl-4 text-center">
+                      <div className="flex justify-center">
+                        <div className="size-6 animate-pulse rounded-full bg-muted/40" />
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <LogoAtivo l={l} />
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <p className="truncate text-sm font-semibold">{l.ticker}</p>
-                            {quantidade > 0 ? (
-                              <span
-                                className="hidden shrink-0 rounded-full border border-emerald-600/30 bg-emerald-600/10 px-1.5 py-px text-[0.6rem] font-bold text-emerald-600 xl:inline"
-                                title={`Na sua carteira · ${quantidade} cotas`}
-                              >
-                                {quantidade} na carteira
-                              </span>
-                            ) : null}
-                          </div>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {l.nome}
-                            {l.setor ? (
-                              <span className="ml-1 hidden rounded-full border border-border/60 px-1.5 py-px text-[0.6rem] text-muted-foreground lg:inline">
-                                {l.setor}
-                              </span>
-                            ) : null}
-                          </p>
+                        <div className="size-8 animate-pulse rounded-md bg-muted/40" />
+                        <div className="space-y-1.5">
+                          <div className="h-4 w-16 animate-pulse rounded bg-muted/40" />
+                          <div className="h-3 w-32 animate-pulse rounded bg-muted/40" />
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <span className="block text-sm tabular-nums">
-                        {l.preco !== null ? fmtPreco(l.preco, "BRL") : "—"}
-                      </span>
+                      <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="text-right">
-                      <span
-                        className={`block text-sm font-semibold tabular-nums ${corValor(l.variacaoDia, "variacao")}`}
-                      >
-                        {fmtPercent(l.variacaoDia)}
-                      </span>
+                      <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="text-right">
-                      <span className="block text-sm font-semibold tabular-nums text-positive">
-                        {l.dy12 !== null ? `${l.dy12.toLocaleString("pt-BR")}%` : "—"}
-                      </span>
-                      <div className="ml-auto mt-1 h-1 w-12 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-emerald-500/70"
-                          style={{
-                            width: `${l.dy12 !== null ? Math.min(100, (l.dy12 / 12) * 100) : 0}%`,
-                          }}
-                        />
-                      </div>
+                      <div className="ml-auto h-4 w-16 animate-pulse rounded bg-muted/40" />
                     </TableCell>
-                    <TableCell className="hidden text-right tabular-nums text-muted-foreground lg:table-cell">
-                      {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
+                    <TableCell className="hidden text-right lg:table-cell">
+                      <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="hidden xl:table-cell">
                       <div className="flex justify-center">
-                        <BarraHistorico
-                          percentil={l.posicao?.percentil ?? null}
-                          zona={l.sinal.zona}
-                          inicioSerie={l.posicao?.inicioSerie ?? null}
-                        />
+                        <div className="h-1.5 w-24 animate-pulse rounded-full bg-muted/40" />
                       </div>
                     </TableCell>
                     <TableCell className="hidden 2xl:table-cell">
-                      <Faixa52sCelula l={l} />
+                      <div className="h-1.5 w-full animate-pulse rounded-full bg-muted/40" />
                     </TableCell>
                     <TableCell className="hidden text-right xl:table-cell">
-
-                      <span
-                        className={`text-sm font-semibold tabular-nums ${
-                          l.posicao?.distMinima52sPct !== null &&
-                          l.posicao?.distMinima52sPct !== undefined
-                            ? l.posicao.distMinima52sPct <= 5
-                              ? "text-emerald-600"
-                              : l.posicao.distMinima52sPct <= 20
-                                ? "text-sky-600"
-                                : "text-muted-foreground"
-                            : "text-muted-foreground"
-                        }`}
-                        title="Distância até a mínima de 52 semanas (0% = na mínima)"
-                      >
-                        {l.posicao?.distMinima52sPct !== null &&
-                        l.posicao?.distMinima52sPct !== undefined
-                          ? `−${l.posicao.distMinima52sPct.toFixed(1).replace(".", ",")}%`
-                          : "—"}
-                      </span>
+                      <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="hidden 2xl:table-cell">
-                      <span
-                        className={`block text-right text-xs tabular-nums ${corDrawdown(l.posicao?.drawdownMaximoPct ?? null)}`}
-                      >
-                        {l.posicao?.drawdownMaximoPct !== null &&
-                        l.posicao?.drawdownMaximoPct !== undefined
-                          ? `${l.posicao.drawdownMaximoPct.toFixed(1).replace(".", ",")}%`
-                          : "—"}
-                      </span>
-                      <span className="block text-right text-[0.65rem] tabular-nums text-muted-foreground">
-                        {l.posicao?.volatilidadeAnualPct !== null &&
-                        l.posicao?.volatilidadeAnualPct !== undefined
-                          ? `vol ${l.posicao.volatilidadeAnualPct.toFixed(0)}%`
-                          : ""}
-                      </span>
+                      <div className="space-y-1 text-right">
+                        <div className="ml-auto h-3 w-10 animate-pulse rounded bg-muted/40" />
+                        <div className="ml-auto h-3 w-12 animate-pulse rounded bg-muted/40" />
+                      </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <ScoreCelula score={l.score} />
+                      <div className="mx-auto h-6 w-10 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="text-center">
-                      <RatingGestorCelula gestor={gestores.get(l.ticker) ?? null} />
+                      <div className="mx-auto h-6 w-12 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                     <TableCell className="pr-4 text-right">
-                      <SinalBadge sinal={l.sinal} />
+                      <div className="ml-auto h-6 w-16 animate-pulse rounded bg-muted/40" />
                     </TableCell>
                   </TableRow>
-                );
-              })}
+                ))
+              ) : paginadas.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={13} className="h-64 text-center">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <Search className="size-10 text-muted-foreground/40" />
+                      <div className="space-y-1">
+                        <p className="text-lg font-semibold">Nenhum ativo encontrado</p>
+                        <p className="text-sm text-muted-foreground">
+                          Tente ajustar seus filtros ou mudar a busca.
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginadas.map((l, i) => {
+                  const quantidade = carteira?.get(l.ticker.toUpperCase()) ?? 0;
+                  return (
+                    <TableRow
+                      key={l.ticker}
+                      onClick={() => aoSelecionar(l)}
+                      className="group relative cursor-pointer"
+                    >
+                      <TableCell className="relative pl-4 text-center">
+                        <span
+                          aria-hidden
+                          className={`absolute inset-y-0 left-0 w-[3px] ${corZona(l.posicao?.percentil ?? null)}`}
+                        />
+                        <ChipPosicao posicao={inicio + i + 1} />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <LogoAtivo l={l} />
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <p className="truncate text-sm font-semibold">{l.ticker}</p>
+                              {quantidade > 0 ? (
+                                <span
+                                  className="hidden shrink-0 rounded-full border border-emerald-600/30 bg-emerald-600/10 px-1.5 py-px text-[0.6rem] font-bold text-emerald-600 xl:inline"
+                                  title={`Na sua carteira · ${quantidade} cotas`}
+                                >
+                                  {quantidade} na carteira
+                                </span>
+                              ) : null}
+                            </div>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {l.nome}
+                              {l.setor ? (
+                                <span className="ml-1 hidden rounded-full border border-border/60 px-1.5 py-px text-[0.6rem] text-muted-foreground lg:inline">
+                                  {l.setor}
+                                </span>
+                              ) : null}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className="block text-sm tabular-nums">
+                          {l.preco !== null ? fmtPreco(l.preco, "BRL") : "—"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {isFetching && !l.variacaoDia ? (
+                          <div className="ml-auto h-4 w-12 animate-pulse rounded bg-muted/40" />
+                        ) : (
+                          <span
+                            className={`block text-sm font-semibold tabular-nums ${corValor(l.variacaoDia, "variacao")}`}
+                          >
+                            {fmtPercent(l.variacaoDia)}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className="block text-sm font-semibold tabular-nums text-positive">
+                          {l.dy12 !== null ? `${l.dy12.toLocaleString("pt-BR")}%` : "—"}
+                        </span>
+                        <div className="ml-auto mt-1 h-1 w-12 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-emerald-500/70"
+                            style={{
+                              width: `${l.dy12 !== null ? Math.min(100, (l.dy12 / 12) * 100) : 0}%`,
+                            }}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden text-right tabular-nums text-muted-foreground lg:table-cell">
+                        {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
+                      </TableCell>
+                      <TableCell className="hidden xl:table-cell">
+                        <div className="flex justify-center">
+                          <BarraHistorico
+                            percentil={l.posicao?.percentil ?? null}
+                            zona={l.sinal.zona}
+                            inicioSerie={l.posicao?.inicioSerie ?? null}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden 2xl:table-cell">
+                        <Faixa52sCelula l={l} />
+                      </TableCell>
+                      <TableCell className="hidden text-right xl:table-cell">
+                        <span
+                          className={`text-sm font-semibold tabular-nums ${
+                            l.posicao?.distMinima52sPct !== null &&
+                            l.posicao?.distMinima52sPct !== undefined
+                              ? l.posicao.distMinima52sPct <= 5
+                                ? "text-emerald-600"
+                                : l.posicao.distMinima52sPct <= 20
+                                  ? "text-sky-600"
+                                  : "text-muted-foreground"
+                              : "text-muted-foreground"
+                          }`}
+                          title="Distância até a mínima de 52 semanas (0% = na mínima)"
+                        >
+                          {l.posicao?.distMinima52sPct !== null &&
+                          l.posicao?.distMinima52sPct !== undefined
+                            ? `−${l.posicao.distMinima52sPct.toFixed(1).replace(".", ",")}%`
+                            : "—"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="hidden 2xl:table-cell">
+                        <span
+                          className={`block text-right text-xs tabular-nums ${corDrawdown(l.posicao?.drawdownMaximoPct ?? null)}`}
+                        >
+                          {l.posicao?.drawdownMaximoPct !== null &&
+                          l.posicao?.drawdownMaximoPct !== undefined
+                            ? `${l.posicao.drawdownMaximoPct.toFixed(1).replace(".", ",")}%`
+                            : "—"}
+                        </span>
+                        <span className="block text-right text-[0.65rem] tabular-nums text-muted-foreground">
+                          {l.posicao?.volatilidadeAnualPct !== null &&
+                          l.posicao?.volatilidadeAnualPct !== undefined
+                            ? `vol ${l.posicao.volatilidadeAnualPct.toFixed(0)}%`
+                            : ""}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <ScoreCelula score={l.score} />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <RatingGestorCelula gestor={gestores.get(l.ticker) ?? null} />
+                      </TableCell>
+                      <TableCell className="pr-4 text-right">
+                        <SinalBadge sinal={l.sinal} />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </div>
