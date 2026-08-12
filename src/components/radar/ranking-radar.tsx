@@ -978,7 +978,7 @@ export function RankingRadar({
                 </TableHead>
 
                 <TableHead
-                  className="hidden w-[8%] whitespace-nowrap text-right 2xl:table-cell"
+                  className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-right 2xl:table-cell"
                   title="Risco: queda máxima desde o pico do histórico e volatilidade anual"
                 >
                   Risco 52s
