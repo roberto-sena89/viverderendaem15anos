@@ -1038,8 +1038,8 @@ export function RankingRadar({
                   </div>
                 </TableHead>
 
-                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-right 2xl:table-cell">
-                  <div className="flex items-center justify-end gap-1.5">
+                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-center 2xl:table-cell">
+                  <div className="flex items-center justify-center gap-1.5">
                     Risco 52s
                     <TooltipProvider>
                       <Tooltip>
@@ -1279,16 +1279,16 @@ export function RankingRadar({
                             : "—"}
                         </span>
                       </TableCell>
-                      <TableCell className="hidden 2xl:table-cell">
+                      <TableCell className="hidden text-center tabular-nums 2xl:table-cell">
                         <span
-                          className={`block text-right text-xs tabular-nums ${corDrawdown(l.posicao?.drawdownMaximoPct ?? null)}`}
+                          className={`block text-center text-xs tabular-nums ${corDrawdown(l.posicao?.drawdownMaximoPct ?? null)}`}
                         >
                           {l.posicao?.drawdownMaximoPct !== null &&
                           l.posicao?.drawdownMaximoPct !== undefined
                             ? `${l.posicao.drawdownMaximoPct.toFixed(1).replace(".", ",")}%`
                             : "—"}
                         </span>
-                        <span className="block text-right text-[0.65rem] tabular-nums text-muted-foreground">
+                        <span className="block text-center text-[0.65rem] tabular-nums text-muted-foreground">
                           {l.posicao?.volatilidadeAnualPct !== null &&
                           l.posicao?.volatilidadeAnualPct !== undefined
                             ? `vol ${l.posicao.volatilidadeAnualPct.toFixed(0)}%`
@@ -1401,6 +1401,25 @@ export function RankingRadar({
                     </dd>
                   </div>
                 </dl>
+                <div className="mt-3 border-t border-border/60 pt-2.5">
+                  <dt className="t-caption mb-1.5 block text-center">Risco 52s</dt>
+                  <dd className="flex items-baseline justify-center gap-2">
+                    <span
+                      className={`text-sm font-semibold tabular-nums ${corDrawdown(l.posicao?.drawdownMaximoPct ?? null)}`}
+                    >
+                      {l.posicao?.drawdownMaximoPct !== null &&
+                      l.posicao?.drawdownMaximoPct !== undefined
+                        ? `${l.posicao.drawdownMaximoPct.toFixed(1).replace(".", ",")}%`
+                        : "—"}
+                    </span>
+                    <span className="text-[0.65rem] tabular-nums text-muted-foreground">
+                      {l.posicao?.volatilidadeAnualPct !== null &&
+                      l.posicao?.volatilidadeAnualPct !== undefined
+                        ? `vol ${l.posicao.volatilidadeAnualPct.toFixed(0)}%`
+                        : ""}
+                    </span>
+                  </dd>
+                </div>
               </button>
             </li>
           );
