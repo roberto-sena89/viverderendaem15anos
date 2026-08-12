@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useId } from "react";
 import { Coins, PiggyBank, Plus, TrendingUp, Wallet, Info } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
