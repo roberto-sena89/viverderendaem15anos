@@ -92,7 +92,7 @@ export function ResumoCategorias() {
     <div className="space-y-4 mb-8">
       <div className="flex items-center justify-between px-2">
         <h2 className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
-          Performance por Categoria
+          {"\n"}
         </h2>
         <div 
           className="flex items-center gap-1.5 text-[0.65rem] font-medium text-muted-foreground/50 transition-colors hover:text-muted-foreground/80"
