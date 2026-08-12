@@ -1,12 +1,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
-import { brl, valorAtual } from "@/lib/portfolio";
+import { useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
+import { brl, valorAtual, classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { useAportes } from "@/lib/data";
-import { TrendingDown, TrendingUp, Wallet, ArrowRightLeft, PieChart } from "lucide-react";
+import { TrendingDown, TrendingUp, Wallet, ArrowRightLeft, PieChart, Lightbulb, Target, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
 
 interface OverlayDetalhesCategoriaProps {
   categoria: string | null;
@@ -16,6 +17,8 @@ interface OverlayDetalhesCategoriaProps {
 export function OverlayDetalhesCategoria({ categoria, onClose }: OverlayDetalhesCategoriaProps) {
   const { data: ativos = [] } = useAtivosAoVivo();
   const { data: aportes = [] } = useAportes();
+  const { mapa } = useCotacoesTempoReal();
+  const { alvo } = useAlocacaoAlvo();
 
   if (!categoria) return null;
 
@@ -29,6 +32,38 @@ export function OverlayDetalhesCategoria({ categoria, onClose }: OverlayDetalhes
   const totalAtual = ativosDaCat.reduce((sum, a) => sum + valorAtual(a), 0);
   const lucro = totalAtual - totalInvestido;
   const cor = corCategoria(categoria);
+
+  // Insights
+  const ativosComVariacao = ativosDaCat
+    .map(a => ({ 
+      ...a, 
+      cotacao: mapa.get(a.ticker.toUpperCase().replace(/\.SA$/i, "")) 
+    }))
+    .filter(a => a.cotacao?.variacaoPercent !== undefined && a.cotacao.variacaoPercent !== null)
+    .sort((a, b) => Math.abs(b.cotacao!.variacaoPercent!) - Math.abs(a.cotacao!.variacaoPercent!));
+
+  const maiorVariacao = ativosComVariacao[0];
+  
+  const ativosComImpacto = ativosDaCat
+    .map(a => {
+      const vAtual = valorAtual(a);
+      const cotacao = mapa.get(a.ticker.toUpperCase().replace(/\.SA$/i, ""));
+      const variacao = cotacao?.variacaoPercent ?? 0;
+      const impactoFinanceiro = vAtual * (variacao / 100);
+      return { ...a, impactoFinanceiro, variacao };
+    })
+    .sort((a, b) => Math.abs(b.impactoFinanceiro) - Math.abs(a.impactoFinanceiro));
+
+  const maiorImpacto = ativosComImpacto[0];
+
+  // Rebalanceamento
+  const totalCarteira = ativos.reduce((sum, a) => sum + valorAtual(a), 0);
+  const classe = ativosDaCat.length > 0 ? classeDoAtivo(ativosDaCat[0]) : null;
+  const percentualAtual = totalCarteira > 0 ? (totalAtual / totalCarteira) * 100 : 0;
+  const percentualAlvo = classe ? (alvo[classe] ?? 0) : 0;
+  const desvio = percentualAtual - percentualAlvo;
+  const precisaComprar = desvio < -1; // Mais de 1% abaixo do alvo
+  const precisaVender = desvio > 1;  // Mais de 1% acima do alvo
 
   return (
     <Dialog open={!!categoria} onOpenChange={(open) => !open && onClose()}>
@@ -78,6 +113,63 @@ export function OverlayDetalhesCategoria({ categoria, onClose }: OverlayDetalhes
 
         <ScrollArea className="max-h-[60vh]">
           <div className="p-6 space-y-8">
+            {/* Insights Automáticos */}
+            <section className="space-y-4">
+              <h3 className="flex items-center gap-2 text-[0.7rem] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <Lightbulb className="size-3.5" /> Insights do Dia
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {maiorVariacao && (
+                  <div className="p-3 rounded-lg border border-border/40 bg-primary/5 flex flex-col gap-1.5">
+                    <span className="text-[0.6rem] font-bold text-muted-foreground uppercase tracking-wider">Maior Volatilidade</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black">{maiorVariacao.ticker}</span>
+                      <span className={cn(
+                        "text-xs font-black tabular-nums",
+                        (maiorVariacao.cotacao?.variacaoPercent ?? 0) >= 0 ? "text-emerald-500" : "text-rose-500"
+                      )}>
+                        {(maiorVariacao.cotacao?.variacaoPercent ?? 0) >= 0 ? "+" : ""}{maiorVariacao.cotacao?.variacaoPercent?.toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {maiorImpacto && Math.abs(maiorImpacto.impactoFinanceiro) > 0.01 && (
+                  <div className="p-3 rounded-lg border border-border/40 bg-primary/5 flex flex-col gap-1.5">
+                    <span className="text-[0.6rem] font-bold text-muted-foreground uppercase tracking-wider">Maior Impacto no Saldo</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black">{maiorImpacto.ticker}</span>
+                      <span className={cn(
+                        "text-xs font-black tabular-nums",
+                        maiorImpacto.impactoFinanceiro >= 0 ? "text-emerald-500" : "text-rose-500"
+                      )}>
+                        {maiorImpacto.impactoFinanceiro >= 0 ? "+" : ""}{brl(maiorImpacto.impactoFinanceiro, 2)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Sugestão de Rebalanceamento */}
+              {classe && (precisaComprar || precisaVender) && (
+                <div className={cn(
+                  "p-3 rounded-lg border flex items-start gap-3",
+                  precisaComprar ? "border-emerald-500/20 bg-emerald-500/5" : "border-amber-500/20 bg-amber-500/5"
+                )}>
+                  <Target className={cn("size-5 shrink-0 mt-0.5", precisaComprar ? "text-emerald-500" : "text-amber-500")} />
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-black uppercase tracking-tight">Sugestão de Rebalanceamento</span>
+                    <p className="text-[0.7rem] leading-relaxed text-muted-foreground">
+                      Esta categoria representa <span className="font-bold text-foreground">{percentualAtual.toFixed(1)}%</span> da sua carteira, 
+                      enquanto seu alvo é <span className="font-bold text-foreground">{percentualAlvo.toFixed(1)}%</span>. 
+                      {precisaComprar ? " Considere novos aportes aqui para atingir seu objetivo." : " Você está acima do peso ideal, considere reavaliar novas compras."}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </section>
+
+            <Separator className="bg-border/40" />
+
             {/* Composição */}
             <section className="space-y-4">
               <h3 className="flex items-center gap-2 text-[0.7rem] font-black uppercase tracking-[0.2em] text-muted-foreground">
