@@ -6,7 +6,7 @@ import { TrendingDown, TrendingUp, Clock, AlertTriangle, Plus, PieChart, Chevron
 import { getIconeCategoria } from "@/lib/icones-categorias";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useId } from "react";
 import { OverlayDetalhesCategoria } from "./overlay-detalhes-categoria";
 import { useAlertasHistorico } from "@/lib/alertas-historico";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -24,6 +24,7 @@ export function ResumoCategorias() {
   const { alertas } = useAlertasHistorico();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
   const [destacarTickers, setDestacarTickers] = useState<string[]>([]);
+  const baseId = useId();
 
   // Escutar evento de abertura de categoria (do Sino de Alertas)
   useEffect(() => {
@@ -144,16 +145,39 @@ export function ResumoCategorias() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-1">
-        {resumoPorCategoria.map((cat) => (
-          <TooltipProvider key={cat.nome}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DashboardCard 
-                  className={cn(
-                    "group relative border-border/40 hover:border-primary/20 transition-all duration-300 min-h-[152px] flex items-center justify-center",
-                    categoriaSelecionada === cat.nome && "ring-2 ring-primary ring-offset-2 ring-offset-background border-primary/40 bg-primary/5"
-                  )}
-                  onClick={() => {
+        {resumoPorCategoria.map((cat, idx) => {
+          const cardId = `${baseId}-card-${idx}`;
+          const descId = `${baseId}-desc-${idx}`;
+          
+          return (
+            <TooltipProvider key={cat.nome}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DashboardCard 
+                    id={cardId}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Ver detalhes da categoria ${cat.nome}`}
+                    aria-describedby={descId}
+                    className={cn(
+                      "group relative border-border/40 hover:border-primary/20 transition-all duration-300 min-h-[152px] flex items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none",
+                      categoriaSelecionada === cat.nome && "ring-2 ring-primary ring-offset-2 ring-offset-background border-primary/40 bg-primary/5"
+                    )}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        const catAtivos = ativos.filter(a => a.categoria === cat.nome);
+                        const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
+                        const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
+                        const tickersComAlerta = alertas
+                          .filter(alerta => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)))
+                          .map(alerta => chaveTicker(alerta.ticker));
+                        
+                        setDestacarTickers(Array.from(new Set(tickersComAlerta)));
+                        setCategoriaSelecionada(cat.nome);
+                      }
+                    }}
+                    onClick={() => {
                     const catAtivos = ativos.filter(a => a.categoria === cat.nome);
                     const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
                     const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
@@ -216,10 +240,12 @@ export function ResumoCategorias() {
                     "flex items-center gap-1.5 text-[0.85rem] font-bold tracking-tight",
                     cat.lucro >= 0 ? "text-success" : "text-destructive"
                   )}>
-                    {cat.lucro >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
+                    {cat.lucro >= 0 ? <TrendingUp className="size-3.5" aria-hidden="true" /> : <TrendingDown className="size-3.5" aria-hidden="true" />}
                     <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
                   </div>
-                  <span className="text-[0.6rem] font-bold text-muted-foreground/30 uppercase tracking-tighter">Resultado Total</span>
+                  <span id={descId} className="text-[0.6rem] font-bold text-muted-foreground/30 uppercase tracking-tighter">
+                    Resultado Total: {cat.lucro >= 0 ? "Lucro" : "Prejuízo"} de {brl(cat.lucro, 2)} ({cat.lucroPct.toFixed(2)}%)
+                  </span>
                 </div>
               </div>
             </div>
