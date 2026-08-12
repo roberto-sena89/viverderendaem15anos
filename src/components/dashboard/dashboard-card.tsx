@@ -5,6 +5,8 @@ interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement | HTMLB
   className?: string;
   onClick?: () => void;
   ariaLabel?: string;
+  ariaExpanded?: boolean;
+  ariaPressed?: boolean;
 }
 
 /**
@@ -16,6 +18,8 @@ export function DashboardCard({
   className, 
   onClick,
   ariaLabel,
+  ariaExpanded,
+  ariaPressed,
   ...props
 }: DashboardCardProps) {
   const Component = onClick ? 'button' : 'div';
@@ -24,6 +28,8 @@ export function DashboardCard({
     <Component
       onClick={onClick}
       aria-label={ariaLabel}
+      aria-expanded={ariaExpanded}
+      aria-pressed={ariaPressed}
       {...props}
       className={cn(
         "surface-card relative flex min-h-[120px] flex-col justify-center overflow-hidden p-3 transition-all duration-300 sm:min-h-[152px] sm:p-4",
