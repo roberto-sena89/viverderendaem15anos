@@ -102,10 +102,7 @@ function Cotacoes() {
 
   return (
     <AppShell title="Cotações" description={legenda}>
-      <div className="sticky top-[var(--altura-cabecalho-app,0px)] z-20 -mx-4 space-y-0 border-b border-border bg-background/70 px-4 pt-1 pb-2 backdrop-blur-xl sm:-mx-6 sm:px-6">
-        <AbasMercado />
-      </div>
-
+      <AbasMercado />
       <div className="space-y-4">
 
         {/* Status do pregão */}
