@@ -156,13 +156,19 @@ export function resumoCarteira(ativos: Ativo[]): ResumoCarteira {
   const totalInvestido = ativos.reduce((s, a) => s + valorInvestido(a), 0);
   const lucroTotal = totalAtual - totalInvestido;
   const dividendosEstimados12m = ativos.reduce((s, a) => s + (valorAtual(a) * a.dy) / 100, 0);
+
+  // Garante arredondamento financeiro consistente nos totais
+  const totalAtualArr = arredondar(totalAtual);
+  const totalInvestidoArr = arredondar(totalInvestido);
+  const lucroTotalArr = arredondar(lucroTotal);
+
   return {
-    totalAtual,
-    totalInvestido,
-    lucroTotal,
-    rentabilidade: totalInvestido > 0 ? (lucroTotal / totalInvestido) * 100 : 0,
-    dividendosEstimados12m,
-    dyCarteira: totalAtual > 0 ? (dividendosEstimados12m / totalAtual) * 100 : 0,
+    totalAtual: totalAtualArr,
+    totalInvestido: totalInvestidoArr,
+    lucroTotal: lucroTotalArr,
+    rentabilidade: totalInvestidoArr > 0 ? (lucroTotalArr / totalInvestidoArr) * 100 : 0,
+    dividendosEstimados12m: arredondar(dividendosEstimados12m),
+    dyCarteira: totalAtualArr > 0 ? (dividendosEstimados12m / totalAtualArr) * 100 : 0,
   };
 }
 
@@ -219,12 +225,19 @@ export function evolucaoPatrimonio(aportes: Aporte[], totalAtual: number) {
   });
 }
 
-import { brl as brlFormat, pct as pctFormat, numeroBR as numeroBRFormat, formatarNumeroBR as formatarNumeroBRFormat } from "./formato-numero";
+import {
+  brl as brlFormat,
+  pct as pctFormat,
+  numeroBR as numeroBRFormat,
+  formatarNumeroBR as formatarNumeroBRFormat,
+  arredondar as arredondarFormat,
+} from "./formato-numero";
 
 export const brl = brlFormat;
 export const pct = pctFormat;
 export const numeroBR = numeroBRFormat;
 export const formatarNumeroBR = formatarNumeroBRFormat;
+export const arredondar = arredondarFormat;
 
 
 export interface ProjecaoInput extends PlanoConfig {
