@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-// Garante regras consistentes de arredondamento (inclusive em totais, médias e gráficos) para que os números dos cards batam com os dados subjacentes.
+// Implemente uma página pública `/comparativo-investimentos` detalhando "Quanto rende 1 milhão?" com tabelas comparativas (Poupança, CDB, FIIs, Ações).
 //
 // IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, não simplifique, implemente EXATAMENTE o que foi pedido.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
