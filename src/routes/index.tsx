@@ -1,4 +1,7 @@
 import { useEffect, useRef } from "react";
+// Implemente um utilitário único de formatação para moeda e porcentagem e aplique em toda a aplicação para evitar inconsistências.
+//
+// IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, não simplifique, implemente EXATAMENTE o que foi pedido.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, LineChart, PiggyBank, Sparkles, TrendingUp, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
