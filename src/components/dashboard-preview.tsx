@@ -111,9 +111,9 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
         <div className="bg-card/80 border-border/40 rounded-xl border p-3">
           <div className="space-y-2">
             {[
-              { ticker: "PETR4", valor: "R$ 42,50", var: 2.4, varReal: 1.02 },
-              { ticker: "HGLG11", valor: "R$ 128,90", var: -0.8, varReal: -1.03 },
-              { ticker: "IVVB11", valor: "R$ 315,20", var: 1.2, varReal: 3.78 },
+              { ticker: "PETR4", valor: "R$ 42,50", var: 2.4, varReal: 1.02, lucro: 12540.50, lucroPct: 24.5 },
+              { ticker: "HGLG11", valor: "R$ 128,90", var: -0.8, varReal: -1.03, lucro: 4320.15, lucroPct: 8.2 },
+              { ticker: "IVVB11", valor: "R$ 315,20", var: 1.2, varReal: 3.78, lucro: -1250.40, lucroPct: -3.8 },
             ].map((ativo) => (
               <div key={ativo.ticker} className="flex items-center justify-between text-[0.55rem]">
                 <div className="flex items-center gap-2">
