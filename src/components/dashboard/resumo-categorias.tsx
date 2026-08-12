@@ -1,6 +1,6 @@
 import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotacoes-tempo-real";
 import { tempoRelativo } from "@/components/status-cotacoes";
-import { brl, valorAtual, arredondar } from "@/lib/portfolio";
+import { brl, valorAtual, arredondar, pct } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { TrendingDown, TrendingUp, Clock, AlertTriangle, Plus, PieChart, ChevronRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { getIconeCategoria } from "@/lib/icones-categorias";
@@ -13,6 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Info } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { DeltaChip } from "@/components/panel";
 
 /**
  * Componente que exibe o resumo de lucro/prejuízo por categoria de ativos.
@@ -298,24 +299,23 @@ export function ResumoCategorias() {
                         </div>
                       </div>
                       
-                      <div className="flex flex-col -space-y-1">
-                        <div className={cn(
-                          "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-tight group-hover:scale-105 transition-transform duration-300 origin-left",
-                          cat.lucro >= 0 ? "text-primary dark:text-primary" : "text-destructive"
-                        )}>
-                          {brl(cat.lucro, 2)}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex flex-wrap items-baseline gap-2">
+                          <p className={cn(
+                            "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none group-hover:text-primary transition-colors duration-300",
+                            cat.lucro >= 0 ? "text-foreground" : "text-destructive"
+                          )}>
+                            {brl(cat.lucro, 2)}
+                          </p>
+                          <DeltaChip value={cat.lucroPct} className="bg-primary/10 text-primary border-primary/20 dark:bg-primary/20" />
                         </div>
                         
-                        <div className="flex items-center justify-between w-full">
-                          <div className={cn(
-                            "flex items-center gap-1.5 text-[0.85rem] font-bold tracking-tight",
-                            cat.lucro >= 0 ? "text-primary dark:text-primary" : "text-destructive"
-                          )}>
-                            {cat.lucro >= 0 ? <TrendingUp className="size-3.5" aria-hidden="true" /> : <TrendingDown className="size-3.5" aria-hidden="true" />}
-                            <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
-                          </div>
+                        <div className="flex items-center justify-between w-full border-t border-border/40 pt-2">
                           <span id={descId} className="text-[0.6rem] font-bold text-muted-foreground/30 uppercase tracking-tighter">
-                            Resultado Total: {cat.lucro >= 0 ? "Lucro" : "Prejuízo"} de {brl(cat.lucro, 2)} ({cat.lucroPct.toFixed(2)}%)
+                            Resultado: {cat.lucro >= 0 ? "Lucro" : "Prejuízo"}
+                          </span>
+                          <span className="text-[0.65rem] font-bold tabular-nums text-muted-foreground/40">
+                            {pct(cat.lucroPct, 2)}
                           </span>
                         </div>
                       </div>
