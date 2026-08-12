@@ -996,20 +996,21 @@ export function RankingRadar({
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="text-right tabular-nums text-muted-foreground">
+                    <TableCell className="hidden text-right tabular-nums text-muted-foreground lg:table-cell">
                       {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden xl:table-cell">
                       <BarraHistorico
                         percentil={l.posicao?.percentil ?? null}
                         zona={l.sinal.zona}
                         inicioSerie={l.posicao?.inicioSerie ?? null}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden 2xl:table-cell">
                       <Faixa52sCelula l={l} />
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="hidden text-right xl:table-cell">
+
                       <span
                         className={`text-sm font-semibold tabular-nums ${
                           l.posicao?.distMinima52sPct !== null &&
