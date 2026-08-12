@@ -542,7 +542,7 @@ function HomePage() {
 
 
 
-          <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl border bg-gradient-to-br p-8 shadow-[var(--shadow-lift)] md:col-span-3 md:flex-row md:items-center md:justify-between">
+          <aside className="border-primary/30 from-primary/20 to-card relative flex flex-col items-start gap-6 overflow-hidden rounded-2xl border bg-gradient-to-br p-6 shadow-[var(--shadow-lift)] sm:rounded-3xl sm:p-8 md:col-span-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
               <p className="text-primary text-[0.62rem] font-bold tracking-[0.2em] uppercase">
                 Comece hoje
