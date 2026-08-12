@@ -386,7 +386,10 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         >
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
-              <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
+              <p className={cn(
+                "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none group-hover:text-primary transition-colors duration-300",
+                resumo.totalAtual >= resumo.totalInvestido ? "text-foreground" : "text-destructive"
+              )}>
                 {brl(resumo.totalAtual, 2)}
               </p>
               <DeltaChip value={resumo.rentabilidade} className="bg-primary/10 text-primary border-primary/20 dark:bg-primary/20" />
