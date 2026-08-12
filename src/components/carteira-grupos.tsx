@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { TickerMark } from "@/components/panel";
+import { DialogTransacao } from "@/components/dialog-transacao";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
