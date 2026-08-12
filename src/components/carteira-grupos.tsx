@@ -919,7 +919,18 @@ export function CarteiraGrupos({
                             {onEditar && onExcluir ? (
                               <TableCell className={`pr-2 text-center sm:pr-3 ${cel}`}>
                                 <div className="flex justify-center gap-1.5">
-                                  <DialogTransacao aporte={a}>
+                                  <DialogTransacao
+                                    aporte={{
+                                      id: a.id,
+                                      ticker: a.ticker,
+                                      categoria: a.categoria,
+                                      quantidade: a.quantidade,
+                                      preco: a.precoMedio,
+                                      data: new Date().toISOString().slice(0, 10),
+                                      corretora: "",
+                                      taxas: 0,
+                                    }}
+                                  >
                                     <Button
                                       size="icon"
                                       variant="ghost"
