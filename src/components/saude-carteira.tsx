@@ -306,7 +306,7 @@ export function SaudeCarteira({ carteira }: { carteira: Ativo[] }) {
                   <div
                     className="mt-0.5 h-px bg-foreground/40"
                     style={{ width: `${Math.min(100, c.alvo)}%` }}
-                    title={`Alvo: ${pct(c.alvo, 0)}`}
+                    title={`Alvo: ${pct(c.alvo, 2)}`}
                   />
                 </div>
               </div>
