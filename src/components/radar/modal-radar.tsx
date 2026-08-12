@@ -459,10 +459,10 @@ export function ModalRadar({
             </section>
 
             <section className="rounded-lg border p-4">
-              <div className="mb-4 flex items-center justify-between gap-4">
+              <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h3 className="flex items-center gap-2 text-sm font-semibold">
                   <FlaskConical className="size-4 text-primary" aria-hidden />
-                  Backtest Rápido: Estratégia do Radar vs BOVA11
+                  Backtest Rápido: Radar vs BOVA11
                 </h3>
                 <Button
                   variant="outline"
