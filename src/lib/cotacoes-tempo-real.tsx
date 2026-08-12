@@ -136,6 +136,7 @@ interface ContextoCotacoes {
   flash: Record<string, "alta" | "baixa">;
   status: StatusSync;
   atualizadoEm: number | null;
+  ultimoRefresh: number | null;
   pregaoAberto: boolean;
   proximaAbertura: string;
   atualizarAgora: () => void;
@@ -215,6 +216,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
 
   const [streamCotacoes, setStreamCotacoes] = useState<CotacaoLive[]>([]);
   const [streamEm, setStreamEm] = useState<number | null>(null);
+  const [ultimoRefresh, setUltimoRefresh] = useState<number | null>(null);
 
   const aoReceberStream = useCallback((cotacoes: CotacaoLive[]) => {
     setStreamCotacoes((atual) => {
@@ -263,6 +265,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     } catch {
       /* ignora cota excedida */
     }
+    setUltimoRefresh(Date.now());
   }, [data]);
 
   const mapa = useMemo(() => {
@@ -345,6 +348,7 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     flash,
     status,
     atualizadoEm: Math.max(dataUpdatedAt || 0, streamEm ?? 0) || null,
+    ultimoRefresh,
     pregaoAberto: pregao.aberto,
     proximaAbertura: pregao.proximaAbertura,
     atualizarAgora: () => void refetch(),
@@ -367,6 +371,7 @@ export function useCotacoesTempoReal(): ContextoCotacoes {
     flash: {},
     status: "manual",
     atualizadoEm: null,
+    ultimoRefresh: null,
     pregaoAberto: estadoPregao().aberto,
     proximaAbertura: estadoPregao().proximaAbertura,
     atualizarAgora: () => {},
