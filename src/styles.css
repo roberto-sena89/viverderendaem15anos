@@ -7,11 +7,11 @@
  * para que o texto pinte imediatamente e o preload seja realmente aproveitado.
  */
 @font-face {
-  font-family: "Manrope Variable";
+  font-family: "Inter Variable";
   font-style: normal;
   font-display: swap;
-  font-weight: 200 800;
-  src: url("@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2")
+  font-weight: 100 900;
+  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2")
     format("woff2-variations");
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
@@ -25,11 +25,11 @@
  * do sistema em tamanho equivalente, sem reflow quando a webfont carrega.
  */
 @font-face {
-  font-family: "Manrope Fallback";
+  font-family: "Inter Fallback";
   src: local("Arial");
-  size-adjust: 104%;
-  ascent-override: 97%;
-  descent-override: 26%;
+  size-adjust: 107.1%;
+  ascent-override: 90.4%;
+  descent-override: 22.5%;
   line-gap-override: 0%;
 }
 
@@ -48,13 +48,13 @@
   --text-base--line-height: 1.55rem;
 
   --font-sans:
-    "Manrope Variable", "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, sans-serif;
+    "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-display:
-    "Manrope Variable", "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, sans-serif;
+    "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-brand:
-    "Manrope Variable", "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, sans-serif;
+    "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-hero:
-    "Manrope Variable", "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, sans-serif;
+    "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

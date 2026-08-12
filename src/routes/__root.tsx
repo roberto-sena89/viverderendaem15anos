@@ -10,7 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import manropeLatin from "@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url";
+import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import logoIcone from "@/assets/logo-icone.webp";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
@@ -106,11 +106,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "preload",
         as: "font",
         type: "font/woff2",
-        href: manropeLatin,
+        href: interLatin,
         crossOrigin: "anonymous",
         fetchPriority: "high",
       },
-      // Manrope é a única família do app (corpo + display): o preload acima
+      // Inter é a única família do app (corpo + display): o preload acima
       // garante que ela não dispute banda com o CSS crítico antes do H1.
       {
         rel: "preconnect",
