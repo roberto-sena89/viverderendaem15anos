@@ -1038,8 +1038,8 @@ export function RankingRadar({
                   </div>
                 </TableHead>
 
-                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-right 2xl:table-cell">
-                  <div className="flex items-center justify-end gap-1.5">
+                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-center 2xl:table-cell">
+                  <div className="flex items-center justify-center gap-1.5">
                     Risco 52s
                     <TooltipProvider>
                       <Tooltip>
