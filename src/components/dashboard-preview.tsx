@@ -12,8 +12,6 @@ interface DashboardPreviewProps {
 export function DashboardPreview({ className }: DashboardPreviewProps) {
   const patrimonio = "R$ 847.350";
   const rendimento = "+12,4%";
-  const meta = "R$ 2.000.000";
-  const anosRestantes = "11 anos";
 
   const dadosGrafico = [
     { mes: "Jan", valor: 65 },
