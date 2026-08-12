@@ -541,6 +541,8 @@ export function RankingRadar({
   atualizadoEm,
   aoTrocarCategoria,
   aoSelecionar,
+  isPending,
+  isFetching,
 }: {
   linhas: (LinhaRadarBase & { sinal: SinalRadar })[];
   /** Ticker (maiúsculo) → quantidade na carteira do usuário. */
@@ -552,6 +554,8 @@ export function RankingRadar({
   atualizadoEm: string | null;
   aoTrocarCategoria: (categoria: "acao" | "fii") => void;
   aoSelecionar: (linha: LinhaRadarBase) => void;
+  isPending?: boolean;
+  isFetching?: boolean;
 }) {
   const [criterio, setCriterio] = useState<Critério>("score");
   const [direcao, setDirecao] = useState<Direcao>("desc");
