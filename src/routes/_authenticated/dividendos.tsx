@@ -931,20 +931,22 @@ function PainelProventos({
         </div>
       </div>
 
-      <div className="surface-card p-6 flex flex-col min-h-[500px]">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <p className="font-display text-xl font-bold tracking-tight">Evolução de Proventos</p>
-            <div className="flex rounded-lg bg-muted p-1 shadow-inner">
+      <div className="surface-card p-6 flex flex-col min-h-[550px]">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <h2 className="font-display text-xl font-bold tracking-tight text-foreground">
+              Evolução de Proventos
+            </h2>
+            <div className="inline-flex items-center rounded-xl bg-muted/50 p-1 backdrop-blur-sm border border-border/50">
               {(["mensal", "anual"] as const).map((m) => (
                 <button
                   key={m}
                   type="button"
                   onClick={() => setModo(m)}
-                  className={`rounded-md px-4 py-1.5 text-xs font-semibold capitalize transition-all ${
+                  className={`relative rounded-lg px-5 py-2 text-xs font-bold capitalize transition-all duration-200 ${
                     modo === m 
-                      ? "bg-background text-primary shadow-sm ring-1 ring-black/5" 
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-background text-primary shadow-md ring-1 ring-black/[0.03] scale-[1.02]" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
                   }`}
                 >
                   {m}
@@ -953,30 +955,33 @@ function PainelProventos({
             </div>
           </div>
           
-          <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
-            <FiltroPeriodo
-              valor={periodo}
-              onChange={setPeriodo}
-              anos={Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) =>
-                b.localeCompare(a),
-              )}
-            />
-            <SeletorFiltro
-              valor={tipoAtivo}
-              onChange={setTipoAtivo}
-              icone={CircleDollarSign}
-              opcoes={opcoesTipo}
-              rotuloAcessivel="Tipo de ativo"
-            />
-            <FiltroAtivos
-              valor={ativoSel}
-              onChange={setAtivoSel}
-              ativos={Array.from(new Set(proventos.map((d) => d.ticker))).sort()}
-            />
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="h-8 w-px bg-border/60 mx-1 hidden lg:block" />
+            <div className="flex flex-wrap items-center gap-2">
+              <FiltroPeriodo
+                valor={periodo}
+                onChange={setPeriodo}
+                anos={Array.from(new Set(proventos.map((d) => d.data.slice(0, 4)))).sort((a, b) =>
+                  b.localeCompare(a),
+                )}
+              />
+              <SeletorFiltro
+                valor={tipoAtivo}
+                onChange={setTipoAtivo}
+                icone={CircleDollarSign}
+                opcoes={opcoesTipo}
+                rotuloAcessivel="Tipo de ativo"
+              />
+              <FiltroAtivos
+                valor={ativoSel}
+                onChange={setAtivoSel}
+                ativos={Array.from(new Set(proventos.map((d) => d.ticker))).sort()}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="mt-8 h-[350px] w-full">
+        <div className="mt-10 h-[380px] w-full">
           {temDados ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={serie}>
