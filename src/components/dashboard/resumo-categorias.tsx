@@ -157,11 +157,15 @@ export function ResumoCategorias() {
     <div className="space-y-4 mb-10 mt-6">
       <div className="flex items-center justify-between px-3 h-4">
         <TooltipProvider>
-          <div className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
+          <div className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
             <span>Performance por Categoria</span>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="size-2.5 cursor-help hover:text-muted-foreground/50 transition-colors" />
+                <Info
+                  tabIndex={0}
+                  aria-label="O que é Performance por Categoria"
+                  className="size-2.5 cursor-help rounded-sm text-muted-foreground/50 transition-colors hover:text-muted-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:outline-none"
+                />
               </TooltipTrigger>
               <TooltipContent className="max-w-[200px] text-[0.7rem] bg-background/95 backdrop-blur-xl border-border/50">
                 <p>Lucro acumulado e variação percentual por classe de ativo em relação ao custo médio.</p>
@@ -170,8 +174,11 @@ export function ResumoCategorias() {
           </div>
         </TooltipProvider>
 
-        <div 
-          className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] text-muted-foreground/30 transition-colors hover:text-muted-foreground/60"
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] text-muted-foreground/50"
           title="Sincronização automática ativa"
         >
           <Clock className="size-2.5" />
@@ -186,12 +193,17 @@ export function ResumoCategorias() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className={cn(
-                  "flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wider border transition-colors cursor-help",
-                  auditoria.integra 
-                    ? "bg-emerald-500/5 text-emerald-500/60 border-emerald-500/10 hover:bg-emerald-500/10" 
-                    : "bg-amber-500/5 text-amber-500/60 border-amber-500/10 hover:bg-amber-500/10"
-                )}>
+                <div
+                  tabIndex={0}
+                  role="img"
+                  aria-label={`Auditoria de dados: ${auditoria.integra ? "íntegra, sem discrepâncias" : "discrepância detectada"}`}
+                  className={cn(
+                    "flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wider border transition-colors cursor-help focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:outline-none",
+                    auditoria.integra
+                      ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/15 hover:text-emerald-700 focus-visible:text-emerald-700"
+                      : "bg-amber-500/5 text-amber-600 border-amber-500/20 hover:bg-amber-500/15 hover:text-amber-700 focus-visible:text-amber-700"
+                  )}
+                >
                   {auditoria.integra ? <ShieldCheck className="size-2.5" /> : <AlertTriangle className="size-2.5" />}
                   <span>Dados Auditados</span>
                 </div>
@@ -203,11 +215,11 @@ export function ResumoCategorias() {
                 <div className="space-y-1 text-muted-foreground">
                   <p>Soma dos ativos: <span className="text-foreground">{brl(auditoria.totalLucroAtivos)}</span></p>
                   <p>Soma das categorias: <span className="text-foreground">{brl(auditoria.totalLucroCategorias)}</span></p>
-                  <p>Discrepância: <span className={auditoria.integra ? "text-emerald-500" : "text-amber-500"}>
+                  <p>Discrepância: <span className={auditoria.integra ? "text-emerald-600" : "text-amber-600"}>
                     {brl(auditoria.discrepancia)}
                   </span></p>
                 </div>
-                <p className="text-[0.6rem] border-t border-border/20 pt-1 mt-1 opacity-50 italic">
+                <p className="text-[0.6rem] border-t border-border/20 pt-1 mt-1 opacity-60 italic">
                   * Verificação em tempo real de integridade matemática e arredondamento (IEEE 754).
                 </p>
               </TooltipContent>
