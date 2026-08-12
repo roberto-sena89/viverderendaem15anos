@@ -32,7 +32,7 @@ export function ResumoCategorias() {
   }).sort((a, b) => b.lucro - a.lucro);
 
   return (
-    <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-1">
+    <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 px-1">
       {resumoPorCategoria.map((cat) => (
         <div 
           key={cat.nome}
