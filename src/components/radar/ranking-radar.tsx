@@ -1022,8 +1022,10 @@ export function RankingRadar({
                       <span className="block text-sm tabular-nums">
                         {l.preco !== null ? fmtPreco(l.preco, "BRL") : "—"}
                       </span>
+                    </TableCell>
+                    <TableCell className="text-right">
                       <span
-                        className={`block text-xs tabular-nums ${corValor(l.variacaoDia, "variacao")}`}
+                        className={`block text-sm font-semibold tabular-nums ${corValor(l.variacaoDia, "variacao")}`}
                       >
                         {fmtPercent(l.variacaoDia)}
                       </span>
