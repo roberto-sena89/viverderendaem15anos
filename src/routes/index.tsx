@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-// Implemente um utilitário único de formatação para moeda e porcentagem e aplique em toda a aplicação para evitar inconsistências.
+// Adicione tooltips explicando como a variação em % é calculada (ex.: dia, mês ou período) em cada KPI do resumo.
 //
 // IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, não simplifique, implemente EXATAMENTE o que foi pedido.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
