@@ -15,7 +15,7 @@ import { useAlertasHistorico } from "@/lib/alertas-historico";
  */
 export function ResumoCategorias() {
   const { data: ativos = [] } = useAtivosAoVivo();
-  const { atualizadoEm, status, mapa } = useCotacoesTempoReal();
+  const { atualizadoEm, status } = useCotacoesTempoReal();
   const { alertas } = useAlertasHistorico();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
 
