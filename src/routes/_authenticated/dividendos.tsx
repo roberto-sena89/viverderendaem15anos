@@ -868,8 +868,8 @@ function PainelProventos({
   ];
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
-      <div className="surface-card divide-y divide-border">
+    <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,350px)_minmax(0,1fr)]">
+      <div className="surface-card flex flex-col divide-y divide-border">
         <div className="p-5">
           <p className="font-display text-lg font-semibold">Resumo</p>
           <p className="mt-3 text-xs text-muted-foreground">Média Mensal (últ. 12 meses)</p>
@@ -931,9 +931,9 @@ function PainelProventos({
         </div>
       </div>
 
-      <div className="surface-card p-5">
+      <div className="surface-card p-6 flex flex-col min-h-[500px]">
         <div className="flex flex-wrap items-center gap-3">
-          <p className="font-display text-lg font-semibold">Evolução de Proventos</p>
+          <p className="font-display text-xl font-bold tracking-tight">Evolução de Proventos</p>
           <div className="flex rounded-md bg-muted p-1">
             {(["mensal", "anual"] as const).map((m) => (
               <button
@@ -971,7 +971,7 @@ function PainelProventos({
           </div>
         </div>
 
-        <div className="mt-4 h-72">
+        <div className="mt-8 h-[350px] w-full">
           {temDados ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={serie}>
