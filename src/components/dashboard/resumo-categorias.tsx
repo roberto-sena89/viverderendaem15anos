@@ -228,25 +228,6 @@ export function ResumoCategorias() {
         )}
       </div>
 
-      {/* Legenda visual de leitura rápida: verde = lucro, vermelho = prejuízo */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-3" role="note" aria-label="Legenda de cores: verde indica lucro, vermelho indica prejuízo">
-        <div className="flex items-center gap-1.5">
-          <span className="flex size-4 items-center justify-center rounded-md bg-positive/10 text-positive">
-            <TrendingUp className="size-2.5" aria-hidden="true" />
-          </span>
-          <span className="text-[0.6rem] font-bold uppercase tracking-wider text-positive">Lucro</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="flex size-4 items-center justify-center rounded-md bg-negative/10 text-negative">
-            <TrendingDown className="size-2.5" aria-hidden="true" />
-          </span>
-          <span className="text-[0.6rem] font-bold uppercase tracking-wider text-negative">Prejuízo</span>
-        </div>
-        <span className="text-[0.55rem] font-medium text-muted-foreground/50 uppercase tracking-wider">
-          Toque em uma categoria para detalhes
-        </span>
-      </div>
-
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0">
         {resumoPorCategoria.map((cat, idx) => {
           const cardId = `${baseId}-card-${idx}`;
