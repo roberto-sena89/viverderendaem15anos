@@ -330,7 +330,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={Wallet}
           onClick={() => setAberto(detalhePatrimonio)}
         >
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
               <p className="text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none text-foreground">
                 {brl(resumo.totalAtual, 2)}
@@ -362,7 +362,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={PiggyBank}
           onClick={() => setAberto(detalheLucro)}
         >
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <p className={cn(
               "text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none",
               resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
@@ -390,7 +390,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={Coins}
           onClick={() => setAberto(detalheProventos)}
         >
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <p className="text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none text-foreground">
               {brl(recebidos12m, 2)}
             </p>
@@ -412,7 +412,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           icone={TrendingUp}
           onClick={() => setAberto(detalheRentabilidade)}
         >
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
               <p className={cn(
                 "text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none",
