@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { classeDoAtivo, resumoCarteira, Ativo, Categoria } from '../../lib/portfolio';
+import { classeDoAtivo, resumoCarteira, Ativo, Categoria, alocacaoIdeal, rotuloCategoria } from '../../lib/portfolio';
 import { regraDaCategoria } from '../../lib/tributacao';
 
 describe('Nomenclatura Fundos Imobiliários -> FIIS', () => {
@@ -43,14 +43,12 @@ describe('Nomenclatura Fundos Imobiliários -> FIIS', () => {
 
 describe('Persistência e Rebalanceamento', () => {
   it('deve manter consistência na alocação ideal', () => {
-    const { alocacaoIdeal } = await import('../../lib/portfolio');
     expect(alocacaoIdeal['FIIS']).toBe(10);
     // @ts-ignore
     expect(alocacaoIdeal['FIIs']).toBeUndefined();
   });
 
   it('deve rotular corretamente na UI', () => {
-    const { rotuloCategoria } = await import('../../lib/portfolio');
     expect(rotuloCategoria['FIIS']).toBe('FIIS');
   });
 });
