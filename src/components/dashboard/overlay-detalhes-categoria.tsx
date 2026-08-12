@@ -36,6 +36,7 @@ export function OverlayDetalhesCategoria({
   const totalInvestido = ativosDaCat.reduce((sum, a) => sum + (Number(a.quantidade) * Number(a.precoMedio)), 0);
   const totalAtual = ativosDaCat.reduce((sum, a) => sum + valorAtual(a), 0);
   const lucro = totalAtual - totalInvestido;
+  const lucroPct = totalInvestido > 0 ? (lucro / totalInvestido) * 100 : 0;
   const cor = corCategoria(categoria);
 
   // Insights
@@ -111,7 +112,12 @@ export function OverlayDetalhesCategoria({
               lucro >= 0 ? "text-emerald-500" : "text-rose-500"
             )}>
               {lucro >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
-              {brl(lucro)}
+              <span className="flex items-baseline gap-1.5">
+                {brl(lucro)}
+                <span className="text-[0.65rem] opacity-70 font-bold">
+                  ({lucroPct >= 0 ? "+" : ""}{lucroPct.toFixed(2).replace(".", ",")}{"%"})
+                </span>
+              </span>
             </div>
           </div>
         </div>

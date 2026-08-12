@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-// Garantir que os tooltips dos KPIs sejam totalmente acessíveis (WCAG), com leitura por teclado e suporte a leitores de tela via aria-describedby.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, LineChart, PiggyBank, Sparkles, TrendingUp, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
