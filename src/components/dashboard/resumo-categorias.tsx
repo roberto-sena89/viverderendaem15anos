@@ -2,7 +2,7 @@ import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotaco
 import { tempoRelativo } from "@/components/status-cotacoes";
 import { brl, valorAtual } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
-import { TrendingDown, TrendingUp, Clock, AlertTriangle } from "lucide-react";
+import { TrendingDown, TrendingUp, Clock, AlertTriangle, Plus, PieChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
 import { useState, useEffect, useMemo } from "react";
@@ -10,6 +10,8 @@ import { OverlayDetalhesCategoria } from "./overlay-detalhes-categoria";
 import { useAlertasHistorico } from "@/lib/alertas-historico";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 
 /**
  * Componente que exibe o resumo de lucro/prejuízo por categoria de ativos.
@@ -88,7 +90,27 @@ export function ResumoCategorias() {
     }).sort((a, b) => b.lucro - a.lucro);
   }, [categoriasUnicas, ativos, alertas]);
 
-  if (ativos.length === 0) return null;
+  if (ativos.length === 0) {
+    return (
+      <div className="mb-10 px-1">
+        <DashboardCard className="flex flex-col items-center justify-center py-10 text-center border-dashed border-border/40 bg-transparent hover:bg-white/[0.02]">
+          <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 mb-4">
+            <PieChart className="size-6 text-primary" />
+          </div>
+          <h3 className="text-sm font-bold text-foreground mb-1 uppercase tracking-wider">Nenhum ativo cadastrado</h3>
+          <p className="text-xs text-muted-foreground max-w-[280px] mb-6">
+            Adicione seus primeiros ativos para visualizar o resumo de performance por categoria.
+          </p>
+          <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-[0.7rem] font-bold uppercase tracking-wider h-8">
+            <Link to="/carteira" search={{ openAdd: true }}>
+              <Plus className="mr-2 size-3" />
+              Começar Agora
+            </Link>
+          </Button>
+        </DashboardCard>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 mb-10">
