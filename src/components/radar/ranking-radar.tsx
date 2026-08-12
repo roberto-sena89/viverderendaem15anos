@@ -889,10 +889,9 @@ export function RankingRadar({
         </section>
       ) : null}
 
-      {/* Tabela profissional (desktop e tablet) */}
       <div className="panel hidden w-full overflow-hidden md:block">
-        <div className="overflow-x-auto">
-          <Table className="w-full min-w-[1100px] table-fixed">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border/60">
+          <Table className="w-full min-w-[1200px] table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
@@ -901,7 +900,7 @@ export function RankingRadar({
                 >
                   #
                 </TableHead>
-                <TableHead className="w-[24%] min-w-[170px] lg:w-[20%]">Ativo</TableHead>
+                <TableHead className="w-[18%] min-w-[170px] lg:w-[16%]">Ativo</TableHead>
                 <TableHead
                   className="w-[12%] whitespace-nowrap text-right"
                   title="Último preço e variação do dia"
@@ -921,13 +920,13 @@ export function RankingRadar({
                   P/VPA
                 </TableHead>
                 <TableHead
-                  className="hidden w-[14%] min-w-[140px] text-center xl:table-cell"
+                  className="hidden w-[12%] min-w-[140px] text-center xl:table-cell"
                   title="Posição do preço na própria história: 0% = mínima · 100% = máxima"
                 >
                   Histórico
                 </TableHead>
                 <TableHead
-                  className="hidden w-[14%] min-w-[130px] 2xl:table-cell"
+                  className="hidden w-[12%] min-w-[130px] 2xl:table-cell"
                   title="Posição da cotação entre a mínima e a máxima de 52 semanas"
                 >
                   Faixa 52s
@@ -955,7 +954,7 @@ export function RankingRadar({
                   Gestor
                 </TableHead>
                 <TableHead
-                  className="w-[16%] min-w-[104px] pr-4 text-right"
+                  className="w-[14%] min-w-[104px] pr-4 text-right"
 
                   title={meta.ajuda}
                   aria-sort={direcao === "asc" ? "ascending" : "descending"}
@@ -1102,7 +1101,7 @@ export function RankingRadar({
       </div>
 
       {/* Cartões em camadas (mobile) */}
-      <ol className="space-y-2 md:hidden">
+      <ol className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:hidden">
         {paginadas.map((l, i) => {
           const v = valorCritério(l, criterio, gestores.get(l.ticker));
           const quantidade = carteira?.get(l.ticker.toUpperCase()) ?? 0;
@@ -1111,7 +1110,7 @@ export function RankingRadar({
               <button
                 type="button"
                 onClick={() => aoSelecionar(l)}
-                className="panel w-full p-3 text-left transition-transform active:scale-[0.99]"
+                className="panel w-full overflow-hidden p-3 text-left transition-transform active:scale-[0.99] active:bg-muted/30"
               >
                 <div className="flex items-center gap-3">
                   <ChipPosicao posicao={inicio + i + 1} />
