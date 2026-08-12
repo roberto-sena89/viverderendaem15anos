@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CalculadoraIndependenciaFinanceiraRouteImport } from './routes/calculadora-independencia-financeira'
 import { Route as CalculadoraJurosCompostosRouteImport } from './routes/calculadora-juros-compostos'
+import { Route as ComparativoInvestimentosRouteImport } from './routes/comparativo-investimentos'
 import { Route as GuiaLiberdadeFinanceiraRouteImport } from './routes/guia-liberdade-financeira'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as OQueERendaPassivaRouteImport } from './routes/o-que-e-renda-passiva'
@@ -72,6 +73,12 @@ const CalculadoraJurosCompostosRoute =
   CalculadoraJurosCompostosRouteImport.update({
     id: '/calculadora-juros-compostos',
     path: '/calculadora-juros-compostos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ComparativoInvestimentosRoute =
+  ComparativoInvestimentosRouteImport.update({
+    id: '/comparativo-investimentos',
+    path: '/comparativo-investimentos',
     getParentRoute: () => rootRouteImport,
   } as any)
 const GuiaLiberdadeFinanceiraRoute = GuiaLiberdadeFinanceiraRouteImport.update({
@@ -254,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/calculadora-independencia-financeira': typeof CalculadoraIndependenciaFinanceiraRoute
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
+  '/comparativo-investimentos': typeof ComparativoInvestimentosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/o-que-e-renda-passiva': typeof OQueERendaPassivaRoute
@@ -293,6 +301,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/calculadora-independencia-financeira': typeof CalculadoraIndependenciaFinanceiraRoute
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
+  '/comparativo-investimentos': typeof ComparativoInvestimentosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/o-que-e-renda-passiva': typeof OQueERendaPassivaRoute
@@ -334,6 +343,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/calculadora-independencia-financeira': typeof CalculadoraIndependenciaFinanceiraRoute
   '/calculadora-juros-compostos': typeof CalculadoraJurosCompostosRoute
+  '/comparativo-investimentos': typeof ComparativoInvestimentosRoute
   '/guia-liberdade-financeira': typeof GuiaLiberdadeFinanceiraRoute
   '/mcp': typeof McpRoute
   '/o-que-e-renda-passiva': typeof OQueERendaPassivaRoute
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/calculadora-independencia-financeira'
     | '/calculadora-juros-compostos'
+    | '/comparativo-investimentos'
     | '/guia-liberdade-financeira'
     | '/mcp'
     | '/o-que-e-renda-passiva'
@@ -414,6 +425,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/calculadora-independencia-financeira'
     | '/calculadora-juros-compostos'
+    | '/comparativo-investimentos'
     | '/guia-liberdade-financeira'
     | '/mcp'
     | '/o-que-e-renda-passiva'
@@ -454,6 +466,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/calculadora-independencia-financeira'
     | '/calculadora-juros-compostos'
+    | '/comparativo-investimentos'
     | '/guia-liberdade-financeira'
     | '/mcp'
     | '/o-que-e-renda-passiva'
@@ -495,6 +508,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CalculadoraIndependenciaFinanceiraRoute: typeof CalculadoraIndependenciaFinanceiraRoute
   CalculadoraJurosCompostosRoute: typeof CalculadoraJurosCompostosRoute
+  ComparativoInvestimentosRoute: typeof ComparativoInvestimentosRoute
   GuiaLiberdadeFinanceiraRoute: typeof GuiaLiberdadeFinanceiraRoute
   McpRoute: typeof McpRoute
   OQueERendaPassivaRoute: typeof OQueERendaPassivaRoute
@@ -551,6 +565,13 @@ declare module '@tanstack/react-router' {
       path: '/calculadora-juros-compostos'
       fullPath: '/calculadora-juros-compostos'
       preLoaderRoute: typeof CalculadoraJurosCompostosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comparativo-investimentos': {
+      id: '/comparativo-investimentos'
+      path: '/comparativo-investimentos'
+      fullPath: '/comparativo-investimentos'
+      preLoaderRoute: typeof ComparativoInvestimentosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guia-liberdade-financeira': {
@@ -831,6 +852,7 @@ const rootRouteChildren: RootRouteChildren = {
   CalculadoraIndependenciaFinanceiraRoute:
     CalculadoraIndependenciaFinanceiraRoute,
   CalculadoraJurosCompostosRoute: CalculadoraJurosCompostosRoute,
+  ComparativoInvestimentosRoute: ComparativoInvestimentosRoute,
   GuiaLiberdadeFinanceiraRoute: GuiaLiberdadeFinanceiraRoute,
   McpRoute: McpRoute,
   OQueERendaPassivaRoute: OQueERendaPassivaRoute,

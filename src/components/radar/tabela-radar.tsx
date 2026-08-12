@@ -125,7 +125,7 @@ export function TabelaRadar({
   return (
     <div className="w-full max-w-full overflow-hidden rounded-xl border bg-card">
       <div className="w-full overflow-x-auto">
-        <Table className="w-full min-w-[880px] table-fixed">
+        <Table className="w-full min-w-[1000px] table-fixed">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-[19%] min-w-[150px] pl-4">Ativo</TableHead>
