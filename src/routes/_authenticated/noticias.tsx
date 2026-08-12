@@ -94,7 +94,7 @@ const CATEGORIAS = [
   "Mercados",
   "Ações",
   "Renda Fixa",
-  "Fundos Imobiliários",
+  "FIIS",
   "Câmbio & Cripto",
   "Economia",
   "Internacional",

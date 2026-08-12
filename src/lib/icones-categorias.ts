@@ -14,7 +14,7 @@ import type { LucideIcon } from "lucide-react";
 
 export const ICONES_CATEGORIAS: Record<string, LucideIcon> = {
   "Ações": TrendingUp,
-  "Fundos Imobiliários": Building2,
+  "FIIS": Building2,
   "FIIs": Building2,
   "Tesouro Direto": Landmark,
   "Tesouro": Landmark,

@@ -168,7 +168,7 @@ export interface SugestaoAtivo {
 }
 
 /** Categorias negociadas na B3 (sufixo .SA no Yahoo). */
-const CATEGORIAS_B3 = ["Ações", "Fundos Imobiliários", "BDR", "ETF Brasil", "Fiagro"];
+const CATEGORIAS_B3 = ["Ações", "FIIS", "BDR", "ETF Brasil", "Fiagro"];
 const CATEGORIAS_TESOURO = ["Tesouro Direto", "Renda Fixa"];
 /** Categorias que aceitam tanto papéis da B3 quanto do exterior. */
 const CATEGORIAS_MISTAS = ["ETF (Global)", "ETF (Exterior)"];

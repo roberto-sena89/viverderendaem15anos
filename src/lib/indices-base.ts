@@ -61,7 +61,7 @@ export const CATEGORIAS_INDICE: {
   { id: "setoriais", rotulo: "Índices Setoriais B3", cor: "bg-primary/15 text-primary" },
   {
     id: "dividendos",
-    rotulo: "Dividendos e Fundos Imobiliários",
+    rotulo: "Dividendos e FIIS",
     cor: "bg-primary/15 text-primary",
   },
   { id: "governanca", rotulo: "Governança e Sustentabilidade", cor: "bg-primary/15 text-primary" },
@@ -187,7 +187,7 @@ export const INDICES: DefIndice[] = [
   ),
   {
     codigo: "IFIX",
-    nome: "Índice de Fundos Imobiliários",
+    nome: "Índice de FIIS",
     categoria: "dividendos",
     tipo: "bolsa",
     simbolos: ["IFIX.SA", "^IFIX"],
