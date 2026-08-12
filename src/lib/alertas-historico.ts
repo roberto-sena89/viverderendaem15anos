@@ -26,6 +26,8 @@ export interface AlertaDisparado {
   vereditoDe?: string;
   /** Veredito novo, quando tipo = "veredito" (mudança do Técnico IA). */
   vereditoPara?: string;
+  /** Categoria do ativo, para navegação rápida. */
+  categoria?: string;
 }
 
 const CHAVE = "alertas:historico";
