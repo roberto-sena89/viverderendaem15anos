@@ -907,9 +907,15 @@ export function RankingRadar({
                 <TableHead className="w-[24%] min-w-[240px] lg:w-[22%]">Ativo</TableHead>
                 <TableHead
                   className="w-[11%] whitespace-nowrap text-right"
-                  title="Último preço e variação do dia"
+                  title="Último preço"
                 >
                   Preço
+                </TableHead>
+                <TableHead
+                  className="w-[10%] whitespace-nowrap text-right"
+                  title="Variação percentual no pregão atual"
+                >
+                  Var. Dia %
                 </TableHead>
                 <TableHead
                   className="w-[9%] whitespace-nowrap text-right"
