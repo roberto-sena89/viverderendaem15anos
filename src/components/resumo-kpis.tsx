@@ -124,9 +124,9 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
                       <p
                         className={`num text-base font-bold tracking-tight ${
                           l.tom === "positive"
-                            ? "text-primary dark:text-primary"
+                            ? "text-positive"
                             : l.tom === "negative"
-                              ? "text-destructive"
+                              ? "text-negative"
                               : "text-foreground"
                         }`}
                       >
@@ -387,12 +387,12 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
               <p className={cn(
-                "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none group-hover:text-primary transition-colors duration-300",
-                resumo.totalAtual >= resumo.totalInvestido ? "text-foreground" : "text-destructive"
+                "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none transition-colors duration-300",
+                resumo.totalAtual >= resumo.totalInvestido ? "text-positive" : "text-negative"
               )}>
                 {brl(resumo.totalAtual, 2)}
               </p>
-              <DeltaChip value={resumo.rentabilidade} className="bg-primary/10 text-primary border-primary/20 dark:bg-primary/20" />
+              <DeltaChip value={resumo.rentabilidade} />
             </div>
             <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
               <div className="flex flex-col">
@@ -427,7 +427,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                   </div>
                   <span className={cn(
                     "text-xs font-bold tabular-nums",
-                    variacaoHoje.delta >= 0 ? "text-primary" : "text-destructive"
+                    variacaoHoje.delta >= 0 ? "text-positive" : "text-negative"
                   )}>
                     {fmtDelta(variacaoHoje.delta)}
                   </span>
@@ -446,7 +446,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           <div className="flex flex-col gap-2">
             <p className={cn(
               "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
-              resumo.lucroTotal >= 0 ? "text-primary" : "text-destructive"
+              resumo.lucroTotal >= 0 ? "text-positive" : "text-negative"
             )}>
               {brl(resumo.lucroTotal, 2)}
             </p>
@@ -455,7 +455,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                 <span className="text-[0.62rem] font-bold text-muted-foreground/60 uppercase tracking-wider">Capital</span>
                 <span className={cn(
                   "text-xs font-bold tabular-nums",
-                  resumo.lucroTotal >= 0 ? "text-primary/80" : "text-destructive/80"
+                  resumo.lucroTotal >= 0 ? "text-positive/80" : "text-negative/80"
                 )}>{brl(resumo.lucroTotal, 2)}</span>
               </div>
               <div className="flex flex-col items-end">
@@ -473,7 +473,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           tooltip="Total de dividendos e JCP recebidos nos últimos 12 meses corridos."
         >
           <div className="flex flex-col gap-2">
-            <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
+            <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-positive transition-colors duration-300">
               {brl(recebidos12m, 2)}
             </p>
             <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
@@ -499,7 +499,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
             <div className="flex flex-wrap items-baseline gap-2">
               <p className={cn(
                 "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
-                resumo.rentabilidade >= 0 ? "text-primary" : "text-destructive"
+                resumo.rentabilidade >= 0 ? "text-positive" : "text-negative"
               )}>
                 {pct(resumo.rentabilidade, 2)}
               </p>
@@ -534,7 +534,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                 </div>
                 <span className={cn(
                   "text-xs font-bold tabular-nums",
-                  retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-primary/80" : "text-destructive/80"
+                  retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-positive/80" : "text-negative/80"
                 )}>{retorno12m === null ? "—" : pct(retorno12m, 2)}</span>
               </div>
               <div className="flex flex-col items-end">
