@@ -117,23 +117,31 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
             ].map((ativo) => (
               <div key={ativo.ticker} className="flex items-center justify-between text-[0.55rem]">
                 <div className="flex items-center gap-2">
-                  <div className="bg-muted flex size-6 items-center justify-center rounded text-[0.4rem] font-bold">
+                  <div className="bg-muted flex size-7 items-center justify-center rounded-lg text-[0.45rem] font-bold">
                     {ativo.ticker.substring(0, 2)}
                   </div>
                   <div>
-                    <p className="font-bold">{ativo.ticker}</p>
-                    <p className="text-muted-foreground">{ativo.valor}</p>
+                    <p className="font-bold text-[0.6rem]">{ativo.ticker}</p>
+                    <div className="flex items-center gap-1 text-[0.45rem] text-muted-foreground">
+                      <span>{ativo.valor}</span>
+                      <span className={cn(
+                        "font-medium",
+                        ativo.var >= 0 ? "text-emerald-500" : "text-rose-500"
+                      )}>
+                        ({ativo.var >= 0 ? "+" : ""}{ativo.var}%)
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className={cn(
-                    "font-bold flex items-center justify-end gap-0.5",
-                    ativo.var >= 0 ? "text-emerald-500" : "text-rose-500"
+                    "font-bold text-[0.6rem]",
+                    ativo.lucro >= 0 ? "text-emerald-500" : "text-rose-500"
                   )}>
-                    {ativo.var >= 0 ? "+" : ""}{ativo.var}%
+                    {ativo.lucro >= 0 ? "+" : "-"}R$ {Math.abs(ativo.lucro).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                   <p className="text-[0.45rem] font-medium text-muted-foreground/80">
-                    {ativo.varReal >= 0 ? "+" : "-"}R$ {Math.abs(ativo.varReal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    {ativo.lucroPct >= 0 ? "+" : ""}{ativo.lucroPct}% lucro
                   </p>
                 </div>
               </div>
