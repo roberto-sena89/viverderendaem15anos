@@ -129,7 +129,7 @@ function DividendosPage() {
     <AppShell title="Proventos" description="Sua renda passiva em construção">
       <AbasCarteira />
 
-      <div className="flex justify-end">
+      <div className="flex justify-start px-2 sm:px-0">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button>
