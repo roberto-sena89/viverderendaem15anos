@@ -301,7 +301,7 @@ export function ResumoCategorias() {
                       <div className="flex flex-col -space-y-1">
                         <div className={cn(
                           "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-tight group-hover:scale-105 transition-transform duration-300 origin-left",
-                          cat.lucro >= 0 ? "text-success" : "text-destructive"
+                          cat.lucro >= 0 ? "text-primary dark:text-primary" : "text-destructive"
                         )}>
                           {brl(cat.lucro, 2)}
                         </div>
@@ -309,7 +309,7 @@ export function ResumoCategorias() {
                         <div className="flex items-center justify-between w-full">
                           <div className={cn(
                             "flex items-center gap-1.5 text-[0.85rem] font-bold tracking-tight",
-                            cat.lucro >= 0 ? "text-success" : "text-destructive"
+                            cat.lucro >= 0 ? "text-primary dark:text-primary" : "text-destructive"
                           )}>
                             {cat.lucro >= 0 ? <TrendingUp className="size-3.5" aria-hidden="true" /> : <TrendingDown className="size-3.5" aria-hidden="true" />}
                             <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
