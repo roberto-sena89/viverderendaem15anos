@@ -1244,7 +1244,7 @@ export function RankingRadar({
                           />
                         </div>
                       </TableCell>
-                      <TableCell className="hidden text-right tabular-nums text-muted-foreground lg:table-cell">
+                      <TableCell className="hidden text-center tabular-nums text-muted-foreground lg:table-cell">
                         {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                       </TableCell>
                       <TableCell className="hidden xl:table-cell">
