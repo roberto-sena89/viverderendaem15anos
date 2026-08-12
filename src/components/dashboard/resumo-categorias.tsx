@@ -8,6 +8,8 @@ import { DashboardCard } from "./dashboard-card";
 import { useState, useEffect, useMemo } from "react";
 import { OverlayDetalhesCategoria } from "./overlay-detalhes-categoria";
 import { useAlertasHistorico } from "@/lib/alertas-historico";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 /**
  * Componente que exibe o resumo de lucro/prejuízo por categoria de ativos.
@@ -89,8 +91,22 @@ export function ResumoCategorias() {
   if (ativos.length === 0) return null;
 
   return (
-    <div className="space-y-3 mb-10">
-      <div className="flex items-center justify-end px-3">
+    <div className="space-y-4 mb-10">
+      <div className="flex items-center justify-between px-3">
+        <TooltipProvider>
+          <div className="flex items-center gap-1.5 text-[0.62rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
+            <span>Performance</span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="size-2.5 cursor-help hover:text-muted-foreground/60 transition-colors" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[200px] text-[0.7rem] bg-background/95 backdrop-blur-xl border-border/50">
+                <p>Lucro acumulado e variação percentual por classe de ativo em relação ao custo médio.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+
         <div 
           className="flex items-center gap-1.5 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-muted-foreground/40 transition-colors hover:text-muted-foreground/70"
           title="Sincronização automática ativa"
@@ -106,21 +122,23 @@ export function ResumoCategorias() {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 px-1">
         {resumoPorCategoria.map((cat) => (
-          <DashboardCard 
-            key={cat.nome}
-            className="group relative border-transparent hover:border-border/40"
-            onClick={() => {
-              const catAtivos = ativos.filter(a => a.categoria === cat.nome);
-              const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
-              const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
-              const tickersComAlerta = alertas
-                .filter(alerta => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)))
-                .map(alerta => chaveTicker(alerta.ticker));
-              
-              setDestacarTickers(Array.from(new Set(tickersComAlerta)));
-              setCategoriaSelecionada(cat.nome);
-            }}
-          >
+          <TooltipProvider key={cat.nome}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DashboardCard 
+                  className="group relative border-transparent hover:border-border/40"
+                  onClick={() => {
+                    const catAtivos = ativos.filter(a => a.categoria === cat.nome);
+                    const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
+                    const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
+                    const tickersComAlerta = alertas
+                      .filter(alerta => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)))
+                      .map(alerta => chaveTicker(alerta.ticker));
+                    
+                    setDestacarTickers(Array.from(new Set(tickersComAlerta)));
+                    setCategoriaSelecionada(cat.nome);
+                  }}
+                >
             {/* Efeito de brilho dinâmico sofisticado */}
             <div 
               className="absolute -inset-1 opacity-[0.02] transition-opacity duration-700 group-hover:opacity-[0.05]"
@@ -165,10 +183,16 @@ export function ResumoCategorias() {
               className="pointer-events-none absolute inset-0 opacity-0 transition-all duration-500 group-hover:opacity-100"
               style={{ 
                 background: `radial-gradient(120px circle at center, ${cat.cor}15, transparent)` 
-              }}
-            />
-          </DashboardCard>
-        ))}
+                }}
+              />
+            </DashboardCard>
+          </TooltipTrigger>
+          <TooltipContent className="text-[0.7rem] bg-background/95 backdrop-blur-xl border-border/50">
+            <p>Clique para ver detalhes de <strong>{cat.nome}</strong></p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ))}
       </div>
 
       <OverlayDetalhesCategoria 
