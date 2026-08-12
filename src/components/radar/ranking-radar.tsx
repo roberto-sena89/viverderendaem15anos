@@ -941,7 +941,7 @@ export function RankingRadar({
                   Histórico
                 </TableHead>
                 <TableHead
-                  className="hidden w-[10%] min-w-[110px] 2xl:table-cell"
+                  className="hidden w-[14%] min-w-[140px] 2xl:table-cell"
                   title="Posição da cotação entre a mínima e a máxima de 52 semanas"
                 >
                   Faixa 52s
