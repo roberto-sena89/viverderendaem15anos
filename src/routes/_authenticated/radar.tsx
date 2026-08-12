@@ -162,7 +162,7 @@ function paginasNumeradas(total: number, atual: number): (number | "…")[] {
 
 function PaginaRadar() {
   const [categoria, setCategoria] = useState<"acao" | "fii">("acao");
-  const [abaVisao] = useState<"cotacoes" | "ranking">("ranking");
+  const [abaVisao, setAbaVisao] = useState<"cotacoes" | "ranking">("ranking");
   const [busca, setBusca] = useState("");
   const [ordem, setOrdem] = useState<Ordenacao>("sinal");
   const [direcao, setDirecao] = useState<"desc" | "asc">("desc");
@@ -172,6 +172,7 @@ function PaginaRadar() {
   const [apenasMinimas52, setApenasMinimas52] = useState(false);
   const [pagina, setPagina] = useState(1);
   const [selecionado, setSelecionado] = useState<LinhaRadarBase | null>(null);
+  const [exportando, setExportando] = useState(false);
   const [lote, setLote] = useState<{
     ativo: boolean;
     processados: number;
@@ -389,10 +390,19 @@ function PaginaRadar() {
 
   const exportarVisao = async (formato: FormatoExportacaoRadar) => {
     try {
-      await exportarRadar(formato, ordenadas, categoria);
+      setExportando(true);
+      // Busca todas as posições para garantir que o export tenha o histórico completo
+      const tickersTodos = linhasFiltradas.map((l) => l.ticker);
+      const { radarPosicoesLote } = await import("@/lib/radar.functions");
+      const { posicoes: todasPosicoes } = await radarPosicoesLote({ data: { tickers: tickersTodos } });
+      const completas = aplicarPosicoes(linhasFiltradas, todasPosicoes);
+      
+      await exportarRadar(formato, completas, categoria);
       toast.success(`Radar exportado em ${formato.toUpperCase()}.`);
     } catch {
       toast.error("Não foi possível exportar o radar agora.");
+    } finally {
+      setExportando(false);
     }
   };
 
@@ -475,13 +485,17 @@ function PaginaRadar() {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-9 gap-2">
-                <Download className="size-4 shrink-0" aria-hidden />
-                Exportar
+              <Button variant="outline" size="sm" className="h-9 gap-2" disabled={exportando}>
+                {exportando ? (
+                  <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />
+                ) : (
+                  <Download className="size-4 shrink-0" aria-hidden />
+                )}
+                {exportando ? "Processando..." : "Exportar"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Visão atual (até {ordenadas.length})</DropdownMenuLabel>
+              <DropdownMenuLabel>Visão filtrada ({linhasFiltradas.length} ativos)</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => void exportarVisao("csv")}>CSV</DropdownMenuItem>
               <DropdownMenuItem onClick={() => void exportarVisao("xlsx")}>
