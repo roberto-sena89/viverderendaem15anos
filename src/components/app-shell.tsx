@@ -197,7 +197,10 @@ export function AppShell({
               )}
               <div className="flex flex-col gap-0.5">
                 {grupo.itens.map(({ to, label, icon: Icon }) => {
-                  const active = pathname === to;
+                  // Sincroniza o estado ativo com o pathname real.
+                  // Se o usuário estiver em /, tratamos como /dashboard para fins de navegação lateral
+                  // se o usuário estiver autenticado (o redirecionamento cuida disso no TanStack Router).
+                  const active = pathname === to || (to === "/dashboard" && pathname === "/");
                   return (
                     <Link
                       key={to}
