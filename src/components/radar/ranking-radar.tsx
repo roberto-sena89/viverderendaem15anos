@@ -1381,7 +1381,7 @@ export function RankingRadar({
                     </dd>
                   </div>
                   <div>
-                    <dt className="t-caption">P/VPA</dt>
+                    <dt className="t-caption text-center">P/VPA</dt>
                     <dd className="t-num mt-0.5">
                       {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                     </dd>
