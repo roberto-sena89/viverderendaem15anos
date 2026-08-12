@@ -215,7 +215,7 @@ export function ResumoCategorias() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-1">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0">
         {resumoPorCategoria.map((cat, idx) => {
           const cardId = `${baseId}-card-${idx}`;
           const descId = `${baseId}-desc-${idx}`;
