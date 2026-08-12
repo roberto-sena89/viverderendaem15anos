@@ -435,7 +435,7 @@ function HomePage() {
           {recursos.map((r, i) => (
             <article
               key={r.title}
-              className={`group border-border/60 relative overflow-hidden rounded-3xl border p-8 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)] ${
+              className={`group border-border/60 relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lift)] sm:rounded-3xl sm:p-8 ${
                 i === 0 ? "from-card to-background bg-gradient-to-br md:col-span-2" : "bg-card"
               }`}
             >
