@@ -20,7 +20,7 @@ import { DeltaChip } from "@/components/panel";
  */
 export function ResumoCategorias() {
   const { data: ativos = [] } = useAtivosAoVivo();
-  const { atualizadoEm, status } = useCotacoesTempoReal();
+  useCotacoesTempoReal();
   const { alertas } = useAlertasHistorico();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
   const [destacarTickers, setDestacarTickers] = useState<string[]>([]);
