@@ -11,6 +11,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { AbasMercado } from "@/components/abas-mercado";
+import { TopAlertBar } from "@/components/radar/top-alert-bar";
 import { AppShell } from "@/components/app-shell";
 import { TabelaRadar } from "@/components/radar/tabela-radar";
 import { RankingRadar } from "@/components/radar/ranking-radar";
@@ -444,6 +445,7 @@ function PaginaRadar() {
       description="Todas as ações e FIIs da B3 comparados com a própria história — mínimas indicam oportunidade, choques exigem cautela."
     >
       <AbasMercado />
+      <TopAlertBar />
 
 
       <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
