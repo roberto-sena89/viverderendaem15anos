@@ -418,7 +418,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                 "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
                 resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
               )}>
-                {pct(resumo.rentabilidade, 1)}
+                {pct(resumo.rentabilidade, 2)}
               </p>
               <span className="text-[0.62rem] font-bold text-muted-foreground uppercase tracking-widest">Total</span>
             </div>
