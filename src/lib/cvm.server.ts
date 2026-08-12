@@ -3,10 +3,10 @@
  *
  * Baixa os ZIPs oficiais do Portal de Dados Abertos da CVM (DFP/ITR),
  * mapeia cada ticker da B3 para o CNPJ da companhia via nome público do
- * Yahoo, e deriva a série trimestral de P/L (TTM) com posição de preços
- * brutos ajustados por splits. O percentil do P/L atual na própria história
- * alimenta o score do gestor como valuation real (não mais derivado do
- * preço, que fazia P/L projetado == percentil do preço).
+ * Yahoo, e deriva as séries trimestrais de P/L (TTM) e EV/EBIT (TTM, com
+ * dívida líquida do BPP) com posição de preços brutos ajustados por splits.
+ * Os percentis na própria história alimentam o score do gestor como valuation
+ * real (não mais derivado do preço).
  *
  * Cache:
  *  - `cotacoes_cache` chave `cvm:fundamentos` -> mapa ticker -> FundamentoCvm
@@ -16,29 +16,43 @@
 
 import { unzipSync } from "fflate";
 import {
+  acumuladoTtmPorTrimestre,
+  diferencaDeSeries,
   lucroTtmPorTrimestre,
   mapearEmpresaPorNome,
+  montarSerieEvEbit,
   montarSeriePlReal,
   parseCsvLinhas,
   serieDaConta,
+  somaDeContas,
   type LinhaCsv,
   type PontoPlReal,
 } from "@/lib/cvm-base";
 import { percentilDistribucional } from "@/lib/radar-base";
 import { sanitizarPontos, simboloYahooB3 } from "@/lib/radar.server";
 
-/** Sempre presente nos DREs da CVM: lucro líquido do período. */
+/** Sempre presentes nos DREs da CVM: lucro líquido e EBIT (proxy 3.05). */
 const CONTA_LUCRO = "3.11";
 const CONTA_LUCRO_FALLBACK = "3.13";
+const CONTA_EBIT = "3.05";
 
-/** Linhas dos DREs consolidadas por trimestre mas só as contas de lucro. */
-const CONTAS_UTEIS = new Set([CONTA_LUCRO, CONTA_LUCRO_FALLBACK]);
+/** Contas do DRE consolidadas por trimestre que o radar deriva. */
+const CONTAS_UTEIS = new Set([CONTA_LUCRO, CONTA_LUCRO_FALLBACK, CONTA_EBIT]);
 
-/** Quantos anos de arquivos DFP/ITR baixar para montar a série de P/L. */
+/** Dívida bruta (passivo circulante + não circulante: empréstimos/debêntures). */
+const CONTAS_DIVIDA = ["2.01.01", "2.01.02", "2.02.01", "2.02.02"];
+/** Caixa e equivalentes (parte negativa da dívida líquida). */
+const CONTAS_CAIXA = ["1.01.01"];
+
+/** Quantos anos de arquivos DFP/ITR baixar para montar as séries. */
 const ANOS_HISTORIA = 8;
 
-/** Mínimo de trimestres com P/L positivo para o percentil existir. */
+/** Mínimo de trimestres com P/L ou EV/EBIT positivos para o percentil existir. */
 const MINIMO_PONTOS_PL = 15;
+
+/** Versão do formato do mapa persistido: entradas antigas (sem EV/EBIT) são
+ *  recalculadas no próximo backfill, sem esperar o TTL semanal. */
+const VERSAO_MAPA = 2;
 
 const TTL_MAPA_MEMORIA_MS = 24 * 60 * 60 * 1000;
 const TTL_ARQUIVOS_MEMORIA_MS = 24 * 60 * 60 * 1000;
@@ -62,6 +76,14 @@ export type FundamentoCvm = {
   plAtual: number | null;
   /** Série de P/L trimestral que sustenta o percentil. */
   pontosPl: PontoPlReal[];
+  /** Percentil do EV/EBIT atual na própria história trimestral (0–100). */
+  percentilEvEbit: number | null;
+  /** EV/EBIT atual (TTM), em vezes. */
+  evEbit: number | null;
+  /** Dívida líquida (dívida bruta − caixa) do último balanço, em R$. */
+  dividaLiquida: number | null;
+  /** Versão do formato (bump força recálculo do ticker). */
+  versao: number;
   atualizadoEm: string;
 };
 
@@ -139,38 +161,69 @@ async function empresasDeAno(): Promise<LinhaCsv[]> {
   return [];
 }
 
-/** Linhas DRE (consolidadas, contas de lucro) de um ano de ITR + DFP (Q4). */
-async function dreDeAno(ano: number): Promise<LinhaCsv[]> {
+/** Demonstrações de um ano de arquivo (ITR + DFP/Q4), por CNPJ, já filtradas
+ *  pelas contas úteis (DRE: lucro/EBIT; BPP: dívida/caixa). */
+type DemonstracoesAno = {
+  dre: LinhaCsv[];
+  bpp: LinhaCsv[];
+};
+
+async function demonstracoesDeAno(ano: number): Promise<DemonstracoesAno> {
   const urlItr = `${BASE_CVM}/ITR/DADOS/itr_cia_aberta_${ano}.zip`;
   const urlDfp = `${BASE_CVM}/DFP/DADOS/dfp_cia_aberta_${ano}.zip`;
   const [zipItr, zipDfp] = await Promise.all([baixarZip(urlItr), baixarZip(urlDfp)]);
-  const linhas: LinhaCsv[] = [];
+  const linhasDre: LinhaCsv[] = [];
+  const linhasBpp: LinhaCsv[] = [];
   if (zipItr) {
-    linhas.push(
+    linhasDre.push(
       ...lerCsvDoZip(zipItr, [
         `itr_cia_aberta_DRE_con_${ano}.csv`,
         `itr_cia_aberta_DRE_${ano}.csv`,
       ]),
     );
+    linhasBpp.push(
+      ...lerCsvDoZip(zipItr, [
+        `itr_cia_aberta_BPP_con_${ano}.csv`,
+        `itr_cia_aberta_BPP_${ano}.csv`,
+      ]),
+    );
   }
   if (zipDfp) {
-    linhas.push(...lerCsvDoZip(zipDfp, [`dfp_cia_aberta_DRE_con_${ano}.csv`]));
+    linhasDre.push(...lerCsvDoZip(zipDfp, [`dfp_cia_aberta_DRE_con_${ano}.csv`]));
+    linhasBpp.push(...lerCsvDoZip(zipDfp, [`dfp_cia_aberta_BPP_con_${ano}.csv`]));
   }
-  const filtradas = linhas.filter((l) => {
+  const dre = linhasDre.filter((l) => {
     if (!CONTAS_UTEIS.has((l["CD_CONTA"] ?? "").trim())) return false;
-    if ((l["MOEDA"] ?? "").trim() !== "REAL") return false;
-    // Cada período aparece duas vezes: "ÚLTIMO" (exercício atual, acumulado
-    // até a data) e "PENÚLTIMO" (mesmo trimestre do ano anterior, para
-    // comparação). Só o ÚLTIMO forma o TTM — o PENÚLTIMO duplicaria valores.
-    const ordem = (l["ORDEM_EXERC"] ?? "").trim().toUpperCase();
-    if (ordem === "PENÚLTIMO" || ordem === "PENULTIMO" || ordem === "2") return false;
-    return true;
+    return ehExercicioValido(l);
+  });
+  const bpp = linhasBpp.filter((l) => {
+    const conta = (l["CD_CONTA"] ?? "").trim();
+    if (!CONTAS_DIVIDA.includes(conta) && !CONTAS_CAIXA.includes(conta)) return false;
+    return ehExercicioValido(l);
   });
   // Reposicionamentos (VERSAO maior) devem prevalecer: a deduplicação pelo
   // primeiro período preserva a versão mais recente.
-  filtradas.sort((a, b) => (Number(b["VERSAO"]) || 0) - (Number(a["VERSAO"]) || 0));
+  dre.sort((a, b) => (Number(b["VERSAO"]) || 0) - (Number(a["VERSAO"]) || 0));
+  bpp.sort((a, b) => (Number(b["VERSAO"]) || 0) - (Number(a["VERSAO"]) || 0));
+  return { dre: porCnpj(dre), bpp: porCnpj(bpp) };
+}
+
+/** Uma linha só vale se o período é o exercício atual ("ÚLTIMO") em REAL. */
+function ehExercicioValido(l: LinhaCsv): boolean {
+  if ((l["MOEDA"] ?? "").trim() !== "REAL") return false;
+  // Cada período aparece duas vezes: "ÚLTIMO" (exercício atual, acumulado até
+  // a data) e "PENÚLTIMO" (mesmo trimestre do ano anterior, para comparação).
+  // Só o ÚLTIMO forma o TTM — o PENÚLTIMO duplicaria valores.
+  const ordem = (l["ORDEM_EXERC"] ?? "").trim().toUpperCase();
+  if (ordem === "PENÚLTIMO" || ordem === "PENULTIMO" || ordem === "2") return false;
+  return true;
+}
+
+/** Mantém todas as linhas, ordenadas por CNPJ (dedup por período fica nas
+ *  séries, que consomem a primeira ocorrência após a ordenação por VERSAO). */
+function porCnpj(linhas: LinhaCsv[]): LinhaCsv[] {
   const porCnpj = new Map<string, LinhaCsv[]>();
-  for (const l of filtradas) {
+  for (const l of linhas) {
     const cnpj = (l["CNPJ_CIA"] ?? "").trim();
     if (!cnpj) continue;
     const lista = porCnpj.get(cnpj) ?? [];
@@ -180,30 +233,38 @@ async function dreDeAno(ano: number): Promise<LinhaCsv[]> {
   return [...porCnpj.entries()].flatMap(([, lista]) => lista);
 }
 
-const drePorAno = new Map<string, LinhaCsv[]>();
+const demonstracoesPorCnpjAno = new Map<string, DemonstracoesAno>();
 
-/** Série de lucro TTM de um CNPJ juntando os arquivos dos últimos anos. */
-async function lucroTtmDoCnpj(cnpj: string): Promise<LinhaCsv[]> {
+/** Demonstrações (DRE + BPP) de um CNPJ juntando os arquivos dos últimos anos. */
+async function demonstracoesDoCnpj(cnpj: string): Promise<DemonstracoesAno> {
   try {
     const anoAtual = new Date().getFullYear();
     const anos = Array.from(
       { length: ANOS_HISTORIA },
       (_, i) => anoAtual - (ANOS_HISTORIA - 1 - i),
     );
-    const series = await Promise.all(
+    const todas = await Promise.all(
       anos.map(async (ano) => {
         const chave = `${cnpj}:${ano}`;
-        let linhas = drePorAno.get(chave) ?? [];
-        if (!linhas.length) {
-          linhas = (await dreDeAno(ano)).filter((l) => l["CNPJ_CIA"] === cnpj);
-          if (linhas.length) drePorAno.set(chave, linhas);
+        let guardado = demonstracoesPorCnpjAno.get(chave);
+        if (!guardado) {
+          const completo = await demonstracoesDeAno(ano);
+          guardado = {
+            dre: completo.dre.filter((l) => l["CNPJ_CIA"] === cnpj),
+            bpp: completo.bpp.filter((l) => l["CNPJ_CIA"] === cnpj),
+          };
+          if (guardado.dre.length || guardado.bpp.length)
+            demonstracoesPorCnpjAno.set(chave, guardado);
         }
-        return linhas;
+        return guardado;
       }),
     );
-    return series.flat();
+    return {
+      dre: todas.flatMap((t) => t.dre),
+      bpp: todas.flatMap((t) => t.bpp),
+    };
   } catch {
-    return [];
+    return { dre: [], bpp: [] };
   }
 }
 
@@ -295,6 +356,7 @@ function pontosDeFundamento(
   cnpj: string | null,
   denominacao: string | null,
   lucro: LinhaCsv[],
+  bpp: LinhaCsv[],
   acoesClasse: number | null,
   plGrade: number | null,
 ): FundamentoCvm | null {
@@ -322,6 +384,29 @@ function pontosDeFundamento(
   }
   const percentilPl = percentilDistribucional(pontosPl, plExibido, MINIMO_PONTOS_PL);
   if (percentilPl === null) return null;
+
+  // EV/EBIT real: EBIT TTM (3.05) e dívida líquida do BPP (dívida bruta −
+  // caixa) no mesmo trimestre. O EV/EBIT não sofre da distorção de escala da
+  // classe — é um múltiplo da empresa inteira — então nada de calibração.
+  const serieEbit = acumuladoTtmPorTrimestre(serieDaConta(lucro, CONTA_EBIT));
+  const dividaLiquida = diferencaDeSeries(
+    somaDeContas(bpp, CONTAS_DIVIDA),
+    somaDeContas(bpp, CONTAS_CAIXA),
+  );
+  const { pontos: pontosEv, evEbitAtual } = montarSerieEvEbit({
+    ebitTtm: serieEbit,
+    precos: dados.precos,
+    splits: dados.splits,
+    acoesClasse,
+    dividaLiquida,
+  });
+  const percentilEvEbit = percentilDistribucional(
+    pontosEv.map((p) => p.evEbit),
+    evEbitAtual,
+    MINIMO_PONTOS_PL,
+  );
+  const dividaLiquidaAtual =
+    dividaLiquida.length > 0 ? dividaLiquida[dividaLiquida.length - 1].valor : null;
   return {
     ticker,
     cnpj,
@@ -329,11 +414,15 @@ function pontosDeFundamento(
     percentilPl,
     plAtual: plExibido,
     pontosPl: pontos.map((p, i) => ({ periodo: p.periodo, pl: pontosPl[i] })),
+    percentilEvEbit,
+    evEbit: evEbitAtual,
+    dividaLiquida: dividaLiquidaAtual,
+    versao: VERSAO_MAPA,
     atualizadoEm: new Date().toISOString(),
   };
 }
 
-/** Mapa de fundamentos CVM (percentil de P/L real) com cache de 24h. */
+/** Mapa de fundamentos CVM (percentis de P/L e EV/EBIT reais) com cache de 24h. */
 export async function lerFundamentosCvm(): Promise<FundosCache> {
   if (mapaMemoria && Date.now() - mapaMemoria.em < TTL_MAPA_MEMORIA_MS) {
     return mapaMemoria.valor;
@@ -404,6 +493,10 @@ export async function atualizarFundamentosCvm(
   const faltantes = unicos.filter((t) => {
     const f = mapa[t];
     if (!f) return true;
+    // Entradas de formato antigo (versão anterior a VERSAO_MAPA, sem
+    // EV/EBIT/dívida) são recalculadas no próximo backfill, sem esperar o
+    // TTL.
+    if (f.versao !== VERSAO_MAPA) return true;
     const frescor = Date.parse(f.atualizadoEm ?? "0");
     return !Number.isFinite(frescor) || agora - frescor > TTL_BANCO_MS;
   });
@@ -459,13 +552,14 @@ export async function atualizarFundamentosCvm(
           }
           const empresas = await empresasDeAno();
           const emp = mapearEmpresaPorNome(dados.nome, empresas);
-          const lucro = emp ? await lucroTtmDoCnpj(emp.cnpj) : [];
+          const demonstracoes = emp ? await demonstracoesDoCnpj(emp.cnpj) : { dre: [], bpp: [] };
           const f = pontosDeFundamento(
             ticker,
             dados,
             emp?.cnpj ?? null,
             emp?.denominacao ?? null,
-            lucro,
+            demonstracoes.dre,
+            demonstracoes.bpp,
             acoesClasse,
             plGrade,
           );

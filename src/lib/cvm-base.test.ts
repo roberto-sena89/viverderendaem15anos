@@ -1,15 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
+  diferencaDeSeries,
   fatorSplitAcumulado,
   isoDeBrasil,
   lucroTtmPorTrimestre,
   mapearEmpresaPorNome,
+  montarSerieEvEbit,
   montarSeriePlReal,
   normalizarNomeEmpresa,
   numeroBr,
   parseCsvLinhas,
   precoNoFimDoTrimestre,
   serieDaConta,
+  somaDeContas,
 } from "@/lib/cvm-base";
 
 describe("parseCsvLinhas", () => {
@@ -185,6 +188,99 @@ describe("splits e P/L real", () => {
     });
     expect(serie.pontos).toHaveLength(0);
     expect(serie.plAtual).toBeNull();
+  });
+});
+
+describe("somaDeContas e diferencaDeSeries", () => {
+  it("soma várias contas por período, uma linha por (conta, período)", () => {
+    const linhas = [
+      { CD_CONTA: "2.01.01", VL_CONTA: "100", DT_FIM_EXERC: "2024-06-30", ESCALA_MOEDA: "MIL" },
+      { CD_CONTA: "2.01.02", VL_CONTA: "50", DT_FIM_EXERC: "2024-06-30", ESCALA_MOEDA: "MIL" },
+      { CD_CONTA: "2.02.01", VL_CONTA: "25", DT_FIM_EXERC: "2024-06-30", ESCALA_MOEDA: "MIL" },
+      { CD_CONTA: "2.01.01", VL_CONTA: "999", DT_FIM_EXERC: "2024-06-30", ESCALA_MOEDA: "MIL" },
+      { CD_CONTA: "2.01.01", VL_CONTA: "80", DT_FIM_EXERC: "2024-09-30", ESCALA_MOEDA: "MIL" },
+    ];
+    const soma = somaDeContas(linhas, ["2.01.01", "2.01.02", "2.02.01"]);
+    expect(soma.find((p) => p.periodo === "2024-06-30")?.valor).toBe(175_000);
+    expect(soma.find((p) => p.periodo === "2024-09-30")?.valor).toBe(80_000);
+  });
+
+  it("subtrai séries por período (dívida bruta − caixa)", () => {
+    const bruta = [
+      { periodo: "2024-06-30", valor: 200_000 },
+      { periodo: "2024-09-30", valor: 220_000 },
+    ];
+    const caixa = [{ periodo: "2024-06-30", valor: 40_000 }];
+    const liquida = diferencaDeSeries(bruta, caixa);
+    expect(liquida.find((p) => p.periodo === "2024-06-30")?.valor).toBe(160_000);
+    expect(liquida.find((p) => p.periodo === "2024-09-30")?.valor).toBe(220_000);
+  });
+});
+
+describe("montarSerieEvEbit", () => {
+  // Ações da classe: 100 mil. EBIT TTM de 50 mil (R$ milhares) → EBIT R$ 50M.
+  // Preço 10 e 11 → market cap 1M e 1.1M de reais. Dívida líquida 0 → EV/EBIT 20 e 22.
+  it("monta a série de EV/EBIT com dívida líquida do trimestre", () => {
+    const serie = montarSerieEvEbit({
+      ebitTtm: [
+        { periodo: "2024-03-31", valor: 50_000 },
+        { periodo: "2024-06-30", valor: 50_000 },
+      ],
+      precos: [
+        { data: "2024-03-29", fechamento: 10 },
+        { data: "2024-06-28", fechamento: 11 },
+      ],
+      splits: [],
+      acoesClasse: 100_000,
+      dividaLiquida: [
+        { periodo: "2024-03-31", valor: 0 },
+        { periodo: "2024-06-30", valor: 0 },
+      ],
+    });
+    expect(serie.pontos.map((p) => p.evEbit)).toEqual([20, 22]);
+    expect(serie.evEbitAtual).toBe(22);
+  });
+
+  it("aplica a dívida líquida e o ajuste de splits ao valor de mercado", () => {
+    // Split 2:1 após 2024-03-31: o market cap de março dobrou por 2 preços.
+    const serie = montarSerieEvEbit({
+      ebitTtm: [{ periodo: "2024-03-31", valor: 50_000 }],
+      precos: [{ data: "2024-03-29", fechamento: 10 }],
+      splits: [{ data: Date.parse("2024-05-01T00:00:00Z"), fator: 2 }],
+      acoesClasse: 100_000,
+      dividaLiquida: [{ periodo: "2024-03-31", valor: 30_000 }],
+    });
+    // (10 × 100k ÷ 2 + 30k) ÷ 50k = 10.6.
+    expect(serie.pontos[0].evEbit).toBe(10.6);
+  });
+
+  it("descarta trimestres sem EBIT, preço ou balanço", () => {
+    const serie = montarSerieEvEbit({
+      ebitTtm: [
+        { periodo: "2024-03-31", valor: -10_000 },
+        { periodo: "2024-06-30", valor: 50_000 },
+        { periodo: "2024-12-31", valor: 60_000 },
+      ],
+      precos: [{ data: "2024-06-28", fechamento: 10 }],
+      splits: [],
+      acoesClasse: 100_000,
+      dividaLiquida: [{ periodo: "2024-06-30", valor: 0 }],
+    });
+    expect(serie.pontos).toHaveLength(1);
+    expect(serie.pontos[0].periodo).toBe("2024-06-30");
+    expect(serie.evEbitAtual).toBe(20);
+  });
+
+  it("sem ações da classe não há série", () => {
+    const serie = montarSerieEvEbit({
+      ebitTtm: [{ periodo: "2024-03-31", valor: 50_000 }],
+      precos: [{ data: "2024-03-29", fechamento: 10 }],
+      splits: [],
+      acoesClasse: null,
+      dividaLiquida: [{ periodo: "2024-03-31", valor: 0 }],
+    });
+    expect(serie.pontos).toHaveLength(0);
+    expect(serie.evEbitAtual).toBeNull();
   });
 });
 

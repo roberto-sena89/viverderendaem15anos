@@ -151,6 +151,42 @@ export function serieDaConta(
     .sort((a, b) => a.periodo.localeCompare(b.periodo));
 }
 
+/** Soma, por período, os valores de várias contas — ex.: dívida bruta
+ *  (2.01.01 + 2.01.02 + 2.02.01 + 2.02.02). Uma linha por (conta, período)
+ *  entra na soma (a primeira ocorrência vence, o chamador ordena por VERSAO). */
+export function somaDeContas(arquivos: LinhaCsv[], codigos: string[]): ContaTrimestre[] {
+  const porPeriodo = new Map<string, number>();
+  const vistos = new Set<string>();
+  for (const arquivo of arquivos) {
+    const conta = (arquivo["CD_CONTA"] ?? "").trim();
+    if (!codigos.includes(conta)) continue;
+    const num = numeroBr(arquivo["VL_CONTA"] ?? "");
+    if (num === null) continue;
+    const periodo = isoDeBrasil(arquivo["DT_FIM_EXERC"] ?? "");
+    if (!periodo) continue;
+    const chave = `${periodo}|${conta}`;
+    if (vistos.has(chave)) continue;
+    vistos.add(chave);
+    const escala = (arquivo["ESCALA_MOEDA"] ?? "").trim().toUpperCase();
+    const fator = escala === "MIL" ? 1000 : 1;
+    porPeriodo.set(periodo, (porPeriodo.get(periodo) ?? 0) + num * fator);
+  }
+  return [...porPeriodo.entries()]
+    .map(([periodo, valor]) => ({ periodo, valor }))
+    .sort((a, b) => a.periodo.localeCompare(b.periodo));
+}
+
+/** Subtração série a série por período (ex.: dívida bruta − caixa). */
+export function diferencaDeSeries(
+  maior: ContaTrimestre[],
+  menor: ContaTrimestre[],
+): ContaTrimestre[] {
+  const porPeriodo = new Map(menor.map((m) => [m.periodo, m.valor]));
+  return maior
+    .map((m) => ({ periodo: m.periodo, valor: m.valor - (porPeriodo.get(m.periodo) ?? 0) }))
+    .sort((a, b) => a.periodo.localeCompare(b.periodo));
+}
+
 /* ------------------------------------------------------------------ *
  * Mapeamento ticker → empresa (por nome)
  * ------------------------------------------------------------------ */
@@ -260,18 +296,18 @@ function trimestreDePeriodo(periodo: string): number {
 }
 
 /**
- * Calcula o lucro TTM (últimos 12 meses) em cada trimestre a partir dos
- * acumulados do exercício (DRE ITR): TTM(t) = acumulado(t) +
- * acumulado(Q4 do ano anterior) − acumulado(trimestre de t no ano anterior).
- * Retorna apenas trimestres com os três termos disponíveis.
+ * Calcula o TTM (últimos 12 meses) em cada trimestre a partir dos acumulados
+ * do exercício (DRE ITR): TTM(t) = acumulado(t) + acumulado(Q4 do ano
+ * anterior) − acumulado(trimestre de t no ano anterior). Retorna apenas
+ * trimestres com os três termos disponíveis. Vale para lucro e EBIT.
  */
-export function lucroTtmPorTrimestre(lucro: ContaTrimestre[]): ContaTrimestre[] {
+export function acumuladoTtmPorTrimestre(acumulado: ContaTrimestre[]): ContaTrimestre[] {
   const porAnoTrimestre = new Map<string, number>();
-  for (const p of lucro) {
+  for (const p of acumulado) {
     porAnoTrimestre.set(`${anoDePeriodo(p.periodo)}-${trimestreDePeriodo(p.periodo)}`, p.valor);
   }
   const ttm: ContaTrimestre[] = [];
-  for (const p of lucro) {
+  for (const p of acumulado) {
     const ano = anoDePeriodo(p.periodo);
     const tri = trimestreDePeriodo(p.periodo);
     const atual = porAnoTrimestre.get(`${ano}-${tri}`);
@@ -281,6 +317,11 @@ export function lucroTtmPorTrimestre(lucro: ContaTrimestre[]): ContaTrimestre[] 
     ttm.push({ periodo: p.periodo, valor: atual + q4Anterior - triAnterior });
   }
   return ttm.sort((a, b) => a.periodo.localeCompare(b.periodo));
+}
+
+/** Alias histórico para o TTM do lucro líquido. */
+export function lucroTtmPorTrimestre(lucro: ContaTrimestre[]): ContaTrimestre[] {
+  return acumuladoTtmPorTrimestre(lucro);
 }
 
 /* ------------------------------------------------------------------ *
@@ -358,4 +399,60 @@ export function montarSeriePlReal(opcoes: {
   }
   plAtual = ultimo?.pl ?? null;
   return { pontos, plAtual };
+}
+
+/* ------------------------------------------------------------------ *
+ * EV/EBIT real (dívida líquida do BPP + valor de mercado)
+ * ------------------------------------------------------------------ */
+
+/** Ponto da série de EV/EBIT (trimestral, TTM). */
+export type PontoEvEbit = {
+  periodo: string;
+  evEbit: number;
+};
+
+/**
+ * Série de EV/EBIT real (trimestral, TTM):
+ *
+ *   EV_t  = preço(t) × ações_hoje ÷ fator_split(t) + dívida_líquida(t)
+ *   EV/EBIT_t = EV_t ÷ EBIT_TTM(t)
+ *
+ * O valor de mercado em t é reconstruído com o fechamento bruto do período
+ * (o fator de split devolve o capital em t); a dívida líquida vem do BPP do
+ * mesmo trimestre (dívida bruta − caixa). Períodos sem EBIT positivo, sem
+ * preço ou sem balanço são descartados.
+ */
+export function montarSerieEvEbit(opcoes: {
+  ebitTtm: ContaTrimestre[];
+  precos: PrecoSemanal[];
+  splits: SplitYahoo[];
+  acoesClasse: number | null;
+  dividaLiquida: ContaTrimestre[];
+}): { pontos: PontoEvEbit[]; evEbitAtual: number | null } {
+  const pontos: PontoEvEbit[] = [];
+  let evEbitAtual: number | null = null;
+  if (!(
+    opcoes.acoesClasse !== null &&
+    Number.isFinite(opcoes.acoesClasse) &&
+    opcoes.acoesClasse > 0
+  )) {
+    return { pontos, evEbitAtual };
+  }
+  const dividaPorPeriodo = new Map(opcoes.dividaLiquida.map((d) => [d.periodo, d.valor]));
+  let ultimo: PontoEvEbit | null = null;
+  for (const e of opcoes.ebitTtm) {
+    if (!Number.isFinite(e.valor) || e.valor <= 0) continue;
+    const divida = dividaPorPeriodo.get(e.periodo);
+    if (divida === undefined || !Number.isFinite(divida)) continue;
+    const preco = precoNoFimDoTrimestre(opcoes.precos, e.periodo);
+    if (preco === null || !(preco > 0)) continue;
+    const fator = fatorSplitAcumulado(opcoes.splits, Date.parse(`${e.periodo}T23:59:59Z`));
+    const valorDeMercadoEmT = (preco * opcoes.acoesClasse) / fator;
+    const evEbit = (valorDeMercadoEmT + divida) / e.valor;
+    if (!Number.isFinite(evEbit) || evEbit <= 0) continue;
+    pontos.push({ periodo: e.periodo, evEbit });
+    ultimo = { periodo: e.periodo, evEbit };
+  }
+  evEbitAtual = ultimo?.evEbit ?? null;
+  return { pontos, evEbitAtual };
 }

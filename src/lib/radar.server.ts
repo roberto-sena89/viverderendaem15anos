@@ -81,6 +81,17 @@ export type LinhaRadarBase = {
    * da CVM já mapeou o ticker — fonte preferida do pilar de oportunidade.
    */
   percentilPlReal: number | null;
+  /**
+   * Percentil do EV/EBIT real (TTM da CVM, com dívida líquida do BPP) na
+   * própria história trimestral (0–100; maior = mais caro). Complementa o
+   * percentil de P/L quando disponível — múltiplo da empresa inteira, sem a
+   * distorção de escala das classes de ações.
+   */
+  percentilEvEbitReal: number | null;
+  /** EV/EBIT real atual (vezes), da CVM — apenas ações. */
+  evEbitReal: number | null;
+  /** Dívida líquida real (dívida bruta − caixa) do último balanço, em R$ — apenas ações. */
+  dividaLiquidaReal: number | null;
 };
 
 /** Ponto da série semanal para o gráfico (compacto). */

@@ -15,6 +15,7 @@ import {
   avaliarParaGestor,
   corNotaGestor,
   estimarPayout,
+  fonteValorizacaoEfetiva,
   limiteAporte,
   pontosConsistencia,
   pontosDividendos,
@@ -42,6 +43,9 @@ const base = {
   percentilDistribucional: null,
   volatilidadeAnualPct: null,
   percentilPlReal: null,
+  percentilEvEbitReal: null,
+  evEbitReal: null,
+  dividaLiquidaReal: null,
 };
 
 describe("estimarPayout", () => {
@@ -155,23 +159,101 @@ describe("limiteAporte", () => {
 
 describe("percentilValorizacaoEfetivo", () => {
   it("prefere o P/L real (CVM) ao distribucional de preço", () => {
-    expect(percentilValorizacaoEfetivo({ percentilDistribucional: 95, percentilPlReal: 30 })).toBe(
-      30,
-    );
     expect(
-      percentilValorizacaoEfetivo({ percentilDistribucional: null, percentilPlReal: 55 }),
+      percentilValorizacaoEfetivo({
+        percentilDistribucional: 95,
+        percentilPlReal: 30,
+        percentilEvEbitReal: null,
+      }),
+    ).toBe(30);
+    expect(
+      percentilValorizacaoEfetivo({
+        percentilDistribucional: null,
+        percentilPlReal: 55,
+        percentilEvEbitReal: null,
+      }),
     ).toBe(55);
   });
 
-  it("cai para o distribucional sem P/L real válido", () => {
+  it("usa o EV/EBIT real (CVM) como segunda fonte, antes do preço", () => {
     expect(
-      percentilValorizacaoEfetivo({ percentilDistribucional: 40, percentilPlReal: null }),
+      percentilValorizacaoEfetivo({
+        percentilDistribucional: 95,
+        percentilPlReal: null,
+        percentilEvEbitReal: 40,
+      }),
     ).toBe(40);
-    expect(percentilValorizacaoEfetivo({ percentilDistribucional: 40, percentilPlReal: 120 })).toBe(
-      40,
-    );
     expect(
-      percentilValorizacaoEfetivo({ percentilDistribucional: null, percentilPlReal: null }),
+      percentilValorizacaoEfetivo({
+        percentilDistribucional: null,
+        percentilPlReal: null,
+        percentilEvEbitReal: 55,
+      }),
+    ).toBe(55);
+  });
+
+  it("prefere o P/L real ao EV/EBIT real quando ambos existem", () => {
+    expect(
+      percentilValorizacaoEfetivo({
+        percentilDistribucional: 95,
+        percentilPlReal: 30,
+        percentilEvEbitReal: 90,
+      }),
+    ).toBe(30);
+  });
+
+  it("cai para o distribucional sem P/L e EV/EBIT reais válidos", () => {
+    expect(
+      percentilValorizacaoEfetivo({
+        percentilDistribucional: 40,
+        percentilPlReal: null,
+        percentilEvEbitReal: null,
+      }),
+    ).toBe(40);
+    expect(
+      percentilValorizacaoEfetivo({
+        percentilDistribucional: 40,
+        percentilPlReal: 120,
+        percentilEvEbitReal: 120,
+      }),
+    ).toBe(40);
+    expect(
+      percentilValorizacaoEfetivo({
+        percentilDistribucional: null,
+        percentilPlReal: null,
+        percentilEvEbitReal: null,
+      }),
+    ).toBeNull();
+  });
+
+  it("fonteValorizacaoEfetiva identifica a fonte do percentil", () => {
+    expect(
+      fonteValorizacaoEfetiva({
+        percentilDistribucional: 95,
+        percentilPlReal: null,
+        percentilEvEbitReal: 40,
+      }),
+    ).toBe("ev-ebit-real");
+    expect(
+      fonteValorizacaoEfetiva({
+        percentilDistribucional: 95,
+        percentilPlReal: 30,
+        percentilEvEbitReal: 40,
+      }),
+    ).toBe("pl-real");
+    expect(
+      fonteValorizacaoEfetiva({
+        percentilDistribucional: 95,
+        percentilPlReal: null,
+        percentilEvEbitReal: null,
+      }),
+    ).toBe("preco");
+    expect(
+      fonteValorizacaoEfetiva({
+        percentilDistribucional: null,
+        percentilPlReal: null,
+        percentilEvEbitReal: null,
+      }),
     ).toBeNull();
   });
 });
@@ -276,6 +358,28 @@ describe("avaliarParaGestor", () => {
     expect(r.alertas.some((a) => a.includes("leituras históricas"))).toBe(false);
     const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
     expect(oportunidade.nota).toBe(65);
+  });
+
+  it("EV/EBIT real caro vira bandeira de valuation (CVM) sem P/L real", () => {
+    const r = avaliarParaGestor({ ...base, percentilEvEbitReal: 95 });
+    const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
+    expect(oportunidade.nota).toBe(65);
+    expect(oportunidade.detalhe).toContain("EV/EBIT real");
+    expect(r.alertas.some((a) => a.includes("EV/EBIT real") && a.includes("valuation"))).toBe(true);
+    expect(r.alertas.some((a) => a.includes("P/L real"))).toBe(false);
+    expect(r.alertas.some((a) => a.includes("leituras históricas"))).toBe(false);
+  });
+
+  it("EV/EBIT real barato segura a nota mesmo com distribucional caro", () => {
+    const r = avaliarParaGestor({
+      ...base,
+      percentilDistribucional: 95,
+      percentilEvEbitReal: 30,
+    });
+    const oportunidade = r.componentes.find((c) => c.chave === "oportunidade")!;
+    // 75 × 0.85 + (100 − 30) × 0.15 = 74,3 → 74.
+    expect(oportunidade.nota).toBe(74);
+    expect(r.alertas.some((a) => a.includes("caro"))).toBe(false);
   });
 
   it("P/L real inválido cai para o percentil distribucional", () => {

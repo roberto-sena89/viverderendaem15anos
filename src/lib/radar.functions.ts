@@ -226,6 +226,9 @@ export const radarVisao = createServerFn({ method: "GET" })
         selic: macro.selic,
         consistenciaDividendos: null,
         percentilPlReal: fundamentosCvm.mapa[ticker]?.percentilPl ?? null,
+        percentilEvEbitReal: fundamentosCvm.mapa[ticker]?.percentilEvEbit ?? null,
+        evEbitReal: fundamentosCvm.mapa[ticker]?.evEbit ?? null,
+        dividaLiquidaReal: fundamentosCvm.mapa[ticker]?.dividaLiquida ?? null,
       });
     }
 

@@ -66,6 +66,16 @@ export type EntradasScoreGestor = {
    * de preço, que era uma aproximação (P/L projetado == posição do preço).
    */
   percentilPlReal: number | null;
+  /**
+   * Percentil do EV/EBIT real (TTM da CVM, com dívida líquida do BPP) na
+   * própria história trimestral (0–100; maior = mais caro). Usado como
+   * segunda fonte do pilar de oportunidade, antes da distribuição de preços.
+   */
+  percentilEvEbitReal: number | null;
+  /** EV/EBIT real atual (TTM, em vezes) — usado nas bandeiras de alavancagem. */
+  evEbitReal: number | null;
+  /** Dívida líquida real (dívida bruta − caixa) do último balanço, em R$. */
+  dividaLiquidaReal: number | null;
 };
 
 /** Componente do score com transparência de nota e peso. */
@@ -304,20 +314,40 @@ export function pontosOportunidadeComDistribuicao(
   );
 }
 
+function percentilValido(p: number | null | undefined): p is number {
+  return p !== null && p !== undefined && Number.isFinite(p) && p >= 0 && p <= 100;
+}
+
+/** Fonte do percentil que alimenta o pilar de oportunidade, para mensagens
+ *  transparentes ao gestor (a ordem de preferência é P/L real, EV/EBIT real,
+ *  distribuição de preços). */
+export type FonteValorizacao = "pl-real" | "ev-ebit-real" | "preco";
+
+export function fonteValorizacaoEfetiva(e: {
+  percentilDistribucional: number | null;
+  percentilPlReal: number | null;
+  percentilEvEbitReal: number | null;
+}): FonteValorizacao | null {
+  if (percentilValido(e.percentilPlReal)) return "pl-real";
+  if (percentilValido(e.percentilEvEbitReal)) return "ev-ebit-real";
+  if (percentilValido(e.percentilDistribucional)) return "preco";
+  return null;
+}
+
 /**
  * Apura o percentil que alimenta o pilar de oportunidade: o do P/L real
- * (CVM) quando disponível — valuation de fato — e, sem ele, o da
- * distribuição de preços (aproximação por posição do preço). Entre 0–100,
- * maior = mais caro.
+ * (CVM) quando disponível — valuation de fato — e, sem ele, o do EV/EBIT
+ * real (CVM, empresa inteira); por fim, o da distribuição de preços
+ * (aproximação por posição do preço). Entre 0–100, maior = mais caro.
  */
 export function percentilValorizacaoEfetivo(e: {
   percentilDistribucional: number | null;
   percentilPlReal: number | null;
+  percentilEvEbitReal: number | null;
 }): number | null {
-  const pl = e.percentilPlReal;
-  if (pl !== null && Number.isFinite(pl) && pl >= 0 && pl <= 100) return pl;
-  const pd = e.percentilDistribucional;
-  if (pd !== null && Number.isFinite(pd) && pd >= 0 && pd <= 100) return pd;
+  if (percentilValido(e.percentilPlReal)) return e.percentilPlReal;
+  if (percentilValido(e.percentilEvEbitReal)) return e.percentilEvEbitReal;
+  if (percentilValido(e.percentilDistribucional)) return e.percentilDistribucional;
   return null;
 }
 
@@ -422,14 +452,16 @@ function montarAlertas(e: EntradasScoreGestor): string[] {
       `Histórico curto de dividendos (${e.consistenciaDividendos} ano${e.consistenciaDividendos === 1 ? "" : "s"}) — consistência ainda não comprovada`,
     );
   }
-  const percentilEfetivo = percentilValorizacaoEfetivo(e);
+  const fonte = fonteValorizacaoEfetiva(e);
+  const percentilEfetivo = fonte === null ? null : percentilValorizacaoEfetivo(e);
   if (percentilEfetivo !== null && percentilEfetivo >= PERCENTIL_DISTRIBUCIONAL_ALERTA) {
-    const plReal = e.percentilPlReal !== null && Number.isFinite(e.percentilPlReal);
-    alertas.push(
-      plReal
+    const alvo =
+      fonte === "pl-real"
         ? `P/L real acima de ${percentilEfetivo.toFixed(0)}% da própria história (CVM) — papel caro por valuation, aguarde recuo antes de aportar`
-        : `Preço acima de ${percentilEfetivo.toFixed(0)}% das leituras históricas — momento caro da própria série, aguarde recuo antes de aportar`,
-    );
+        : fonte === "ev-ebit-real"
+          ? `EV/EBIT real acima de ${percentilEfetivo.toFixed(0)}% da própria história (CVM) — empresa inteira cara por valuation, aguarde recuo antes de aportar`
+          : `Preço acima de ${percentilEfetivo.toFixed(0)}% das leituras históricas — momento caro da própria série, aguarde recuo antes de aportar`;
+    alertas.push(alvo);
   }
   if (e.volatilidadeAnualPct !== null && e.volatilidadeAnualPct >= VOLATILIDADE_ALERTA) {
     alertas.push(
@@ -475,16 +507,18 @@ export function limiteAporte(
 export function avaliarParaGestor(e: EntradasScoreGestor): ScoreGestor {
   const payout = e.payout ?? estimarPayout(e.dy12, e.pl);
   const ajusteSetor = ajusteSetorial(e.setor);
-  const percentilEfetivo = percentilValorizacaoEfetivo(e);
-  const plRealDisponivel = e.percentilPlReal !== null && Number.isFinite(e.percentilPlReal);
+  const fonte = fonteValorizacaoEfetiva(e);
+  const percentilEfetivo = fonte === null ? null : percentilValorizacaoEfetivo(e);
   const detalheOportunidade =
     e.oportunidade === null
       ? null
       : percentilEfetivo === null
         ? "Posição no histórico, DY e risco (radar)"
-        : plRealDisponivel
+        : fonte === "pl-real"
           ? `Posição no histórico, DY e risco; P/L real acima de ${percentilEfetivo.toFixed(0)}% da própria história (CVM)`
-          : `Posição no histórico, DY e risco; preço acima de ${percentilEfetivo.toFixed(0)}% das leituras históricas`;
+          : fonte === "ev-ebit-real"
+            ? `Posição no histórico, DY e risco; EV/EBIT real acima de ${percentilEfetivo.toFixed(0)}% da própria história (CVM)`
+            : `Posição no histórico, DY e risco; preço acima de ${percentilEfetivo.toFixed(0)}% das leituras históricas`;
 
   const componentes: ComponenteScoreGestor[] = [
     {

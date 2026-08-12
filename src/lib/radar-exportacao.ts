@@ -56,6 +56,9 @@ export function linhasParaExportacao(linhas: LinhaRadarBase[]): LinhaRadarExport
       percentilDistribucional: l.posicao?.percentilDistribucional ?? null,
       volatilidadeAnualPct: l.posicao?.volatilidadeAnualPct ?? null,
       percentilPlReal: l.percentilPlReal ?? null,
+      percentilEvEbitReal: l.percentilEvEbitReal ?? null,
+      evEbitReal: l.evEbitReal ?? null,
+      dividaLiquidaReal: l.dividaLiquidaReal ?? null,
     });
     return {
       ticker: l.ticker,
