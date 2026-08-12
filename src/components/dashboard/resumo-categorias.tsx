@@ -114,11 +114,11 @@ export function ResumoCategorias() {
   }
 
   return (
-    <div className="space-y-2 mb-10">
+    <div className="space-y-4 mb-10">
       <div className="flex items-center justify-between px-3 h-4">
         <TooltipProvider>
-          <div className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/20">
-            <span>Performance</span>
+          <div className="flex items-center gap-1.5 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">
+            <span>Performance por Categoria</span>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="size-2.5 cursor-help hover:text-muted-foreground/50 transition-colors" />
@@ -143,14 +143,14 @@ export function ResumoCategorias() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 px-1">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-1">
         {resumoPorCategoria.map((cat) => (
           <TooltipProvider key={cat.nome}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <DashboardCard 
                   className={cn(
-                    "group relative border-transparent hover:border-border/40",
+                    "group relative border-border/40 hover:border-primary/20 transition-all duration-300 min-h-[152px] flex items-center justify-center",
                     categoriaSelecionada === cat.nome && "ring-2 ring-primary ring-offset-2 ring-offset-background border-primary/40 bg-primary/5"
                   )}
                   onClick={() => {
@@ -167,51 +167,59 @@ export function ResumoCategorias() {
                 >
             {/* Efeito de brilho dinâmico sofisticado */}
             <div 
-              className="absolute -inset-1 opacity-[0.02] transition-opacity duration-700 group-hover:opacity-[0.05]"
+              className="absolute -inset-1 opacity-[0.03] transition-opacity duration-700 group-hover:opacity-[0.08]"
               style={{ background: `radial-gradient(circle at center, ${cat.cor}, transparent)` }}
             />
             
-            <div className="flex flex-col gap-2 h-full items-center justify-center relative z-10 w-full">
-              <div className="flex items-center justify-between w-full relative px-1">
-                <div className="flex items-center gap-2">
-                  <div className="flex size-6 items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
+            <div className="flex flex-col gap-4 w-full relative z-10 px-4">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-foreground/5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300 shadow-sm">
                     {(() => {
                       const Icon = getIconeCategoria(cat.nome);
-                      return <Icon className="size-3.5" />;
+                      return <Icon className="size-5" />;
                     })()}
                   </div>
-                  <span className="text-muted-foreground font-black uppercase text-[0.62rem] tracking-[0.15em] group-hover:text-foreground transition-colors truncate max-w-[80px]">
-                    {cat.nome}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground font-black uppercase text-[0.62rem] tracking-[0.15em] group-hover:text-foreground transition-colors truncate max-w-[120px]">
+                      {cat.nome}
+                    </span>
+                    <span className="text-[0.55rem] font-bold text-muted-foreground/40 uppercase tracking-widest">Categoria</span>
+                  </div>
                 </div>
                 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   {cat.alertas > 0 && (
                     <div 
-                      className="flex size-4 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse-slow shadow-sm"
+                      className="flex size-5 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse-slow shadow-sm"
                       title={`${cat.alertas} alerta(s)`}
                     >
-                      <AlertTriangle className="size-2.5" />
+                      <AlertTriangle className="size-3" />
                     </div>
                   )}
-                  <ChevronRight className="size-3 text-muted-foreground/20 group-hover:text-primary/40 group-hover:translate-x-0.5 transition-all" />
+                  <div className="size-6 flex items-center justify-center rounded-full border border-border/40 text-muted-foreground/20 group-hover:border-primary/20 group-hover:text-primary/40 transition-all">
+                    <ChevronRight className="size-3" />
+                  </div>
                 </div>
               </div>
               
-              <div className="flex flex-col items-center justify-center -space-y-0.5 w-full">
+              <div className="flex flex-col -space-y-1">
                 <div className={cn(
-                  "text-[1.125rem] font-bold tabular-nums tracking-tighter leading-tight sm:text-[1.375rem] group-hover:scale-105 transition-transform duration-300",
+                  "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-tight group-hover:scale-105 transition-transform duration-300 origin-left",
                   cat.lucro >= 0 ? "text-success" : "text-destructive"
                 )}>
                   {brl(cat.lucro, 2)}
                 </div>
                 
-                <div className={cn(
-                  "flex items-center gap-1 text-[0.7rem] font-bold tracking-tight px-1.5 py-0.5 rounded-md bg-opacity-10",
-                  cat.lucro >= 0 ? "text-success bg-success" : "text-destructive bg-destructive"
-                )}>
-                  {cat.lucro >= 0 ? <TrendingUp className="size-2.5" /> : <TrendingDown className="size-2.5" />}
-                  <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(1).replace(".", ",")}%</span>
+                <div className="flex items-center justify-between w-full">
+                  <div className={cn(
+                    "flex items-center gap-1.5 text-[0.85rem] font-bold tracking-tight",
+                    cat.lucro >= 0 ? "text-success" : "text-destructive"
+                  )}>
+                    {cat.lucro >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
+                    <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
+                  </div>
+                  <span className="text-[0.6rem] font-bold text-muted-foreground/30 uppercase tracking-tighter">Resultado Total</span>
                 </div>
               </div>
             </div>
