@@ -1000,7 +1000,7 @@ export function RankingRadar({
                   </div>
                 </TableHead>
                 <TableHead
-                  className="hidden w-[14%] min-w-[140px] 2xl:table-cell"
+                  className="hidden w-[18%] min-w-[180px] 2xl:table-cell"
                 >
                   <div className="flex items-center justify-center gap-1.5">
                     Faixa 52s
@@ -1373,26 +1373,32 @@ export function RankingRadar({
                   </div>
                   <SinalBadge sinal={l.sinal} />
                 </span>
-                <dl className="mt-2 grid grid-cols-4 gap-2 border-t border-border/60 pt-2.5 text-xs">
-                  <div>
+                <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-border/60 pt-2.5 text-xs">
+                  <div className="flex items-center justify-between gap-2">
                     <dt className="t-caption">DY 12m</dt>
-                    <dd className="t-num mt-0.5 text-positive">
+                    <dd className="t-num text-positive">
                       {l.dy12 !== null ? `${l.dy12.toLocaleString("pt-BR")}%` : "—"}
                     </dd>
                   </div>
-                  <div>
-                    <dt className="t-caption text-center">P/VPA</dt>
-                    <dd className="t-num mt-0.5 text-center">
+                  <div className="flex items-center justify-between gap-2">
+                    <dt className="t-caption">P/VPA</dt>
+                    <dd className="t-num">
                       {l.pvp !== null ? l.pvp.toLocaleString("pt-BR") : "—"}
                     </dd>
                   </div>
-                  <div>
+                  <div className="flex items-center justify-between gap-2">
                     <dt className="t-caption">Score</dt>
-                    <dd className="t-num mt-0.5">{l.score ?? "—"}</dd>
+                    <dd className="t-num">{l.score ?? "—"}</dd>
                   </div>
-                  <div>
+                  <div className="flex items-center justify-between gap-2">
                     <dt className="t-caption">Gestor</dt>
-                    <dd className="t-num mt-0.5">{gestores.get(l.ticker)?.rating ?? "—"}</dd>
+                    <dd className="t-num">{gestores.get(l.ticker)?.rating ?? "—"}</dd>
+                  </div>
+                  <div className="col-span-2 mt-1">
+                    <dt className="t-caption mb-1.5 block">Faixa 52s</dt>
+                    <dd>
+                      <Faixa52sCelula l={l} />
+                    </dd>
                   </div>
                 </dl>
               </button>
