@@ -109,7 +109,7 @@ export function OverlayDetalhesCategoria({
             <span className="text-[0.65rem] font-bold text-muted-foreground uppercase tracking-wider">Lucro / Prejuízo</span>
             <div className={cn(
               "flex items-center gap-1 text-sm font-black tabular-nums",
-              lucro >= 0 ? "text-emerald-500" : "text-rose-500"
+              lucro >= 0 ? "text-positive" : "text-negative"
             )}>
               {lucro >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
               <span className="flex items-baseline gap-1.5">
@@ -137,7 +137,7 @@ export function OverlayDetalhesCategoria({
                       <span className="text-xs font-black">{maiorVariacao.ticker}</span>
                       <span className={cn(
                         "text-xs font-black tabular-nums",
-                        (maiorVariacao.cotacao?.variacaoPercent ?? 0) >= 0 ? "text-emerald-500" : "text-rose-500"
+                        (maiorVariacao.cotacao?.variacaoPercent ?? 0) >= 0 ? "text-positive" : "text-negative"
                       )}>
                         {(maiorVariacao.cotacao?.variacaoPercent ?? 0) >= 0 ? "+" : ""}{maiorVariacao.cotacao?.variacaoPercent?.toFixed(2)}%
                       </span>
@@ -151,7 +151,7 @@ export function OverlayDetalhesCategoria({
                       <span className="text-xs font-black">{maiorImpacto.ticker}</span>
                       <span className={cn(
                         "text-xs font-black tabular-nums",
-                        maiorImpacto.impactoFinanceiro >= 0 ? "text-emerald-500" : "text-rose-500"
+                        maiorImpacto.impactoFinanceiro >= 0 ? "text-positive" : "text-negative"
                       )}>
                         {maiorImpacto.impactoFinanceiro >= 0 ? "+" : ""}{brl(maiorImpacto.impactoFinanceiro, 2)}
                       </span>
@@ -166,7 +166,7 @@ export function OverlayDetalhesCategoria({
                   "p-3 rounded-lg border flex items-start gap-3",
                   precisaComprar ? "border-emerald-500/20 bg-emerald-500/5" : "border-amber-500/20 bg-amber-500/5"
                 )}>
-                  <Target className={cn("size-5 shrink-0 mt-0.5", precisaComprar ? "text-emerald-500" : "text-amber-500")} />
+                  <Target className={cn("size-5 shrink-0 mt-0.5", precisaComprar ? "text-positive" : "text-amber-500")} />
                   <div className="flex flex-col gap-1">
                     <span className="text-xs font-black uppercase tracking-tight">Sugestão de Rebalanceamento</span>
                     <p className="text-[0.7rem] leading-relaxed text-muted-foreground">
@@ -199,7 +199,7 @@ export function OverlayDetalhesCategoria({
                     <p>Total Atual: <span className="text-foreground font-bold">{brl(totalAtual)}</span></p>
                     <p>Total Investido: <span className="text-foreground font-bold">{brl(totalInvestido)}</span></p>
                     <p className="mt-2 pt-2 border-t border-border/20 italic">
-                      Cálculo: {brl(totalAtual)} - {brl(totalInvestido)} = <span className={cn("font-black", lucro >= 0 ? "text-emerald-500" : "text-rose-500")}>{brl(lucro)}</span>
+                      Cálculo: {brl(totalAtual)} - {brl(totalInvestido)} = <span className={cn("font-black", lucro >= 0 ? "text-positive" : "text-negative")}>{brl(lucro)}</span>
                     </p>
                     <p className="text-[0.6rem] mt-1 opacity-70 italic">* Todos os valores são arredondados individualmente antes da soma para garantir precisão.</p>
                   </div>
@@ -230,7 +230,7 @@ export function OverlayDetalhesCategoria({
                       <div className="flex items-center gap-3">
                         <div className={cn(
                           "flex size-8 items-center justify-center rounded-lg text-[0.7rem] font-black",
-                          isDestacado ? "bg-rose-500/20 text-rose-500 animate-pulse" : "bg-primary/10 text-primary"
+                          isDestacado ? "bg-negative/20 text-negative animate-pulse" : "bg-primary/10 text-primary"
                         )}>
                           {ativo.ticker.slice(0, 4)}
                         </div>
@@ -266,7 +266,7 @@ export function OverlayDetalhesCategoria({
                       <div className="font-bold">{aporte.ticker}</div>
                       <div className={cn(
                         "px-1.5 py-0.5 rounded text-[0.6rem] font-black uppercase tracking-tighter",
-                        Number(aporte.quantidade) >= 0 ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"
+                        Number(aporte.quantidade) >= 0 ? "bg-positive/10 text-positive" : "bg-negative/10 text-negative"
                       )}>
                         {Number(aporte.quantidade) >= 0 ? "Compra" : "Venda"}
                       </div>

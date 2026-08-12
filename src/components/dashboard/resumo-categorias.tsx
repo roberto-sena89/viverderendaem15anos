@@ -200,7 +200,7 @@ export function ResumoCategorias() {
                   className={cn(
                     "flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wider border transition-colors cursor-help focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:outline-none",
                     auditoria.integra
-                      ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/15 hover:text-emerald-700 focus-visible:text-emerald-700"
+                      ? "bg-positive/5 text-positive border-positive/20 hover:bg-positive/15 focus-visible:bg-positive/15"
                       : "bg-amber-500/5 text-amber-600 border-amber-500/20 hover:bg-amber-500/15 hover:text-amber-700 focus-visible:text-amber-700"
                   )}
                 >
@@ -215,7 +215,7 @@ export function ResumoCategorias() {
                 <div className="space-y-1 text-muted-foreground">
                   <p>Soma dos ativos: <span className="text-foreground">{brl(auditoria.totalLucroAtivos)}</span></p>
                   <p>Soma das categorias: <span className="text-foreground">{brl(auditoria.totalLucroCategorias)}</span></p>
-                  <p>Discrepância: <span className={auditoria.integra ? "text-emerald-600" : "text-amber-600"}>
+                  <p>Discrepância: <span className={auditoria.integra ? "text-positive" : "text-amber-600"}>
                     {brl(auditoria.discrepancia)}
                   </span></p>
                 </div>
@@ -321,7 +321,7 @@ export function ResumoCategorias() {
                             <div 
                               role="img"
                               aria-label={`${cat.alertas} alerta(s) recente(s) em ${cat.nome}`}
-                              className="flex size-5 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse-slow shadow-sm"
+                              className="flex size-5 items-center justify-center rounded-full bg-negative/10 text-negative animate-pulse-slow shadow-sm"
                               title={`${cat.alertas} alerta(s)`}
                             >
                               <AlertTriangle className="size-3" />
