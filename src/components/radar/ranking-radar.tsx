@@ -967,7 +967,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="hidden w-[14%] min-w-[140px] whitespace-nowrap text-center lg:table-cell">
+                <TableHead className="hidden w-[8%] min-w-[80px] whitespace-nowrap text-center lg:table-cell">
                   <div className="flex items-center justify-center gap-1.5">
                     P/VPA
                     <TooltipProvider>
