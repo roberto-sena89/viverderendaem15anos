@@ -563,30 +563,39 @@ function PaginaRadar() {
           />
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
-              <ResumoCard rotulo="Total de ativos" valor={String(visao.contagem.total)} />
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+              <ResumoCard 
+                rotulo="Total Monitorado" 
+                valor={String(visao.contagem.total)} 
+                sub="Ativos na cobertura do Radar"
+              />
               <ResumoCard
-                rotulo="Sinal de compra"
+                rotulo="Sinal de Compra"
                 valor={String(visao.contagem.comprar)}
                 cor="text-emerald-600"
+                sub="Oportunidades em mínimas históricas"
               />
               <ResumoCard
-                rotulo="Alertas de venda"
+                rotulo="Alertas de Venda"
                 valor={String(alertaVenda.length)}
                 cor="text-red-600"
+                sub="Riscos imediatos ou choques de preço"
               />
               <ResumoCard
-                rotulo="Nas mínimas 52s"
+                rotulo="Mínimas 52 Semanas"
                 valor={String(visao.contagem.minimas52)}
                 cor="text-sky-600"
+                sub="Ativos perto do menor preço do ano"
               />
               <ResumoCard
-                rotulo="Com posição histórica"
-                valor={`${visao.contagem.comPosicao}/${visao.contagem.total}`}
+                rotulo="Cobertura Técnica"
+                valor={`${Math.round((visao.contagem.comPosicao / visao.contagem.total) * 100)}%`}
+                sub={`${visao.contagem.comPosicao} ativos com dados completos`}
               />
               <ResumoCard
-                rotulo="Base fundamentalista"
+                rotulo="Base de Dados"
                 valor={visao.baseEm ? new Date(visao.baseEm).toLocaleDateString("pt-BR") : "—"}
+                sub="Data da última coleta fundamentalista"
               />
             </div>
 
@@ -953,15 +962,20 @@ function ResumoCard({
   rotulo,
   valor,
   cor = "text-foreground",
+  sub,
 }: {
   rotulo: string;
   valor: string;
   cor?: string;
+  sub?: string;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4">
-      <p className="text-xs text-muted-foreground">{rotulo}</p>
-      <p className={`mt-1 text-2xl font-bold tabular-nums ${cor}`}>{valor}</p>
+    <div className="panel flex flex-col justify-between p-4 transition-all hover:shadow-lift">
+      <div>
+        <p className="t-label text-[0.6rem] uppercase tracking-wider">{rotulo}</p>
+        <p className={`mt-2 t-metric-sm ${cor}`}>{valor}</p>
+      </div>
+      {sub && <p className="mt-2 t-caption line-clamp-2">{sub}</p>}
     </div>
   );
 }

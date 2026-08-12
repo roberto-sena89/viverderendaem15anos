@@ -712,63 +712,98 @@ export function RankingRadar({
         <Kpi
           rotulo="Universo filtrado"
           valor={estatisticas.total.toLocaleString("pt-BR")}
-          sub={<p className="t-caption">do total de {totalUniverso.toLocaleString("pt-BR")}</p>}
+          sub={
+            <div className="flex items-center gap-1 text-[0.65rem] text-muted-foreground">
+              <span>de</span>
+              <span className="font-bold text-foreground">{totalUniverso.toLocaleString("pt-BR")}</span>
+              <span>ativos totais</span>
+            </div>
+          }
           cor="text-foreground"
           icone={<Layers className="size-4" />}
         />
         <Kpi
-          rotulo="Cobertura"
+          rotulo="Cobertura de Histórico"
           valor={`${estatisticas.coberturaPct.toFixed(0)}%`}
           sub={
-            <div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
+            <div className="mt-1 space-y-1.5">
+              <div className="h-1.5 overflow-hidden rounded-full bg-muted/50 ring-1 ring-border/20">
                 <div
-                  className="h-full rounded-full bg-gradient-brand"
+                  className="h-full rounded-full bg-gradient-brand shadow-[0_0_8px_rgba(0,107,60,0.4)]"
                   style={{ width: `${estatisticas.coberturaPct}%` }}
                 />
               </div>
-              <p className="t-caption mt-1">{estatisticas.comHistorico} com histórico</p>
+              <p className="flex items-center gap-1.5 text-[0.65rem] font-medium text-primary">
+                <span className="size-1 rounded-full bg-primary animate-pulse" />
+                {estatisticas.comHistorico} ativos com dados
+              </p>
             </div>
           }
           cor="text-primary"
           icone={<Radar className="size-4" />}
         />
         <Kpi
-          rotulo="Score médio"
+          rotulo="Qualidade do Universo"
           valor={estatisticas.scoreMedio !== null ? estatisticas.scoreMedio.toFixed(0) : "—"}
-          sub={<p className="t-caption">0–100 · preço, DY e risco</p>}
+          sub={
+            <p className="t-caption leading-relaxed">
+              Média de oportunidade baseada em <span className="text-foreground font-medium">Preço</span>, 
+              <span className="text-foreground font-medium"> DY</span> e <span className="text-foreground font-medium">Risco</span>.
+            </p>
+          }
           cor="text-foreground"
           icone={<Gauge className="size-4" />}
         />
         <Kpi
-          rotulo="Sinais de compra"
+          rotulo="Oportunidades de Compra"
           valor={String(estatisticas.porSinal.comprar)}
-          sub={<p className="t-caption">nas mínimas históricas</p>}
+          sub={
+            <p className="t-caption flex items-center gap-1 text-emerald-600/80 font-medium">
+              <TrendingUp className="size-3" />
+              Preços em mínimas históricas
+            </p>
+          }
           cor="text-emerald-600"
           icone={<TrendingUp className="size-4" />}
         />
         <Kpi
-          rotulo="Nas mínimas 52s"
+          rotulo="Alertas de Mínimas 52s"
           valor={String(estatisticas.minimas52)}
-          sub={<p className="t-caption">a até 5% da mínima de 52 semanas</p>}
+          sub={
+            <p className="t-caption leading-relaxed">
+              Ativos a menos de <span className="text-sky-600 font-bold">5%</span> da menor cotação do último ano.
+            </p>
+          }
           cor="text-sky-600"
           icone={<Activity className="size-4" />}
         />
         <Kpi
-          rotulo="Na sua carteira"
+          rotulo="Ativos em Carteira"
           valor={String(estatisticas.naCarteira)}
-          sub={<p className="t-caption">dos ativos do universo filtrado</p>}
+          sub={
+            <p className="t-caption">
+              Total de ativos que você já possui neste universo filtrado.
+            </p>
+          }
           cor="text-foreground"
           icone={<Wallet className="size-4" />}
         />
         <Kpi
-          rotulo="Rating A"
+          rotulo="Excelência (Rating A)"
           valor={String(estatisticas.porRating.A)}
           sub={
-            <p className="t-caption">
-              {estatisticas.porRating.A + estatisticas.porRating.B} com A/B ·{" "}
-              {estatisticas.porRating.C} C · {estatisticas.porRating.D} D
-            </p>
+            <div className="space-y-1">
+              <div className="flex justify-between text-[0.65rem] font-medium">
+                <span className="text-emerald-600">A/B: {estatisticas.porRating.A + estatisticas.porRating.B}</span>
+                <span className="text-amber-600">C: {estatisticas.porRating.C}</span>
+                <span className="text-red-600">D: {estatisticas.porRating.D}</span>
+              </div>
+              <div className="h-1 flex overflow-hidden rounded-full bg-muted/30">
+                <div className="bg-emerald-500" style={{ width: `${((estatisticas.porRating.A + estatisticas.porRating.B) / Math.max(1, estatisticas.total)) * 100}%` }} />
+                <div className="bg-amber-500" style={{ width: `${(estatisticas.porRating.C / Math.max(1, estatisticas.total)) * 100}%` }} />
+                <div className="bg-red-500" style={{ width: `${(estatisticas.porRating.D / Math.max(1, estatisticas.total)) * 100}%` }} />
+              </div>
+            </div>
           }
           cor="text-emerald-600"
           icone={<Trophy className="size-4" />}
