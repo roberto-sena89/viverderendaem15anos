@@ -19,7 +19,7 @@ function quando(ts: number) {
 
 /** Sino do cabeçalho com o histórico dos alertas de variação disparados. */
 export function SinoAlertas() {
-  const { alertas, naoLidos, marcarTodos Lidos, limpar } = useAlertasHistorico();
+  const { alertas, naoLidos, marcarTodosLidos, limpar } = useAlertasHistorico();
   const [aberto, setAberto] = useState(false);
 
   const abrirCategoria = (categoria?: string) => {
