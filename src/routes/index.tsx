@@ -566,12 +566,12 @@ function HomePage() {
           <h2 className="font-hero text-center text-2xl font-bold tracking-tight sm:text-4xl">
             Perguntas frequentes
           </h2>
-          <Accordion type="single" collapsible className="mt-10 grid gap-3">
+          <Accordion type="single" collapsible className="mt-8 grid gap-2 sm:mt-10 sm:gap-3">
             {faq.map((f, i) => (
               <AccordionItem
                 key={f.q}
                 value={`faq-${i}`}
-                className="border-border/60 bg-card rounded-2xl border px-6"
+                className="border-border/60 bg-card rounded-xl border px-4 sm:rounded-2xl sm:px-6"
               >
                 <AccordionTrigger className="font-hero py-5 text-left text-base font-bold tracking-tight hover:no-underline sm:text-lg">
                   {f.q}
