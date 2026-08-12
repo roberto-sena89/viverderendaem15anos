@@ -368,10 +368,10 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           <DialogTransacao>
             <Button
               size="default"
-              className="font-display gap-2 bg-primary px-5 text-[15px] font-semibold tracking-[0.01em] text-primary-foreground shadow-sm hover:bg-primary/90"
+              className="font-display h-12 gap-2 bg-primary px-6 text-[15px] font-bold tracking-tight text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.98] sm:h-11"
             >
-              <Plus className="size-5" />
-              Adicionar Lançamento
+              <Plus className="size-5" strokeWidth={3} />
+              <span>Adicionar Lançamento</span>
             </Button>
           </DialogTransacao>
         </div>
