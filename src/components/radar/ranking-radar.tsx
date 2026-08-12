@@ -1401,6 +1401,25 @@ export function RankingRadar({
                     </dd>
                   </div>
                 </dl>
+                <div className="mt-3 border-t border-border/60 pt-2.5">
+                  <dt className="t-caption mb-1.5 block text-center">Risco 52s</dt>
+                  <dd className="flex items-baseline justify-center gap-2">
+                    <span
+                      className={`text-sm font-semibold tabular-nums ${corDrawdown(l.posicao?.drawdownMaximoPct ?? null)}`}
+                    >
+                      {l.posicao?.drawdownMaximoPct !== null &&
+                      l.posicao?.drawdownMaximoPct !== undefined
+                        ? `${l.posicao.drawdownMaximoPct.toFixed(1).replace(".", ",")}%`
+                        : "—"}
+                    </span>
+                    <span className="text-[0.65rem] tabular-nums text-muted-foreground">
+                      {l.posicao?.volatilidadeAnualPct !== null &&
+                      l.posicao?.volatilidadeAnualPct !== undefined
+                        ? `vol ${l.posicao.volatilidadeAnualPct.toFixed(0)}%`
+                        : ""}
+                    </span>
+                  </dd>
+                </div>
               </button>
             </li>
           );
