@@ -200,7 +200,10 @@ function ChatPage() {
       title="Técnico IA"
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
-      <AbasPlanejamento />
+      <div className="sticky top-[var(--altura-cabecalho-app,0px)] z-20 -mx-4 space-y-0 border-b border-border bg-background/70 px-4 pt-1 pb-2 backdrop-blur-xl sm:-mx-6 sm:px-6">
+        <AbasPlanejamento />
+      </div>
+
       <div className="flex h-[calc(100dvh-13rem)] min-h-[28rem] flex-col gap-4">
         <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-card/60 p-3 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4">
           <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">

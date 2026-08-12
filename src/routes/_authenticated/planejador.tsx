@@ -112,7 +112,10 @@ function Planejador() {
       title="Planejador da Independência Financeira"
       description="Simule cenários e descubra sua data de liberdade"
     >
-      <AbasPlanejamento />
+      <div className="sticky top-[var(--altura-cabecalho-app,0px)] z-20 -mx-4 space-y-0 border-b border-border bg-background/70 px-4 pt-1 pb-2 backdrop-blur-xl sm:-mx-6 sm:px-6">
+        <AbasPlanejamento />
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-[340px_1fr] [&>*]:min-w-0">
         <div className="surface-card space-y-5 p-6">
           <NumberField label="Idade atual" value={input.idadeAtual} onChange={set("idadeAtual")} />
