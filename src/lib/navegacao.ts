@@ -10,6 +10,7 @@ export type SecaoNav = {
 };
 
 export const SECOES: SecaoNav[] = [
+  { to: "/dashboard", rotulo: "Resumo", grupo: "Carteira" },
   { to: "/carteira", rotulo: "Carteira", grupo: "Carteira" },
   { to: "/dividendos", rotulo: "Proventos", grupo: "Carteira" },
   { to: "/aportes", rotulo: "Patrimônio", grupo: "Carteira" },
@@ -28,6 +29,7 @@ export const SECOES: SecaoNav[] = [
 
 /** Abas horizontais da carteira, na ordem exibida. */
 export const ABAS_CARTEIRA = [
+  "/dashboard",
   "/carteira",
   "/dividendos",
   "/aportes",
