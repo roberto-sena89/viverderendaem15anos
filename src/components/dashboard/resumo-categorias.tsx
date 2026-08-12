@@ -2,7 +2,7 @@ import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotaco
 import { tempoRelativo } from "@/components/status-cotacoes";
 import { brl, valorAtual, arredondar } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
-import { TrendingDown, TrendingUp, Clock, AlertTriangle, Plus, PieChart, ChevronRight } from "lucide-react";
+import { TrendingDown, TrendingUp, Clock, AlertTriangle, Plus, PieChart, ChevronRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { getIconeCategoria } from "@/lib/icones-categorias";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
@@ -92,6 +92,44 @@ export function ResumoCategorias() {
     }).sort((a, b) => b.lucro - a.lucro);
   }, [categoriasUnicas, ativos, alertas]);
 
+  // Auditoria de arredondamento e integridade
+  const auditoria = useMemo(() => {
+    if (ativos.length === 0) return null;
+    
+    let totalInvestidoAtivos = 0;
+    let totalAtualAtivos = 0;
+    
+    ativos.forEach(a => {
+      totalInvestidoAtivos += arredondar(Number(a.quantidade) * Number(a.precoMedio));
+      totalAtualAtivos += arredondar(valorAtual(a));
+    });
+    
+    const totalLucroAtivos = arredondar(totalAtualAtivos - totalInvestidoAtivos);
+    
+    let totalLucroCategorias = 0;
+    resumoPorCategoria.forEach(r => {
+      totalLucroCategorias += r.lucro;
+    });
+    
+    const discrepancia = arredondar(totalLucroAtivos - totalLucroCategorias);
+    const integra = Math.abs(discrepancia) < 0.01;
+    
+    return {
+      totalLucroAtivos,
+      totalLucroCategorias,
+      discrepancia,
+      integra,
+      data: new Date().toISOString()
+    };
+  }, [ativos, resumoPorCategoria]);
+
+  // Log de auditoria em desenvolvimento
+  useEffect(() => {
+    if (auditoria && !auditoria.integra) {
+      console.warn("[Auditoria] Discrepância de arredondamento detectada:", auditoria);
+    }
+  }, [auditoria]);
+
   if (ativos.length === 0) {
     return (
       <div className="mb-10 px-1">
@@ -142,6 +180,39 @@ export function ResumoCategorias() {
             tempoRelativo(atualizadoEm)
           )}
         </div>
+
+        {auditoria && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className={cn(
+                  "flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wider border transition-colors cursor-help",
+                  auditoria.integra 
+                    ? "bg-emerald-500/5 text-emerald-500/60 border-emerald-500/10 hover:bg-emerald-500/10" 
+                    : "bg-amber-500/5 text-amber-500/60 border-amber-500/10 hover:bg-amber-500/10"
+                )}>
+                  {auditoria.integra ? <ShieldCheck className="size-2.5" /> : <AlertTriangle className="size-2.5" />}
+                  <span>Dados Auditados</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="text-[0.7rem] bg-background/95 backdrop-blur-xl border-border/50 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-primary font-bold">
+                  <CheckCircle2 className="size-3" /> Camada de Auditoria Ativa
+                </div>
+                <div className="space-y-1 text-muted-foreground">
+                  <p>Soma dos ativos: <span className="text-foreground">{brl(auditoria.totalLucroAtivos)}</span></p>
+                  <p>Soma das categorias: <span className="text-foreground">{brl(auditoria.totalLucroCategorias)}</span></p>
+                  <p>Discrepância: <span className={auditoria.integra ? "text-emerald-500" : "text-amber-500"}>
+                    {brl(auditoria.discrepancia)}
+                  </span></p>
+                </div>
+                <p className="text-[0.6rem] border-t border-border/20 pt-1 mt-1 opacity-50 italic">
+                  * Verificação em tempo real de integridade matemática e arredondamento (IEEE 754).
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-1">
