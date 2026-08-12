@@ -1000,7 +1000,7 @@ export function RankingRadar({
                   </div>
                 </TableHead>
                 <TableHead
-                  className="hidden w-[14%] min-w-[140px] 2xl:table-cell"
+                  className="hidden w-[18%] min-w-[180px] 2xl:table-cell"
                 >
                   <div className="flex items-center justify-center gap-1.5">
                     Faixa 52s
