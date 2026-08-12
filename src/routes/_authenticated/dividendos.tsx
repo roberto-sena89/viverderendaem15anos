@@ -932,23 +932,28 @@ function PainelProventos({
       </div>
 
       <div className="surface-card p-6 flex flex-col min-h-[500px]">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="font-display text-xl font-bold tracking-tight">Evolução de Proventos</p>
-          <div className="flex rounded-md bg-muted p-1">
-            {(["mensal", "anual"] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setModo(m)}
-                className={`rounded px-3 py-1 text-xs capitalize ${
-                  modo === m ? "bg-background font-medium shadow-sm" : "text-muted-foreground"
-                }`}
-              >
-                {m}
-              </button>
-            ))}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <p className="font-display text-xl font-bold tracking-tight">Evolução de Proventos</p>
+            <div className="flex rounded-lg bg-muted p-1 shadow-inner">
+              {(["mensal", "anual"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setModo(m)}
+                  className={`rounded-md px-4 py-1.5 text-xs font-semibold capitalize transition-all ${
+                    modo === m 
+                      ? "bg-background text-primary shadow-sm ring-1 ring-black/5" 
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="ml-auto flex flex-wrap items-center gap-2">
+          
+          <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <FiltroPeriodo
               valor={periodo}
               onChange={setPeriodo}
