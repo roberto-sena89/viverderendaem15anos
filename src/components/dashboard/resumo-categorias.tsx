@@ -157,7 +157,7 @@ export function ResumoCategorias() {
                     id={cardId}
                     role="button"
                     tabIndex={0}
-                    aria-label={`Ver detalhes da categoria ${cat.nome}`}
+                    ariaLabel={`Ver detalhes da categoria ${cat.nome}`}
                     aria-describedby={descId}
                     className={cn(
                       "group relative border-border/40 hover:border-primary/20 transition-all duration-300 min-h-[152px] flex items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none",
