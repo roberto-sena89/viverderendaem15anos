@@ -459,7 +459,7 @@ function HomePage() {
 
           <section
             id="conteudo-gratuito"
-            className="border-border/60 bg-card rounded-3xl border p-8 md:col-span-2"
+            className="border-border/60 bg-card rounded-2xl border p-6 sm:rounded-3xl sm:p-8 md:col-span-2"
           >
             <h2 className="font-hero flex flex-wrap items-center gap-3 text-xl font-bold tracking-tight sm:text-2xl">
               Conteúdo gratuito
