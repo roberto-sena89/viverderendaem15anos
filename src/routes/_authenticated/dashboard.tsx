@@ -261,11 +261,11 @@ function Dashboard() {
     <AppShell title="Resumo" description="Visão geral do seu patrimônio">
       <StatusCotacoes />
       <AbasCarteira />
-      <ResumoCategorias />
       <NavegacaoSecoes />
-
       <section id="resumo" className="scroll-mt-32 sm:scroll-mt-40">
         <ResumoKpis />
+        <ResumoCategorias />
+      </section>
       </section>
 
       <section id="saude" className="scroll-mt-32 sm:scroll-mt-40">
