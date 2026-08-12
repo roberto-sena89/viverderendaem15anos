@@ -177,7 +177,14 @@ export function TopAlertBar() {
                     </div>
                   </div>
                   <div className="bg-emerald-500/10 p-4 text-center border-t border-emerald-500/20">
-                    <button className="w-full py-2.5 rounded-lg bg-emerald-500 text-xs font-black text-emerald-950 hover:bg-emerald-400 active:scale-[0.98] transition-all uppercase tracking-[0.2em] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] flex items-center justify-center gap-3">
+                    <button 
+                      onClick={() => {
+                        window.dispatchEvent(new CustomEvent('app:abrir-radar-ativo', { 
+                          detail: { ticker: alerta.ticker } 
+                        }));
+                      }}
+                      className="w-full py-2.5 rounded-lg bg-emerald-500 text-xs font-black text-emerald-950 hover:bg-emerald-400 active:scale-[0.98] transition-all uppercase tracking-[0.2em] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] flex items-center justify-center gap-3"
+                    >
                       Visualizar no Radar Completo
                       <ChevronRight className="size-4" />
                     </button>
