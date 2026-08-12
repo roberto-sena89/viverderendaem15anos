@@ -293,7 +293,7 @@ export function ResumoCategorias() {
                             <span className="text-muted-foreground font-black uppercase text-[0.62rem] tracking-[0.15em] group-hover:text-foreground transition-colors truncate max-w-[120px]">
                               {cat.nome}
                             </span>
-                            <span className="text-[0.55rem] font-bold text-muted-foreground/40 uppercase tracking-widest">Categoria</span>
+                            <span className="text-[0.55rem] font-bold text-muted-foreground/60 uppercase tracking-widest">Categoria</span>
                           </div>
                         </div>
                         
