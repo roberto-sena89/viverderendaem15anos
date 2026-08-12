@@ -364,7 +364,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
   return (
     <>
       {mostrarLancamento && (
-        <div className="flex justify-start">
+        <div className="flex justify-start px-2 sm:px-0">
           <DialogTransacao>
             <Button
               size="default"
