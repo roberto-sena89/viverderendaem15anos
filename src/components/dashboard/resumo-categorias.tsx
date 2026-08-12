@@ -57,11 +57,12 @@ export function ResumoCategorias() {
     return () => window.clearInterval(id);
   }, []);
 
-  if (ativos.length === 0) return null;
-
   // Agrupar ativos por categoria e calcular totais
-  const categoriasUnicas = Array.from(new Set(ativos.map((a) => a.categoria)));
-  
+  const categoriasUnicas = useMemo(
+    () => Array.from(new Set(ativos.map((a) => a.categoria))),
+    [ativos]
+  );
+
   const resumoPorCategoria = useMemo(() => {
     return categoriasUnicas.map((cat) => {
       const ativosDaCat = ativos.filter((a) => a.categoria === cat);
@@ -87,6 +88,8 @@ export function ResumoCategorias() {
       };
     }).sort((a, b) => b.lucro - a.lucro);
   }, [categoriasUnicas, ativos, alertas]);
+
+  if (ativos.length === 0) return null;
 
   return (
     <div className="space-y-3 mb-8">
