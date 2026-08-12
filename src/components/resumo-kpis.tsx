@@ -1,5 +1,5 @@
 import { useMemo, useState, useId } from "react";
-import { Coins, PiggyBank, Plus, TrendingUp, Wallet, Info } from "lucide-react";
+import { Coins, PiggyBank, Plus, TrendingUp, Wallet, Info, AlertTriangle, RefreshCw } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -165,9 +165,31 @@ function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose:
 /** Faixa de indicadores da carteira (padrão Investidor 10). */
 export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: boolean }) {
   const tooltipHojeId = useId();
-  const { data: ativos = [] } = useAtivosAoVivo();
-  const { data: proventos = [] } = useDividendos();
-  const { mapa } = useCotacoesTempoReal();
+  const {
+    data: ativos = [],
+    isLoading: carregandoAtivos,
+    isError: erroAtivos,
+    isFetching: buscandoAtivos,
+    refetch: recarregarAtivos,
+  } = useAtivosAoVivo();
+  const {
+    data: proventos = [],
+    isLoading: carregandoProventos,
+    isError: erroProventos,
+    isFetching: buscandoProventos,
+    refetch: recarregarProventos,
+  } = useDividendos();
+  const { mapa, atualizadoEm, carregando: carregandoCotacoes, atualizarAgora } =
+    useCotacoesTempoReal();
+
+  const carregandoInicial = carregandoAtivos || carregandoProventos;
+  const houveErro = erroAtivos || erroProventos;
+  const atualizando = buscandoAtivos || buscandoProventos || carregandoCotacoes;
+  const recarregar = () => {
+    void recarregarAtivos();
+    void recarregarProventos();
+    atualizarAgora();
+  };
   const [aberto, setAberto] = useState<Detalhe | null>(null);
 
   const tickers = useMemo(() => ativos.map((a) => a.ticker), [ativos]);
@@ -361,8 +383,77 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
     ],
   };
 
+  if (carregandoInicial) {
+    return (
+      <div
+        role="status"
+        aria-busy="true"
+        aria-live="polite"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0 mt-4"
+      >
+        <span className="sr-only">Carregando indicadores da carteira…</span>
+        {[0, 1, 2, 3].map((i) => (
+          <DashboardCard key={i} className="animate-pulse">
+            <div className="flex items-start gap-2">
+              <div className="size-10 rounded-xl bg-muted/40" />
+              <div className="mt-1 h-3 w-24 rounded bg-muted/40" />
+            </div>
+            <div className="mt-4 h-7 w-2/3 rounded bg-muted/50" />
+            <div className="mt-4 flex justify-between border-t border-border/40 pt-3">
+              <div className="h-3 w-16 rounded bg-muted/30" />
+              <div className="h-3 w-16 rounded bg-muted/30" />
+            </div>
+          </DashboardCard>
+        ))}
+      </div>
+    );
+  }
+
+  if (houveErro) {
+    return (
+      <div
+        role="alert"
+        className="surface-card mt-4 mx-2 sm:mx-0 flex flex-col items-center gap-3 p-6 text-center"
+      >
+        <div className="flex size-11 items-center justify-center rounded-xl bg-negative/10 text-negative">
+          <AlertTriangle className="size-5" />
+        </div>
+        <div>
+          <p className="font-display text-base font-bold text-foreground">
+            Não foi possível carregar os indicadores
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Verifique sua conexão e tente novamente. Seus dados permanecem salvos.
+          </p>
+        </div>
+        <Button variant="outline" className="gap-2" onClick={recarregar}>
+          <RefreshCw className={cn("size-4", atualizando && "animate-spin")} />
+          Tentar novamente
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <>
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex items-center justify-end gap-1.5 px-2 sm:px-0 text-[0.65rem] font-bold uppercase tracking-wider text-muted-foreground/70"
+      >
+        <span
+          className={cn(
+            "size-1.5 rounded-full",
+            atualizando ? "bg-primary animate-pulse" : "bg-positive",
+          )}
+        />
+        {atualizando
+          ? "Atualizando cotações…"
+          : atualizadoEm
+            ? `Atualizado às ${new Date(atualizadoEm).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`
+            : "Dados ao vivo"}
+      </div>
+
       {mostrarLancamento && (
         <div className="flex justify-start px-2 sm:px-0">
           <DialogTransacao>
