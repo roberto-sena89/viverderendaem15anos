@@ -50,8 +50,6 @@ function CartaoResumo({
           ?
         </div>
 
-        <span className="hidden shrink-0 text-[0.8rem] text-foreground sm:inline">detalhes</span>
-      </div>
 
       <div className="mt-3">{children}</div>
     </DashboardCard>
