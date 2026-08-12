@@ -932,7 +932,7 @@ export function RankingRadar({
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead className="w-[10%] whitespace-nowrap text-right">
+                <TableHead className="w-[8%] min-w-[80px] whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-1.5">
                     Var. Dia %
                     <TooltipProvider>
