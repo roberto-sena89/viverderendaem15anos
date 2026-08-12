@@ -219,7 +219,7 @@ export function evolucaoPatrimonio(aportes: Aporte[], totalAtual: number) {
   });
 }
 
-export const brl = (v: number, digits = 0) =>
+export const brl = (v: number, digits = 2) =>
   (Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -227,7 +227,7 @@ export const brl = (v: number, digits = 0) =>
     minimumFractionDigits: digits,
   });
 
-export const pct = (v: number, digits = 1) =>
+export const pct = (v: number, digits = 2) =>
   `${(Number.isFinite(v) ? v : 0).toFixed(digits).replace(".", ",")}%`;
 
 export interface ProjecaoInput extends PlanoConfig {

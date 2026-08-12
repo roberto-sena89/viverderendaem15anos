@@ -152,7 +152,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
   }, [ativos, mapa]);
 
   const fmtDelta = (v: number) => `${v >= 0 ? "+" : ""}${brl(v, 2)}`;
-  const fmtPctDelta = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(2).replace(".", ",")}%`;
+  const fmtPctDelta = (v: number) => `${v >= 0 ? "+" : ""}${pct(v, 2)}`;
 
   const detalhePatrimonio: Detalhe = {
     titulo: "Patrimônio total",

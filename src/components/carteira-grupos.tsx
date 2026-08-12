@@ -368,9 +368,9 @@ export function CarteiraGrupos({
                     <span className="block text-[0.82rem] text-muted-foreground">
                       {g.ativos.length} {g.ativos.length === 1 ? "ativo" : "ativos"} ·{" "}
                       <span className="font-semibold tabular-nums" style={{ color: cor }}>
-                        {pct(g.participacao)}
+                        {pct(g.participacao, 2)}
                       </span>{" "}
-                      de <span className="tabular-nums">{pct(g.ideal)}</span>
+                      de <span className="tabular-nums">{pct(g.ideal, 2)}</span>
                     </span>
                   </span>
                 </button>
