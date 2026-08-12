@@ -11,6 +11,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { AbasMercado } from "@/components/abas-mercado";
+import { TopAlertBar } from "@/components/radar/top-alert-bar";
 import { AppShell } from "@/components/app-shell";
 import { TabelaRadar } from "@/components/radar/tabela-radar";
 import { RankingRadar } from "@/components/radar/ranking-radar";
