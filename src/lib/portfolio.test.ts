@@ -53,7 +53,7 @@ describe("classeDoAtivo · demais categorias", () => {
     ["REITs", "REITs"],
     ["Criptomoedas", "Criptomoedas"],
     ["Fundos de Investimentos", "Fundos de Investimentos"],
-    ["Fundos Imobiliários", "FIIs"],
+    ["FIIS", "FIIs"],
     ["FIIs", "FIIs"],
     ["Fiagro", "FIIs"],
   ];
@@ -75,7 +75,7 @@ describe("integridade das janelas de rebalanceamento", () => {
   it("toda classe retornada existe na tabela de alocação-alvo", () => {
     const categorias = [
       "Ações",
-      "Fundos Imobiliários",
+      "FIIS",
       "Tesouro Direto",
       "BDR",
       "ETF Brasil",

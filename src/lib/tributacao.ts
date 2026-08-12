@@ -37,7 +37,7 @@ export function regraDaCategoria(categoria: Categoria): RegraTributaria {
   switch (categoria) {
     case "Ações":
       return "acao";
-    case "Fundos Imobiliários":
+    case "FIIS":
     case "FIIs":
     case "Fiagro":
       return "fii";
