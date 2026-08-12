@@ -24,6 +24,7 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
     status,
     atualizadoEm,
     pregaoAberto,
+    ultimoRefresh,
     proximaAbertura,
     atualizarAgora,
     carregando,
@@ -78,9 +79,16 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
         <span className="truncate text-xs font-semibold sm:text-sm">{rotulo}</span>
       </span>
 
-      <span className="flex items-center gap-1.5 text-[0.72rem] text-muted-foreground sm:text-xs">
+      <span 
+        className="flex items-center gap-1.5 text-[0.72rem] text-muted-foreground sm:text-xs"
+        title={ultimoRefresh ? `Última atualização completa: ${new Date(ultimoRefresh).toLocaleTimeString()}` : undefined}
+      >
         <Clock className="size-3.5 shrink-0" />
-        {tempoRelativo(atualizadoEm)}
+        {status === "ao-vivo" && Date.now() - (atualizadoEm || 0) < 5000 ? (
+          <span className="font-bold text-success animate-pulse">atualizado agora</span>
+        ) : (
+          tempoRelativo(atualizadoEm)
+        )}
       </span>
 
       <span
