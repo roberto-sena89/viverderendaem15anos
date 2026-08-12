@@ -3,6 +3,7 @@ import { Coins, PiggyBank, Plus, TrendingUp, Wallet } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { Button } from "@/components/ui/button";
 import { DialogTransacao } from "@/components/dialog-transacao";
+import { DashboardCard } from "./dashboard/dashboard-card";
 
 import {
   Dialog,
@@ -59,11 +60,9 @@ function CartaoResumo({
   children: React.ReactNode;
 }) {
   return (
-    <button
-      type="button"
+    <DashboardCard
       onClick={onClick}
-      aria-label={`Ver detalhes e fórmulas de ${titulo}`}
-      className="panel cursor-pointer p-4 text-left transition-[box-shadow,border-color] hover:border-primary/60 hover:shadow-[var(--shadow-lift)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      ariaLabel={`Ver detalhes e fórmulas de ${titulo}`}
     >
       <div className="flex items-start gap-2">
         <Icone className="size-8! shrink-0 text-foreground" />
@@ -75,7 +74,7 @@ function CartaoResumo({
       </div>
 
       <div className="mt-3">{children}</div>
-    </button>
+    </DashboardCard>
   );
 }
 
