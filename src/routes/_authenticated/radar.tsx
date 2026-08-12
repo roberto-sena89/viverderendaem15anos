@@ -445,6 +445,7 @@ function PaginaRadar() {
       description="Todas as ações e FIIs da B3 comparados com a própria história — mínimas indicam oportunidade, choques exigem cautela."
     >
       <AbasMercado />
+      <TopAlertBar />
 
 
       <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
