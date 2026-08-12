@@ -19,35 +19,6 @@ import { useDividendos } from "@/lib/data";
 import { useDesempenho12m } from "@/lib/desempenho-12m";
 import { brl, dividendos12m, pct, resumoCarteira, valorAtual } from "@/lib/portfolio";
 
-function Indicador({
-  rotulo,
-  valor,
-  tom = "default",
-  serie,
-}: {
-  rotulo: string;
-  valor: string;
-  tom?: "default" | "positive" | "negative";
-  serie?: "patrimonio" | "investido";
-}) {
-  const classeSerie =
-    serie === "patrimonio" ? "serie-patrimonio" : serie === "investido" ? "serie-investido" : "";
-  const cor = serie
-    ? classeSerie
-    : tom === "positive"
-      ? "text-success"
-      : tom === "negative"
-        ? "text-destructive"
-        : "text-foreground";
-  return (
-    <div className="min-w-0">
-      <p className={`truncate text-[0.875rem] text-foreground ${serie ? "rotulo-serie" : ""}`}>
-        {rotulo}
-      </p>
-      <p className={`num truncate text-sm font-semibold ${cor}`}>{valor}</p>
-    </div>
-  );
-}
 
 function CartaoResumo({
   titulo,
