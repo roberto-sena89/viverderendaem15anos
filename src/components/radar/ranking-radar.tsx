@@ -855,9 +855,9 @@ export function RankingRadar({
       ) : null}
 
       {/* Tabela profissional (desktop e tablet) */}
-      <div className="panel hidden w-full max-w-full md:block">
-        <div className="rolagem-lateral w-full">
-          <Table className="w-full min-w-[720px] table-fixed">
+      <div className="panel hidden w-full overflow-hidden md:block">
+        <div className="overflow-x-auto w-full">
+          <Table className="w-full min-w-[1000px] table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead
