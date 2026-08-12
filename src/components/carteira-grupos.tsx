@@ -5,7 +5,6 @@ import {
   CircleCheck,
   CircleSlash,
   Pencil,
-  Settings2,
   Trash2,
 } from "lucide-react";
 
