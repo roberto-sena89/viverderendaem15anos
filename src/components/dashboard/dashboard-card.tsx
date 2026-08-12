@@ -24,8 +24,8 @@ export function DashboardCard({
       onClick={onClick}
       aria-label={ariaLabel}
       className={cn(
-        "bg-card/40 border-border/40 relative flex min-h-[152px] flex-col justify-between overflow-hidden rounded-xl border p-4 transition-all duration-300 backdrop-blur-md",
-        onClick && "cursor-pointer hover:border-primary/60 hover:shadow-[var(--shadow-lift)] hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none text-left",
+        "bg-card/40 border-border/40 relative flex min-h-[128px] flex-col justify-between overflow-hidden rounded-xl border p-3.5 transition-all duration-300 backdrop-blur-md",
+        onClick && "cursor-pointer hover:border-primary/50 hover:bg-card/60 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none text-left",
         className
       )}
     >
