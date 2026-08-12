@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { ResumoCategorias } from "@/components/dashboard/resumo-categorias";
+import { ResumoEtfBrasil } from "@/components/dashboard/resumo-etf-brasil";
 import { AppShell } from "@/components/app-shell";
 import { StatusCotacoes } from "@/components/status-cotacoes";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
@@ -262,6 +263,7 @@ function Dashboard() {
       <StatusCotacoes />
       <AbasCarteira />
       <ResumoCategorias />
+      <ResumoEtfBrasil />
       <NavegacaoSecoes />
 
       <section id="resumo" className="scroll-mt-32 sm:scroll-mt-40">
