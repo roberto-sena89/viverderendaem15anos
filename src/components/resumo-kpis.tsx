@@ -377,6 +377,33 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         </div>
       )}
 
+      {ativos.length === 0 ? (
+        <div className="px-2 sm:px-0 mt-4">
+          <DashboardCard className="flex flex-col items-center justify-center gap-3 py-12 text-center border-dashed border-border/40 bg-transparent hover:bg-white/[0.02] min-h-[180px]">
+            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
+              <Wallet className="size-7 text-primary" />
+            </div>
+            <div className="space-y-1.5">
+              <h3 className="text-sm font-black uppercase tracking-[0.15em] text-foreground">
+                Sua carteira está vazia
+              </h3>
+              <p className="text-xs text-muted-foreground max-w-[320px] leading-relaxed">
+                Adicione seu primeiro ativo para acompanhar o patrimônio, lucro,
+                proventos e rentabilidade em tempo real.
+              </p>
+            </div>
+            <DialogTransacao>
+              <Button
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-[0.7rem] font-bold uppercase tracking-wider h-8 gap-1.5"
+              >
+                <Plus className="size-3" strokeWidth={3} />
+                Adicionar primeiro ativo
+              </Button>
+            </DialogTransacao>
+          </DashboardCard>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0 mt-4">
         <CartaoResumo
           titulo="Patrimônio total"
