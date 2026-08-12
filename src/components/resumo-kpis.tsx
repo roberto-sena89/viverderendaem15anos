@@ -105,37 +105,55 @@ interface Detalhe {
 function PainelDetalhe({ detalhe, onClose }: { detalhe: Detalhe | null; onClose: () => void }) {
   return (
     <Dialog open={!!detalhe} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         {detalhe && (
           <>
-            <DialogHeader>
-              <DialogTitle>{detalhe.titulo}</DialogTitle>
-              <DialogDescription>{detalhe.descricao}</DialogDescription>
+            <DialogHeader className="mb-4">
+              <DialogTitle className="text-xl">{detalhe.titulo}</DialogTitle>
+              <DialogDescription className="text-sm leading-relaxed">
+                {detalhe.descricao}
+              </DialogDescription>
             </DialogHeader>
-            <div className="divide-y divide-border rounded-md border border-border">
-              {detalhe.linhas.map((l) => (
-                <div key={l.rotulo} className="p-3">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-sm font-medium">{l.rotulo}</p>
-                    <p
-                      className={`num text-sm font-semibold ${
-                        l.tom === "positive"
-                          ? "text-success"
-                          : l.tom === "negative"
-                            ? "text-destructive"
-                            : "text-foreground"
-                      }`}
-                    >
-                      {l.valor}
-                    </p>
+
+            <div className="space-y-4">
+              <div className="divide-y divide-border rounded-xl border border-border bg-card/50">
+                {detalhe.linhas.map((l) => (
+                  <div key={l.rotulo} className="p-4 transition-colors hover:bg-muted/30">
+                    <div className="flex items-baseline justify-between gap-3 mb-1.5">
+                      <p className="text-sm font-semibold text-foreground/90">{l.rotulo}</p>
+                      <p
+                        className={`num text-base font-bold tracking-tight ${
+                          l.tom === "positive"
+                            ? "text-success"
+                            : l.tom === "negative"
+                              ? "text-destructive"
+                              : "text-foreground"
+                        }`}
+                      >
+                        {l.valor}
+                      </p>
+                    </div>
+                    {l.formula && (
+                      <div className="rounded-lg bg-background/50 p-2.5 mt-2 border border-border/40">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Info className="size-3 text-primary/60" />
+                          <span className="text-[0.65rem] font-bold uppercase tracking-wider text-muted-foreground">Fórmula e Cálculo</span>
+                        </div>
+                        <p className="font-mono text-[0.82rem] leading-relaxed text-muted-foreground/90 break-words">
+                          {l.formula}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  {l.formula && (
-                    <p className="num mt-1 text-[0.82rem] break-words text-muted-foreground">
-                      {l.formula}
-                    </p>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">Exemplo Prático</p>
+                <p className="text-sm text-muted-foreground leading-relaxed italic">
+                  Os valores acima são calculados em tempo real com base nos seus ativos atuais ({detalhe.linhas.find(l => l.rotulo === "Ativos na carteira")?.valor || "registrados"}). Ao clicar em cada card do resumo, você acessa a memória de cálculo específica daquela métrica.
+                </p>
+              </div>
             </div>
           </>
         )}
