@@ -89,18 +89,15 @@ export function ResumoCategorias() {
   if (ativos.length === 0) return null;
 
   return (
-    <div className="space-y-4 mb-8">
-      <div className="flex items-center justify-between px-2">
-        <h2 className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
-          {"\n"}
-        </h2>
+    <div className="space-y-3 mb-10">
+      <div className="flex items-center justify-end px-3">
         <div 
-          className="flex items-center gap-1.5 text-[0.65rem] font-medium text-muted-foreground/50 transition-colors hover:text-muted-foreground/80"
+          className="flex items-center gap-1.5 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-muted-foreground/40 transition-colors hover:text-muted-foreground/70"
           title="Sincronização automática ativa"
         >
-          <Clock className="size-3" />
+          <Clock className="size-2.5" />
           {status === "ao-vivo" && Date.now() - (atualizadoEm || 0) < 5000 ? (
-            <span className="text-success font-bold animate-pulse">ao vivo</span>
+            <span className="text-success font-black animate-pulse">ao vivo</span>
           ) : (
             tempoRelativo(atualizadoEm)
           )}
