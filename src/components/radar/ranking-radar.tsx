@@ -1161,7 +1161,7 @@ export function RankingRadar({
                 ))
               ) : paginadas.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={13} className="h-64 text-center">
+                  <TableCell colSpan={14} className="h-64 text-center">
                     <div className="flex flex-col items-center justify-center gap-3">
                       <Search className="size-10 text-muted-foreground/40" />
                       <div className="space-y-1">
