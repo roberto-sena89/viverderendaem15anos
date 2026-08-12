@@ -40,3 +40,17 @@ describe('Nomenclatura Fundos Imobiliários -> FIIS', () => {
     expect(resumo.dividendosEstimados12m).toBe(1280);
   });
 });
+
+describe('Persistência e Rebalanceamento', () => {
+  it('deve manter consistência na alocação ideal', () => {
+    const { alocacaoIdeal } = await import('../../lib/portfolio');
+    expect(alocacaoIdeal['FIIS']).toBe(10);
+    // @ts-ignore
+    expect(alocacaoIdeal['FIIs']).toBeUndefined();
+  });
+
+  it('deve rotular corretamente na UI', () => {
+    const { rotuloCategoria } = await import('../../lib/portfolio');
+    expect(rotuloCategoria['FIIS']).toBe('FIIS');
+  });
+});
