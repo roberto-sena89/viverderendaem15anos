@@ -916,8 +916,8 @@ export function RankingRadar({
                 >
                   #
                 </TableHead>
-                <TableHead className="w-[20%] min-w-[200px] lg:w-[18%]">Ativo</TableHead>
-                <TableHead className="w-[14%] min-w-[140px] whitespace-nowrap text-right">
+                <TableHead className="w-[14%] min-w-[200px]">Ativo</TableHead>
+                <TableHead className="w-[10%] min-w-[100px] whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-1.5">
                     Preço
                     <TooltipProvider>
