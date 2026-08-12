@@ -66,14 +66,14 @@ export function ResumoCategorias() {
                 <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(2).replace(".", ",")}%</span>
               </div>
             </div>
-        </DashboardCard>
+          </div>
           
           {/* Sutil gradiente de fundo no hover */}
           <div 
             className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-5"
             style={{ backgroundColor: cat.cor }}
           />
-        </div>
+        </DashboardCard>
       ))}
     </div>
   );
