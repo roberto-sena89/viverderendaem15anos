@@ -377,7 +377,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0 mt-4">
         <CartaoResumo
           titulo="Patrimônio total"
           icone={Wallet}
