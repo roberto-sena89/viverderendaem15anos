@@ -119,7 +119,7 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
                 <div className="flex items-center gap-2.5">
                   <div className={cn(
                     "flex size-8 items-center justify-center rounded-lg text-[0.5rem] font-bold shadow-sm transition-transform hover:scale-105",
-                    ativo.var >= 0 ? "bg-primary/10 text-primary dark:text-primary" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                    ativo.var >= 0 ? "chip-pos" : "chip-neg"
                   )}>
                     {ativo.ticker.substring(0, 2)}
                   </div>
@@ -129,7 +129,7 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
                       <span className="text-muted-foreground font-medium">{ativo.valor}</span>
                       <span className={cn(
                         "font-bold px-1 rounded-[2px] bg-opacity-10",
-                        ativo.var >= 0 ? "text-primary bg-primary" : "text-rose-500 bg-rose-500"
+                        ativo.var >= 0 ? "text-positive bg-positive" : "text-negative bg-negative"
                       )}>
                         {ativo.var >= 0 ? "↑" : "↓"} {Math.abs(ativo.var)}%
                       </span>
@@ -139,13 +139,13 @@ export function DashboardPreview({ className }: DashboardPreviewProps) {
                 <div className="text-right flex flex-col gap-0.5">
                   <p className={cn(
                     "font-bold text-[0.65rem] tabular-nums",
-                    ativo.lucro >= 0 ? "text-primary" : "text-rose-500"
+                    ativo.lucro >= 0 ? "text-positive" : "text-negative"
                   )}>
                     {ativo.lucro >= 0 ? "+" : "-"} R$ {Math.abs(ativo.lucro).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                   <p className="text-[0.45rem] font-bold uppercase tracking-wider text-muted-foreground/90">
                     <span className={cn(
-                      ativo.lucroPct >= 0 ? "text-primary/80" : "text-rose-500/80"
+                      ativo.lucroPct >= 0 ? "text-positive/80" : "text-negative/80"
                     )}>
                       {ativo.lucroPct >= 0 ? "+" : ""}{ativo.lucroPct}%
                     </span>
