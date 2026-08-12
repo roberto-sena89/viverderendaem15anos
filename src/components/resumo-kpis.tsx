@@ -534,7 +534,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
                 </div>
                 <span className={cn(
                   "text-xs font-bold tabular-nums",
-                  retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-success/80" : "text-destructive/80"
+                  retorno12m === null ? "text-muted-foreground/50" : retorno12m >= 0 ? "text-primary/80" : "text-destructive/80"
                 )}>{retorno12m === null ? "—" : pct(retorno12m, 2)}</span>
               </div>
               <div className="flex flex-col items-end">
