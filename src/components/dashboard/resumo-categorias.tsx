@@ -207,8 +207,8 @@ export function ResumoCategorias() {
                 </div>
                 
                 <div className={cn(
-                  "flex items-center gap-1 text-[0.68rem] font-bold tracking-tight",
-                  cat.lucro >= 0 ? "text-success/90" : "text-destructive/90"
+                  "flex items-center gap-1 text-[0.7rem] font-bold tracking-tight px-1.5 py-0.5 rounded-md bg-opacity-10",
+                  cat.lucro >= 0 ? "text-success bg-success" : "text-destructive bg-destructive"
                 )}>
                   {cat.lucro >= 0 ? <TrendingUp className="size-2.5" /> : <TrendingDown className="size-2.5" />}
                   <span className="tabular-nums">{cat.lucroPct >= 0 ? "+" : ""}{cat.lucroPct.toFixed(1).replace(".", ",")}%</span>

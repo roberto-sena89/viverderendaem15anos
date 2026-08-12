@@ -332,8 +332,8 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         >
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
-              <p className="text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none text-foreground">
-                {brl(resumo.totalAtual, 2)}
+              <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
+                {brl(resumo.totalAtual, 0)}
               </p>
               <DeltaChip value={resumo.rentabilidade} />
             </div>
@@ -364,10 +364,10 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
         >
           <div className="flex flex-col gap-2">
             <p className={cn(
-              "text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none",
+              "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
               resumo.lucroTotal >= 0 ? "text-success" : "text-destructive"
             )}>
-              {brl(resumo.lucroTotal, 2)}
+              {brl(resumo.lucroTotal, 0)}
             </p>
             <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
               <div className="flex flex-col">
@@ -391,8 +391,8 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           onClick={() => setAberto(detalheProventos)}
         >
           <div className="flex flex-col gap-2">
-            <p className="text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none text-foreground">
-              {brl(recebidos12m, 2)}
+            <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-foreground group-hover:text-primary transition-colors duration-300">
+              {brl(recebidos12m, 0)}
             </p>
             <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
               <div className="flex flex-col">
@@ -415,10 +415,10 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline gap-2">
               <p className={cn(
-                "text-[1.5rem] font-bold tracking-tighter tabular-nums leading-none",
+                "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
                 resumo.rentabilidade >= 0 ? "text-success" : "text-destructive"
               )}>
-                {pct(resumo.rentabilidade, 2)}
+                {pct(resumo.rentabilidade, 1)}
               </p>
               <span className="text-[0.62rem] font-bold text-muted-foreground uppercase tracking-widest">Total</span>
             </div>
