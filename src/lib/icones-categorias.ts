@@ -8,8 +8,7 @@ import {
   Wallet, 
   Coins, 
   Bitcoin, 
-  BarChart3,
-  Flame
+  BarChart3
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
