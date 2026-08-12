@@ -869,7 +869,7 @@ function PainelProventos({
 
   return (
     <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,350px)_minmax(0,1fr)]">
-      <div className="surface-card divide-y divide-border">
+      <div className="surface-card flex flex-col divide-y divide-border">
         <div className="p-5">
           <p className="font-display text-lg font-semibold">Resumo</p>
           <p className="mt-3 text-xs text-muted-foreground">Média Mensal (últ. 12 meses)</p>
