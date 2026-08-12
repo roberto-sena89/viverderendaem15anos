@@ -93,7 +93,10 @@ function MetasPage() {
 
   return (
     <AppShell title="Metas" description={`Patrimônio atual: ${brl(totalAtual)}`}>
-      <AbasPlanejamento />
+      <div className="sticky top-[var(--altura-cabecalho-app,0px)] z-20 -mx-4 space-y-0 border-b border-border bg-background/70 px-4 pt-1 pb-2 backdrop-blur-xl sm:-mx-6 sm:px-6">
+        <AbasPlanejamento />
+      </div>
+
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
