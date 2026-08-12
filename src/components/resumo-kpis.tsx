@@ -479,7 +479,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
             <div className="flex flex-wrap items-baseline gap-2">
               <p className={cn(
                 "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none transition-colors duration-300",
-                resumo.totalAtual >= resumo.totalInvestido ? "text-positive" : "text-negative"
+                resumo.totalAtual === 0 ? "text-foreground" : resumo.totalAtual >= resumo.totalInvestido ? "text-positive" : "text-negative"
               )}>
                 {brl(resumo.totalAtual, 2)}
               </p>
@@ -537,7 +537,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           <div className="flex flex-col gap-2">
             <p className={cn(
               "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
-              resumo.lucroTotal >= 0 ? "text-positive" : "text-negative"
+              resumo.lucroTotal === 0 ? "text-foreground" : resumo.lucroTotal >= 0 ? "text-positive" : "text-negative"
             )}>
               {brl(resumo.lucroTotal, 2)}
             </p>
@@ -564,7 +564,10 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           tooltip="Total de dividendos e JCP recebidos nos últimos 12 meses corridos."
         >
           <div className="flex flex-col gap-2">
-            <p className="text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none text-positive transition-colors duration-300">
+            <p className={cn(
+              "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none transition-colors duration-300",
+              recebidos12m === 0 ? "text-foreground" : "text-positive"
+            )}>
               {brl(recebidos12m, 2)}
             </p>
             <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2">
@@ -590,7 +593,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
             <div className="flex flex-wrap items-baseline gap-2">
               <p className={cn(
                 "text-[1.625rem] font-bold tracking-tighter tabular-nums leading-none group-hover:scale-105 transition-transform duration-300",
-                resumo.rentabilidade >= 0 ? "text-positive" : "text-negative"
+                resumo.rentabilidade === 0 ? "text-foreground" : resumo.rentabilidade >= 0 ? "text-positive" : "text-negative"
               )}>
                 {pct(resumo.rentabilidade, 2)}
               </p>
