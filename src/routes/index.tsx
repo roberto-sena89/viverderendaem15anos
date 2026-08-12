@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-// Otimize a página de radar para lidar com grandes volumes de dados (lazy loading, virtualização se necessário) e garanta que as ferramentas de exportação incluam todos os dados visíveis.
+// Implemente na página de Radar uma funcionalidade de "Backtest Rápido" que permita ao usuário selecionar um ativo e ver como o sinal de "Comprar" do radar performou nos últimos 5 anos comparado ao BOVA11.
 //
 // IMPORTANTE: Execute TODOS os detalhes desta tarefa com máxima precisão. Não ignore nada, não simplifique, implemente EXATAMENTE o que foi pedido.
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
