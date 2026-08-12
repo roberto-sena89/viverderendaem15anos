@@ -2,11 +2,12 @@ import { useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real
 import { tempoRelativo } from "@/components/status-cotacoes";
 import { brl, valorAtual } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
-import { TrendingDown, TrendingUp, Clock } from "lucide-react";
+import { TrendingDown, TrendingUp, Clock, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardCard } from "./dashboard-card";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { OverlayDetalhesCategoria } from "./overlay-detalhes-categoria";
+import { useAlertasHistorico } from "@/lib/alertas-historico";
 
 /**
  * Componente que exibe o resumo de lucro/prejuízo por categoria de ativos.
@@ -14,7 +15,8 @@ import { OverlayDetalhesCategoria } from "./overlay-detalhes-categoria";
  */
 export function ResumoCategorias() {
   const { data: ativos = [] } = useAtivosAoVivo();
-  const { atualizadoEm, status } = useCotacoesTempoReal();
+  const { atualizadoEm, status, mapa } = useCotacoesTempoReal();
+  const { alertas } = useAlertasHistorico();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
 
   // Re-renderiza para o tempo relativo
@@ -29,20 +31,31 @@ export function ResumoCategorias() {
   // Agrupar ativos por categoria e calcular totais
   const categoriasUnicas = Array.from(new Set(ativos.map((a) => a.categoria)));
   
-  const resumoPorCategoria = categoriasUnicas.map((cat) => {
-    const ativosDaCat = ativos.filter((a) => a.categoria === cat);
-    const totalInvestido = ativosDaCat.reduce((sum, a) => sum + (Number(a.quantidade) * Number(a.precoMedio)), 0);
-    const totalAtual = ativosDaCat.reduce((sum, a) => sum + valorAtual(a), 0);
-    const lucro = totalAtual - totalInvestido;
-    const lucroPct = totalInvestido > 0 ? (lucro / totalInvestido) * 100 : 0;
-    
-    return {
-      nome: cat,
-      lucro,
-      lucroPct,
-      cor: corCategoria(cat)
-    };
-  }).sort((a, b) => b.lucro - a.lucro);
+  const resumoPorCategoria = useMemo(() => {
+    return categoriasUnicas.map((cat) => {
+      const ativosDaCat = ativos.filter((a) => a.categoria === cat);
+      const totalInvestido = ativosDaCat.reduce((sum, a) => sum + (Number(a.quantidade) * Number(a.precoMedio)), 0);
+      const totalAtual = ativosDaCat.reduce((sum, a) => sum + valorAtual(a), 0);
+      const lucro = totalAtual - totalInvestido;
+      const lucroPct = totalInvestido > 0 ? (lucro / totalInvestido) * 100 : 0;
+      
+      // Encontrar alertas recentes (últimas 24h) para ativos desta categoria
+      const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
+      const tickersDaCat = new Set(ativosDaCat.map(a => a.ticker.toUpperCase().replace(/\.SA$/i, "")));
+      const alertasRecentes = alertas.filter(alerta => 
+        alerta.em > umDiaAtras && 
+        tickersDaCat.has(alerta.ticker.toUpperCase())
+      );
+      
+      return {
+        nome: cat,
+        lucro,
+        lucroPct,
+        cor: corCategoria(cat),
+        alertas: alertasRecentes.length
+      };
+    }).sort((a, b) => b.lucro - a.lucro);
+  }, [categoriasUnicas, ativos, alertas]);
 
   return (
     <div className="space-y-3 mb-8">
@@ -77,9 +90,19 @@ export function ResumoCategorias() {
           />
           
           <div className="flex flex-col gap-2">
-            <span className="text-muted-foreground truncate text-[0.7rem] font-bold uppercase tracking-[0.15em] opacity-80 group-hover:opacity-100">
-              {cat.nome}
-            </span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-muted-foreground truncate text-[0.7rem] font-bold uppercase tracking-[0.15em] opacity-80 group-hover:opacity-100">
+                {cat.nome}
+              </span>
+              {cat.alertas > 0 && (
+                <div 
+                  className="flex size-4 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 animate-pulse"
+                  title={`${cat.alertas} alerta(s) de variação relevante nas últimas 24h`}
+                >
+                  <AlertTriangle className="size-2.5" />
+                </div>
+              )}
+            </div>
             
             <div className="flex flex-col items-baseline gap-1">
               <span className={cn(
