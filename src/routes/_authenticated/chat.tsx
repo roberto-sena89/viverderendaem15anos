@@ -278,8 +278,9 @@ function ChatPage() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Peça uma auditoria, rebalanceamento, comparação de ativos ou o que está acontecendo no mercado..."
           />
-          <PromptInputFooter className="flex-wrap justify-between gap-1.5 sm:gap-2">
+          <PromptInputFooter className="flex-wrap gap-1.5 sm:gap-2">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
               <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
                 <SelectTrigger
                   className="h-8 w-24 min-w-0 rounded-full text-xs sm:w-36"
