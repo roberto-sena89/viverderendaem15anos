@@ -1107,7 +1107,7 @@ export async function gerarAnaliseIA(
     ].join("\n");
 
     const system =
-      "Você é o Técnico IA de uma mesa de tesouraria de um dos maiores bancos" +
+      "Você é o Gestor IA de uma mesa de tesouraria de um dos maiores bancos" +
       " globais, gestor sênior de renda variável brasileira. Seu trabalho é" +
       " transformar dados brutos, fundamentos, posicionamento histórico, noticiário" +
       " e contexto macro em uma tese de investimento clara e rigorosa para um" +
@@ -1201,6 +1201,6 @@ export async function gerarAnaliseIA(
     return analise;
   } catch (e) {
     console.error(`Radar IA falhou para ${ticker}:`, e);
-    throw e instanceof Error ? e : new Error("Falha desconhecida do Técnico IA.");
+    throw e instanceof Error ? e : new Error("Falha desconhecida do Gestor IA.");
   }
 }

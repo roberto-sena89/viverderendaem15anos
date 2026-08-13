@@ -203,7 +203,7 @@ function textoDaCarteira(
   ].join("\n");
 }
 
-const MODELO_CHAT = "openai/gpt-5.4-mini";
+const MODELO_CHAT = "openai/gpt-5.5";
 
 function textoDaMensagem(message: UIMessage) {
   return message.parts

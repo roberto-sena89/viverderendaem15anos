@@ -350,7 +350,7 @@ export function ModalRadar({
   const analise = ia.data?.analise ?? null;
   const erroIa = ia.data?.erro ?? null;
 
-  // Mudança de veredito do Técnico IA: avisa uma única vez por par (sessão).
+  // Mudança de veredito do Gestor IA: avisa uma única vez por par (sessão).
   const mudancaVeredito = useMemo(() => {
     const h = historico.data ?? [];
     if (h.length < 2) return null;

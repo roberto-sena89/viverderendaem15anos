@@ -22,7 +22,7 @@ export interface AlertaDisparado {
   titulo?: string;
   /** Link da notícia, quando tipo = "noticia". */
   url?: string;
-  /** Veredito anterior, quando tipo = "veredito" (mudança do Técnico IA). */
+  /** Veredito anterior, quando tipo = "veredito" (mudança do Gestor IA). */
   vereditoDe?: string;
   /** Veredito novo, quando tipo = "veredito" (mudança do Técnico IA). */
   vereditoPara?: string;

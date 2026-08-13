@@ -502,7 +502,7 @@ export const radarAnaliseIA = createServerFn({ method: "GET" })
     },
   );
 
-/** Histórico do Técnico IA para um ativo (da mais recente para a mais antiga). */
+/** Histórico do Gestor IA para um ativo (da mais recente para a mais antiga). */
 export const radarHistoricoIA = createServerFn({ method: "GET" })
   .inputValidator((d: { ticker?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
