@@ -260,60 +260,9 @@ function ChatPage() {
               </div>
             ) : null}
           </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
+        <ConversationScrollButton />
+      </Conversation>
 
-        {/* Toolbar compacto — logo + ações agrupadas (movido para baixo da conversa) */}
-        <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card/60 p-2 backdrop-blur-sm sm:gap-3 sm:px-3">
-          {/* Logo + nome (oculto no mobile para ganhar espaço) */}
-          <div className="flex min-w-0 shrink-0 items-center gap-2.5">
-            <img
-              src={logoIA}
-              alt="Técnico IA"
-              width={512}
-              height={512}
-              loading="lazy"
-              className="size-8 shrink-0 rounded-lg object-contain ring-1 ring-border/60"
-            />
-            <div className="hidden min-w-0 lg:block">
-              <p className="truncate text-sm font-semibold leading-tight">Técnico IA</p>
-              <p className="truncate text-[11px] leading-tight text-muted-foreground">
-                Análises educativas — não é recomendação.
-              </p>
-            </div>
-          </div>
-
-
-          {/* Grupo de configuração — perfil + limpar */}
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-            <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
-              <SelectTrigger
-                className="h-8 w-[7.5rem] min-w-0 rounded-full text-xs sm:w-36"
-                aria-label="Perfil de investidor"
-              >
-                <SelectValue placeholder="Perfil" />
-              </SelectTrigger>
-              <SelectContent>
-                {PERFIS.map((p) => (
-                  <SelectItem key={p.valor} value={p.valor}>
-                    {p.rotulo}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={limpar}
-              disabled={messages.length === 0 || carregando}
-              className="size-8 shrink-0 rounded-full"
-              aria-label="Limpar conversa"
-              title="Limpar conversa"
-            >
-              <Eraser className="size-4 shrink-0" />
-            </Button>
-          </div>
-        </div>
 
 
         <PromptInput
@@ -331,6 +280,32 @@ function ChatPage() {
           />
           <PromptInputFooter className="justify-between">
             <div className="flex items-center gap-1.5 sm:gap-2">
+              <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
+                <SelectTrigger
+                  className="h-8 w-[7.5rem] min-w-0 rounded-full text-xs sm:w-36"
+                  aria-label="Perfil de investidor"
+                >
+                  <SelectValue placeholder="Perfil" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERFIS.map((p) => (
+                    <SelectItem key={p.valor} value={p.valor}>
+                      {p.rotulo}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={limpar}
+                disabled={messages.length === 0 || carregando}
+                className="size-8 shrink-0 rounded-full"
+                aria-label="Limpar conversa"
+                title="Limpar conversa"
+              >
+                <Eraser className="size-4 shrink-0" />
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
