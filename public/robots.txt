@@ -1,0 +1,49 @@
+# robots.txt — https://viverderendaem15anos.lovable.app
+#
+# Política de rastreamento: as páginas públicas importantes (home, conteúdo,
+# blog, guias, calculadoras e /auth) são explicitamente liberadas para
+# indexação. Apenas endpoints de máquina e áreas privadas (após login) são
+# bloqueados — eles não devem aparecer nos resultados de busca.
+
+User-agent: *
+Allow: /
+
+# Páginas públicas importantes — liberadas para indexação.
+Allow: /conteudo/
+Allow: /blog/
+Allow: /guia-liberdade-financeira
+Allow: /calculadora-juros-compostos
+Allow: /o-que-e-renda-passiva
+Allow: /quanto-rende-1-milhao-por-mes
+Allow: /auth
+Allow: /sitemap.xml
+
+# Endpoints de máquina (JSON, OAuth, MCP) — não são conteúdo indexável.
+Disallow: /api/
+Disallow: /mcp
+Disallow: /.mcp/
+Disallow: /.lovable/
+Disallow: /.well-known/
+
+# Estados transitórios de conta, vinculados a links de e-mail de uso único.
+Disallow: /verificar-email
+Disallow: /recuperar-senha
+Disallow: /redefinir-senha
+
+# Áreas privadas do app (exigem autenticação e contêm dados do usuário).
+Disallow: /dashboard
+Disallow: /carteira
+Disallow: /aportes
+Disallow: /dividendos
+Disallow: /historico-aportes
+Disallow: /importar
+Disallow: /planejador
+Disallow: /rebalanceamento
+Disallow: /metas
+Disallow: /cotacoes
+Disallow: /rankings
+Disallow: /noticias
+Disallow: /radar
+Disallow: /chat
+
+Sitemap: https://viverderendaem15anos.lovable.app/sitemap.xml

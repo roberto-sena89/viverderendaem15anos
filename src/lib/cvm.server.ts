@@ -1,0 +1,591 @@
+/**
+ * Radar — fundamentos reais da CVM (F0 + F1).
+ *
+ * Baixa os ZIPs oficiais do Portal de Dados Abertos da CVM (DFP/ITR),
+ * mapeia cada ticker da B3 para o CNPJ da companhia via nome público do
+ * Yahoo, e deriva as séries trimestrais de P/L (TTM) e EV/EBIT (TTM, com
+ * dívida líquida do BPP) com posição de preços brutos ajustados por splits.
+ * Os percentis na própria história alimentam o score do gestor como valuation
+ * real (não mais derivado do preço).
+ *
+ * Cache:
+ *  - `cotacoes_cache` chave `cvm:fundamentos` -> mapa ticker -> FundamentoCvm
+ *  - memória com TTL de 24h para o mapa e para os arquivos CVM já baixados
+ *    (um download por ano de arquivo, compartilhado entre os tickers)
+ */
+
+import { unzipSync } from "fflate";
+import {
+  acumuladoTtmPorTrimestre,
+  diferencaDeSeries,
+  lucroTtmPorTrimestre,
+  mapearEmpresaPorNome,
+  montarSerieEvEbit,
+  montarSeriePlReal,
+  parseCsvLinhas,
+  serieDaConta,
+  somaDeContas,
+  type LinhaCsv,
+  type PontoPlReal,
+} from "@/lib/cvm-base";
+import { percentilDistribucional } from "@/lib/radar-base";
+import { sanitizarPontos, simboloYahooB3 } from "@/lib/radar.server";
+
+/** Sempre presentes nos DREs da CVM: lucro líquido e EBIT (proxy 3.05). */
+const CONTA_LUCRO = "3.11";
+const CONTA_LUCRO_FALLBACK = "3.13";
+const CONTA_EBIT = "3.05";
+
+/** Contas do DRE consolidadas por trimestre que o radar deriva. */
+const CONTAS_UTEIS = new Set([CONTA_LUCRO, CONTA_LUCRO_FALLBACK, CONTA_EBIT]);
+
+/** Dívida bruta (passivo circulante + não circulante: empréstimos/debêntures). */
+const CONTAS_DIVIDA = ["2.01.01", "2.01.02", "2.02.01", "2.02.02"];
+/** Caixa e equivalentes (parte negativa da dívida líquida). */
+const CONTAS_CAIXA = ["1.01.01"];
+
+/** Quantos anos de arquivos DFP/ITR baixar para montar as séries. */
+const ANOS_HISTORIA = 8;
+
+/** Mínimo de trimestres com P/L ou EV/EBIT positivos para o percentil existir. */
+const MINIMO_PONTOS_PL = 15;
+
+/** Versão do formato do mapa persistido: entradas antigas (sem EV/EBIT) são
+ *  recalculadas no próximo backfill, sem esperar o TTL semanal. */
+const VERSAO_MAPA = 2;
+
+const TTL_MAPA_MEMORIA_MS = 24 * 60 * 60 * 1000;
+const TTL_ARQUIVOS_MEMORIA_MS = 24 * 60 * 60 * 1000;
+const TTL_BANCO_MS = 7 * 24 * 60 * 60 * 1000;
+const MAX_EM_VOO = 3;
+const ESPERA_ENTRE_LOADS_MS = 350;
+
+const BASE_CVM = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC";
+const HOSTS_YAHOO = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
+const UA_YAHOO =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+
+export type FundamentoCvm = {
+  ticker: string;
+  /** CNPJ da companhia nos arquivos da CVM (8 dígitos cheios, sem pontuação). */
+  cnpj: string | null;
+  denominacao: string | null;
+  /** Percentil do P/L atual na própria história trimestral (0–100). */
+  percentilPl: number | null;
+  /** P/L atual (TTM do último trimestre reportado), em vezes. */
+  plAtual: number | null;
+  /** Série de P/L trimestral que sustenta o percentil. */
+  pontosPl: PontoPlReal[];
+  /** Percentil do EV/EBIT atual na própria história trimestral (0–100). */
+  percentilEvEbit: number | null;
+  /** EV/EBIT atual (TTM), em vezes. */
+  evEbit: number | null;
+  /** Dívida líquida (dívida bruta − caixa) do último balanço, em R$. */
+  dividaLiquida: number | null;
+  /** Versão do formato (bump força recálculo do ticker). */
+  versao: number;
+  atualizadoEm: string;
+};
+
+type FundosCache = {
+  mapa: Record<string, FundamentoCvm>;
+  atualizadoEm: string | null;
+};
+
+let mapaMemoria: { valor: FundosCache; em: number } | null = null;
+let mapaEmVoo: Promise<FundosCache> | null = null;
+
+/** Cache em memória dos arquivos CVM já baixados (um por ano). */
+const arquivosMemoria = new Map<string, { valor: Uint8Array; em: number }>();
+
+/** Carregamentos Yahoo em andamento por ticker (deduplicação). */
+const yahooEmVoo = new Map<string, Promise<DadosYahoo | null>>();
+
+async function baixarZip(url: string): Promise<Uint8Array | null> {
+  const memoria = arquivosMemoria.get(url);
+  if (memoria && Date.now() - memoria.em < TTL_ARQUIVOS_MEMORIA_MS) return memoria.valor;
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30_000);
+    const res = await fetch(url, {
+      headers: { Accept: "application/zip", "User-Agent": UA_YAHOO },
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    const buffer = await res.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    arquivosMemoria.set(url, { valor: bytes, em: Date.now() });
+    return bytes;
+  } catch {
+    return null;
+  }
+}
+
+/** Leituras de um arquivo CSV (ISO-8859-1) dentro de um ZIP da CVM — tenta
+ *  os nomes na ordem até achar um presente no ZIP. */
+function lerCsvDoZip(zip: Uint8Array, nomes: string[]): LinhaCsv[] {
+  try {
+    const arquivos = unzipSync(zip);
+    for (const nome of nomes) {
+      const bytes = arquivos[nome];
+      if (!bytes) continue;
+      const texto = new TextDecoder("latin1").decode(bytes);
+      return parseCsvLinhas(texto);
+    }
+  } catch {
+    /* zip corrompido ou arquivos ausentes */
+  }
+  return [];
+}
+
+/** CNPJs e denominações do último ano com arquivo completo. O ZIP do ano em
+ *  curso só começa a listar companhias conforme elas entregam relatórios —
+ *  usamos o último ano com volume representativo do mercado (>= 50), com
+ *  fallback para os anteriores. */
+async function empresasDeAno(): Promise<LinhaCsv[]> {
+  const anoAtual = new Date().getFullYear();
+  for (let ano = anoAtual; ano >= anoAtual - 2; ano--) {
+    const url = `${BASE_CVM}/DFP/DADOS/dfp_cia_aberta_${ano}.zip`;
+    const zip = await baixarZip(url);
+    if (!zip) continue;
+    const linhas = lerCsvDoZip(zip, [`dfp_cia_aberta_${ano}.csv`]);
+    const unicas = new Map<string, LinhaCsv>();
+    for (const l of linhas) {
+      const cnpj = (l["CNPJ_CIA"] ?? "").trim();
+      if (!cnpj || unicas.has(cnpj)) continue;
+      unicas.set(cnpj, l);
+    }
+    if (unicas.size >= 50) return [...unicas.values()];
+  }
+  return [];
+}
+
+/** Demonstrações de um ano de arquivo (ITR + DFP/Q4), por CNPJ, já filtradas
+ *  pelas contas úteis (DRE: lucro/EBIT; BPP: dívida/caixa). */
+type DemonstracoesAno = {
+  dre: LinhaCsv[];
+  bpp: LinhaCsv[];
+};
+
+async function demonstracoesDeAno(ano: number): Promise<DemonstracoesAno> {
+  const urlItr = `${BASE_CVM}/ITR/DADOS/itr_cia_aberta_${ano}.zip`;
+  const urlDfp = `${BASE_CVM}/DFP/DADOS/dfp_cia_aberta_${ano}.zip`;
+  const [zipItr, zipDfp] = await Promise.all([baixarZip(urlItr), baixarZip(urlDfp)]);
+  const linhasDre: LinhaCsv[] = [];
+  const linhasBpp: LinhaCsv[] = [];
+  if (zipItr) {
+    linhasDre.push(
+      ...lerCsvDoZip(zipItr, [
+        `itr_cia_aberta_DRE_con_${ano}.csv`,
+        `itr_cia_aberta_DRE_${ano}.csv`,
+      ]),
+    );
+    linhasBpp.push(
+      ...lerCsvDoZip(zipItr, [
+        `itr_cia_aberta_BPP_con_${ano}.csv`,
+        `itr_cia_aberta_BPP_${ano}.csv`,
+      ]),
+    );
+  }
+  if (zipDfp) {
+    linhasDre.push(...lerCsvDoZip(zipDfp, [`dfp_cia_aberta_DRE_con_${ano}.csv`]));
+    linhasBpp.push(...lerCsvDoZip(zipDfp, [`dfp_cia_aberta_BPP_con_${ano}.csv`]));
+  }
+  const dre = linhasDre.filter((l) => {
+    if (!CONTAS_UTEIS.has((l["CD_CONTA"] ?? "").trim())) return false;
+    return ehExercicioValido(l);
+  });
+  const bpp = linhasBpp.filter((l) => {
+    const conta = (l["CD_CONTA"] ?? "").trim();
+    if (!CONTAS_DIVIDA.includes(conta) && !CONTAS_CAIXA.includes(conta)) return false;
+    return ehExercicioValido(l);
+  });
+  // Reposicionamentos (VERSAO maior) devem prevalecer: a deduplicação pelo
+  // primeiro período preserva a versão mais recente.
+  dre.sort((a, b) => (Number(b["VERSAO"]) || 0) - (Number(a["VERSAO"]) || 0));
+  bpp.sort((a, b) => (Number(b["VERSAO"]) || 0) - (Number(a["VERSAO"]) || 0));
+  return { dre: porCnpj(dre), bpp: porCnpj(bpp) };
+}
+
+/** Uma linha só vale se o período é o exercício atual ("ÚLTIMO") em REAL. */
+function ehExercicioValido(l: LinhaCsv): boolean {
+  if ((l["MOEDA"] ?? "").trim() !== "REAL") return false;
+  // Cada período aparece duas vezes: "ÚLTIMO" (exercício atual, acumulado até
+  // a data) e "PENÚLTIMO" (mesmo trimestre do ano anterior, para comparação).
+  // Só o ÚLTIMO forma o TTM — o PENÚLTIMO duplicaria valores.
+  const ordem = (l["ORDEM_EXERC"] ?? "").trim().toUpperCase();
+  if (ordem === "PENÚLTIMO" || ordem === "PENULTIMO" || ordem === "2") return false;
+  return true;
+}
+
+/** Mantém todas as linhas, ordenadas por CNPJ (dedup por período fica nas
+ *  séries, que consomem a primeira ocorrência após a ordenação por VERSAO). */
+function porCnpj(linhas: LinhaCsv[]): LinhaCsv[] {
+  const porCnpj = new Map<string, LinhaCsv[]>();
+  for (const l of linhas) {
+    const cnpj = (l["CNPJ_CIA"] ?? "").trim();
+    if (!cnpj) continue;
+    const lista = porCnpj.get(cnpj) ?? [];
+    lista.push(l);
+    porCnpj.set(cnpj, lista);
+  }
+  return [...porCnpj.entries()].flatMap(([, lista]) => lista);
+}
+
+const demonstracoesPorCnpjAno = new Map<string, DemonstracoesAno>();
+
+/** Demonstrações (DRE + BPP) de um CNPJ juntando os arquivos dos últimos anos. */
+async function demonstracoesDoCnpj(cnpj: string): Promise<DemonstracoesAno> {
+  try {
+    const anoAtual = new Date().getFullYear();
+    const anos = Array.from(
+      { length: ANOS_HISTORIA },
+      (_, i) => anoAtual - (ANOS_HISTORIA - 1 - i),
+    );
+    const todas = await Promise.all(
+      anos.map(async (ano) => {
+        const chave = `${cnpj}:${ano}`;
+        let guardado = demonstracoesPorCnpjAno.get(chave);
+        if (!guardado) {
+          const completo = await demonstracoesDeAno(ano);
+          guardado = {
+            dre: completo.dre.filter((l) => l["CNPJ_CIA"] === cnpj),
+            bpp: completo.bpp.filter((l) => l["CNPJ_CIA"] === cnpj),
+          };
+          if (guardado.dre.length || guardado.bpp.length)
+            demonstracoesPorCnpjAno.set(chave, guardado);
+        }
+        return guardado;
+      }),
+    );
+    return {
+      dre: todas.flatMap((t) => t.dre),
+      bpp: todas.flatMap((t) => t.bpp),
+    };
+  } catch {
+    return { dre: [], bpp: [] };
+  }
+}
+
+/** Dados Yahoo de um ticker: nome, preços brutos mensais e splits. */
+type DadosYahoo = {
+  nome: string;
+  precos: { data: string; fechamento: number }[];
+  splits: { data: number; fator: number }[];
+};
+
+function parsearSplits(eventos: {
+  splits?: Record<string, { numerator: number; denominator: number }>;
+}): { data: number; fator: number }[] {
+  const saida: { data: number; fator: number }[] = [];
+  for (const [chave, s] of Object.entries(eventos.splits ?? {})) {
+    const epoch = Number(chave);
+    if (!Number.isFinite(epoch) || !(s.denominator > 0)) continue;
+    saida.push({ data: epoch * 1000, fator: s.numerator / s.denominator });
+  }
+  return saida.sort((a, b) => a.data - b.data);
+}
+
+/** Resposta do v8/finance/chart do Yahoo (o que o radar consome). */
+type ResultadoChart = {
+  chart?: {
+    result?: Array<{
+      meta?: { longName?: string };
+      timestamp?: number[];
+      indicators?: { quote?: Array<{ close?: (number | null)[] }> };
+      events?: { splits?: Record<string, { numerator: number; denominator: number }> };
+    }>;
+  };
+};
+
+async function buscarDadosYahoo(ticker: string): Promise<DadosYahoo | null> {
+  const simbolo = simboloYahooB3(ticker);
+  let chartPayload: ResultadoChart | null = null;
+
+  for (const host of HOSTS_YAHOO) {
+    const url = `https://${host}/v8/finance/chart/${encodeURIComponent(
+      simbolo,
+    )}?range=8y&interval=1mo&events=div%2Csplit`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15_000);
+    try {
+      const res = await fetch(url, {
+        headers: { Accept: "application/json", "User-Agent": UA_YAHOO },
+        signal: controller.signal,
+      });
+      if (!res.ok) continue;
+      chartPayload = (await res.json()) as ResultadoChart;
+      break;
+    } catch {
+      /* próximo host */
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  const r = chartPayload?.chart?.result?.[0];
+  const precos: { data: string; fechamento: number }[] = [];
+  if (r?.timestamp?.length) {
+    const closes = r.indicators?.quote?.[0]?.close ?? [];
+    for (let i = 0; i < r.timestamp.length; i++) {
+      const fechamento = closes[i];
+      if (typeof fechamento === "number" && Number.isFinite(fechamento) && fechamento > 0) {
+        precos.push({
+          data: new Date(r.timestamp[i] * 1000).toISOString().slice(0, 10),
+          fechamento,
+        });
+      }
+    }
+  }
+  const validos = precos.length >= 8 ? sanitizarPontos(precos).filter((p) => p.fechamento > 0) : [];
+  if (validos.length < 12) return null;
+
+  // Nome público do ticker vem no meta do próprio chart (o endpoint v7 de
+  // quotes exige autenticação/401); as ações em circulação da classe vêm da
+  // grade de ações cacheada, fora desta função.
+  return {
+    nome: r?.meta?.longName ?? ticker,
+    precos: validos,
+    splits: parsearSplits(r?.events ?? {}),
+  };
+}
+
+function pontosDeFundamento(
+  ticker: string,
+  dados: DadosYahoo,
+  cnpj: string | null,
+  denominacao: string | null,
+  lucro: LinhaCsv[],
+  bpp: LinhaCsv[],
+  acoesClasse: number | null,
+  plGrade: number | null,
+): FundamentoCvm | null {
+  if (acoesClasse === null || !(acoesClasse > 0)) return null;
+  const serieLucro = serieDaConta(lucro, CONTA_LUCRO, CONTA_LUCRO_FALLBACK);
+  const ttm = lucroTtmPorTrimestre(serieLucro);
+  const { pontos, plAtual } = montarSeriePlReal({
+    lucroTtm: ttm,
+    precos: dados.precos,
+    splits: dados.splits,
+    acoesHoje: acoesClasse,
+  });
+  if (plAtual === null) return null;
+
+  // Calibração da escala: ações da classe × lucro consolidado dão o nível
+  // certo de P/L apenas até o fator de participação da classe (estável no
+  // tempo). O percentil é rank-based (invariante à escala); o P/L exibido é
+  // calibrado pelo P/L atual da grade (Brapi), que conhece a participação.
+  let pontosPl = pontos.map((p) => p.pl);
+  let plExibido = plAtual;
+  if (plGrade !== null && Number.isFinite(plGrade) && plGrade > 0 && plAtual > 0) {
+    const escala = plGrade / plAtual;
+    pontosPl = pontosPl.map((pl) => pl * escala);
+    plExibido = plGrade;
+  }
+  const percentilPl = percentilDistribucional(pontosPl, plExibido, MINIMO_PONTOS_PL);
+  if (percentilPl === null) return null;
+
+  // EV/EBIT real: EBIT TTM (3.05) e dívida líquida do BPP (dívida bruta −
+  // caixa) no mesmo trimestre. O EV/EBIT não sofre da distorção de escala da
+  // classe — é um múltiplo da empresa inteira — então nada de calibração.
+  const serieEbit = acumuladoTtmPorTrimestre(serieDaConta(lucro, CONTA_EBIT));
+  const dividaLiquida = diferencaDeSeries(
+    somaDeContas(bpp, CONTAS_DIVIDA),
+    somaDeContas(bpp, CONTAS_CAIXA),
+  );
+  const { pontos: pontosEv, evEbitAtual } = montarSerieEvEbit({
+    ebitTtm: serieEbit,
+    precos: dados.precos,
+    splits: dados.splits,
+    acoesClasse,
+    dividaLiquida,
+  });
+  const percentilEvEbit = percentilDistribucional(
+    pontosEv.map((p) => p.evEbit),
+    evEbitAtual,
+    MINIMO_PONTOS_PL,
+  );
+  const dividaLiquidaAtual =
+    dividaLiquida.length > 0 ? dividaLiquida[dividaLiquida.length - 1].valor : null;
+  return {
+    ticker,
+    cnpj,
+    denominacao,
+    percentilPl,
+    plAtual: plExibido,
+    pontosPl: pontos.map((p, i) => ({ periodo: p.periodo, pl: pontosPl[i] })),
+    percentilEvEbit,
+    evEbit: evEbitAtual,
+    dividaLiquida: dividaLiquidaAtual,
+    versao: VERSAO_MAPA,
+    atualizadoEm: new Date().toISOString(),
+  };
+}
+
+/** Mapa de fundamentos CVM (percentis de P/L e EV/EBIT reais) com cache de 24h. */
+export async function lerFundamentosCvm(): Promise<FundosCache> {
+  if (mapaMemoria && Date.now() - mapaMemoria.em < TTL_MAPA_MEMORIA_MS) {
+    return mapaMemoria.valor;
+  }
+  if (!mapaEmVoo) {
+    mapaEmVoo = (async () => {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data } = await supabaseAdmin
+          .from("cotacoes_cache")
+          .select("payload, atualizado_em")
+          .eq("categoria", "cvm:fundamentos")
+          .maybeSingle();
+        const cache: FundosCache = data?.payload
+          ? (data.payload as unknown as FundosCache)
+          : { mapa: {}, atualizadoEm: null };
+        mapaMemoria = { valor: cache, em: Date.now() };
+        return cache;
+      } catch {
+        const vazio: FundosCache = { mapa: {}, atualizadoEm: null };
+        mapaMemoria = { valor: vazio, em: Date.now() };
+        return vazio;
+      }
+    })().finally(() => {
+      mapaEmVoo = null;
+    });
+  }
+  return mapaEmVoo;
+}
+
+async function gravarFundamentosCvm(
+  mapa: Record<string, FundamentoCvm>,
+  adicionados: FundamentoCvm[],
+) {
+  if (!adicionados.length) return;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    for (const f of adicionados) mapa[f.ticker] = f;
+    const atualizado = new Date().toISOString();
+    await supabaseAdmin.from("cotacoes_cache").upsert(
+      {
+        categoria: "cvm:fundamentos",
+        payload: JSON.parse(JSON.stringify({ mapa, atualizadoEm: atualizado })),
+        parcial: false,
+        atualizado_em: atualizado,
+      },
+      { onConflict: "categoria" },
+    );
+    mapaMemoria = { valor: { mapa, atualizadoEm: atualizado }, em: Date.now() };
+  } catch {
+    /* best-effort: memória cobre a sessão */
+  }
+}
+
+/**
+ * Preenche os fundamentos CVM que faltam (ou estão vencidos há 7 dias) dos
+ * tickers pedidos. Idempotente e autocontido: um download de arquivo por ano
+ * (compartilhado), duas chamadas Yahoo por ticker. Retorna o que foi buscado.
+ */
+export async function atualizarFundamentosCvm(
+  tickers: string[],
+  limite = 30,
+): Promise<{ buscados: number; obtidos: number }> {
+  const unicos = [...new Set(tickers.map((t) => t.toUpperCase()).filter(Boolean))];
+  if (!unicos.length) return { buscados: 0, obtidos: 0 };
+  const { mapa } = await lerFundamentosCvm();
+  const agora = Date.now();
+  const faltantes = unicos.filter((t) => {
+    const f = mapa[t];
+    if (!f) return true;
+    // Entradas de formato antigo (versão anterior a VERSAO_MAPA, sem
+    // EV/EBIT/dívida) são recalculadas no próximo backfill, sem esperar o
+    // TTL.
+    if (f.versao !== VERSAO_MAPA) return true;
+    const frescor = Date.parse(f.atualizadoEm ?? "0");
+    return !Number.isFinite(frescor) || agora - frescor > TTL_BANCO_MS;
+  });
+  const lote = faltantes.slice(0, limite);
+  if (!lote.length) return { buscados: 0, obtidos: 0 };
+
+  // Ações da classe e P/L de referência vêm da grade de ações (cacheada).
+  const gradeMapa = new Map<
+    string,
+    { pl: number | null; valorMercado: number | null; preco: number | null }
+  >();
+  try {
+    const grade = await (await import("@/lib/acoes.server")).gradeAcoesComCache().catch(() => null);
+    for (const l of grade?.linhas ?? []) {
+      gradeMapa.set(String(l.ticker).toUpperCase(), {
+        pl: l.pl ?? null,
+        valorMercado: l.valorMercado ?? null,
+        preco: l.preco ?? null,
+      });
+    }
+  } catch {
+    /* sem grade: tickers ficam sem série (acoesClasse desconhecida) */
+  }
+
+  const fundamentos: Array<FundamentoCvm | null> = [];
+  let emVoo = 0;
+  const corridas: Promise<void>[] = [];
+  for (const ticker of lote) {
+    const g = gradeMapa.get(ticker);
+    const preco = g?.preco ?? null;
+    const acoesClasse =
+      g !== undefined &&
+      preco !== null &&
+      preco > 0 &&
+      g.valorMercado !== null &&
+      g.valorMercado > 0
+        ? g.valorMercado / preco
+        : null;
+    const plGrade = g?.pl ?? null;
+    if (emVoo >= MAX_EM_VOO) await dormir(ESPERA_ENTRE_LOADS_MS);
+    emVoo++;
+    corridas.push(
+      (async () => {
+        try {
+          if (!yahooEmVoo.has(ticker)) {
+            const promessa = buscarDadosYahoo(ticker).finally(() => yahooEmVoo.delete(ticker));
+            yahooEmVoo.set(ticker, promessa);
+          }
+          const dados = await yahooEmVoo.get(ticker);
+          if (!dados) {
+            fundamentos.push(null);
+            return;
+          }
+          const empresas = await empresasDeAno();
+          const emp = mapearEmpresaPorNome(dados.nome, empresas);
+          const demonstracoes = emp ? await demonstracoesDoCnpj(emp.cnpj) : { dre: [], bpp: [] };
+          const f = pontosDeFundamento(
+            ticker,
+            dados,
+            emp?.cnpj ?? null,
+            emp?.denominacao ?? null,
+            demonstracoes.dre,
+            demonstracoes.bpp,
+            acoesClasse,
+            plGrade,
+          );
+          fundamentos.push(f);
+        } catch {
+          fundamentos.push(null);
+        } finally {
+          emVoo--;
+        }
+      })(),
+    );
+  }
+  await Promise.allSettled(corridas);
+  const obtidos = fundamentos.filter((f): f is FundamentoCvm => f !== null);
+  await gravarFundamentosCvm(mapa, obtidos);
+  return { buscados: lote.length, obtidos: obtidos.length };
+}
+
+function dormir(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+/** Limite de taxa do backfill de fundamentos CVM (operação pesada): no
+ *  máximo 3 chamadas por usuário a cada 10 minutos. Reusa o isolamento por
+ *  usuário do radar. */
+export async function limitePorUsuarioCvm(userId: string): Promise<boolean> {
+  const { limitePorUsuario } = await import("@/lib/radar.server");
+  return limitePorUsuario("cvm:fundamentos", userId, 3, 10 * 60_000);
+}

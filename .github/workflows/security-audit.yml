@@ -1,0 +1,30 @@
+name: Security audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Diariamente às 09:00 UTC
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    name: Varredura de vulnerabilidades
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Instalar dependências
+        run: bun install --frozen-lockfile
+
+      - name: bun audit (falha em high/critical)
+        run: bun audit --audit-level=high
+
+      - name: Verificar correções já instaláveis (brace-expansion, uuid)
+        run: bun scripts/check-vuln-fixes.mjs
