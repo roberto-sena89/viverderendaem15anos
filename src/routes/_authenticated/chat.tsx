@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpenText, Eraser, FileText, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
-import { AbasPlanejamento } from "@/components/abas-planejamento";
+
 import { Switch } from "@/components/ui/switch";
 import {
   Conversation,
@@ -201,7 +201,6 @@ function ChatPage() {
       title="Técnico IA"
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
-      <AbasPlanejamento />
       <div className="flex h-[calc(100dvh-7rem)] min-h-[30rem] flex-col gap-2.5">
         <Conversation className="flex-1 rounded-xl border border-border/60 bg-card/40">
           <ConversationContent>
