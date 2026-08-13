@@ -814,7 +814,7 @@ export async function buscarFatosExternos(ticker: string, nome: string): Promise
 }
 
 /* ------------------------------------------------------------------ *
- * Análise pelo Técnico IA (cache compartilhado, 72h)
+ * Análise pelo Gestor IA (cache compartilhado, 72h)
  * ------------------------------------------------------------------ */
 
 export interface AnaliseIA {
@@ -852,7 +852,7 @@ export async function lerAnaliseIA(ticker: string): Promise<AnaliseIA | null> {
     if (vencida) return null;
     const analise = data.payload as unknown as AnaliseIA;
     // Análises geradas no formato antigo (sem convicção/cenários) são
-    // descartadas para que o Técnico IA regenerre no formato profissional.
+    // descartadas para que o Gestor IA regenerre no formato profissional.
     if (!analise?.conviccao || !analise?.cenarioBase) return null;
     return analise;
   } catch {
@@ -877,7 +877,7 @@ async function gravarAnaliseIA(ticker: string, analise: AnaliseIA) {
   }
 }
 
-/** Histórico do Técnico IA: cada análise gerada vira uma linha em `radar_analises`. */
+/** Histórico do Gestor IA: cada análise gerada vira uma linha em `radar_analises`. */
 async function gravarHistoricoIA(ticker: string, analise: AnaliseIA) {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -901,7 +901,7 @@ async function gravarHistoricoIA(ticker: string, analise: AnaliseIA) {
   }
 }
 
-/** Últimas análises do Técnico IA para um ativo, da mais recente para a mais antiga. */
+/** Últimas análises do Gestor IA para um ativo, da mais recente para a mais antiga. */
 export async function lerHistoricoIA(ticker: string, qtd = 10): Promise<AnaliseIA[]> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
