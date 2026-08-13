@@ -289,16 +289,6 @@ function ChatPage() {
           {/* Grupo de ações —primary */}
           <div className="flex flex-1 items-center gap-1.5 sm:gap-2">
             <Button
-              variant="default"
-              size="sm"
-              onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
-              disabled={carregando}
-              className="min-w-0 rounded-full shadow-[var(--shadow-lift)] sm:px-4"
-            >
-              <ShieldCheck className="size-4 shrink-0 sm:mr-2" />
-              <span className="hidden truncate sm:inline">Auditoria</span>
-            </Button>
-            <Button
               variant="outline"
               size="sm"
               onClick={gerarRelatorioPdf}
