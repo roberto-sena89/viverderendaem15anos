@@ -65,8 +65,8 @@ export function createLovableAiGatewayProvider(
 }
 
 /**
- * Provedor OpenAI-compatível configurável pelo usuário (ex.: OpenRouter com
- * modelos gratuitos). É ativado quando USER_LLM_API_KEY está definida.
+ * Provedor OpenAI-compatível configurável pelo usuário (ex.: Groq, OpenRouter).
+ * É ativado quando USER_LLM_API_KEY está definida.
  */
 export function createUserLlmProvider(options: {
   apiKey: string;
@@ -87,9 +87,9 @@ export function createUserLlmProvider(options: {
 }
 
 export const MODELO_LOVABLE = "openai/gpt-5.5";
-export const MODELO_PADRAO_OPENROUTER = "google/gemma-4-31b-it:free";
+export const MODELO_PADRAO = "llama-3.3-70b-versatile";
 
-const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+const BASE_URL_PADRAO = "https://api.groq.com/openai/v1";
 const SITE_URL = "https://viverderendaem15anos.lovable.app";
 const SITE_NAME = "Investidor em 15 Anos";
 
@@ -103,8 +103,9 @@ export type ProvedorIA = {
 
 /**
  * Resolve o provedor de IA preferencial: o configurado pelo usuário
- * (USER_LLM_*, ex.: OpenRouter com modelos gratuitos) tem prioridade; sem ele,
- * cai no gateway pago da Lovable. Retorna null quando nenhum está configurado.
+ * (USER_LLM_*, ex.: Groq ou qualquer provedor OpenAI-compatível) tem
+ * prioridade; sem ele, cai no gateway pago da Lovable. Retorna null quando
+ * nenhum está configurado.
  */
 export function criarProvedorIA(options?: { lovableRunId?: string }): ProvedorIA | null {
   const userLlmApiKey = process.env.USER_LLM_API_KEY;
@@ -113,11 +114,11 @@ export function criarProvedorIA(options?: { lovableRunId?: string }): ProvedorIA
     return {
       gateway: createUserLlmProvider({
         apiKey: userLlmApiKey,
-        baseUrl: process.env.USER_LLM_BASE_URL ?? OPENROUTER_BASE_URL,
+        baseUrl: process.env.USER_LLM_BASE_URL ?? BASE_URL_PADRAO,
         siteUrl: SITE_URL,
         siteName: SITE_NAME,
       }),
-      modelo: process.env.USER_LLM_MODEL ?? MODELO_PADRAO_OPENROUTER,
+      modelo: process.env.USER_LLM_MODEL ?? MODELO_PADRAO,
       provedor: "user-llm",
     };
   }

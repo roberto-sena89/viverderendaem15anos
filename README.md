@@ -142,18 +142,16 @@ VITE_SUPABASE_ANON_KEY=...
 
 Opcional:
 - `BRAPI_TOKEN` — token do brapi.dev para ampliar os limites de cotações.
-- `USER_LLM_API_KEY` — chave de IA gratuita (ex.: OpenRouter). Quando definida, o
+- `USER_LLM_API_KEY` — chave de IA gratuita (ex.: Groq). Quando definida, o
   Gestor IA e o Radar de Oportunidades usam esse provedor em vez do gateway pago
   da Lovable.
   - `USER_LLM_BASE_URL` — URL da API compatível com OpenAI (padrão:
+    `https://api.groq.com/openai/v1`; para OpenRouter use
     `https://openrouter.ai/api/v1`).
-  - `USER_LLM_MODEL` — modelo a usar (padrão:
-    `google/gemma-4-31b-it:free`; alternativas gratuitas no OpenRouter:
-    `openai/gpt-oss-20b:free`, `nvidia/nemotron-3-super-120b-a12b:free`,
-    `google/gemma-4-26b-a4b-it:free`). Confira a lista atual de modelos
-    gratuitos em https://openrouter.ai/models (filtro "Free").
-  - Crie a chave gratuita em https://openrouter.ai e defina a variável no painel
-    da Lovable (Settings → Environment variables). Em dev, use `.env.local`.
+  - `USER_LLM_MODEL` — modelo a usar (padrão: `llama-3.3-70b-versatile`).
+  - Crie a chave gratuita em https://console.groq.com (ou, se preferir
+    OpenRouter, em https://openrouter.ai) e defina a variável na Lovable
+    (Cloud → Secrets). Em dev, use `.env.local`.
 
 ## Testes
 
