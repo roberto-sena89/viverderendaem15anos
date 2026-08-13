@@ -525,7 +525,7 @@ function PaginaRadar() {
             className="h-9 gap-2"
             onClick={() => void analisarLote()}
             disabled={lote?.ativo ?? false}
-            title="Analisa o top 20 pelo score do Técnico IA (usado também para o histórico de cada ativo)."
+            title="Analisa o top 20 pelo score do Gestor IA (usado também para o histórico de cada ativo)."
           >
             {lote?.ativo ? (
               <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />

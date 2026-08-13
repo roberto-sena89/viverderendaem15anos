@@ -1015,7 +1015,7 @@ function fmtNum(v: number | null | undefined, casas = 2): string {
   return v.toLocaleString("pt-BR", { maximumFractionDigits: casas });
 }
 
-/** Ficha fundamentalista completa (ação ou FII) para alimentar o Técnico IA. */
+/** Ficha fundamentalista completa (ação ou FII) para alimentar o Gestor IA. */
 function textoDeFundamentos(l: LinhaAcao | LinhaFii | null): string {
   if (!l) return "- Sem dados fundamentalistas na grade.";
   if ("vacancia" in l) {
@@ -1040,7 +1040,7 @@ function textoDeFundamentos(l: LinhaAcao | LinhaFii | null): string {
   ].join("\n");
 }
 
-/** Gera (e persiste) a análise completa de um ativo com o Técnico IA. */
+/** Gera (e persiste) a análise completa de um ativo com o Gestor IA. */
 export async function gerarAnaliseIA(
   ticker: string,
   lovableApiKey: string,

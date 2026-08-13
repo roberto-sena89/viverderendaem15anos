@@ -614,7 +614,7 @@ export function ModalRadar({
             </section>
 
             <section>
-              <h3 className="mb-2 text-sm font-semibold">Técnico IA</h3>
+              <h3 className="mb-2 text-sm font-semibold">Gestor IA</h3>
               {analise ? (
                 <div className="space-y-3 rounded-lg border p-4 text-sm">
                   <div className="flex flex-wrap items-center gap-2">
@@ -711,7 +711,7 @@ export function ModalRadar({
                   </div>
                   <p className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                    Técnico IA consultando histórico, ficha e noticiário em tempo real…
+                    Gestor IA consultando histórico, ficha e noticiário em tempo real…
                   </p>
                 </div>
               ) : ia.isError ? (
@@ -743,7 +743,7 @@ export function ModalRadar({
               ) : (
                 <div className="flex flex-col gap-2">
                   <p className="text-sm text-muted-foreground">
-                    Peça ao Técnico IA um veredito com base no histórico, na ficha e no noticiário
+                    Peça ao Gestor IA um veredito com base no histórico, na ficha e no noticiário
                     (com busca automática em tempo real).
                   </p>
                   <Button
@@ -762,7 +762,7 @@ export function ModalRadar({
               <section>
                 <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
                   <History className="size-4 text-muted-foreground" />
-                  Histórico do Técnico IA
+                  Histórico do Gestor IA
                 </h3>
                 <ul className="space-y-2">
                   {historico.data!.map((a, i) => {

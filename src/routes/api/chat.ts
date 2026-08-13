@@ -1631,7 +1631,7 @@ export const Route = createFileRoute("/api/chat")({
               )
               .concat(
                 (habilidades ?? []).length
-                  ? "\n\n### Habilidades aprendidas pelo Técnico IA (ativas)\n" +
+                  ? "\n\n### Habilidades aprendidas pelo Gestor IA (ativas)\n" +
                       (habilidades ?? [])
                         .map(
                           (h) =>
