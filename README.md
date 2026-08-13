@@ -148,8 +148,10 @@ Opcional:
   - `USER_LLM_BASE_URL` — URL da API compatível com OpenAI (padrão:
     `https://openrouter.ai/api/v1`).
   - `USER_LLM_MODEL` — modelo a usar (padrão:
-    `meta-llama/llama-3.3-70b-instruct:free`; alternativas gratuitas:
-    `deepseek/deepseek-chat-v3-0324:free`, `google/gemma-3-27b-it:free`).
+    `google/gemma-4-31b-it:free`; alternativas gratuitas no OpenRouter:
+    `openai/gpt-oss-20b:free`, `nvidia/nemotron-3-super-120b-a12b:free`,
+    `google/gemma-4-26b-a4b-it:free`). Confira a lista atual de modelos
+    gratuitos em https://openrouter.ai/models (filtro "Free").
   - Crie a chave gratuita em https://openrouter.ai e defina a variável no painel
     da Lovable (Settings → Environment variables). Em dev, use `.env.local`.
 

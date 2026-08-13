@@ -134,7 +134,9 @@ function ChatPage() {
           ? "Muitas mensagens em sequência. Aguarde alguns instantes."
           : error.message.includes("402") || /payment required/i.test(error.message)
             ? "Os créditos/quota de IA acabaram no provedor configurado (Lovable ou OpenRouter). Verifique a chave ou a cota gratuita do provedor."
-            : error.message,
+            : /error occurred|model.*(not found|does not exist)|ai_apicallerror|404/i.test(error.message)
+              ? "O provedor de IA rejeitou a chamada. Verifique se a chave USER_LLM_API_KEY está correta, se o modelo (USER_LLM_MODEL) existe no OpenRouter e veja o detalhe em Cloud → Logs."
+              : error.message,
       }),
   });
 

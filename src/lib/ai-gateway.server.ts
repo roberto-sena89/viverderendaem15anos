@@ -87,7 +87,7 @@ export function createUserLlmProvider(options: {
 }
 
 export const MODELO_LOVABLE = "openai/gpt-5.5";
-export const MODELO_PADRAO_OPENROUTER = "meta-llama/llama-3.3-70b-instruct:free";
+export const MODELO_PADRAO_OPENROUTER = "google/gemma-4-31b-it:free";
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const SITE_URL = "https://viverderendaem15anos.lovable.app";
