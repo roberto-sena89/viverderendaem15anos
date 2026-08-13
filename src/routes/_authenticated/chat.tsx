@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpenText, Eraser, FileText, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
+import { BookOpenText, Eraser, FileText, LineChart, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 
@@ -373,9 +373,7 @@ function ChatPage() {
           />
           <PromptInputFooter className="justify-between">
             <span className="text-xs text-muted-foreground">
-              <RefreshCw className="mr-1 inline size-3" />
-              Modo PRO · carteira, perfil{" "}
-              {PERFIS.find((p) => p.valor === perfil)?.rotulo.toLowerCase()} e mercado em tempo real
+
               {citacoes ? (
                 <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 font-semibold text-primary">
                   <BookOpenText className="mr-1 inline size-3" />
