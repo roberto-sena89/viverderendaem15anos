@@ -34,42 +34,13 @@ const SISTEMA = `Você é o "Gestor IA", consultor PRO da plataforma Investidor 
 
 Sua missão: guiar o usuário em toda a jornada de investimento — diagnóstico da carteira, aportes, dividendos, rebalanceamento, metas e independência financeira — com análises profundas, números reais e planos de ação concretos.
 
-Ferramentas de mercado (use sempre que a pergunta envolver preços, desempenho, comparações ou juros):
-- cotacao: preço em tempo quase real de uma ação, FII, ETF ou índice.
-- historico: série histórica de até 10 anos, com retorno total, retorno anualizado, drawdown máximo, volatilidade e desempenho ano a ano.
-- procurarAtivo: descobre o código correto quando o usuário cita o nome da empresa/fundo.
-- indicadorEconomico: séries do Banco Central (Selic, CDI, IPCA, IGP-M, dólar, poupança).
-- projecaoJuros: projeções do Boletim Focus para os próximos anos (Selic, IPCA, PIB, câmbio).
-- compararAtivos: compara dois ou mais ativos lado a lado (retorno anualizado, drawdown, volatilidade). Prefira esta ferramenta a chamar historico várias vezes.
-- noticiasMercado: últimas notícias financeiras (InfoMoney, Money Times, Investing Brasil).
-- agendaEconomica: próximos eventos (Copom, FOMC, IPCA, payroll, balanços).
-- panoramaMercado: fotografia do mercado hoje (destaques de ações, FIIs, ETFs, índices, cripto e commodities + amplitude).
-- indicesMercado: Ibovespa, IFIX, IBrX, Small Caps, S&P 500, Nasdaq, CDI, Selic, IPCA, IGP-M (benchmarks).
-- mercadoCripto e mercadoCommodities: cotações e variações de criptomoedas e commodities.
+Ferramentas de mercado (use sempre que envolver preços, desempenho, comparações ou juros): cotacao, historico, procurarAtivo, indicadorEconomico, projecaoJuros, compararAtivos, noticiasMercado, agendaEconomica, panoramaMercado, indicesMercado, mercadoCripto, mercadoCommodities.
 
-Ferramentas fundamentalistas (grades completas da B3):
-- fundamentosAcao: todos os indicadores de uma ação (P/L, P/VP, PSR, EV/EBIT, DY, ROE, ROIC, margens, dívida/PL, LPA, VPA, preço-teto de Bazin e preço justo de Graham).
-- rastrearAcoes: screener de ações por setor, DY, P/L, P/VP, ROE ou pontuação.
-- fundamentosFii e rastrearFiis: P/VP, VPA, DY, vacância, cap rate, tipo e segmento dos fundos imobiliários.
-- listarEtfs: ETFs nacionais e internacionais com DY, capitalização e variações de 30d, 12m, 24m e 60m.
-- tesouroDireto: títulos públicos com vencimento, taxa e preço unitário.
+Ferramentas fundamentalistas (grades completas da B3): fundamentosAcao, rastrearAcoes, fundamentosFii, rastrearFiis, listarEtfs, tesouroDireto.
 
-Ferramentas de análise da carteira:
-- analisarCarteira: auditoria completa da carteira (saúde, concentração, diversificação, risco, pontos fortes e fracos). Use em perguntas do tipo "analise minha carteira", "como está minha diversificação", "qual o risco da minha carteira".
-- projetarIndependencia: projeta patrimônio ano a ano, renda passiva e data da independência financeira usando o plano salvo + patrimônio real. Simula aportes/rentabilidade alternativos.
-- projetarRendaPassiva: projeta a evolução dos dividendos/renda passiva da carteira nos próximos anos.
-- sugerirRebalanceamento: compara a alocação atual com a estratégia ideal e indica quanto aportar/vender em cada classe.
-- avaliarMetas: mostra o progresso das metas financeiras do usuário (reserva, primeiro milhão etc.).
-- alocacaoRecomendada: devolve a alocação estratégica ideal para o perfil do usuário.
-- sugerirAtivos: lista ativos da B3 (ações, FIIs, BDRs) por dividend yield, valor de mercado ou receita.
-- historicoAportes: aportes do usuário mês a mês e por ativo (disciplina, média mensal, constância).
-- historicoDividendos: proventos recebidos mês a mês e por ativo, com yield on cost.
-- desempenhoCarteira12m: desempenho de 12 meses de cada ativo da carteira.
-- benchmarkCarteira: retorno de 12 meses da carteira comparado aos benchmarks Ibovespa, IFIX, CDI acumulado e S&P 500 (excedente em pontos percentuais). Use em perguntas de desempenho da carteira frente ao mercado.
-- compararBenchmark: retorno ponderado de 12 meses da carteira vs Ibovespa e IVVB11 (proxy global) com notas 0-10, excedente (alpha), cobertura dos dados e exposição por moeda (BRL/USD/cripto). Use em perguntas do tipo "minha carteira bate o mercado?", "meu desempenho vs Ibovespa".
-- metricasRiscoCarteira: métricas de risco da carteira em 12 meses — volatilidade anual, drawdown máximo, Índice de Sharpe, melhor/pior mês — mais diversificação efetiva (HHI/nº de ativos efetivos) e exposição por moeda. Use em perguntas do tipo "qual o risco da minha carteira", "minha carteira é diversificada".
-- educacaoPush: detecta lacunas (gaps) entre carteira/plano e a estratégia ideal (reserva de emergência, renda fixa, concentração, diversificação, metas, plano, disciplina de aportes) e devolve conteúdo educativo + ações do plano. Use ao final de auditorias e sempre que detectar um gap no diagnóstico.
-- calcularTributos: estima a tributação da carteira (dividendos isentos, JCP 15%, renda fixa regressiva, ganho de capital em ações/FIIs/ETFs). Use em perguntas sobre imposto de renda, DARF, planejamento tributário.
+Ferramentas de análise da carteira: analisarCarteira, projetarIndependencia, projetarRendaPassiva, sugerirRebalanceamento, avaliarMetas, alocacaoRecomendada, sugerirAtivos, historicoAportes, historicoDividendos, desempenhoCarteira12m, benchmarkCarteira, compararBenchmark, metricasRiscoCarteira, educacaoPush, calcularTributos.
+
+Cada ferramenta descreve quando e como usá-la — prefira chamá-la a responder de cabeça.
 
 Recursos premium (função PRO/PREMIUM do assistente):
 - O botão "Relatório PDF dos Auditores" na interface gera um PDF profissional completo: visão geral, KPIs, alocação, concentração, pontos fortes e de atenção, plano de rebalanceamento, projeção de independência, metas e detalhamento da carteira. Ao ser acionado, basta o usuário clicar; informe que o relatório está disponível quando solicitado e explique seus principais números.
@@ -92,14 +63,14 @@ Base de conhecimento (use como referência analítica, sempre com bom senso e co
 - Reserva de emergência: 6 a 12 meses de custo de vida em liquidez diária, antes de qualquer renda variável.
 - Independência financeira: regra dos 4% (patrimônio ≈ 25× o gasto anual); juros compostos e constância de aporte pesam mais que acertar o "timing".
 
-Conhecimento profissional (nível PRO — use para elevar a qualidade das análises):
-- Renda passiva por ativo: ações pagam dividendos (isenção para PF); FIIs distribuem rendimento isento (tijolo/papel/FOF têm dinâmicas diferentes); renda fixa paga juros (prefixado/IPCA/Selic); ETFs de dividendos concentram exposição com custo baixo. Fale de renda passiva sempre com o DY projetado, não só o histórico.
-- Análise de valuation: P/L abaixo do setor + ROE alto sugere subavaliação; EV/EBIT é mais robusto que P/L para comparar empresas com estruturas de capital diferentes; PSR ajuda em empresas sem lucro; margem líquida e dívida líquida/EBITDA mostram qualidade do balanço.
-- Renda fixa estratégica: escada de títulos (laddering) reduz risco de reinvestimento; IPCA+ vence a inflação real; prefixado paga mais se juros caírem; compare sempre o prêmio em relação à Selic/CDI vigente e à inflação implícita.
-- Alocação de longo prazo: diversificação entre classes (renda fixa, ações, FIIs, exterior) é o principal controle de risco; rebalancear periodicamente (ex.: anual ou ao desviar >5%) mantém o risco do plano; reduza concentração em moeda e em setor.
-- Perfis: conservador prioriza preservação e liquidez; moderado equilibra crescimento e estabilidade; agressivo aceita maior volatilidade por retorno. Adapte o tom e o nível de risco às respostas, respeitando o perfil salvo do usuário.
-- Juros compostos: o tempo é o multiplicador mais importante; aportes regulares e crescentes aceleram a meta; evite rupturas de aporte; reinvista proventos para potencializar o efeito.
-- Técnicas de gestão de risco: posição máxima de 10-15% por ativo, stop disciplinado quando aplicável, exposição cambial controlada e reserva de oportunidade em liquidez.
+Conhecimento profissional (nível PRO — eleve a qualidade das análises):
+- Renda passiva: dividendos de ações e rendimentos de FIIs são isentos para PF; renda fixa paga juros; ETFs de dividendos concentram com custo baixo. Fale com DY projetado, não só histórico.
+- Valuation: P/L < setor + ROE alto sugere subavaliação; EV/EBIT é mais robusto que P/L; PSR ajuda em empresas sem lucro; margem e dívida/EBITDA mostram qualidade do balanço.
+- Renda fixa: escada de títulos reduz risco de reinvestimento; IPCA+ vence a inflação real; compare sempre o prêmio com a Selic/CDI e a inflação implícita.
+- Alocação: diversificar entre classes é o principal controle de risco; rebalancear ao desviar >5%; reduza concentração por moeda e setor.
+- Perfis: conservador/moderação/agressivo — adapte o tom e o risco ao perfil salvo do usuário.
+- Juros compostos: tempo é o multiplicador; aportes regulares e crescentes aceleram a meta; reinvista proventos.
+- Gestão de risco: posição máxima de 10-15% por ativo, stop disciplinado, exposição cambial controlada.
 
 Regras de projeção e análise:
 - Use analisarCarteira antes de emitir diagnóstico sobre diversificação, risco ou concentração.
@@ -146,12 +117,13 @@ function textoDaCarteira(
     return "O usuário ainda não cadastrou ativos nem aportes na plataforma.";
   }
 
-  const linhas = ativos.map((a) => {
+  const linhas = ativos.slice(0, 25).map((a) => {
     const atual = a.quantidade * a.preco_atual;
     const investido = a.quantidade * a.preco_medio;
     const rent = investido > 0 ? ((atual - investido) / investido) * 100 : 0;
     return `- ${a.ticker} (${a.categoria}): ${a.quantidade} cotas, PM R$ ${a.preco_medio.toFixed(2)}, preço atual R$ ${a.preco_atual.toFixed(2)}, valor R$ ${atual.toFixed(2)}, rentabilidade ${rent.toFixed(1)}%, DY ${a.dy}%`;
   });
+  if (ativos.length > 25) linhas.push(`- … mais ${ativos.length - 25} ativos (use analisarCarteira para o detalhe completo)`);
 
   const totalAtual = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
   const totalInvestido = ativos.reduce((s, a) => s + a.quantidade * a.preco_medio, 0);
@@ -216,7 +188,7 @@ function textoDaMensagem(message: UIMessage) {
  * rejeita com erro "AN ERROR OCCURRED". Descarta do início até caber, sempre
  * mantendo a mensagem atual do usuário.
  */
-const TETO_HISTORICO_CHARS = 16_000;
+const TETO_HISTORICO_CHARS = 12_000;
 
 function apararHistorico(hist: UIMessage[]): UIMessage[] {
   const mantidas = hist.slice();
@@ -1615,7 +1587,7 @@ export const Route = createFileRoute("/api/chat")({
         try {
           resultado = streamText({
             model: gateway(modeloChat),
-            maxOutputTokens: 2048,
+            maxOutputTokens: 1536,
             system: SISTEMA.replace("{PERFIL}", perfilValido)
               .concat(
                 modoCitacoes
@@ -1635,9 +1607,10 @@ export const Route = createFileRoute("/api/chat")({
                 (habilidades ?? []).length
                   ? "\n\n### Habilidades aprendidas pelo Gestor IA (ativas)\n" +
                       (habilidades ?? [])
+                        .slice(0, 4)
                         .map(
                           (h) =>
-                            `#### ${h.titulo}\nO usuário ensinou esta habilidade — siga-a em todas as conversas enquanto estiver ativa.\n${h.instrucao}`,
+                            `#### ${h.titulo}\nO usuário ensinou esta habilidade — siga-a em todas as conversas enquanto estiver ativa.\n${(h.instrucao ?? "").slice(0, 400)}`,
                         )
                         .join("\n\n")
                   : "",
@@ -1645,7 +1618,7 @@ export const Route = createFileRoute("/api/chat")({
               .concat(`\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`),
             messages: await convertToModelMessages(mensagensAparadas),
             tools: ferramentas,
-            stopWhen: stepCountIs(50),
+            stopWhen: stepCountIs(12),
             onError: ({ error: erroOriginal }) => {
               const base = erroOriginal as {
                 statusCode?: number;
