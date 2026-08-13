@@ -45,13 +45,13 @@ export const Route = createFileRoute("/_authenticated/chat")({
   component: ChatPage,
   head: () => ({
     meta: [
-      { title: "Técnico IA — Assistente da sua carteira | Investidor em 15 Anos" },
+      { title: "Gestor IA — Assistente da sua carteira | Investidor em 15 Anos" },
       {
         name: "description",
         content:
-          "Converse com o Técnico IA sobre a sua carteira: rebalanceamento, aportes, dividendos e metas de independência financeira.",
+          "Converse com o Gestor IA sobre a sua carteira: rebalanceamento, aportes, dividendos e metas de independência financeira.",
       },
-      { property: "og:title", content: "Técnico IA — Assistente da sua carteira" },
+      { property: "og:title", content: "Gestor IA — Assistente da sua carteira" },
       {
         property: "og:description",
         content:
@@ -122,10 +122,10 @@ function ChatPage() {
   );
 
   const { messages, sendMessage, setMessages, status } = useChat({
-    id: "tecnico-ia",
+    id: "gestor-ia",
     transport,
     onError: (error) =>
-      toast.error("Não foi possível falar com o Técnico IA", {
+      toast.error("Não foi possível falar com o Gestor IA", {
         description: error.message.includes("429")
           ? "Muitas mensagens em sequência. Aguarde alguns instantes."
           : error.message.includes("402") || /payment required/i.test(error.message)
@@ -198,7 +198,7 @@ function ChatPage() {
 
   return (
     <AppShell
-      title="Técnico IA"
+      title="Gestor IA"
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
       <div className="flex h-[calc(100dvh-var(--altura-cabecalho-app,0px)-3rem)] min-h-0 flex-col gap-2.5 sm:h-[calc(100dvh-var(--altura-cabecalho-app,0px)-4rem)]">
@@ -220,7 +220,7 @@ function ChatPage() {
                     className="size-14 object-contain"
                   />
                 }
-                title="Fale com o Técnico IA PRO"
+                title="Fale com o Gestor IA PRO"
                 description="Ele conhece seus ativos, aportes, dividendos e metas — e usa dados reais de mercado, notícias e agenda econômica."
               >
                 <div className="mt-4 flex flex-wrap justify-center gap-2">

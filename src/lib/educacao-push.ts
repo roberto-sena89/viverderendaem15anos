@@ -4,7 +4,7 @@
  * para cada gap, conteúdo educativo e ações concretas do plano.
  *
  * Módulo compartilhado (client/server), usado pela tool `educacaoPush` do
- * Técnico IA para transformar diagnóstico em orientação acionável.
+ * Gestor IA para transformar diagnóstico em orientação acionável.
  */
 
 import { ALOCACAO_POR_PERFIL, type AtivoLinha, type PerfilInvestidor } from "@/lib/auditoria";

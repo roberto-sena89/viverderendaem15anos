@@ -51,7 +51,7 @@ chegar lá.
   com cenários otimista, base e conservador.
 - **Metas** — sistema de metas (reserva de emergência, 100 mil, 1 milhão...) com
   barras de progresso.
-- **Técnico IA** — assistente financeiro integrado que responde perguntas como
+- **Gestor IA** — assistente financeiro integrado que responde perguntas como
   "quanto devo aportar este mês?", "minha carteira está desbalanceada?" e
   "quanto falta para me aposentar?".
 - **Tributação e análise de risco** — painéis de apuração de impostos e análise de

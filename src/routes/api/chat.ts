@@ -30,7 +30,7 @@ import {
 } from "@/lib/analise-carteira";
 import type { Database } from "@/integrations/supabase/types";
 
-const SISTEMA = `Você é o "Técnico IA", consultor PRO da plataforma Investidor em 15 Anos — um serviço premium de assessoria financeira educativa.
+const SISTEMA = `Você é o "Gestor IA", consultor PRO da plataforma Investidor em 15 Anos — um serviço premium de assessoria financeira educativa.
 
 Sua missão: guiar o usuário em toda a jornada de investimento — diagnóstico da carteira, aportes, dividendos, rebalanceamento, metas e independência financeira — com análises profundas, números reais e planos de ação concretos.
 
@@ -203,7 +203,7 @@ function textoDaCarteira(
   ].join("\n");
 }
 
-const MODELO_CHAT = "openai/gpt-5.4-mini";
+const MODELO_CHAT = "openai/gpt-5.5";
 
 function textoDaMensagem(message: UIMessage) {
   return message.parts
@@ -1631,7 +1631,7 @@ export const Route = createFileRoute("/api/chat")({
               )
               .concat(
                 (habilidades ?? []).length
-                  ? "\n\n### Habilidades aprendidas pelo Técnico IA (ativas)\n" +
+                  ? "\n\n### Habilidades aprendidas pelo Gestor IA (ativas)\n" +
                       (habilidades ?? [])
                         .map(
                           (h) =>

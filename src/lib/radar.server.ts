@@ -7,8 +7,8 @@
  * Cache:
  *  - `cotacoes_cache` chave `radar:posicao` -> mapa ticker -> PosicaoHistorica
  *  - `cotacoes_cache` chave `radar:serie:<TICKER>` -> série downsampled
- *  - `cotacoes_cache` chave `radar:ia:<TICKER>` -> análise do Técnico IA (72h)
- *  - memória com TTL de 24h (posições e séries) e 15min (contexto macro)
+ *  - `cotacoes_cache` chave `radar:ia:<TICKER>` -> análise do Gestor IA (72h)
+ *  - memória com TTL de 24h (posições e séries) e 15min (contexto macro) e Análise pelo Gestor IA (cache compartilhado, 72h)
  */
 
 import { buscarHistorico, type Historico } from "@/lib/market.server";
@@ -814,7 +814,7 @@ export async function buscarFatosExternos(ticker: string, nome: string): Promise
 }
 
 /* ------------------------------------------------------------------ *
- * Análise pelo Técnico IA (cache compartilhado, 72h)
+ * Análise pelo Gestor IA (cache compartilhado, 72h)
  * ------------------------------------------------------------------ */
 
 export interface AnaliseIA {
@@ -852,7 +852,7 @@ export async function lerAnaliseIA(ticker: string): Promise<AnaliseIA | null> {
     if (vencida) return null;
     const analise = data.payload as unknown as AnaliseIA;
     // Análises geradas no formato antigo (sem convicção/cenários) são
-    // descartadas para que o Técnico IA regenerre no formato profissional.
+    // descartadas para que o Gestor IA regenerre no formato profissional.
     if (!analise?.conviccao || !analise?.cenarioBase) return null;
     return analise;
   } catch {
@@ -877,7 +877,7 @@ async function gravarAnaliseIA(ticker: string, analise: AnaliseIA) {
   }
 }
 
-/** Histórico do Técnico IA: cada análise gerada vira uma linha em `radar_analises`. */
+/** Histórico do Gestor IA: cada análise gerada vira uma linha em `radar_analises`. */
 async function gravarHistoricoIA(ticker: string, analise: AnaliseIA) {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -901,7 +901,7 @@ async function gravarHistoricoIA(ticker: string, analise: AnaliseIA) {
   }
 }
 
-/** Últimas análises do Técnico IA para um ativo, da mais recente para a mais antiga. */
+/** Últimas análises do Gestor IA para um ativo, da mais recente para a mais antiga. */
 export async function lerHistoricoIA(ticker: string, qtd = 10): Promise<AnaliseIA[]> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -1015,7 +1015,7 @@ function fmtNum(v: number | null | undefined, casas = 2): string {
   return v.toLocaleString("pt-BR", { maximumFractionDigits: casas });
 }
 
-/** Ficha fundamentalista completa (ação ou FII) para alimentar o Técnico IA. */
+/** Ficha fundamentalista completa (ação ou FII) para alimentar o Gestor IA. */
 function textoDeFundamentos(l: LinhaAcao | LinhaFii | null): string {
   if (!l) return "- Sem dados fundamentalistas na grade.";
   if ("vacancia" in l) {
@@ -1040,7 +1040,7 @@ function textoDeFundamentos(l: LinhaAcao | LinhaFii | null): string {
   ].join("\n");
 }
 
-/** Gera (e persiste) a análise completa de um ativo com o Técnico IA. */
+/** Gera (e persiste) a análise completa de um ativo com o Gestor IA. */
 export async function gerarAnaliseIA(
   ticker: string,
   lovableApiKey: string,
@@ -1107,7 +1107,7 @@ export async function gerarAnaliseIA(
     ].join("\n");
 
     const system =
-      "Você é o Técnico IA de uma mesa de tesouraria de um dos maiores bancos" +
+      "Você é o Gestor IA de uma mesa de tesouraria de um dos maiores bancos" +
       " globais, gestor sênior de renda variável brasileira. Seu trabalho é" +
       " transformar dados brutos, fundamentos, posicionamento histórico, noticiário" +
       " e contexto macro em uma tese de investimento clara e rigorosa para um" +
@@ -1201,6 +1201,6 @@ export async function gerarAnaliseIA(
     return analise;
   } catch (e) {
     console.error(`Radar IA falhou para ${ticker}:`, e);
-    throw e instanceof Error ? e : new Error("Falha desconhecida do Técnico IA.");
+    throw e instanceof Error ? e : new Error("Falha desconhecida do Gestor IA.");
   }
 }

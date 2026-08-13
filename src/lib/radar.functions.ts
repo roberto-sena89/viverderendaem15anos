@@ -448,7 +448,7 @@ export interface ResultadoAnaliseIA {
   erro?: string | null;
 }
 
-/** Análise gerada pelo Técnico IA para um ativo (cache de 72h no servidor).
+/** Análise gerada pelo Gestor IA para um ativo (cache de 72h no servidor).
  *  Autenticado: geração de análise consome cota paga de LLM. */
 export const radarAnaliseIA = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -489,7 +489,7 @@ export const radarAnaliseIA = createServerFn({ method: "GET" })
           analise,
           erro: analise
             ? null
-            : "O Técnico IA não conseguiu montar a análise agora. Tente novamente em instantes.",
+            : "O Gestor IA não conseguiu montar a análise agora. Tente novamente em instantes.",
         };
       } catch (e) {
         const msg = e instanceof Error ? e.message : "erro desconhecido";
@@ -502,7 +502,7 @@ export const radarAnaliseIA = createServerFn({ method: "GET" })
     },
   );
 
-/** Histórico do Técnico IA para um ativo (da mais recente para a mais antiga). */
+/** Histórico do Gestor IA para um ativo (da mais recente para a mais antiga). */
 export const radarHistoricoIA = createServerFn({ method: "GET" })
   .inputValidator((d: { ticker?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",

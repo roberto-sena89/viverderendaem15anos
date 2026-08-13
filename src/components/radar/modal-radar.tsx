@@ -1,7 +1,7 @@
 /**
  * Ficha do ativo no Radar — gráfico da série completa desde o início,
  * posição histórica, janela de 52 semanas, ficha fundamentalista, notícias
- * relacionadas e análise do Técnico IA (com fatos externos em tempo real).
+ * relacionadas e análise do Gestor IA (com fatos externos em tempo real).
  */
 
 import { useEffect, useMemo, useState } from "react";
@@ -350,7 +350,7 @@ export function ModalRadar({
   const analise = ia.data?.analise ?? null;
   const erroIa = ia.data?.erro ?? null;
 
-  // Mudança de veredito do Técnico IA: avisa uma única vez por par (sessão).
+  // Mudança de veredito do Gestor IA: avisa uma única vez por par (sessão).
   const mudancaVeredito = useMemo(() => {
     const h = historico.data ?? [];
     if (h.length < 2) return null;
@@ -371,13 +371,13 @@ export function ModalRadar({
       variacaoPercent: 0,
       preco: linha.preco,
       limite: 0,
-      canais: ["Técnico IA"],
-      titulo: "O Técnico IA mudou de ideia sobre este ativo — confira a nova análise.",
+      canais: ["Gestor IA"],
+      titulo: "O Gestor IA mudou de ideia sobre este ativo — confira a nova análise.",
       vereditoDe: mudancaVeredito.de,
       vereditoPara: mudancaVeredito.para,
     });
     notificarPush(
-      `Técnico IA: ${ticker} · de ${ROTULOS_VEREDITO[mudancaVeredito.de] ?? mudancaVeredito.de} para ${ROTULOS_VEREDITO[mudancaVeredito.para] ?? mudancaVeredito.para}`,
+      `Gestor IA: ${ticker} · de ${ROTULOS_VEREDITO[mudancaVeredito.de] ?? mudancaVeredito.de} para ${ROTULOS_VEREDITO[mudancaVeredito.para] ?? mudancaVeredito.para}`,
       "Abra o radar para conferir a nova análise.",
     );
   }, [mudancaVeredito, ticker, linha]);
@@ -614,7 +614,7 @@ export function ModalRadar({
             </section>
 
             <section>
-              <h3 className="mb-2 text-sm font-semibold">Técnico IA</h3>
+              <h3 className="mb-2 text-sm font-semibold">Gestor IA</h3>
               {analise ? (
                 <div className="space-y-3 rounded-lg border p-4 text-sm">
                   <div className="flex flex-wrap items-center gap-2">
@@ -711,7 +711,7 @@ export function ModalRadar({
                   </div>
                   <p className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                    Técnico IA consultando histórico, ficha e noticiário em tempo real…
+                    Gestor IA consultando histórico, ficha e noticiário em tempo real…
                   </p>
                 </div>
               ) : ia.isError ? (
@@ -743,7 +743,7 @@ export function ModalRadar({
               ) : (
                 <div className="flex flex-col gap-2">
                   <p className="text-sm text-muted-foreground">
-                    Peça ao Técnico IA um veredito com base no histórico, na ficha e no noticiário
+                    Peça ao Gestor IA um veredito com base no histórico, na ficha e no noticiário
                     (com busca automática em tempo real).
                   </p>
                   <Button
@@ -762,7 +762,7 @@ export function ModalRadar({
               <section>
                 <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
                   <History className="size-4 text-muted-foreground" />
-                  Histórico do Técnico IA
+                  Histórico do Gestor IA
                 </h3>
                 <ul className="space-y-2">
                   {historico.data!.map((a, i) => {

@@ -36,12 +36,12 @@ export function DialogoAprendizado() {
   async function ensinar(e: React.FormEvent) {
     e.preventDefault();
     if (!titulo.trim() || !instrucao.trim()) {
-      toast.error("Preencha o título e o que o Técnico IA deve aprender.");
+      toast.error("Preencha o título e o que o Gestor IA deve aprender.");
       return;
     }
     try {
       await criar.mutateAsync({ nome: slug(titulo), titulo, instrucao });
-      toast.success("Habilidade ensinada ao Técnico IA.");
+      toast.success("Habilidade ensinada ao Gestor IA.");
       setTitulo("");
       setInstrucao("");
     } catch {
@@ -56,8 +56,8 @@ export function DialogoAprendizado() {
           variant="outline"
           size="sm"
           className="shrink-0 rounded-full"
-          aria-label="Ensinar novas habilidades ao Técnico IA"
-          title="Ensine novas habilidades ao Técnico IA"
+          aria-label="Ensinar novas habilidades ao Gestor IA"
+          title="Ensine novas habilidades ao Gestor IA"
         >
           <GraduationCap className="size-4 shrink-0 sm:mr-2" />
           <span className="hidden truncate sm:inline">Aprender</span>
@@ -66,7 +66,7 @@ export function DialogoAprendizado() {
       <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-display text-lg font-bold">
-            Aprendizado do Técnico IA
+            Aprendizado do Gestor IA
           </DialogTitle>
           <DialogDescription>
             Ensine novas habilidades ao seu consultor: ele passa a segui-las em todas as conversas
@@ -90,7 +90,7 @@ export function DialogoAprendizado() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="habilidade-instrucao">O que o Técnico IA deve aprender</Label>
+            <Label htmlFor="habilidade-instrucao">O que o Gestor IA deve aprender</Label>
             <Textarea
               id="habilidade-instrucao"
               value={instrucao}

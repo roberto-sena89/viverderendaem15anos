@@ -16,15 +16,15 @@ export interface AlertaDisparado {
   lido: boolean;
   /** Canais em que o alerta foi entregue. */
   canais: string[];
-  /** Origem do alerta: variação de preço (padrão), notícia ou Técnico IA. */
+  /** Origem do alerta: variação de preço (padrão), notícia ou Gestor IA. */
   tipo?: "preco" | "noticia" | "veredito";
   /** Título da notícia, quando tipo = "noticia". */
   titulo?: string;
   /** Link da notícia, quando tipo = "noticia". */
   url?: string;
-  /** Veredito anterior, quando tipo = "veredito" (mudança do Técnico IA). */
+  /** Veredito anterior, quando tipo = "veredito" (mudança do Gestor IA). */
   vereditoDe?: string;
-  /** Veredito novo, quando tipo = "veredito" (mudança do Técnico IA). */
+  /** Veredito novo, quando tipo = "veredito" (mudança do Gestor IA). */
   vereditoPara?: string;
   /** Categoria do ativo, para navegação rápida. */
   categoria?: string;
