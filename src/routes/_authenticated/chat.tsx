@@ -278,81 +278,79 @@ function ChatPage() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Peça uma auditoria, rebalanceamento, comparação de ativos ou o que está acontecendo no mercado..."
           />
-          <PromptInputFooter className="flex-wrap gap-1.5 sm:gap-2">
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
-              <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
-                <SelectTrigger
-                  className="h-8 w-24 min-w-0 rounded-full text-xs sm:w-36"
-                  aria-label="Perfil de investidor"
-                >
-                  <SelectValue placeholder="Perfil" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PERFIS.map((p) => (
-                    <SelectItem key={p.valor} value={p.valor}>
-                      {p.rotulo}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={limpar}
-                disabled={messages.length === 0 || carregando}
-                className="size-8 shrink-0 rounded-full"
-                aria-label="Limpar conversa"
-                title="Limpar conversa"
+          <PromptInputFooter className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
+            <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
+              <SelectTrigger
+                className="h-8 w-24 shrink-0 rounded-full text-xs sm:w-36"
+                aria-label="Perfil de investidor"
               >
-                <Eraser className="size-4 shrink-0" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                role="switch"
-                aria-checked={citacoes}
-                aria-label="Modo citações e justificativas"
-                title="Citações e justificativas: cada recomendação aponta os dados e critérios usados"
-                onClick={() => alternarCitacoes(!citacoes)}
-                className={`min-w-0 rounded-full ${citacoes ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
-              >
-                <BookOpenText className="size-4 shrink-0 sm:mr-2" />
-                <span className="hidden truncate sm:inline">Citações</span>
-                <Switch
-                  checked={citacoes}
-                  onCheckedChange={alternarCitacoes}
-                  onClick={(e) => e.stopPropagation()}
-                  className="ml-1.5 hidden scale-75 sm:ml-2 sm:block"
-                  aria-hidden
-                />
-              </Button>
-              <DialogoAprendizado />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={gerarRelatorioPdf}
-                disabled={gerandoRelatorio || carregando}
-                className="shrink-0 rounded-full"
-                aria-label="Gerar relatório de auditoria em PDF"
-                title="Gerar relatório de auditoria em PDF"
-              >
-                <FileText className="size-4 shrink-0 sm:mr-2" />
-                <span className="hidden truncate sm:inline">
-                  {gerandoRelatorio ? "Gerando..." : "Relatório"}
-                </span>
-              </Button>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
-                disabled={carregando}
-                className="shrink-0 rounded-full shadow-[var(--shadow-lift)]"
-              >
-                <ShieldCheck className="size-4 shrink-0 sm:mr-2" />
-                <span className="hidden truncate sm:inline">Auditoria</span>
-              </Button>
-            </div>
+                <SelectValue placeholder="Perfil" />
+              </SelectTrigger>
+              <SelectContent>
+                {PERFIS.map((p) => (
+                  <SelectItem key={p.valor} value={p.valor}>
+                    {p.rotulo}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={limpar}
+              disabled={messages.length === 0 || carregando}
+              className="size-8 shrink-0 rounded-full"
+              aria-label="Limpar conversa"
+              title="Limpar conversa"
+            >
+              <Eraser className="size-4 shrink-0" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              role="switch"
+              aria-checked={citacoes}
+              aria-label="Modo citações e justificativas"
+              title="Citações e justificativas: cada recomendação aponta os dados e critérios usados"
+              onClick={() => alternarCitacoes(!citacoes)}
+              className={`h-8 shrink-0 rounded-full px-2.5 ${citacoes ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
+            >
+              <BookOpenText className="size-4 shrink-0 sm:mr-2" />
+              <span className="hidden truncate sm:inline">Citações</span>
+              <Switch
+                checked={citacoes}
+                onCheckedChange={alternarCitacoes}
+                onClick={(e) => e.stopPropagation()}
+                className="ml-1.5 hidden scale-75 sm:ml-2 sm:block"
+                aria-hidden
+              />
+            </Button>
+            <DialogoAprendizado />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={gerarRelatorioPdf}
+              disabled={gerandoRelatorio || carregando}
+              className="h-8 shrink-0 rounded-full px-2.5"
+              aria-label="Gerar relatório de auditoria em PDF"
+              title="Gerar relatório de auditoria em PDF"
+            >
+              <FileText className="size-4 shrink-0 sm:mr-2" />
+              <span className="hidden truncate sm:inline">
+                {gerandoRelatorio ? "Gerando..." : "Relatório"}
+              </span>
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
+              disabled={carregando}
+              className="h-8 shrink-0 rounded-full px-2.5 shadow-[var(--shadow-lift)]"
+            >
+              <ShieldCheck className="size-4 shrink-0 sm:mr-2" />
+              <span className="hidden truncate sm:inline">Auditoria</span>
+            </Button>
           </PromptInputFooter>
         </PromptInput>
       </div>
