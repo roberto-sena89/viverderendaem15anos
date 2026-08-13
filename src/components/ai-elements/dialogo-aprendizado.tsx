@@ -55,11 +55,12 @@ export function DialogoAprendizado() {
         <Button
           variant="outline"
           size="sm"
-          className="min-w-0 rounded-full"
+          className="shrink-0 rounded-full"
+          aria-label="Ensinar novas habilidades ao Técnico IA"
           title="Ensine novas habilidades ao Técnico IA"
         >
-          <GraduationCap className="mr-2 size-4 shrink-0" />
-          <span className="truncate">Aprender</span>
+          <GraduationCap className="size-4 shrink-0 sm:mr-2" />
+          <span className="hidden truncate sm:inline">Aprender</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-2xl">
