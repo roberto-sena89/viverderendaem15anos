@@ -330,15 +330,35 @@ function ChatPage() {
             placeholder="Peça uma auditoria, rebalanceamento, comparação de ativos ou o que está acontecendo no mercado..."
           />
           <PromptInputFooter className="justify-between">
-            <span className="text-xs text-muted-foreground">
-
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                role="switch"
+                aria-checked={citacoes}
+                aria-label="Modo citações e justificativas"
+                title="Citações e justificativas: cada recomendação aponta os dados e critérios usados"
+                onClick={() => alternarCitacoes(!citacoes)}
+                className={`min-w-0 rounded-full ${citacoes ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
+              >
+                <BookOpenText className="size-4 shrink-0 sm:mr-2" />
+                <span className="hidden truncate sm:inline">Citações</span>
+                <Switch
+                  checked={citacoes}
+                  onCheckedChange={alternarCitacoes}
+                  onClick={(e) => e.stopPropagation()}
+                  className="ml-1.5 scale-[0.6] sm:ml-2 sm:scale-75"
+                  aria-hidden
+                />
+              </Button>
+              <DialogoAprendizado />
               {citacoes ? (
-                <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 font-semibold text-primary">
+                <span className="ml-1 hidden rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary sm:inline">
                   <BookOpenText className="mr-1 inline size-3" />
                   Citações ativas
                 </span>
               ) : null}
-            </span>
+            </div>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
