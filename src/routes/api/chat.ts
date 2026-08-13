@@ -1608,7 +1608,7 @@ export const Route = createFileRoute("/api/chat")({
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(
-          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${modeloChat}`,
+          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, provedor ${provedorIA.provedor}, modelo ${modeloChat}`,
         );
 
         let resultado;
@@ -1646,9 +1646,16 @@ export const Route = createFileRoute("/api/chat")({
             tools: ferramentas,
             stopWhen: stepCountIs(50),
             onError: ({ error: erroOriginal }) => {
-              const err = erroOriginal as { statusCode?: number } & Error;
+              const base = erroOriginal as {
+                statusCode?: number;
+                error?: { statusCode?: number; message?: string };
+                cause?: { message?: string };
+              } & Error;
+              const interno = base.error;
+              const status = interno?.statusCode ?? base.statusCode ?? "?";
+              const causa = interno?.message ?? base.cause?.message ?? "?";
               console.error(
-                `[chat] erro no stream do gateway (${userId}): status=${err?.statusCode ?? "?"} nome=${err?.name ?? "?"} msg=${err?.message ?? String(erroOriginal)}`,
+                `[chat] erro no stream do gateway: provedor=${provedorIA.provedor} modelo=${modeloChat} status=${status} nome=${base?.name ?? "?"} msg=${base?.message ?? String(erroOriginal)} causa=${causa}`,
               );
             },
           });
