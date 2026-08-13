@@ -210,6 +210,38 @@ function textoDaMensagem(message: UIMessage) {
     .trim();
 }
 
+/**
+ * Teto de caracteres do histórico enviado ao modelo. Cada mensagem reenvia a
+ * conversa inteira; sem limite, conversas longas explodem o pedido e o gateway
+ * rejeita com erro "AN ERROR OCCURRED". Descarta do início até caber, sempre
+ * mantendo a mensagem atual do usuário.
+ */
+const TETO_HISTORICO_CHARS = 60_000;
+
+function apararHistorico(hist: UIMessage[]): UIMessage[] {
+  const mantidas = hist.slice();
+  let total = mantidas.reduce((s, m) => s + textoDaMensagem(m).length, 0);
+  while (mantidas.length > 1 && total > TETO_HISTORICO_CHARS) {
+    const removida = mantidas.shift();
+    if (removida) total -= textoDaMensagem(removida).length;
+  }
+  return mantidas.map((m) =>
+    textoDaMensagem(m).length > TETO_HISTORICO_CHARS
+      ? {
+          ...m,
+          parts: m.parts.map((p) =>
+            p.type === "text" && p.text.length > TETO_HISTORICO_CHARS
+              ? {
+                  ...p,
+                  text: `${p.text.slice(0, TETO_HISTORICO_CHARS)}\n… Conteúdo antigo muito longo foi resumido para caber no limite do assistente.`,
+                }
+              : p,
+          ),
+        }
+      : m,
+  );
+}
+
 function ativosParaModelo(linhas: AtivoLinha[]): Parameters<typeof resumoCarteira>[0] {
   return linhas.map((a) => ({
     id: a.ticker,
@@ -1600,7 +1632,7 @@ export const Route = createFileRoute("/api/chat")({
                 : "",
             )
             .concat(`\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`),
-          messages: await convertToModelMessages(messages),
+          messages: await convertToModelMessages(apararHistorico(messages)),
           tools: ferramentas,
           stopWhen: stepCountIs(50),
         });
