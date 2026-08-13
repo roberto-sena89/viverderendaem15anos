@@ -280,6 +280,32 @@ function ChatPage() {
           />
           <PromptInputFooter className="justify-between">
             <div className="flex items-center gap-1.5 sm:gap-2">
+              <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
+                <SelectTrigger
+                  className="h-8 w-[7.5rem] min-w-0 rounded-full text-xs sm:w-36"
+                  aria-label="Perfil de investidor"
+                >
+                  <SelectValue placeholder="Perfil" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERFIS.map((p) => (
+                    <SelectItem key={p.valor} value={p.valor}>
+                      {p.rotulo}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={limpar}
+                disabled={messages.length === 0 || carregando}
+                className="size-8 shrink-0 rounded-full"
+                aria-label="Limpar conversa"
+                title="Limpar conversa"
+              >
+                <Eraser className="size-4 shrink-0" />
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
