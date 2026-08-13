@@ -10,7 +10,13 @@ const aporte = (over: Partial<LinhaAporteBruta>): LinhaAporteBruta => ({
 });
 
 const ativo = (
-  over: Partial<{ ticker: string; quantidade: number; preco_medio: number; preco_atual: number }>,
+  over: Partial<{
+    ticker: string;
+    categoria: string;
+    quantidade: number;
+    preco_medio: number;
+    preco_atual: number;
+  }>,
 ) => ({
   ticker: "PETR4",
   categoria: "Ações",
@@ -70,8 +76,29 @@ describe("reconciliarHistoricoAportes", () => {
         quantidade_atual: 15,
         investido_atual: 300,
         valor_atual: 330,
+        possivel_inconsistencia: false,
       },
     ]);
+  });
+
+  it("sinaliza ativo com preço atual implausível no por_ativo e nos alertas", () => {
+    const r = reconciliarHistoricoAportes(
+      [aporte({ ticker: "TESOURO PREFIXADO 2032", quantidade: 0.47931, preco: 1000 })],
+      [
+        ativo({
+          ticker: "TESOURO PREFIXADO 2032",
+          categoria: "Tesouro Direto",
+          quantidade: 0.47931,
+          preco_medio: 1000,
+          preco_atual: 6188.62,
+        }),
+      ],
+    );
+    const linha = r.por_ativo.find((l) => l.ticker === "TESOURO PREFIXADO 2032");
+    expect(linha?.possivel_inconsistencia).toBe(true);
+    expect(r.alertas_consistencia.length).toBe(1);
+    expect(r.alertas_consistencia[0]).toContain("TESOURO PREFIXADO 2032");
+    expect(r.alertas_consistencia[0]).toContain("R$ 6188.62");
   });
 
   it("marca totais como parciais quando há filtro de período", () => {
@@ -90,6 +117,7 @@ describe("reconciliarHistoricoAportes", () => {
     expect(r.total_investido_carteira).toBe(0);
     expect(r.patrimonio_atual_carteira).toBe(0);
     expect(r.por_ativo).toEqual([]);
+    expect(r.alertas_consistencia).toEqual([]);
     expect(r.primeiro_aporte).toBeNull();
     expect(r.media_mensal).toBe(0);
   });

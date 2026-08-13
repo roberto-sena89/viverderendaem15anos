@@ -93,7 +93,7 @@ export const alocacaoIdeal: Record<string, number> = {
   "Renda Fixa (Tesouro SELIC, IPCA+,Prefixado)\u00a0CDB, LCI, LCA": 50,
   "ETFs - Brasil": 20,
   "ETFs - Global": 20,
-  FIIS: 10,
+  FIIs: 10,
   Ações: 0,
   BDRs: 0,
   "Fundos de Investimentos": 0,
@@ -133,7 +133,7 @@ export const classeDoAtivo = (a: Ativo): string => {
     case "FIIs":
     case "FIIS":
     case "Fiagro":
-      return "FIIS";
+      return "FIIs";
     default:
       return CLASSE_POS_FIXADO;
   }
@@ -239,7 +239,6 @@ export const numeroBR = numeroBRFormat;
 export const formatarNumeroBR = formatarNumeroBRFormat;
 export const arredondar = arredondarFormat;
 
-
 export interface ProjecaoInput extends PlanoConfig {
   patrimonioAtual: number;
 }
@@ -326,7 +325,8 @@ export function anosAteMeta(
 /** Rótulos exibidos para cada categoria, alinhados às classes da carteira. */
 export const rotuloCategoria: Record<string, string> = {
   Ações: "Ações",
-  FIIS: "FIIS",
+  FIIS: "FIIs",
+  FIIs: "FIIs",
   "Tesouro Direto": "Tesouro Direto (Renda Fixa)",
   BDR: "BDRs",
   "ETF Brasil": "ETFs - Brasil",

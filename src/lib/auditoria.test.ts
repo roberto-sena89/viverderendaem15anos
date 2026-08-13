@@ -3,6 +3,7 @@ import {
   ALOCACAO_POR_PERFIL,
   analisarCarteiraDe,
   planoDeRebalanceamento,
+  precoAceitavel,
   type AtivoLinha,
 } from "./auditoria";
 
@@ -117,6 +118,67 @@ describe("analisarCarteiraDe", () => {
     ]);
     expect(r.score_diversificacao).toBeGreaterThanOrEqual(60);
     expect(r.pontos_fortes.length).toBeGreaterThan(0);
+  });
+
+  it("sinaliza preço atual implausível em renda fixa (avisos_consistencia)", () => {
+    const r = analisarCarteiraDe([
+      ativo({
+        ticker: "TESOURO PREFIXADO 2032",
+        categoria: "Tesouro Direto",
+        quantidade: 0.47931,
+        preco_medio: 1000,
+        preco_atual: 6188.62,
+        dy: 0,
+      }),
+    ]);
+    expect(r.avisos_consistencia.length).toBe(1);
+    expect(r.avisos_consistencia[0]).toContain("TESOURO PREFIXADO 2032");
+  });
+
+  it("não sinaliza variação normal de ações", () => {
+    const r = analisarCarteiraDe([
+      ativo({
+        ticker: "PETR4",
+        categoria: "Ações",
+        quantidade: 10,
+        preco_medio: 20,
+        preco_atual: 30,
+        dy: 8,
+      }),
+    ]);
+    expect(r.avisos_consistencia).toEqual([]);
+  });
+});
+
+describe("precoAceitavel", () => {
+  const base = (over: Partial<AtivoLinha> = {}) =>
+    ({
+      ticker: "TESOURO PREFIXADO 2032",
+      categoria: "Tesouro Direto",
+      quantidade: 0.47931,
+      preco_medio: 1000,
+      ...over,
+    }) as const;
+
+  it("aceita preço coerente com o preço médio", () => {
+    expect(precoAceitavel(base(), 1010)).toBe(true);
+    expect(precoAceitavel(base(), 1550)).toBe(true);
+  });
+
+  it("rejeita preço implausível em renda fixa (causa do bug original)", () => {
+    expect(precoAceitavel(base(), 6188.62)).toBe(false);
+    expect(precoAceitavel(base(), 100)).toBe(false);
+  });
+
+  it("usa tolerância ampla para renda variável", () => {
+    const acao = base({ ticker: "PETR4", categoria: "Ações", preco_medio: 30 });
+    expect(precoAceitavel(acao, 120)).toBe(true);
+    expect(precoAceitavel(acao, 180)).toBe(false);
+  });
+
+  it("rejeita preço zero/negativo e aceita sem preço médio (conservador)", () => {
+    expect(precoAceitavel(base(), 0)).toBe(false);
+    expect(precoAceitavel(base({ preco_medio: 0 }), 6188.62)).toBe(true);
   });
 });
 

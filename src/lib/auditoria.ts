@@ -36,7 +36,36 @@ export interface AuditoriaCarteira {
   score_diversificacao: number;
   pontos_fortes: string[];
   pontos_fracos: string[];
+  /** Avisos de ativos cujo preço atual parece inconsistente com o preço médio. */
+  avisos_consistencia: string[];
   selo: string;
+}
+
+/** Categorias de renda fixa: variação além de ±80% entre preço atual e médio é implausível. */
+const CATEGORIAS_RF = new Set(["Tesouro", "Tesouro Direto", "Renda Fixa"]);
+
+/**
+ * Verdadeiro quando o preço atual está fora do plausível frente ao preço médio
+ * (tolerância conservadora para renda fixa, ampla para renda variável). Evita
+ * que um preço corrompido no banco vire "fato" no diagnóstico do assistente.
+ */
+export function precoImplausivel(a: AtivoLinha): boolean {
+  if (!(a.quantidade > 0) || !(a.preco_medio > 0) || !(a.preco_atual > 0)) return false;
+  const variacao = Math.abs(a.preco_atual / a.preco_medio - 1);
+  return variacao > (CATEGORIAS_RF.has(a.categoria) ? 0.8 : 4);
+}
+
+/**
+ * Guard de gravação: verdadeiro quando um preço recebido de uma fonte pode ser
+ * gravado como preco_atual sem parecer corrompido frente ao preço médio atual.
+ * Sem preço médio conhecido, aceita (conservador) — nunca bloqueia sem base.
+ */
+export function precoAceitavel(
+  a: Pick<AtivoLinha, "ticker" | "categoria" | "quantidade" | "preco_medio">,
+  novoPreco: number,
+): boolean {
+  if (!(novoPreco > 0)) return false;
+  return !precoImplausivel({ ...a, preco_atual: novoPreco, dy: 0 });
 }
 
 export interface LinhaRebalanceamento {
@@ -198,6 +227,13 @@ export function analisarCarteiraDe(ativos: AtivoLinha[]): AuditoriaCarteira {
     ),
   );
 
+  const avisosConsistencia = ativos
+    .filter((a) => precoImplausivel(a))
+    .map(
+      (a) =>
+        `Preço atual de ${a.ticker} (R$ ${a.preco_atual.toFixed(2)}) parece inconsistente com o preço médio (R$ ${a.preco_medio.toFixed(2)}) — confira o preço do ativo na janela Carteira antes de considerar esse valor.`,
+    );
+
   return {
     patrimonio_total: Math.round(total),
     total_investido: Math.round(investido),
@@ -221,6 +257,7 @@ export function analisarCarteiraDe(ativos: AtivoLinha[]): AuditoriaCarteira {
     score_diversificacao: score,
     pontos_fortes: pontosFortes,
     pontos_fracos: pontosFracos,
+    avisos_consistencia: avisosConsistencia,
     selo:
       score >= 75
         ? "Saúde financeira sólida"

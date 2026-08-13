@@ -152,10 +152,20 @@ function indexador(texto: string): "SELIC" | "IPCA" | "PRE" | null {
   return null;
 }
 
+/**
+ * Verdadeiro quando o texto parece se referir a um título público do Tesouro.
+ * O limite de palavra evita falsos positivos em tickers da B3 como "SELIC11"
+ * (ETF Selic), que casariam com SELIC e receberiam preço de Tesouro SELIC.
+ */
+export function ehTituloTesouro(texto: string): boolean {
+  return /TESOURO|(?:SELIC|IPCA|PREFIXADO?|NTN|LTN|LFT)\b/i.test(texto);
+}
+
 /** Casa o ativo da carteira (ex.: "Tesouro Selic 2031") com o título oficial. */
 export function casarTitulo(entrada: string, titulos: TituloTesouro[]): TituloTesouro | null {
   const alvo = normalizar(entrada);
-  if (!alvo.includes("TESOURO") && !indexador(alvo)) return null;
+  // Mesma regra de roteamento: texto que não parece Tesouro nunca casa título.
+  if (!ehTituloTesouro(alvo)) return null;
 
   const idx = indexador(alvo);
   const ano = alvo.match(/(20\d{2})/)?.[1];

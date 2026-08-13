@@ -1,4 +1,4 @@
-import type { AtivoLinha } from "@/lib/auditoria";
+import { precoImplausivel, type AtivoLinha } from "@/lib/auditoria";
 
 export interface LinhaAporteBruta {
   data: string;
@@ -18,6 +18,8 @@ export interface LinhaAportePorAtivo {
   quantidade_atual: number;
   investido_atual: number;
   valor_atual: number;
+  /** Verdadeiro quando o preço atual do ativo parece inconsistente com o preço médio. */
+  possivel_inconsistencia: boolean;
 }
 
 export interface HistoricoAportesReconciliado {
@@ -41,6 +43,8 @@ export interface HistoricoAportesReconciliado {
   ultimo_aporte: string | null;
   por_mes: LinhaAportePorMes[];
   por_ativo: LinhaAportePorAtivo[];
+  /** Avisos de ativos cujo preço atual parece inconsistente com o preço médio. */
+  alertas_consistencia: string[];
 }
 
 /**
@@ -99,9 +103,17 @@ export function reconciliarHistoricoAportes(
         quantidade_atual: a?.quantidade ?? 0,
         investido_atual: a ? Math.round(a.quantidade * a.preco_medio) : 0,
         valor_atual: a ? Math.round(a.quantidade * a.preco_atual) : 0,
+        possivel_inconsistencia: a ? precoImplausivel(a) : false,
       };
     })
     .sort((x, y) => y.total_aportado - x.total_aportado);
+
+  const alertasConsistencia = ativos
+    .filter((a) => precoImplausivel(a))
+    .map(
+      (a) =>
+        `Preço atual de ${a.ticker} (R$ ${a.preco_atual.toFixed(2)}) parece inconsistente com o preço médio (R$ ${a.preco_medio.toFixed(2)}) — confira o preço do ativo na janela Carteira antes de considerar esse valor.`,
+    );
 
   return {
     total_aportado_compras: Math.round(compras),
@@ -118,5 +130,6 @@ export function reconciliarHistoricoAportes(
     ultimo_aporte: ordenados[ordenados.length - 1]?.data ?? null,
     por_mes: meses,
     por_ativo: porAtivo,
+    alertas_consistencia: alertasConsistencia,
   };
 }

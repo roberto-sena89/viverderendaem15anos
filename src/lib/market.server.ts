@@ -183,6 +183,31 @@ export async function cotacaoBrapi(simboloEntrada: string): Promise<Cotacao | nu
 }
 
 export async function buscarCotacao(simboloEntrada: string): Promise<Cotacao> {
+  // Títulos públicos: preço oficial do Tesouro Transparente (CSV diário),
+  // nunca Yahoo/brapi — evita cotação errada ou corrompida para Tesouro.
+  const { ehTituloTesouro, casarTitulo, listarTesouroDireto } =
+    await import("@/lib/tesouro.server");
+  if (ehTituloTesouro(simboloEntrada)) {
+    const titulo = casarTitulo(simboloEntrada, await listarTesouroDireto());
+    const preco = titulo?.precoCompra ?? titulo?.precoVenda ?? null;
+    if (preco && preco > 0) {
+      return {
+        simbolo: simboloEntrada.trim().toUpperCase(),
+        nome: titulo?.nome ?? "Tesouro Direto",
+        moeda: "BRL",
+        preco,
+        fechamentoAnterior: null,
+        variacaoDia: null,
+        variacaoDiaPercent: null,
+        maxima52s: null,
+        minima52s: null,
+        bolsa: "Tesouro Direto",
+        atualizadoEm: null,
+      };
+    }
+    throw new Error(`Não encontrei o título "${simboloEntrada}" na fonte oficial do Tesouro.`);
+  }
+
   const simbolo = normalizarSimbolo(INDICES[simboloEntrada.trim().toUpperCase()] ?? simboloEntrada);
   let data: ChartResponse;
   try {
@@ -241,6 +266,24 @@ export async function buscarHistorico(
   periodo: "1mo" | "6mo" | "1y" | "2y" | "5y" | "10y" | "max" = "10y",
   intervalo: "1d" | "1wk" | "1mo" = "1mo",
 ): Promise<Historico> {
+  // Títulos públicos: série oficial do Tesouro Transparente (diária, ~18 meses).
+  const { ehTituloTesouro, casarTitulo, listarTesouroDireto } =
+    await import("@/lib/tesouro.server");
+  if (ehTituloTesouro(simboloEntrada)) {
+    const titulo = casarTitulo(simboloEntrada, await listarTesouroDireto());
+    const serie = (titulo?.serie ?? []).map((p) => ({ data: p.data, fechamento: p.preco }));
+    if (serie.length === 0) throw new Error(`Sem histórico disponível para "${simboloEntrada}".`);
+    return {
+      simbolo: simboloEntrada.trim().toUpperCase(),
+      nome: titulo?.nome ?? "Tesouro Direto",
+      moeda: "BRL",
+      periodo,
+      intervalo,
+      serie,
+      resumo: resumoDaSerie(serie, intervalo),
+    };
+  }
+
   const simbolo = normalizarSimbolo(INDICES[simboloEntrada.trim().toUpperCase()] ?? simboloEntrada);
   const data = await getJson<ChartResponse>(
     `${YAHOO}/v8/finance/chart/${encodeURIComponent(simbolo)}?range=${periodo}&interval=${intervalo}&events=div%2Csplit`,
@@ -257,6 +300,22 @@ export async function buscarHistorico(
     }))
     .filter((p): p is { data: string; fechamento: number } => typeof p.fechamento === "number");
 
+  return {
+    simbolo: r.meta.symbol,
+    nome: r.meta.longName ?? r.meta.shortName ?? r.meta.symbol,
+    moeda: r.meta.currency ?? "BRL",
+    periodo,
+    intervalo,
+    serie,
+    resumo: resumoDaSerie(serie, intervalo),
+  };
+}
+
+/** Métricas de uma série de fechamentos (retornos, drawdown, volatilidade, ano a ano). */
+function resumoDaSerie(
+  serie: { data: string; fechamento: number }[],
+  intervalo: "1d" | "1wk" | "1mo",
+): Historico["resumo"] {
   const primeiro = serie[0]?.fechamento ?? null;
   const ultimo = serie[serie.length - 1]?.fechamento ?? null;
   const anosDecorridos =
@@ -293,33 +352,25 @@ export async function buscarHistorico(
   }
 
   return {
-    simbolo: r.meta.symbol,
-    nome: r.meta.longName ?? r.meta.shortName ?? r.meta.symbol,
-    moeda: r.meta.currency ?? "BRL",
-    periodo,
-    intervalo,
-    serie,
-    resumo: {
-      primeiroPreco: primeiro,
-      ultimoPreco: ultimo,
-      retornoTotalPercent: primeiro && ultimo ? ((ultimo - primeiro) / primeiro) * 100 : null,
-      retornoAnualizadoPercent:
-        primeiro && ultimo && anosDecorridos > 0.5
-          ? ((ultimo / primeiro) ** (1 / anosDecorridos) - 1) * 100
-          : null,
-      maximo: serie.length ? Math.max(...serie.map((p) => p.fechamento)) : null,
-      minimo: serie.length ? Math.min(...serie.map((p) => p.fechamento)) : null,
-      drawdownMaximoPercent: serie.length ? drawdown * 100 : null,
-      volatilidadeAnualPercent: variancia > 0 ? Math.sqrt(variancia * periodosPorAno) * 100 : null,
-      anos: [...porAno.entries()]
-        .sort((a, b) => a[0] - b[0])
-        .map(([ano, v]) => ({
-          ano,
-          primeiro: v.primeiro,
-          ultimo: v.ultimo,
-          variacaoPercent: v.primeiro > 0 ? ((v.ultimo - v.primeiro) / v.primeiro) * 100 : 0,
-        })),
-    },
+    primeiroPreco: primeiro,
+    ultimoPreco: ultimo,
+    retornoTotalPercent: primeiro && ultimo ? ((ultimo - primeiro) / primeiro) * 100 : null,
+    retornoAnualizadoPercent:
+      primeiro && ultimo && anosDecorridos > 0.5
+        ? ((ultimo / primeiro) ** (1 / anosDecorridos) - 1) * 100
+        : null,
+    maximo: serie.length ? Math.max(...serie.map((p) => p.fechamento)) : null,
+    minimo: serie.length ? Math.min(...serie.map((p) => p.fechamento)) : null,
+    drawdownMaximoPercent: serie.length ? drawdown * 100 : null,
+    volatilidadeAnualPercent: variancia > 0 ? Math.sqrt(variancia * periodosPorAno) * 100 : null,
+    anos: [...porAno.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([ano, v]) => ({
+        ano,
+        primeiro: v.primeiro,
+        ultimo: v.ultimo,
+        variacaoPercent: v.primeiro > 0 ? ((v.ultimo - v.primeiro) / v.primeiro) * 100 : 0,
+      })),
   };
 }
 

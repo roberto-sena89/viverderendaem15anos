@@ -102,7 +102,7 @@ export const painelB3 = createServerFn({ method: "GET" }).handler(async (): Prom
 });
 
 export const cotacaoAtivo = createServerFn({ method: "GET" })
-  .inputValidator((d: { simbolo: string }) => ({ simbolo: String(d.simbolo).slice(0, 20) }))
+  .inputValidator((d: { simbolo: string }) => ({ simbolo: String(d.simbolo).slice(0, 80) }))
   .handler(async ({ data }) => {
     const mercado = await import("@/lib/market.server");
     return mercado.buscarCotacao(data.simbolo);
@@ -110,7 +110,7 @@ export const cotacaoAtivo = createServerFn({ method: "GET" })
 
 export const historicoAtivo = createServerFn({ method: "GET" })
   .inputValidator((d: { simbolo: string; periodo?: "1y" | "5y" | "10y" }) => ({
-    simbolo: String(d.simbolo).slice(0, 20),
+    simbolo: String(d.simbolo).slice(0, 80),
     periodo: d.periodo ?? "10y",
   }))
   .handler(async ({ data }) => {
@@ -123,7 +123,10 @@ export const sincronizarPrecos = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const mercado = await import("@/lib/market.server");
-    const { data: ativos, error } = await context.supabase.from("ativos").select("id, ticker");
+    const { precoAceitavel } = await import("@/lib/auditoria");
+    const { data: ativos, error } = await context.supabase
+      .from("ativos")
+      .select("id, ticker, categoria, quantidade, preco_medio");
     if (error) throw new Error(error.message);
 
     let atualizados = 0;
@@ -133,6 +136,23 @@ export const sincronizarPrecos = createServerFn({ method: "POST" })
       try {
         const c = await mercado.buscarCotacao(ativo.ticker);
         if (c.preco && c.preco > 0) {
+          // Guard anti-corrupção: nunca grava preço implausível vs preço médio.
+          if (
+            !precoAceitavel(
+              {
+                ticker: ativo.ticker,
+                categoria: String(ativo.categoria ?? ""),
+                quantidade: Number(ativo.quantidade) || 0,
+                preco_medio: Number(ativo.preco_medio) || 0,
+              },
+              c.preco,
+            )
+          ) {
+            falhas.push(
+              `${ativo.ticker}: preço recebido (${c.preco}) implausível vs preço médio (${ativo.preco_medio}) — não gravado`,
+            );
+            continue;
+          }
           const { error: upErr } = await context.supabase
             .from("ativos")
             .update({ preco_atual: c.preco })

@@ -114,6 +114,9 @@ Regras de projeção e análise:
 Regras de conciliação de valores (CRÍTICO em auditorias e sugestões de aporte):
 - "Patrimônio atual" e "Total investido (hoje)" vêm SEMPRE da carteira atual (posições da janela Carteira, via analisarCarteira/contexto). São os números que o usuário vê na tela — eles prevalecem sobre qualquer outro.
 - "Total aportado (histórico)" é o fluxo acumulado de compras/vendas ao longo do tempo. Ele PODE ser diferente do total investido atual (vendas parciais, taxas, ajustes de preço médio). Ao falar de aportes, traga a conciliação do historicoAportes (total_aportado_liquido vs total_investido_carteira) e explique qualquer diferença em linguagem simples — nunca apresente o valor DOBRADO com rótulos contraditórios.
+- Aportes mês a mês: use SEMPRE historicoAportes.por_mes — é a mesma origem da janela "Histórico de Aportes" que o usuário vê na tela.
+- Lucro/prejuízo da carteira: use analisarCarteira (lucro_total, rentabilidade_pct) e a conciliação do historicoAportes — total_investido_carteira corresponde à coluna "Investido" da janela Carteira e patrimonio_atual_carteira ao "Patrimônio" da janela Resumo. Esses são os números que o usuário vê.
+- Se um ativo aparecer em avisos_consistencia (analisarCarteira) ou alertas_consistencia/possivel_inconsistencia (historicoAportes), o preço atual dele no banco está fora do plausível frente ao preço médio (ex.: renda fixa variando mais de 80%). NESSE CASO: não apresente o valor como fato — diga que o preço atual do ativo no sistema parece incorreto, cruze com a ferramenta cotacao/tesouroDireto quando puder e oriente o usuário a conferir/editar o preço na janela Carteira. Nunca construa diagnóstico (concentração, lucro, rebalanceamento) sobre um valor sinalizado como inconsistente.
 - Para sugerir aportes, use SEMPRE sugerirRebalanceamento (que calcula sobre a carteira atual: patrimônio, posições e lacunas por classe) + alocacaoRecomendada. Os valores sugeridos saem da ferramenta — nunca chute ou invente quanto aportar.
 - Nunca misture projeções futuras (projetarIndependencia usa o aporte mensal do plano) com valores reais da carteira sem deixar claro o que é projeção e o que é realidade. Em auditorias, apresente primeiro os números reais da carteira, depois as projeções do plano.
 - Se dois números divergirem, prevalecem os da carteira atual (ativos) e informe a divergência ao usuário.
@@ -472,9 +475,9 @@ export const Route = createFileRoute("/api/chat")({
         const ferramentas = {
           cotacao: tool({
             description:
-              "Cotação atual de uma ação, FII, ETF ou índice (B3 e bolsas internacionais). Ex.: PETR4, HGLG11, BOVA11, IBOVESPA, AAPL, DOLAR.",
+              "Cotação atual de uma ação, FII, ETF, índice (B3 e bolsas internacionais) ou título do Tesouro Direto. Ex.: PETR4, HGLG11, BOVA11, IBOVESPA, AAPL, DOLAR, TESOURO SELIC 2029, TESOURO PREFIXADO 2032, TESOURO IPCA+ 2035. Títulos do Tesouro são cotados na fonte oficial (Tesouro Transparente).",
             inputSchema: z.object({
-              ticker: z.string().describe("Código do ativo ou nome do índice"),
+              ticker: z.string().describe("Código do ativo, nome do índice ou título do Tesouro"),
             }),
             execute: async ({ ticker }) => mercado.buscarCotacao(ticker).catch(erro),
           }),
@@ -623,7 +626,7 @@ export const Route = createFileRoute("/api/chat")({
           }),
           analisarCarteira: tool({
             description:
-              "Auditoria completa da carteira do usuário: saúde financeira, concentração, diversificação por classe, riscos, pontos fortes e fracos. Use antes de dar diagnóstico sobre a carteira.",
+              "Auditoria completa da carteira do usuário: saúde financeira, concentração, diversificação por classe, riscos, pontos fortes e fracos, e avisos_consistencia (ativos cujo preço atual parece incorreto — cruze com a janela Carteira antes de afirmar valores). Use antes de dar diagnóstico sobre a carteira.",
             inputSchema: z.object({}),
             execute: async () => analisarCarteiraDe(ativosLinha),
           }),
@@ -1266,7 +1269,7 @@ export const Route = createFileRoute("/api/chat")({
           }),
           historicoAportes: tool({
             description:
-              "Histórico completo de aportes do usuário reconciliado com a carteira atual: quanto foi investido em cada mês, média mensal, constância, e a conciliação entre o total aportado (histórico) e o total investido/patrimônio da janela Carteira (hoje). Use para avaliar disciplina de aportes, evolução do investimento e para embasar sugestões de novos aportes sobre o que já foi aportado.",
+              "Histórico completo de aportes do usuário reconciliado com a carteira atual: por_mes equivale à janela Histórico de Aportes (quanto foi investido em cada mês), por_ativo traz total_aportado, investido_atual (janela Carteira), valor_atual (janela Resumo) e possivel_inconsistencia; alertas_consistencia sinalizam ativos com preço atual implausível — nunca apresente o valor_atual deles como fato. Use para avaliar disciplina de aportes, evolução do investimento e para embasar sugestões de novos aportes sobre o que já foi aportado.",
             inputSchema: z.object({
               desde: z.string().optional().describe("Data inicial AAAA-MM-DD"),
             }),

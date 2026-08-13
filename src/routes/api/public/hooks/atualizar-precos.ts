@@ -46,7 +46,8 @@ function agoraBrasilia() {
   };
 }
 
-const ehTesouro = (texto: string) => /TESOURO|SELIC|IPCA|PREFIXAD|NTN|LTN|LFT/i.test(texto);
+/** Ticker B3 compacto (ex.: PETR4, HGLG11, SELIC11) — nunca é título do Tesouro. */
+const pareceTickerB3 = (t: string) => /^[A-Z0-9]{4,8}$/.test(t);
 
 export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
   server: {
@@ -66,27 +67,51 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
           return Response.json({ ok: true, ignorado: "fora do pregão", hora, diaUtil });
         }
 
-        const [{ supabaseAdmin }, mercado, tesouro] = await Promise.all([
+        const [{ supabaseAdmin }, mercado, tesouroMod, { precoAceitavel }] = await Promise.all([
           import("@/integrations/supabase/client.server"),
           import("@/lib/market.server"),
           import("@/lib/tesouro.server"),
+          import("@/lib/auditoria"),
         ]);
 
         const { data: ativos, error } = await supabaseAdmin
           .from("ativos")
-          .select("id, ticker, nome, categoria");
+          .select("id, ticker, nome, categoria, quantidade, preco_medio");
         if (error) return Response.json({ error: error.message }, { status: 500 });
 
         const lista = ativos ?? [];
-        const chaves = new Map<string, { ticker: string; texto: string; tesouro: boolean }>();
+        const chaves = new Map<
+          string,
+          {
+            ticker: string;
+            texto: string;
+            tesouro: boolean;
+            base: { categoria: string; quantidade: number; preco_medio: number };
+          }
+        >();
         for (const a of lista) {
           const ticker = String(a.ticker ?? "").trim();
           if (!ticker) continue;
           const texto = `${ticker} ${a.nome ?? ""} ${a.categoria ?? ""}`;
-          chaves.set(ticker, { ticker, texto, tesouro: ehTesouro(texto) });
+          // Roteamento: o ticker decide sozinho; nome/categoria só ajudam quando
+          // o ticker não tem cara de código da B3 (evita "SELIC11" → Tesouro).
+          const tesouro =
+            tesouroMod.ehTituloTesouro(ticker) ||
+            (!pareceTickerB3(ticker) && tesouroMod.ehTituloTesouro(texto));
+          chaves.set(ticker, {
+            ticker,
+            texto,
+            tesouro,
+            base: {
+              categoria: String(a.categoria ?? ""),
+              quantidade: Number(a.quantidade) || 0,
+              preco_medio: Number(a.preco_medio) || 0,
+            },
+          });
         }
 
-        const titulos = escopo === "b3" ? [] : await tesouro.listarTesouroDireto().catch(() => []);
+        const titulos =
+          escopo === "b3" ? [] : await tesouroMod.listarTesouroDireto().catch(() => []);
 
         const iniciadoEm = Date.now();
         const precos = new Map<string, { preco: number; fonte: string; classe: string }>();
@@ -108,7 +133,7 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
 
           try {
             if (alvoTesouro) {
-              const titulo = tesouro.casarTitulo(item.texto, titulos);
+              const titulo = tesouroMod.casarTitulo(item.texto, titulos);
               const preco = titulo?.precoCompra ?? titulo?.precoVenda ?? null;
               if (preco && preco > 0) {
                 precos.set(item.ticker, { preco, fonte: "tesouro-direto", classe: "tesouro" });
@@ -140,6 +165,14 @@ export const Route = createFileRoute("/api/public/hooks/atualizar-precos")({
         let atualizados = 0;
         for (const [ticker, info] of precos) {
           const m = info.classe === "tesouro" ? metricas.tesouro : metricas.b3;
+          const base = chaves.get(ticker)?.base;
+          // Guard anti-corrupção: nunca grava preço implausível vs preço médio.
+          if (base && !precoAceitavel({ ticker, ...base }, info.preco)) {
+            m.falhas.push(
+              `${ticker}: preço recebido (${info.preco}) implausível vs preço médio (${base.preco_medio}) — não gravado`,
+            );
+            continue;
+          }
           const { error: upErr } = await supabaseAdmin
             .from("ativos")
             .update({ preco_atual: info.preco })
