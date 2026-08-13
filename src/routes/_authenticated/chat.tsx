@@ -373,9 +373,7 @@ function ChatPage() {
           />
           <PromptInputFooter className="justify-between">
             <span className="text-xs text-muted-foreground">
-              <RefreshCw className="mr-1 inline size-3" />
-              Modo PRO · carteira, perfil{" "}
-              {PERFIS.find((p) => p.valor === perfil)?.rotulo.toLowerCase()} e mercado em tempo real
+
               {citacoes ? (
                 <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 font-semibold text-primary">
                   <BookOpenText className="mr-1 inline size-3" />
