@@ -60,9 +60,11 @@ export default defineTool({
       const precoMedio =
         (Number(existente.quantidade) * Number(existente.preco_medio) + quantidade * preco) /
         qtdTotal;
+      // Não mexe em preco_atual: ele é mantido pela sincronização de cotações
+      // (preço de mercado), não pelo preço pago neste aporte.
       const { error } = await supabase
         .from("ativos")
-        .update({ quantidade: qtdTotal, preco_medio: precoMedio, preco_atual: preco })
+        .update({ quantidade: qtdTotal, preco_medio: precoMedio })
         .eq("id", existente.id);
       if (error) return errorResult(error.message);
     } else {
