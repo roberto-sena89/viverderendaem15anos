@@ -379,6 +379,7 @@ function ChatPage() {
             autoFocus
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            className="min-h-28 max-h-72 text-base"
             placeholder="Peça uma auditoria, rebalanceamento, comparação de ativos ou o que está acontecendo no mercado..."
           />
           <PromptInputFooter className="justify-between">
