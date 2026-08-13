@@ -203,6 +203,8 @@ function textoDaCarteira(
   ].join("\n");
 }
 
+const MODELO_CHAT = "openai/gpt-5.4-mini";
+
 function textoDaMensagem(message: UIMessage) {
   return message.parts
     .map((part) => (part.type === "text" ? part.text : ""))
@@ -1605,13 +1607,13 @@ export const Route = createFileRoute("/api/chat")({
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(
-          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo openai/gpt-5.5`,
+          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${MODELO_CHAT}`,
         );
 
         let resultado;
         try {
           resultado = streamText({
-            model: gateway("openai/gpt-5.5"),
+            model: gateway(MODELO_CHAT),
             system: SISTEMA.replace("{PERFIL}", perfilValido)
               .concat(
                 modoCitacoes
