@@ -24,7 +24,7 @@ export interface AlertaDisparado {
   url?: string;
   /** Veredito anterior, quando tipo = "veredito" (mudança do Gestor IA). */
   vereditoDe?: string;
-  /** Veredito novo, quando tipo = "veredito" (mudança do Técnico IA). */
+  /** Veredito novo, quando tipo = "veredito" (mudança do Gestor IA). */
   vereditoPara?: string;
   /** Categoria do ativo, para navegação rápida. */
   categoria?: string;

@@ -106,7 +106,7 @@ export function useRadarDetalhe(ticker: string | null) {
   });
 }
 
-/** Histórico do Técnico IA para o ativo selecionado (linha do tempo). */
+/** Histórico do Gestor IA para o ativo selecionado (linha do tempo). */
 export function useRadarHistoricoIA(ticker: string | null) {
   const buscar = useServerFn(radarHistoricoIA);
   return useQuery({
