@@ -201,8 +201,8 @@ function ChatPage() {
       title="Técnico IA"
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
-      <div className="flex h-[calc(100dvh-2rem)] min-h-[34rem] flex-col gap-2.5">
-        <Conversation className="flex-1 rounded-xl border border-border/60 bg-card/40">
+      <div className="flex h-[calc(100dvh-var(--altura-cabecalho-app,0px)-3rem)] min-h-0 flex-col gap-2.5 sm:h-[calc(100dvh-var(--altura-cabecalho-app,0px)-4rem)]">
+        <Conversation className="min-h-0 flex-1 rounded-xl border border-border/60 bg-card/40">
           <ConversationContent>
             {historico.isLoading ? (
               <div className="flex h-full items-center justify-center">
