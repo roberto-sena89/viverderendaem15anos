@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
 import { z } from "zod";
-import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
+import { criarProvedorIA, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
 import {
   brl,
   classeDoAtivo,
@@ -203,8 +203,6 @@ function textoDaCarteira(
   ].join("\n");
 }
 
-const MODELO_CHAT = "openai/gpt-5.5";
-
 function textoDaMensagem(message: UIMessage) {
   return message.parts
     .map((part) => (part.type === "text" ? part.text : ""))
@@ -372,9 +370,11 @@ export const Route = createFileRoute("/api/chat")({
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
         const lovableApiKey = process.env.LOVABLE_API_KEY;
+        const userLlmApiKey = process.env.USER_LLM_API_KEY;
         if (!supabaseUrl || !supabaseKey)
           return new Response("Backend não configurado", { status: 500 });
-        if (!lovableApiKey) return new Response("IA não configurada", { status: 500 });
+        if (!userLlmApiKey && !lovableApiKey)
+          return new Response("IA não configurada", { status: 500 });
 
         const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
           auth: { persistSession: false, autoRefreshToken: false },
@@ -496,10 +496,11 @@ export const Route = createFileRoute("/api/chat")({
           dy: Number(a.dy),
         }));
 
-        const gateway = createLovableAiGatewayProvider(
-          lovableApiKey,
-          getLovableAiGatewayRunId(request),
-        );
+        const provedorIA = criarProvedorIA({
+          lovableRunId: getLovableAiGatewayRunId(request),
+        });
+        if (!provedorIA) return new Response("IA não configurada", { status: 500 });
+        const { gateway, modelo: modeloChat } = provedorIA;
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
@@ -1607,13 +1608,13 @@ export const Route = createFileRoute("/api/chat")({
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(
-          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${MODELO_CHAT}`,
+          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${modeloChat}`,
         );
 
         let resultado;
         try {
           resultado = streamText({
-            model: gateway(MODELO_CHAT),
+            model: gateway(modeloChat),
             system: SISTEMA.replace("{PERFIL}", perfilValido)
               .concat(
                 modoCitacoes

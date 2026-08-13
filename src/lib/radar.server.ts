@@ -1041,10 +1041,7 @@ function textoDeFundamentos(l: LinhaAcao | LinhaFii | null): string {
 }
 
 /** Gera (e persiste) a análise completa de um ativo com o Gestor IA. */
-export async function gerarAnaliseIA(
-  ticker: string,
-  lovableApiKey: string,
-): Promise<AnaliseIA | null> {
+export async function gerarAnaliseIA(ticker: string): Promise<AnaliseIA | null> {
   try {
     const [acoesMod, fiisMod] = await Promise.all([
       import("@/lib/acoes.server").catch(() => null),
@@ -1150,13 +1147,15 @@ export async function gerarAnaliseIA(
       '"fatoresExternos":["lista curta de manchetes/fatores que pesaram na decisão, máx 4 itens"]}.';
 
     const { generateText } = await import("ai");
-    const { createLovableAiGatewayProvider } = await import("@/lib/ai-gateway.server");
-    const gateway = createLovableAiGatewayProvider(lovableApiKey);
+    const { criarProvedorIA } = await import("@/lib/ai-gateway.server");
+    const provedor = criarProvedorIA();
+    if (!provedor) return null;
     const resultadoIA = await generateText({
-      model: gateway("openai/gpt-5.5"),
-      providerOptions: {
-        lovable: { max_completion_tokens: 1300 },
-      },
+      model: provedor.gateway(provedor.modelo),
+      providerOptions:
+        provedor.provedor === "lovable"
+          ? { lovable: { max_completion_tokens: 1300 } }
+          : { "user-llm": { max_tokens: 1300 } },
       system,
       prompt,
     });

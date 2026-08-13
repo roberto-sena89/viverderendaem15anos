@@ -142,7 +142,16 @@ VITE_SUPABASE_ANON_KEY=...
 
 Opcional:
 - `BRAPI_TOKEN` — token do brapi.dev para ampliar os limites de cotações.
-- Variáveis `USER_LLM_*` — credenciais do provedor de IA para o assistente.
+- `USER_LLM_API_KEY` — chave de IA gratuita (ex.: OpenRouter). Quando definida, o
+  Gestor IA e o Radar de Oportunidades usam esse provedor em vez do gateway pago
+  da Lovable.
+  - `USER_LLM_BASE_URL` — URL da API compatível com OpenAI (padrão:
+    `https://openrouter.ai/api/v1`).
+  - `USER_LLM_MODEL` — modelo a usar (padrão:
+    `meta-llama/llama-3.3-70b-instruct:free`; alternativas gratuitas:
+    `deepseek/deepseek-chat-v3-0324:free`, `google/gemma-3-27b-it:free`).
+  - Crie a chave gratuita em https://openrouter.ai e defina a variável no painel
+    da Lovable (Settings → Environment variables). Em dev, use `.env.local`.
 
 ## Testes
 
