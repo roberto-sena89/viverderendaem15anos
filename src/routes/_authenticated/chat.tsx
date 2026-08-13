@@ -278,11 +278,11 @@ function ChatPage() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Peça uma auditoria, rebalanceamento, comparação de ativos ou o que está acontecendo no mercado..."
           />
-          <PromptInputFooter className="justify-between">
-            <div className="flex items-center gap-1.5 sm:gap-2">
+          <PromptInputFooter className="flex-wrap justify-between gap-1.5 sm:gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
                 <SelectTrigger
-                  className="h-8 w-[7.5rem] min-w-0 rounded-full text-xs sm:w-36"
+                  className="h-8 w-24 min-w-0 rounded-full text-xs sm:w-36"
                   aria-label="Perfil de investidor"
                 >
                   <SelectValue placeholder="Perfil" />
@@ -322,23 +322,17 @@ function ChatPage() {
                   checked={citacoes}
                   onCheckedChange={alternarCitacoes}
                   onClick={(e) => e.stopPropagation()}
-                  className="ml-1.5 scale-[0.6] sm:ml-2 sm:scale-75"
+                  className="ml-1.5 hidden scale-75 sm:ml-2 sm:block"
                   aria-hidden
                 />
               </Button>
               <DialogoAprendizado />
-              {citacoes ? (
-                <span className="ml-1 hidden rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary sm:inline">
-                  <BookOpenText className="mr-1 inline size-3" />
-                  Citações ativas
-                </span>
-              ) : null}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={gerarRelatorioPdf}
                 disabled={gerandoRelatorio || carregando}
-                className="rounded-full"
+                className="shrink-0 rounded-full"
                 aria-label="Gerar relatório de auditoria em PDF"
                 title="Gerar relatório de auditoria em PDF"
               >
@@ -352,13 +346,13 @@ function ChatPage() {
                 size="sm"
                 onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
                 disabled={carregando}
-                className="rounded-full shadow-[var(--shadow-lift)]"
+                className="shrink-0 rounded-full shadow-[var(--shadow-lift)]"
               >
                 <ShieldCheck className="size-4 shrink-0 sm:mr-2" />
                 <span className="hidden truncate sm:inline">Auditoria</span>
               </Button>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
             </div>
           </PromptInputFooter>
