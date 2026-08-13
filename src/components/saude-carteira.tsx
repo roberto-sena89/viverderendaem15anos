@@ -26,7 +26,7 @@ interface Analise {
   fracos: string[];
 }
 
-/** Mesma metodologia da auditoria do Técnico IA, calculada no cliente. */
+/** Mesma metodologia da auditoria do Gestor IA, calculada no cliente. */
 function analisar(ativos: Ativo[], alvo: Record<string, number>): Analise {
   const totalAtual = ativos.reduce((s, a) => s + valorAtual(a), 0);
   const dividendos = ativos.reduce((s, a) => s + (valorAtual(a) * a.dy) / 100, 0);
@@ -318,7 +318,7 @@ export function SaudeCarteira({ carteira }: { carteira: Ativo[] }) {
       <div className="mt-5 border-t border-border pt-4">
         <Button variant="outline" size="sm" asChild>
           <Link to="/chat">
-            Auditoria completa no Técnico IA
+            Auditoria completa no Gestor IA
             <ArrowRight className="ml-2 size-3.5" />
           </Link>
         </Button>

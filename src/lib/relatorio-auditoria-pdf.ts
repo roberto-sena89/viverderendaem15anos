@@ -38,7 +38,7 @@ function cabecalho(doc: Doc, titulo: string, geradoEm: string) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
   doc.setTextColor(220, 240, 230);
-  doc.text("Relatório de Auditoria de Carteira · Técnico IA", M, 56);
+  doc.text("Relatório de Auditoria de Carteira · Gestor IA", M, 56);
   doc.setFontSize(9);
   doc.text(`Gerado em ${new Date(geradoEm).toLocaleString("pt-BR")}`, M, 72);
 

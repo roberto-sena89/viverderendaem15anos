@@ -27,7 +27,7 @@ export const getRadarAlertas = createServerFn({ method: "GET" })
         ticker: "VALE3",
         tipo: "mudanca",
         titulo: "Mudança no Rating: VALE3",
-        corpo: "O Técnico IA elevou o rating de B para A após novos fundamentos.",
+        corpo: "O Gestor IA elevou o rating de B para A após novos fundamentos.",
         detalhes: {
           ranking: { de: 8, para: 2 },
           dy12m: 8.2,

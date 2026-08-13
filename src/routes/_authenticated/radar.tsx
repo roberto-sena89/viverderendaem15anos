@@ -3,7 +3,7 @@
  *
  * Compara o preço atual com a própria história (desde o lançamento) e cruza
  * com notícias de alto impacto para sugerir comprar / manter / vender, com
- * briefing executivo, contexto macro e o veredito do Técnico IA.
+ * briefing executivo, contexto macro e o veredito do Gestor IA.
  */
 
 import { createFileRoute } from "@tanstack/react-router";
@@ -83,7 +83,7 @@ export const Route = createFileRoute("/_authenticated/radar")({
       {
         name: "description",
         content:
-          "Triagem de todas as ações e FIIs da B3: posição do preço na própria história, janela de 52 semanas, dividend yield, notícias de alto impacto e veredito do Técnico IA.",
+          "Triagem de todas as ações e FIIs da B3: posição do preço na própria história, janela de 52 semanas, dividend yield, notícias de alto impacto e veredito do Gestor IA.",
       },
       {
         property: "og:title",
@@ -107,7 +107,7 @@ const TAMANHO_PAGINA = 50;
 
 /** Percentil máximo para o ativo entrar no "foco de compra" do topo. */
 const FOCO_COMPRA_PERCENTIL_MAX = 45;
-/** Tamanho do lote de análises do Técnico IA (top pelo score). */
+/** Tamanho do lote de análises do Gestor IA (top pelo score). */
 const ALVO_LOTE_IA = 20;
 const TOP_ALERTAS = 5;
 
@@ -420,7 +420,7 @@ function PaginaRadar() {
     }
   };
 
-  /** Lote do Técnico IA: analisa o top 20 pelo score (2 análises em paralelo). */
+  /** Lote do Gestor IA: analisa o top 20 pelo score (2 análises em paralelo). */
   const analisarLote = async () => {
     const visaoAtual = visao;
     if (!visaoAtual) return;

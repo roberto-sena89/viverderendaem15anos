@@ -372,12 +372,12 @@ export function ModalRadar({
       preco: linha.preco,
       limite: 0,
       canais: ["Técnico IA"],
-      titulo: "O Técnico IA mudou de ideia sobre este ativo — confira a nova análise.",
+      titulo: "O Gestor IA mudou de ideia sobre este ativo — confira a nova análise.",
       vereditoDe: mudancaVeredito.de,
       vereditoPara: mudancaVeredito.para,
     });
     notificarPush(
-      `Técnico IA: ${ticker} · de ${ROTULOS_VEREDITO[mudancaVeredito.de] ?? mudancaVeredito.de} para ${ROTULOS_VEREDITO[mudancaVeredito.para] ?? mudancaVeredito.para}`,
+      `Gestor IA: ${ticker} · de ${ROTULOS_VEREDITO[mudancaVeredito.de] ?? mudancaVeredito.de} para ${ROTULOS_VEREDITO[mudancaVeredito.para] ?? mudancaVeredito.para}`,
       "Abra o radar para conferir a nova análise.",
     );
   }, [mudancaVeredito, ticker, linha]);

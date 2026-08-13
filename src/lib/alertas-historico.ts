@@ -16,7 +16,7 @@ export interface AlertaDisparado {
   lido: boolean;
   /** Canais em que o alerta foi entregue. */
   canais: string[];
-  /** Origem do alerta: variação de preço (padrão), notícia ou Técnico IA. */
+  /** Origem do alerta: variação de preço (padrão), notícia ou Gestor IA. */
   tipo?: "preco" | "noticia" | "veredito";
   /** Título da notícia, quando tipo = "noticia". */
   titulo?: string;

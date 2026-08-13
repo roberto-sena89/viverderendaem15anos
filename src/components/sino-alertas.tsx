@@ -86,11 +86,11 @@ export function SinoAlertas() {
                       <p className="truncate text-sm font-semibold">
                         {a.ticker}{" "}
                         <span className="text-amber-600">
-                          Técnico IA: {a.vereditoDe} → {a.vereditoPara}
+                          Gestor IA: {a.vereditoDe} → {a.vereditoPara}
                         </span>
                       </p>
                       <p className="line-clamp-2 text-xs text-muted-foreground">
-                        {a.titulo ?? "O Técnico IA mudou de ideia sobre este ativo."}
+                        {a.titulo ?? "O Gestor IA mudou de ideia sobre este ativo."}
                       </p>
                       <p className="text-[0.7rem] text-muted-foreground">
                         {quando(a.em)} · {a.canais.join(" + ")}

@@ -67,7 +67,7 @@ export function useRadarPosicoes(tickers: string[], habilitado: boolean) {
   };
 }
 
-/** Análise do Técnico IA para o ticker selecionado (cache 72h; versao > 0 força). */
+/** Análise do Gestor IA para o ticker selecionado (cache 72h; versao > 0 força). */
 export function useRadarAnaliseIA(ticker: string | null, versao = 0) {
   const buscar = useServerFn(radarAnaliseIA);
   return useQuery({

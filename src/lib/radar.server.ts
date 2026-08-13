@@ -7,7 +7,7 @@
  * Cache:
  *  - `cotacoes_cache` chave `radar:posicao` -> mapa ticker -> PosicaoHistorica
  *  - `cotacoes_cache` chave `radar:serie:<TICKER>` -> série downsampled
- *  - `cotacoes_cache` chave `radar:ia:<TICKER>` -> análise do Técnico IA (72h)
+ *  - `cotacoes_cache` chave `radar:ia:<TICKER>` -> análise do Gestor IA (72h)
  *  - memória com TTL de 24h (posições e séries) e 15min (contexto macro)
  */
 
