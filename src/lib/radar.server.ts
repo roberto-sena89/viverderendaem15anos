@@ -8,7 +8,7 @@
  *  - `cotacoes_cache` chave `radar:posicao` -> mapa ticker -> PosicaoHistorica
  *  - `cotacoes_cache` chave `radar:serie:<TICKER>` -> série downsampled
  *  - `cotacoes_cache` chave `radar:ia:<TICKER>` -> análise do Gestor IA (72h)
- *  - memória com TTL de 24h (posições e séries) e 15min (contexto macro)
+ *  - memória com TTL de 24h (posições e séries) e 15min (contexto macro) e Análise pelo Gestor IA (cache compartilhado, 72h)
  */
 
 import { buscarHistorico, type Historico } from "@/lib/market.server";
