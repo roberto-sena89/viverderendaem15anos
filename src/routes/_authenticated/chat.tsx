@@ -283,36 +283,6 @@ function ChatPage() {
             </div>
           </div>
 
-          {/* Divisor */}
-          <div className="hidden h-7 w-px shrink-0 bg-border/50 lg:block" />
-
-          {/* Grupo de ações —primary */}
-          <div className="flex flex-1 items-center gap-1.5 sm:gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              role="switch"
-              aria-checked={citacoes}
-              aria-label="Modo citações e justificativas"
-              title="Citações e justificativas: cada recomendação aponta os dados e critérios usados"
-              onClick={() => alternarCitacoes(!citacoes)}
-              className={`min-w-0 rounded-full ${citacoes ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
-            >
-              <BookOpenText className="size-4 shrink-0 sm:mr-2" />
-              <span className="hidden truncate sm:inline">Citações</span>
-              <Switch
-                checked={citacoes}
-                onCheckedChange={alternarCitacoes}
-                onClick={(e) => e.stopPropagation()}
-                className="ml-1.5 scale-[0.6] sm:ml-2 sm:scale-75"
-                aria-hidden
-              />
-            </Button>
-            <DialogoAprendizado />
-          </div>
-
-          {/* Divisor */}
-          <div className="hidden h-7 w-px shrink-0 bg-border/50 sm:block" />
 
           {/* Grupo de configuração — perfil + limpar */}
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
