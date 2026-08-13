@@ -291,18 +291,6 @@ function ChatPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={gerarRelatorioPdf}
-              disabled={gerandoRelatorio}
-              className="min-w-0 rounded-full"
-            >
-              <FileText className="size-4 shrink-0 sm:mr-2" />
-              <span className="hidden truncate sm:inline">
-                {gerandoRelatorio ? "Gerando..." : "Relatório"}
-              </span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
               role="switch"
               aria-checked={citacoes}
               aria-label="Modo citações e justificativas"
@@ -382,6 +370,20 @@ function ChatPage() {
               ) : null}
             </span>
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={gerarRelatorioPdf}
+                disabled={gerandoRelatorio || carregando}
+                className="rounded-full"
+                aria-label="Gerar relatório de auditoria em PDF"
+                title="Gerar relatório de auditoria em PDF"
+              >
+                <FileText className="size-4 shrink-0 sm:mr-2" />
+                <span className="hidden truncate sm:inline">
+                  {gerandoRelatorio ? "Gerando..." : "Relatório"}
+                </span>
+              </Button>
               <Button
                 variant="default"
                 size="sm"
