@@ -202,34 +202,41 @@ function ChatPage() {
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
       <AbasPlanejamento />
-      <div className="flex h-[calc(100dvh-13rem)] min-h-[28rem] flex-col gap-4">
-        <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-card/60 p-3 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4">
-          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
+      <div className="flex h-[calc(100dvh-10rem)] min-h-[30rem] flex-col gap-2.5">
+        {/* Toolbar compacto — logo + ações agrupadas */}
+        <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card/60 p-2 backdrop-blur-sm sm:gap-3 sm:px-3">
+          {/* Logo + nome (oculto no mobile para ganhar espaço) */}
+          <div className="flex min-w-0 shrink-0 items-center gap-2.5">
             <img
               src={logoIA}
               alt="Técnico IA"
               width={512}
               height={512}
               loading="lazy"
-              className="size-9 shrink-0 rounded-xl object-contain ring-1 ring-border/60"
+              className="size-8 shrink-0 rounded-lg object-contain ring-1 ring-border/60"
             />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">Técnico IA</p>
-              <p className="truncate text-xs text-muted-foreground">
-                Análises educativas — não é recomendação de investimento.
+            <div className="hidden min-w-0 lg:block">
+              <p className="truncate text-sm font-semibold leading-tight">Técnico IA</p>
+              <p className="truncate text-[11px] leading-tight text-muted-foreground">
+                Análises educativas — não é recomendação.
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-end">
+
+          {/* Divisor */}
+          <div className="hidden h-7 w-px shrink-0 bg-border/50 lg:block" />
+
+          {/* Grupo de ações —primary */}
+          <div className="flex flex-1 items-center gap-1.5 sm:gap-2">
             <Button
               variant="default"
               size="sm"
               onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
               disabled={carregando}
-              className="min-w-0 rounded-full shadow-[var(--shadow-lift)]"
+              className="min-w-0 rounded-full shadow-[var(--shadow-lift)] sm:px-4"
             >
-              <ShieldCheck className="mr-2 size-4 shrink-0" />
-              <span className="truncate">Auditoria</span>
+              <ShieldCheck className="size-4 shrink-0 sm:mr-2" />
+              <span className="hidden truncate sm:inline">Auditoria</span>
             </Button>
             <Button
               variant="outline"
@@ -238,8 +245,10 @@ function ChatPage() {
               disabled={gerandoRelatorio}
               className="min-w-0 rounded-full"
             >
-              <FileText className="mr-2 size-4 shrink-0" />
-              <span className="truncate">{gerandoRelatorio ? "Gerando..." : "Relatório PDF"}</span>
+              <FileText className="size-4 shrink-0 sm:mr-2" />
+              <span className="hidden truncate sm:inline">
+                {gerandoRelatorio ? "Gerando..." : "Relatório"}
+              </span>
             </Button>
             <Button
               variant="outline"
@@ -251,20 +260,27 @@ function ChatPage() {
               onClick={() => alternarCitacoes(!citacoes)}
               className={`min-w-0 rounded-full ${citacoes ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
             >
-              <BookOpenText className="mr-2 size-4 shrink-0" />
-              <span className="truncate">Citações</span>
+              <BookOpenText className="size-4 shrink-0 sm:mr-2" />
+              <span className="hidden truncate sm:inline">Citações</span>
               <Switch
                 checked={citacoes}
                 onCheckedChange={alternarCitacoes}
                 onClick={(e) => e.stopPropagation()}
-                className="ml-2 scale-75"
+                className="ml-1.5 scale-[0.6] sm:ml-2 sm:scale-75"
                 aria-hidden
               />
             </Button>
             <DialogoAprendizado />
+          </div>
+
+          {/* Divisor */}
+          <div className="hidden h-7 w-px shrink-0 bg-border/50 sm:block" />
+
+          {/* Grupo de configuração — perfil + limpar */}
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
               <SelectTrigger
-                className="w-full min-w-0 rounded-full sm:w-40"
+                className="h-8 w-[7.5rem] min-w-0 rounded-full text-xs sm:w-36"
                 aria-label="Perfil de investidor"
               >
                 <SelectValue placeholder="Perfil" />
@@ -279,13 +295,14 @@ function ChatPage() {
             </Select>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={limpar}
               disabled={messages.length === 0 || carregando}
-              className="min-w-0 rounded-full"
+              className="size-8 shrink-0 rounded-full"
+              aria-label="Limpar conversa"
+              title="Limpar conversa"
             >
-              <Eraser className="mr-2 size-4 shrink-0" />
-              <span className="truncate">Limpar</span>
+              <Eraser className="size-4 shrink-0" />
             </Button>
           </div>
         </div>
