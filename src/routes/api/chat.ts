@@ -1668,6 +1668,26 @@ export const Route = createFileRoute("/api/chat")({
 
         return resultado.toUIMessageStreamResponse({
           originalMessages: messages,
+          onError: (erroOriginal) => {
+            const base = erroOriginal as {
+              statusCode?: number;
+              error?: { statusCode?: number; message?: string };
+              cause?: { message?: string };
+            } & Error;
+            const interno = base.error;
+            const status = interno?.statusCode ?? base.statusCode;
+            const causa = (interno?.message ?? base.cause?.message ?? "")
+              .slice(0, 160);
+            const detalhes = [
+              provedorIA.provedor,
+              modeloChat,
+              status ? `HTTP ${status}` : "",
+              causa ? `detalhe: ${causa}` : "",
+            ]
+              .filter(Boolean)
+              .join(" · ");
+            return `Falha no provedor de IA (${detalhes}). Veja o detalhe completo em Cloud → Logs.`;
+          },
           onFinish: async ({ responseMessage }) => {
             const texto = textoDaMensagem(responseMessage);
             if (!texto) return;
