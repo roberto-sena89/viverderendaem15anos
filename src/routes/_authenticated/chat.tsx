@@ -203,7 +203,68 @@ function ChatPage() {
     >
       <AbasPlanejamento />
       <div className="flex h-[calc(100dvh-7rem)] min-h-[30rem] flex-col gap-2.5">
-        {/* Toolbar compacto — logo + ações agrupadas */}
+        <Conversation className="flex-1 rounded-xl border border-border/60 bg-card/40">
+          <ConversationContent>
+            {historico.isLoading ? (
+              <div className="flex h-full items-center justify-center">
+                <Shimmer>Carregando conversa...</Shimmer>
+              </div>
+            ) : messages.length === 0 ? (
+              <ConversationEmptyState
+                icon={
+                  <img
+                    src={logoIA}
+                    alt=""
+                    width={512}
+                    height={512}
+                    loading="lazy"
+                    className="size-14 object-contain"
+                  />
+                }
+                title="Fale com o Técnico IA PRO"
+                description="Ele conhece seus ativos, aportes, dividendos e metas — e usa dados reais de mercado, notícias e agenda econômica."
+              >
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  {SUGESTOES.map((s) => (
+                    <Button key={s} variant="outline" size="sm" onClick={() => enviar(s)}>
+                      {s}
+                    </Button>
+                  ))}
+                </div>
+              </ConversationEmptyState>
+            ) : (
+              messages.map((message) => {
+                const ferramentas = message.parts
+                  .filter((part) => part.type.startsWith("tool-"))
+                  .map((part) => part.type.replace("tool-", ""));
+                const texto = message.parts
+                  .map((part) => (part.type === "text" ? part.text : ""))
+                  .join("");
+                return (
+                  <Message key={message.id} from={message.role}>
+                    <MessageContent>
+                      {ferramentas.length > 0 ? (
+                        <p className="mb-2 text-xs text-muted-foreground">
+                          <LineChart className="mr-1 inline size-3" />
+                          Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}
+                        </p>
+                      ) : null}
+                      <MessageResponse>{texto}</MessageResponse>
+                    </MessageContent>
+                  </Message>
+                );
+              })
+            )}
+            {status === "submitted" ? (
+              <div className="px-2 pt-2">
+                <Shimmer>Analisando sua carteira...</Shimmer>
+              </div>
+            ) : null}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+
+        {/* Toolbar compacto — logo + ações agrupadas (movido para baixo da conversa) */}
         <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card/60 p-2 backdrop-blur-sm sm:gap-3 sm:px-3">
           {/* Logo + nome (oculto no mobile para ganhar espaço) */}
           <div className="flex min-w-0 shrink-0 items-center gap-2.5">
@@ -307,66 +368,6 @@ function ChatPage() {
           </div>
         </div>
 
-        <Conversation className="flex-1 rounded-xl border border-border/60 bg-card/40">
-          <ConversationContent>
-            {historico.isLoading ? (
-              <div className="flex h-full items-center justify-center">
-                <Shimmer>Carregando conversa...</Shimmer>
-              </div>
-            ) : messages.length === 0 ? (
-              <ConversationEmptyState
-                icon={
-                  <img
-                    src={logoIA}
-                    alt=""
-                    width={512}
-                    height={512}
-                    loading="lazy"
-                    className="size-14 object-contain"
-                  />
-                }
-                title="Fale com o Técnico IA PRO"
-                description="Ele conhece seus ativos, aportes, dividendos e metas — e usa dados reais de mercado, notícias e agenda econômica."
-              >
-                <div className="mt-4 flex flex-wrap justify-center gap-2">
-                  {SUGESTOES.map((s) => (
-                    <Button key={s} variant="outline" size="sm" onClick={() => enviar(s)}>
-                      {s}
-                    </Button>
-                  ))}
-                </div>
-              </ConversationEmptyState>
-            ) : (
-              messages.map((message) => {
-                const ferramentas = message.parts
-                  .filter((part) => part.type.startsWith("tool-"))
-                  .map((part) => part.type.replace("tool-", ""));
-                const texto = message.parts
-                  .map((part) => (part.type === "text" ? part.text : ""))
-                  .join("");
-                return (
-                  <Message key={message.id} from={message.role}>
-                    <MessageContent>
-                      {ferramentas.length > 0 ? (
-                        <p className="mb-2 text-xs text-muted-foreground">
-                          <LineChart className="mr-1 inline size-3" />
-                          Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}
-                        </p>
-                      ) : null}
-                      <MessageResponse>{texto}</MessageResponse>
-                    </MessageContent>
-                  </Message>
-                );
-              })
-            )}
-            {status === "submitted" ? (
-              <div className="px-2 pt-2">
-                <Shimmer>Analisando sua carteira...</Shimmer>
-              </div>
-            ) : null}
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
 
         <PromptInput
           onSubmit={(message: PromptInputMessage, event) => {
