@@ -371,6 +371,20 @@ function ChatPage() {
             </span>
             <div className="flex items-center gap-2">
               <Button
+                variant="outline"
+                size="sm"
+                onClick={gerarRelatorioPdf}
+                disabled={gerandoRelatorio || carregando}
+                className="rounded-full"
+                aria-label="Gerar relatório de auditoria em PDF"
+                title="Gerar relatório de auditoria em PDF"
+              >
+                <FileText className="size-4 shrink-0 sm:mr-2" />
+                <span className="hidden truncate sm:inline">
+                  {gerandoRelatorio ? "Gerando..." : "Relatório"}
+                </span>
+              </Button>
+              <Button
                 variant="default"
                 size="sm"
                 onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
