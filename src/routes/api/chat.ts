@@ -216,7 +216,7 @@ function textoDaMensagem(message: UIMessage) {
  * rejeita com erro "AN ERROR OCCURRED". Descarta do início até caber, sempre
  * mantendo a mensagem atual do usuário.
  */
-const TETO_HISTORICO_CHARS = 60_000;
+const TETO_HISTORICO_CHARS = 16_000;
 
 function apararHistorico(hist: UIMessage[]): UIMessage[] {
   const mantidas = hist.slice();
@@ -1615,6 +1615,7 @@ export const Route = createFileRoute("/api/chat")({
         try {
           resultado = streamText({
             model: gateway(modeloChat),
+            maxOutputTokens: 2048,
             system: SISTEMA.replace("{PERFIL}", perfilValido)
               .concat(
                 modoCitacoes
