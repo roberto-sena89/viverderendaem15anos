@@ -1603,41 +1603,60 @@ export const Route = createFileRoute("/api/chat")({
           }),
         };
 
-        const result = streamText({
-          model: gateway("openai/gpt-5.5"),
-          system: SISTEMA.replace("{PERFIL}", perfilValido)
-            .concat(
-              modoCitacoes
-                ? "\n\n### MODE CITAÇÕES ATIVO (obrigatório)\n" +
-                    "Sempre que você apresentar uma recomendação, veredito, sugestão de ativo ou plano de ação, inclua citações e justificativas rastreáveis. Regras:\n" +
-                    "1. Cite a fonte e a data/periodo de cada numero usado (ex.: 'cotação de 10/08/2026 via cotacao', 'série de 5 anos via historico', 'grade fundamentalista da B3 atualizada em 10/08/2026 via fundamentosAcao').\n" +
-                    "2. Para cada recomendação, diga explicitamente quais dados e critérios sustentaram a decisão (ex.: 'DY 8,2% acima da média do setor', 'P/VP 0,85 indica desconto', 'percentil 23% na série histórica').\n" +
-                    "3. Não invente números: todo dado citado deve vir de uma ferramenta executada nesta conversa. Se um numero for estimativa ou premissa, rotule como tal.\n" +
-                    "4. Sempre que houver uma recomendação (comprar/vender/manter/aportar/rebalancear), encerre com uma seção '📌 Dados e critérios usados' em lista, apontando numero, fonte, data e critério aplicado.\n" +
-                    "5. Se um dado vier do contexto da carteira do usuário (patrimônio, aportes, metas), identifique a origem (ex.: 'registro de aportes do usuário')."
-                : "",
-            )
-            .concat(
-              `\n\n### Carteira atual do usuário\n${contexto}\n\n### Metas financeiras do usuário\n${contextoMetas}`,
-            )
-            .concat(
-              (habilidades ?? []).length
-                ? "\n\n### Habilidades aprendidas pelo Técnico IA (ativas)\n" +
-                    (habilidades ?? [])
-                      .map(
-                        (h) =>
-                          `#### ${h.titulo}\nO usuário ensinou esta habilidade — siga-a em todas as conversas enquanto estiver ativa.\n${h.instrucao}`,
-                      )
-                      .join("\n\n")
-                : "",
-            )
-            .concat(`\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`),
-          messages: await convertToModelMessages(apararHistorico(messages)),
-          tools: ferramentas,
-          stopWhen: stepCountIs(50),
-        });
+        const mensagensAparadas = apararHistorico(messages);
+        console.info(
+          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo openai/gpt-5.5`,
+        );
 
-        return result.toUIMessageStreamResponse({
+        let resultado;
+        try {
+          resultado = streamText({
+            model: gateway("openai/gpt-5.5"),
+            system: SISTEMA.replace("{PERFIL}", perfilValido)
+              .concat(
+                modoCitacoes
+                  ? "\n\n### MODE CITAÇÕES ATIVO (obrigatório)\n" +
+                      "Sempre que você apresentar uma recomendação, veredito, sugestão de ativo ou plano de ação, inclua citações e justificativas rastreáveis. Regras:\n" +
+                      "1. Cite a fonte e a data/periodo de cada numero usado (ex.: 'cotação de 10/08/2026 via cotacao', 'série de 5 anos via historico', 'grade fundamentalista da B3 atualizada em 10/08/2026 via fundamentosAcao').\n" +
+                      "2. Para cada recomendação, diga explicitamente quais dados e critérios sustentaram a decisão (ex.: 'DY 8,2% acima da média do setor', 'P/VP 0,85 indica desconto', 'percentil 23% na série histórica').\n" +
+                      "3. Não invente números: todo dado citado deve vir de uma ferramenta executada nesta conversa. Se um numero for estimativa ou premissa, rotule como tal.\n" +
+                      "4. Sempre que houver uma recomendação (comprar/vender/manter/aportar/rebalancear), encerre com uma seção '📌 Dados e critérios usados' em lista, apontando numero, fonte, data e critério aplicado.\n" +
+                      "5. Se um dado vier do contexto da carteira do usuário (patrimônio, aportes, metas), identifique a origem (ex.: 'registro de aportes do usuário')."
+                  : "",
+              )
+              .concat(
+                `\n\n### Carteira atual do usuário\n${contexto}\n\n### Metas financeiras do usuário\n${contextoMetas}`,
+              )
+              .concat(
+                (habilidades ?? []).length
+                  ? "\n\n### Habilidades aprendidas pelo Técnico IA (ativas)\n" +
+                      (habilidades ?? [])
+                        .map(
+                          (h) =>
+                            `#### ${h.titulo}\nO usuário ensinou esta habilidade — siga-a em todas as conversas enquanto estiver ativa.\n${h.instrucao}`,
+                        )
+                        .join("\n\n")
+                  : "",
+              )
+              .concat(`\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`),
+            messages: await convertToModelMessages(mensagensAparadas),
+            tools: ferramentas,
+            stopWhen: stepCountIs(50),
+            onError: ({ error: erroOriginal }) => {
+              const err = erroOriginal as { statusCode?: number } & Error;
+              console.error(
+                `[chat] erro no stream do gateway (${userId}): status=${err?.statusCode ?? "?"} nome=${err?.name ?? "?"} msg=${err?.message ?? String(erroOriginal)}`,
+              );
+            },
+          });
+        } catch (e) {
+          console.error(
+            `[chat] erro ao criar stream (${userId}): ${e instanceof Error ? e.message : String(e)}`,
+          );
+          throw e;
+        }
+
+        return resultado.toUIMessageStreamResponse({
           originalMessages: messages,
           onFinish: async ({ responseMessage }) => {
             const texto = textoDaMensagem(responseMessage);
