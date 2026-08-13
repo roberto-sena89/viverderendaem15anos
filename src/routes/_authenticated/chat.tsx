@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpenText, Eraser, FileText, LineChart, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
+import { OnboardingGestorIA } from "@/components/ai-elements/onboarding-gestor-ia";
 
 import { Switch } from "@/components/ui/switch";
 import {
@@ -81,6 +82,9 @@ function ChatPage() {
   const fetchMensagens = useServerFn(listarMensagens);
   const clearFn = useServerFn(limparConversa);
   const { perfil, salvar } = usePerfilInvestidor();
+  const [showOnboarding, setShowOnboarding] = useState(() => 
+    typeof window !== "undefined" ? !window.localStorage.getItem("gestor-ia-onboarded") : false
+  );
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [input, setInput] = useState("");
   const [citacoes, setCitacoes] = useState(() =>
@@ -202,7 +206,15 @@ function ChatPage() {
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
       <div className="flex h-[calc(100dvh-var(--altura-cabecalho-app,0px)-3rem)] min-h-0 flex-col gap-2.5 sm:h-[calc(100dvh-var(--altura-cabecalho-app,0px)-4rem)]">
-        <Conversation className="min-h-0 flex-1 rounded-xl border border-border/60 bg-card/40">
+        {showOnboarding ? (
+          <div className="flex flex-1 items-center justify-center p-4">
+            <OnboardingGestorIA onComplete={() => {
+              setShowOnboarding(false);
+              window.localStorage.setItem("gestor-ia-onboarded", "true");
+            }} />
+          </div>
+        ) : (
+          <Conversation className="min-h-0 flex-1 rounded-xl border border-border/60 bg-card/40">
           <ConversationContent>
             {historico.isLoading ? (
               <div className="flex h-full items-center justify-center">
@@ -262,6 +274,7 @@ function ChatPage() {
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
+        )}
 
         <PromptInput
           onSubmit={(message: PromptInputMessage, event) => {
