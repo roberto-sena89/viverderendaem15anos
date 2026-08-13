@@ -128,8 +128,8 @@ function ChatPage() {
       toast.error("Não foi possível falar com o Técnico IA", {
         description: error.message.includes("429")
           ? "Muitas mensagens em sequência. Aguarde alguns instantes."
-          : error.message.includes("402")
-            ? "Os créditos de IA do workspace acabaram."
+          : error.message.includes("402") || /payment required/i.test(error.message)
+            ? "Os créditos de IA do workspace acabaram. Adicione créditos em Configurações → Planos e uso dentro da Lovable."
             : error.message,
       }),
   });
