@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpenText, Eraser, FileText, LineChart, RefreshCw, ShieldCheck } from "lucide-react";
+import { BookOpenText, Eraser, FileText, LineChart, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 
