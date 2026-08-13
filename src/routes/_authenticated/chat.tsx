@@ -333,8 +333,6 @@ function ChatPage() {
                   Citações ativas
                 </span>
               ) : null}
-            </div>
-            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -359,6 +357,8 @@ function ChatPage() {
                 <ShieldCheck className="size-4 shrink-0 sm:mr-2" />
                 <span className="hidden truncate sm:inline">Auditoria</span>
               </Button>
+            </div>
+            <div className="flex items-center gap-2">
               <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
             </div>
           </PromptInputFooter>
