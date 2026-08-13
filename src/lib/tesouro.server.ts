@@ -4,11 +4,17 @@
  * Dataset "Taxas dos Títulos Ofertados pelo Tesouro Direto":
  * https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto
  *
- * O CSV traz a série completa desde 2005 (~14 MB). Ele é lido em streaming
- * (sem carregar o arquivo inteiro na memória), guardando a linha mais recente
- * de cada título e uma série curta (últimos ~18 meses) para os gráficos.
- * Como o Tesouro publica preços uma vez por dia útil, o resultado fica em
- * cache por 6 horas.
+ * O CSV traz a série completa desde 2005 (~14 MB, sem gzip e sem suporte a
+ * Range — o servidor ignora cabeçalhos de intervalo e entrega o arquivo
+ * inteiro). Ele é lido em streaming (sem carregar o arquivo inteiro na
+ * memória), guardando a linha mais recente de cada título e uma série curta
+ * (últimos ~18 meses) para os gráficos.
+ *
+ * Como o download pode demorar 15–40s e o Tesouro publica preços uma vez por
+ * dia útil, esta função usa stale-while-revalidate: devolve o último dado bom
+ * enquanto revalida em segundo plano, deduplica downloads concorrentes
+ * (emVoo) e nunca lança exceção (falha -> stale ou lista vazia). Assim uma
+ * chamada lenta nunca quebra o stream do chat.
  */
 
 const CSV_TESOURO =
@@ -28,8 +34,15 @@ export type TituloTesouro = {
   serie: PontoTesouro[];
 };
 
-let cache: { expira: number; valor: TituloTesouro[] } | null = null;
+let cache: { valor: TituloTesouro[]; expira: number } | null = null;
+let emVoo: Promise<TituloTesouro[]> | null = null;
+/** Não tenta baixar de novo antes deste instante após uma falha. */
+let proximaTentativa = 0;
 const TTL_MS = 6 * 60 * 60 * 1000;
+/** Aborta o download cedo o bastante para não estourar o limite do chat. */
+const TIMEOUT_MS = 15_000;
+/** Espera entre tentativas após uma falha (o arquivo é caro de baixar). */
+const RECUPERACAO_MS = 5 * 60 * 1000;
 
 const numero = (v: string) => {
   const n = Number(v.trim().replace(/\./g, "").replace(",", "."));
@@ -99,12 +112,10 @@ function amostrar(serie: PontoTesouro[], max = 180): PontoTesouro[] {
   return saida;
 }
 
-/** Preço e taxa mais recentes de cada título público. */
-export async function listarTesouroDireto(): Promise<TituloTesouro[]> {
-  if (cache && cache.expira > Date.now()) return cache.valor;
-
+/** Baixa e processa o CSV oficial em streaming (com timeout rígido). */
+async function baixar(): Promise<TituloTesouro[]> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 120000);
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(CSV_TESOURO, {
       headers: { Accept: "text/csv" },
@@ -126,14 +137,37 @@ export async function listarTesouroDireto(): Promise<TituloTesouro[]> {
     }
     if (resto) processarLinha(resto, mapa, corte);
 
-    const titulos = [...mapa.values()]
+    return [...mapa.values()]
       .map((t) => ({ ...t, serie: amostrar(t.serie) }))
       .sort((a, b) => (a.vencimento ?? "").localeCompare(b.vencimento ?? ""));
-    cache = { valor: titulos, expira: Date.now() + TTL_MS };
-    return titulos;
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * Preço e taxa mais recentes de cada título público.
+ * Stale-while-revalidate: nunca bloqueia o chamador por mais de TIMEOUT_MS
+ * nem lança exceção — falha devolve o último dado bom (ou lista vazia).
+ */
+export async function listarTesouroDireto(): Promise<TituloTesouro[]> {
+  if (cache && cache.expira > Date.now()) return cache.valor;
+  if (emVoo) return emVoo;
+  if (Date.now() < proximaTentativa) return cache ? cache.valor : [];
+
+  emVoo = (async () => {
+    try {
+      const titulos = await baixar();
+      if (titulos.length) cache = { valor: titulos, expira: Date.now() + TTL_MS };
+      return titulos;
+    } catch {
+      proximaTentativa = Date.now() + RECUPERACAO_MS;
+      return cache ? cache.valor : [];
+    } finally {
+      emVoo = null;
+    }
+  })();
+  return emVoo;
 }
 
 const normalizar = (t: string) =>
