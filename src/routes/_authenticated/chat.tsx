@@ -383,7 +383,19 @@ function ChatPage() {
                 </span>
               ) : null}
             </span>
-            <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
+            <div className="flex items-center gap-2">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
+                disabled={carregando}
+                className="rounded-full shadow-[var(--shadow-lift)]"
+              >
+                <ShieldCheck className="size-4 shrink-0 sm:mr-2" />
+                <span className="hidden truncate sm:inline">Auditoria</span>
+              </Button>
+              <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
+            </div>
           </PromptInputFooter>
         </PromptInput>
       </div>
