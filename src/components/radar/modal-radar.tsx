@@ -1,7 +1,7 @@
 /**
  * Ficha do ativo no Radar — gráfico da série completa desde o início,
  * posição histórica, janela de 52 semanas, ficha fundamentalista, notícias
- * relacionadas e análise do Técnico IA (com fatos externos em tempo real).
+ * relacionadas e análise do Gestor IA (com fatos externos em tempo real).
  */
 
 import { useEffect, useMemo, useState } from "react";
@@ -371,7 +371,7 @@ export function ModalRadar({
       variacaoPercent: 0,
       preco: linha.preco,
       limite: 0,
-      canais: ["Técnico IA"],
+      canais: ["Gestor IA"],
       titulo: "O Gestor IA mudou de ideia sobre este ativo — confira a nova análise.",
       vereditoDe: mudancaVeredito.de,
       vereditoPara: mudancaVeredito.para,

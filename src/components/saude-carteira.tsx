@@ -184,7 +184,7 @@ export function SaudeCarteira({ carteira }: { carteira: Ativo[] }) {
   return (
     <Panel
       title="Saúde da carteira"
-      hint="Score de diversificação e risco, na mesma metodologia do Técnico IA."
+      hint="Score de diversificação e risco, na mesma metodologia do Gestor IA."
       action={
         <Badge variant="secondary" className="gap-1">
           <ShieldCheck className="size-3" />

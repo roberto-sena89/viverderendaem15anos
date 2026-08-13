@@ -198,7 +198,7 @@ function ChatPage() {
 
   return (
     <AppShell
-      title="Técnico IA"
+      title="Gestor IA"
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
       <div className="flex h-[calc(100dvh-var(--altura-cabecalho-app,0px)-3rem)] min-h-0 flex-col gap-2.5 sm:h-[calc(100dvh-var(--altura-cabecalho-app,0px)-4rem)]">
