@@ -260,10 +260,8 @@ function ChatPage() {
               </div>
             ) : null}
           </ConversationContent>
-        <ConversationScrollButton />
-      </Conversation>
-
-
+          <ConversationScrollButton />
+        </Conversation>
 
         <PromptInput
           onSubmit={(message: PromptInputMessage, event) => {
