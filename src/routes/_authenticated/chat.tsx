@@ -202,7 +202,7 @@ function ChatPage() {
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
       <AbasPlanejamento />
-      <div className="flex h-[calc(100dvh-10rem)] min-h-[30rem] flex-col gap-2.5">
+      <div className="flex h-[calc(100dvh-7rem)] min-h-[30rem] flex-col gap-2.5">
         {/* Toolbar compacto — logo + ações agrupadas */}
         <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card/60 p-2 backdrop-blur-sm sm:gap-3 sm:px-3">
           {/* Logo + nome (oculto no mobile para ganhar espaço) */}
