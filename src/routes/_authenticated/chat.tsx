@@ -291,18 +291,6 @@ function ChatPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={gerarRelatorioPdf}
-              disabled={gerandoRelatorio}
-              className="min-w-0 rounded-full"
-            >
-              <FileText className="size-4 shrink-0 sm:mr-2" />
-              <span className="hidden truncate sm:inline">
-                {gerandoRelatorio ? "Gerando..." : "Relatório"}
-              </span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
               role="switch"
               aria-checked={citacoes}
               aria-label="Modo citações e justificativas"
