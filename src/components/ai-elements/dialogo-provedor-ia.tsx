@@ -41,7 +41,7 @@ export function DialogoProvedorIA() {
 
   function escolherPreset(id: string) {
     if (id === "lovable") {
-      setRascunho({ ...CONFIG_PADRAO });
+      setRascunho({ ...CONFIG_PADRAO, chavesPorProvedor: rascunho.chavesPorProvedor });
       return;
     }
     const alvo = PRESETS_PROVEDOR.find((p) => p.id === id);
@@ -49,13 +49,16 @@ export function DialogoProvedorIA() {
       preset: id,
       baseUrl: alvo?.baseUrl ?? "",
       modelo: alvo?.modelos[0] ?? "",
-      chave: rascunho.preset === id ? rascunho.chave : "",
+      // lembra a chave já usada neste navegador para o provedor escolhido
+      chave:
+        rascunho.preset === id ? rascunho.chave : (rascunho.chavesPorProvedor[id] ?? ""),
+      chavesPorProvedor: rascunho.chavesPorProvedor,
     });
   }
 
   function confirmar() {
     if (rascunho.preset === "lovable") {
-      limpar();
+      salvar({ ...CONFIG_PADRAO, chavesPorProvedor: rascunho.chavesPorProvedor });
       toast.success("Gestor IA voltou a usar a IA nativa da plataforma");
       setAberto(false);
       return;
@@ -66,10 +69,11 @@ export function DialogoProvedorIA() {
     }
     salvar(rascunho);
     toast.success("Provedor de IA configurado", {
-      description: `${preset?.nome ?? "Personalizado"} · ${rascunho.modelo}`,
+      description: `${preset?.nome ?? "Personalizado"} · ${rascunho.modelo} · salvo neste navegador`,
     });
     setAberto(false);
   }
+
 
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
