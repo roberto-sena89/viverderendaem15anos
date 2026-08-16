@@ -10,7 +10,10 @@ export interface ConfigProvedorIA {
   modelo: string;
   /** Chave de API do provedor — fica salva apenas neste navegador. */
   chave: string;
+  /** Chaves guardadas por provedor, para lembrar ao alternar entre eles. */
+  chavesPorProvedor: Record<string, string>;
 }
+
 
 export interface PresetProvedor {
   id: string;
