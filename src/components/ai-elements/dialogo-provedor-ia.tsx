@@ -7,6 +7,7 @@ import {
   Plug,
   PlugZap,
   Sparkles,
+  Trash2,
   XCircle,
 } from "lucide-react";
 
@@ -35,7 +36,11 @@ import {
   PRESETS_PROVEDOR,
   provedorAtivo,
   useProvedorIA,
+  limparHistoricoTestes,
+  lerHistoricoTestes,
+  registrarTeste,
   type ConfigProvedorIA,
+  type RegistroTesteConexao,
 } from "@/lib/provedor-ia";
 import {
   testarProvedorIA,
@@ -48,12 +53,14 @@ export function DialogoProvedorIA() {
   const [rascunho, setRascunho] = useState<ConfigProvedorIA>(config);
   const [testando, setTestando] = useState(false);
   const [teste, setTeste] = useState<ResultadoTesteProvedor | null>(null);
+  const [historico, setHistorico] = useState<RegistroTesteConexao[]>([]);
   const executarTeste = useServerFn(testarProvedorIA);
 
   useEffect(() => {
     if (aberto) {
       setRascunho(config);
       setTeste(null);
+      setHistorico(lerHistoricoTestes());
     }
   }, [aberto, config]);
 
@@ -65,11 +72,35 @@ export function DialogoProvedorIA() {
         data: { baseUrl: rascunho.baseUrl.trim(), chave: rascunho.chave.trim() },
       });
       setTeste(resultado);
+      const nomeProvedor =
+        PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset)?.nome ?? "Personalizado";
+      registrarTeste({
+        provedor: nomeProvedor,
+        ok: resultado.ok,
+        status: resultado.status,
+        resumo: resultado.mensagem,
+      });
+      setHistorico(lerHistoricoTestes());
       if (resultado.ok) toast.success(resultado.mensagem);
       else toast.error("Falha na conexão", { description: resultado.mensagem });
     } catch (erro) {
       const mensagem = erro instanceof Error ? erro.message : "Erro inesperado no teste";
-      setTeste({ ok: false, status: 0, mensagem, modelos: [] });
+      const fallback: ResultadoTesteProvedor = {
+        ok: false,
+        status: 0,
+        mensagem,
+        modelos: [],
+      };
+      setTeste(fallback);
+      const nomeProvedor =
+        PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset)?.nome ?? "Personalizado";
+      registrarTeste({
+        provedor: nomeProvedor,
+        ok: false,
+        status: 0,
+        resumo: mensagem,
+      });
+      setHistorico(lerHistoricoTestes());
       toast.error("Falha ao testar conexão", { description: mensagem });
     } finally {
       setTestando(false);
@@ -333,6 +364,87 @@ export function DialogoProvedorIA() {
                     </div>
                   </div>
                 )}
+
+                {/* Histórico de testes de conexão — diagnóstico client-side */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-muted-foreground text-xs">
+                      Histórico de testes ({historico.length})
+                    </p>
+                    {historico.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          limparHistoricoTestes();
+                          setHistorico([]);
+                          toast.success("Histórico de testes limpo");
+                        }}
+                        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11px] transition-colors"
+                        title="Limpar histórico de testes"
+                      >
+                        <Trash2 className="size-3" /> Limpar
+                      </button>
+                    )}
+                  </div>
+                  {historico.length === 0 ? (
+                    <p className="text-muted-foreground/70 py-2 text-center text-[11px]">
+                      Nenhum teste registrado ainda. Use “Testar conexão” para começar.
+                    </p>
+                  ) : (
+                    <ul className="border-border/60 max-h-40 space-y-1 overflow-y-auto rounded-lg border p-2">
+                      {historico.map((r) => (
+                        <li
+                          key={r.timestamp}
+                          className="flex items-start gap-2 rounded-md px-1.5 py-1 text-[11px]"
+                        >
+                          <span
+                            className={`mt-0.5 flex size-3.5 shrink-0 items-center justify-center rounded-full ${
+                              r.ok
+                                ? "bg-positive/15 text-positive"
+                                : "bg-negative/15 text-negative"
+                            }`}
+                            aria-label={r.ok ? "Sucesso" : "Falha"}
+                          >
+                            {r.ok ? (
+                              <CheckCircle2 className="size-2.5" />
+                            ) : (
+                              <XCircle className="size-2.5" />
+                            )}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="flex items-center gap-1.5">
+                              <span className="truncate font-medium">
+                                {r.provedor}
+                              </span>
+                              <span className="text-muted-foreground shrink-0">
+                                {new Date(r.timestamp).toLocaleString("pt-BR", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                              {r.status ? (
+                                <span
+                                  className={`shrink-0 rounded px-1 font-mono text-[10px] ${
+                                    r.ok
+                                      ? "bg-positive/10 text-positive"
+                                      : "bg-negative/10 text-negative"
+                                  }`}
+                                >
+                                  {r.status}
+                                </span>
+                              ) : null}
+                            </p>
+                            <p className="text-muted-foreground truncate">
+                              {r.resumo}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
 
             </>

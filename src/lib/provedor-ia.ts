@@ -170,3 +170,64 @@ export function cabecalhosProvedor(config: ConfigProvedorIA): Record<string, str
     "X-IA-Chave": config.chave.trim(),
   };
 }
+
+
+// ──────────────────────────────────────────────────────────────────────────
+// Histórico de testes de conexão (localStorage — diagnóstico client-side)
+// ──────────────────────────────────────────────────────────────────────────
+
+export interface RegistroTesteConexao {
+  /** ISO timestamp do teste. */
+  timestamp: string;
+  /** Nome amigável do provedor testado (ex.: "OpenRouter (modelos :free)"). */
+  provedor: string;
+  /** true = sucesso, false = falha. */
+  ok: boolean;
+  /** Código HTTP retornado (0 para erros de rede). */
+  status: number;
+  /** Resumo do resultado (ex.: "Conexão validada · 42 modelos"). */
+  resumo: string;
+}
+
+const CHAVE_HISTORICO = "gestor-ia-testes-conexao";
+const LIMITE_HISTORICO = 12;
+
+export function lerHistoricoTestes(): RegistroTesteConexao[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const bruto = window.localStorage.getItem(CHAVE_HISTORICO);
+    if (!bruto) return [];
+    const dados = JSON.parse(bruto);
+    return Array.isArray(dados)
+      ? dados.filter(
+          (d) =>
+            d &&
+            typeof d.timestamp === "string" &&
+            typeof d.provedor === "string" &&
+            typeof d.ok === "boolean" &&
+            typeof d.status === "number",
+        )
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Adiciona um registro ao histórico (mantém os últimos 12, mais novos primeiro). */
+export function registrarTeste(registro: Omit<RegistroTesteConexao, "timestamp">) {
+  if (typeof window === "undefined") return;
+  try {
+    const atual = lerHistoricoTestes();
+    const novo: RegistroTesteConexao = { timestamp: new Date().toISOString(), ...registro };
+    const atualizado = [novo, ...atual].slice(0, LIMITE_HISTORICO);
+    window.localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(atualizado));
+  } catch {
+    /* ignore — só diagnóstico client-side */
+  }
+}
+
+export function limparHistoricoTestes() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(CHAVE_HISTORICO);
+}
+
