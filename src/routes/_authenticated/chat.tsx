@@ -45,7 +45,11 @@ import logoIA from "@/assets/tecnico-ia.png";
 import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/chat")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    q: typeof search["q"] === "string" ? (search["q"] as string) : undefined,
+  }),
   component: ChatPage,
+
   head: () => ({
     meta: [
       { title: "Gestor IA — Assistente da sua carteira | Investidor em 15 Anos" },
