@@ -274,21 +274,62 @@ export function DialogoProvedorIA() {
                     <p className="text-muted-foreground text-xs">
                       Modelos disponíveis — clique para usar:
                     </p>
-                    <div className="border-border/60 flex max-h-40 flex-wrap gap-1.5 overflow-y-auto rounded-lg border p-2">
-                      {teste.modelos.map((m) => (
-                        <button
-                          key={m}
-                          type="button"
-                          onClick={() => setRascunho({ ...rascunho, modelo: m })}
-                          className={`rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
-                            rascunho.modelo === m
-                              ? "border-primary/60 bg-primary/10 text-primary"
-                              : "border-border text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          {m}
-                        </button>
-                      ))}
+                    <div className="border-border/60 max-h-48 space-y-1 overflow-y-auto rounded-lg border p-2">
+                      {teste.modelos.map((m) => {
+                        const selecionado = rascunho.modelo === m;
+                        return (
+                          <div
+                            key={m}
+                            className={`flex items-center justify-between gap-2 rounded-md border px-2 py-1 transition-colors ${
+                              selecionado
+                                ? "border-primary/60 bg-primary/10"
+                                : "border-transparent hover:bg-muted/50"
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setRascunho({ ...rascunho, modelo: m })}
+                              className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+                              title="Selecionar modelo"
+                            >
+                              <span
+                                className={`flex h-2 w-2 shrink-0 rounded-full ${
+                                  selecionado ? "bg-primary" : "bg-muted-foreground/40"
+                                }`}
+                              />
+                              <span
+                                className={`truncate font-mono text-[11px] ${
+                                  selecionado
+                                    ? "text-primary"
+                                    : "text-muted-foreground"
+                                }`}
+                              >
+                                {m}
+                              </span>
+                            </button>
+                            <button
+                              type="button"
+                              disabled={selecionado}
+                              onClick={() => setRascunho({ ...rascunho, modelo: m })}
+                              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                                selecionado
+                                  ? "bg-primary/20 text-primary"
+                                  : "bg-primary/10 text-primary hover:bg-primary/20"
+                              }`}
+                            >
+                              {selecionado ? (
+                                <>
+                                  <CheckCircle2 className="size-3" /> Em uso
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="size-3" /> Usar este modelo
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
