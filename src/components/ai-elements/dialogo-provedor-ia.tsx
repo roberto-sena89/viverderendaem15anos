@@ -7,6 +7,7 @@ import {
   Plug,
   PlugZap,
   Sparkles,
+  Trash2,
   XCircle,
 } from "lucide-react";
 
@@ -35,7 +36,11 @@ import {
   PRESETS_PROVEDOR,
   provedorAtivo,
   useProvedorIA,
+  limparHistoricoTestes,
+  lerHistoricoTestes,
+  registrarTeste,
   type ConfigProvedorIA,
+  type RegistroTesteConexao,
 } from "@/lib/provedor-ia";
 import {
   testarProvedorIA,
