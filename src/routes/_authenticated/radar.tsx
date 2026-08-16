@@ -536,7 +536,25 @@ function PaginaRadar() {
               ? `${lote.atual || "…"} ${lote.processados}/${lote.total}`
               : "Analisar top 20 com IA"}
           </Button>
+          <Button
+            variant="default"
+            size="sm"
+            className="h-9 gap-2"
+            onClick={() =>
+              void navegar({
+                to: "/chat",
+                search: {
+                  q: `Analise o Radar de Oportunidades de ${categoria === "acao" ? "ações" : "FIIs"} usando a ferramenta radarOportunidades: destaque os melhores sinais de compra, compare com a minha carteira e diga o que devo fazer agora.`,
+                },
+              })
+            }
+            title="Levar a visão atual do Radar para o Gestor IA"
+          >
+            <MessageSquare className="size-4 shrink-0" aria-hidden />
+            Perguntar ao Gestor IA
+          </Button>
         </div>
+
       </header>
 
       {isPending ? (
