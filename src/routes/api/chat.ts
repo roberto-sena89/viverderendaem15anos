@@ -375,7 +375,7 @@ export const Route = createFileRoute("/api/chat")({
         const lovableApiKey = process.env.LOVABLE_API_KEY;
         if (!supabaseUrl || !supabaseKey)
           return new Response("Backend não configurado", { status: 500 });
-        if (!lovableApiKey) return new Response("IA não configurada", { status: 500 });
+
 
         const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
           auth: { persistSession: false, autoRefreshToken: false },
