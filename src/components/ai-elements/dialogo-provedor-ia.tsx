@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Plug, Sparkles } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  CheckCircle2,
+  ExternalLink,
+  Loader2,
+  Plug,
+  PlugZap,
+  Sparkles,
+  XCircle,
+} from "lucide-react";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,15 +37,45 @@ import {
   useProvedorIA,
   type ConfigProvedorIA,
 } from "@/lib/provedor-ia";
+import {
+  testarProvedorIA,
+  type ResultadoTesteProvedor,
+} from "@/lib/testar-provedor.functions";
 
 export function DialogoProvedorIA() {
   const { config, salvar, limpar, ativo } = useProvedorIA();
   const [aberto, setAberto] = useState(false);
   const [rascunho, setRascunho] = useState<ConfigProvedorIA>(config);
+  const [testando, setTestando] = useState(false);
+  const [teste, setTeste] = useState<ResultadoTesteProvedor | null>(null);
+  const executarTeste = useServerFn(testarProvedorIA);
 
   useEffect(() => {
-    if (aberto) setRascunho(config);
+    if (aberto) {
+      setRascunho(config);
+      setTeste(null);
+    }
   }, [aberto, config]);
+
+  async function testarConexao() {
+    setTestando(true);
+    setTeste(null);
+    try {
+      const resultado = await executarTeste({
+        data: { baseUrl: rascunho.baseUrl.trim(), chave: rascunho.chave.trim() },
+      });
+      setTeste(resultado);
+      if (resultado.ok) toast.success(resultado.mensagem);
+      else toast.error("Falha na conexão", { description: resultado.mensagem });
+    } catch (erro) {
+      const mensagem = erro instanceof Error ? erro.message : "Erro inesperado no teste";
+      setTeste({ ok: false, status: 0, mensagem, modelos: [] });
+      toast.error("Falha ao testar conexão", { description: mensagem });
+    } finally {
+      setTestando(false);
+    }
+  }
+
 
   const preset = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
 
@@ -188,6 +228,72 @@ export function DialogoProvedorIA() {
                   </a>
                 )}
               </div>
+
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  disabled={testando || !rascunho.baseUrl.trim() || !rascunho.chave.trim()}
+                  onClick={testarConexao}
+                >
+                  {testando ? (
+                    <Loader2 className="mr-1.5 size-4 animate-spin" />
+                  ) : (
+                    <PlugZap className="mr-1.5 size-4" />
+                  )}
+                  Testar conexão
+                </Button>
+
+                {teste && (
+                  <div
+                    className={`rounded-lg border p-3 text-xs ${
+                      teste.ok
+                        ? "border-positive/40 bg-positive/10 text-positive"
+                        : "border-negative/40 bg-negative/10 text-negative"
+                    }`}
+                    role="status"
+                  >
+                    <p className="flex items-start gap-1.5 font-medium">
+                      {teste.ok ? (
+                        <CheckCircle2 className="mt-px size-3.5 shrink-0" />
+                      ) : (
+                        <XCircle className="mt-px size-3.5 shrink-0" />
+                      )}
+                      <span className="break-words">
+                        {teste.mensagem}
+                        {teste.status ? ` (HTTP ${teste.status})` : ""}
+                      </span>
+                    </p>
+                  </div>
+                )}
+
+                {teste?.ok && teste.modelos.length > 0 && (
+                  <div className="space-y-1.5">
+                    <p className="text-muted-foreground text-xs">
+                      Modelos disponíveis — clique para usar:
+                    </p>
+                    <div className="border-border/60 flex max-h-40 flex-wrap gap-1.5 overflow-y-auto rounded-lg border p-2">
+                      {teste.modelos.map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setRascunho({ ...rascunho, modelo: m })}
+                          className={`rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                            rascunho.modelo === m
+                              ? "border-primary/60 bg-primary/10 text-primary"
+                              : "border-border text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
             </>
           )}
         </div>
