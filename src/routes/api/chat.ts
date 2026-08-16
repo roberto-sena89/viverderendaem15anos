@@ -375,7 +375,7 @@ export const Route = createFileRoute("/api/chat")({
         const lovableApiKey = process.env.LOVABLE_API_KEY;
         if (!supabaseUrl || !supabaseKey)
           return new Response("Backend não configurado", { status: 500 });
-        if (!lovableApiKey) return new Response("IA não configurada", { status: 500 });
+
 
         const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
           auth: { persistSession: false, autoRefreshToken: false },
@@ -503,10 +503,12 @@ export const Route = createFileRoute("/api/chat")({
         const iaChave = request.headers.get("x-ia-chave")?.trim();
         const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
 
-        const gateway = createLovableAiGatewayProvider(
-          lovableApiKey,
-          getLovableAiGatewayRunId(request),
-        );
+        if (!provedorExterno && !lovableApiKey) {
+          return new Response(
+            "A IA nativa não está configurada. Configure um provedor gratuito no botão de configurações do Gestor IA.",
+            { status: 503 },
+          );
+        }
 
         const modeloEscolhido = provedorExterno ? iaModelo! : MODELO_CHAT;
         const modeloChat = provedorExterno
@@ -515,7 +517,11 @@ export const Route = createFileRoute("/api/chat")({
               baseURL: iaBaseUrl!.replace(/\/$/, ""),
               headers: { Authorization: `Bearer ${iaChave}` },
             })(iaModelo!)
-          : gateway(MODELO_CHAT);
+          : createLovableAiGatewayProvider(
+              lovableApiKey!,
+              getLovableAiGatewayRunId(request),
+            )(MODELO_CHAT);
+
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
@@ -1676,6 +1682,26 @@ export const Route = createFileRoute("/api/chat")({
 
         return resultado.toUIMessageStreamResponse({
           originalMessages: messages,
+          onError: (erroStream) => {
+            const err = erroStream as { statusCode?: number; message?: string };
+            const msg = String(err?.message ?? erroStream ?? "");
+            const status = err?.statusCode;
+            if (status === 402 || /payment required|not enough credits/i.test(msg)) {
+              return provedorExterno
+                ? "O provedor de IA configurado recusou a chamada por falta de créditos/cota. Verifique sua chave ou escolha outro modelo gratuito."
+                : "Os créditos de IA do workspace acabaram. Adicione créditos em Configurações → Planos e uso, ou configure um provedor gratuito no botão de configurações do Gestor IA.";
+            }
+            if (status === 429 || /rate limit|too many requests/i.test(msg)) {
+              return "Muitas mensagens em sequência. Aguarde alguns instantes e tente novamente.";
+            }
+            if (status === 401 || status === 403 || /unauthorized|invalid api key/i.test(msg)) {
+              return provedorExterno
+                ? "A chave do provedor de IA configurado é inválida ou expirou. Revise-a nas configurações do Gestor IA."
+                : "Falha de autenticação com o serviço de IA.";
+            }
+            return msg || "Falha ao gerar a resposta do Gestor IA.";
+          },
+
           onFinish: async ({ responseMessage }) => {
             const texto = textoDaMensagem(responseMessage);
             if (!texto) return;
