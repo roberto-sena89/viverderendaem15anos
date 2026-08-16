@@ -503,10 +503,12 @@ export const Route = createFileRoute("/api/chat")({
         const iaChave = request.headers.get("x-ia-chave")?.trim();
         const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
 
-        const gateway = createLovableAiGatewayProvider(
-          lovableApiKey,
-          getLovableAiGatewayRunId(request),
-        );
+        if (!provedorExterno && !lovableApiKey) {
+          return new Response(
+            "A IA nativa não está configurada. Configure um provedor gratuito no botão de configurações do Gestor IA.",
+            { status: 503 },
+          );
+        }
 
         const modeloEscolhido = provedorExterno ? iaModelo! : MODELO_CHAT;
         const modeloChat = provedorExterno
@@ -515,7 +517,11 @@ export const Route = createFileRoute("/api/chat")({
               baseURL: iaBaseUrl!.replace(/\/$/, ""),
               headers: { Authorization: `Bearer ${iaChave}` },
             })(iaModelo!)
-          : gateway(MODELO_CHAT);
+          : createLovableAiGatewayProvider(
+              lovableApiKey!,
+              getLovableAiGatewayRunId(request),
+            )(MODELO_CHAT);
+
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
