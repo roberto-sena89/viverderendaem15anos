@@ -40,7 +40,8 @@ let emVoo: Promise<TituloTesouro[]> | null = null;
 let proximaTentativa = 0;
 const TTL_MS = 6 * 60 * 60 * 1000;
 /** Aborta o download cedo o bastante para não estourar o limite do chat. */
-const TIMEOUT_MS = 15_000;
+const TIMEOUT_MS = 30_000;
+
 /** Espera entre tentativas após uma falha (o arquivo é caro de baixar). */
 const RECUPERACAO_MS = 5 * 60 * 1000;
 
@@ -181,10 +182,13 @@ const normalizar = (t: string) =>
 /** Indexador declarado no ticker/nome do ativo (SELIC, IPCA+, PREFIXADO). */
 function indexador(texto: string): "SELIC" | "IPCA" | "PRE" | null {
   if (/SELIC|LFT/.test(texto)) return "SELIC";
-  if (/IPCA|NTN B|RENDA|EDUCA/.test(texto)) return "IPCA";
+  // Prefixado antes de IPCA: o texto do ativo costuma trazer a categoria
+  // ("Renda Fixa") junto, e "RENDA" sozinho não pode significar Renda+.
   if (/PREFIXAD|PRE\b|LTN|NTN F/.test(texto)) return "PRE";
+  if (/IPCA|NTN B|RENDA\+|EDUCA/.test(texto)) return "IPCA";
   return null;
 }
+
 
 /**
  * Verdadeiro quando o texto parece se referir a um título público do Tesouro.
