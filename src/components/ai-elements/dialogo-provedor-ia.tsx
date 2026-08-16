@@ -53,12 +53,14 @@ export function DialogoProvedorIA() {
   const [rascunho, setRascunho] = useState<ConfigProvedorIA>(config);
   const [testando, setTestando] = useState(false);
   const [teste, setTeste] = useState<ResultadoTesteProvedor | null>(null);
+  const [historico, setHistorico] = useState<RegistroTesteConexao[]>([]);
   const executarTeste = useServerFn(testarProvedorIA);
 
   useEffect(() => {
     if (aberto) {
       setRascunho(config);
       setTeste(null);
+      setHistorico(lerHistoricoTestes());
     }
   }, [aberto, config]);
 
@@ -70,11 +72,35 @@ export function DialogoProvedorIA() {
         data: { baseUrl: rascunho.baseUrl.trim(), chave: rascunho.chave.trim() },
       });
       setTeste(resultado);
+      const nomeProvedor =
+        PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset)?.nome ?? "Personalizado";
+      registrarTeste({
+        provedor: nomeProvedor,
+        ok: resultado.ok,
+        status: resultado.status,
+        resumo: resultado.mensagem,
+      });
+      setHistorico(lerHistoricoTestes());
       if (resultado.ok) toast.success(resultado.mensagem);
       else toast.error("Falha na conexão", { description: resultado.mensagem });
     } catch (erro) {
       const mensagem = erro instanceof Error ? erro.message : "Erro inesperado no teste";
-      setTeste({ ok: false, status: 0, mensagem, modelos: [] });
+      const fallback: ResultadoTesteProvedor = {
+        ok: false,
+        status: 0,
+        mensagem,
+        modelos: [],
+      };
+      setTeste(fallback);
+      const nomeProvedor =
+        PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset)?.nome ?? "Personalizado";
+      registrarTeste({
+        provedor: nomeProvedor,
+        ok: false,
+        status: 0,
+        resumo: mensagem,
+      });
+      setHistorico(lerHistoricoTestes());
       toast.error("Falha ao testar conexão", { description: mensagem });
     } finally {
       setTestando(false);
