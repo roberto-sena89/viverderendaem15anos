@@ -43,6 +43,8 @@ import { PERFIS, usePerfilInvestidor, type PerfilInvestidor } from "@/lib/perfil
 import { cabecalhosProvedor, useProvedorIA } from "@/lib/provedor-ia";
 import logoIA from "@/assets/tecnico-ia.png";
 import { urlAbsoluta } from "@/lib/seo";
+import { emitirRespostaGestorIA } from "@/lib/radar-sync";
+
 
 export const Route = createFileRoute("/_authenticated/chat")({
   validateSearch: (search: Record<string, unknown>): { q?: string } =>
