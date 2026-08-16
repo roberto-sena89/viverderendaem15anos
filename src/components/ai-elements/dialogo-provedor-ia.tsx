@@ -188,6 +188,72 @@ export function DialogoProvedorIA() {
                   </a>
                 )}
               </div>
+
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  disabled={testando || !rascunho.baseUrl.trim() || !rascunho.chave.trim()}
+                  onClick={testarConexao}
+                >
+                  {testando ? (
+                    <Loader2 className="mr-1.5 size-4 animate-spin" />
+                  ) : (
+                    <PlugZap className="mr-1.5 size-4" />
+                  )}
+                  Testar conexão
+                </Button>
+
+                {teste && (
+                  <div
+                    className={`rounded-lg border p-3 text-xs ${
+                      teste.ok
+                        ? "border-positive/40 bg-positive/10 text-positive"
+                        : "border-negative/40 bg-negative/10 text-negative"
+                    }`}
+                    role="status"
+                  >
+                    <p className="flex items-start gap-1.5 font-medium">
+                      {teste.ok ? (
+                        <CheckCircle2 className="mt-px size-3.5 shrink-0" />
+                      ) : (
+                        <XCircle className="mt-px size-3.5 shrink-0" />
+                      )}
+                      <span className="break-words">
+                        {teste.mensagem}
+                        {teste.status ? ` (HTTP ${teste.status})` : ""}
+                      </span>
+                    </p>
+                  </div>
+                )}
+
+                {teste?.ok && teste.modelos.length > 0 && (
+                  <div className="space-y-1.5">
+                    <p className="text-muted-foreground text-xs">
+                      Modelos disponíveis — clique para usar:
+                    </p>
+                    <div className="border-border/60 flex max-h-40 flex-wrap gap-1.5 overflow-y-auto rounded-lg border p-2">
+                      {teste.modelos.map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setRascunho({ ...rascunho, modelo: m })}
+                          className={`rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                            rascunho.modelo === m
+                              ? "border-primary/60 bg-primary/10 text-primary"
+                              : "border-border text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
             </>
           )}
         </div>
