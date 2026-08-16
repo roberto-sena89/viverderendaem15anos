@@ -54,7 +54,13 @@ export function DialogoProvedorIA() {
   const [testando, setTestando] = useState(false);
   const [teste, setTeste] = useState<ResultadoTesteProvedor | null>(null);
   const [historico, setHistorico] = useState<RegistroTesteConexao[]>([]);
+  const [apenasFree, setApenasFree] = useState(false);
+  const modelos = teste?.modelos ?? [];
+  const ehFree = (m: string) => /(:free\b|\bfree\b|-free)/i.test(m);
+  const totalFree = modelos.filter(ehFree).length;
+  const modelosVisiveis = apenasFree ? modelos.filter(ehFree) : modelos;
   const executarTeste = useServerFn(testarProvedorIA);
+
 
   useEffect(() => {
     if (aberto) {
