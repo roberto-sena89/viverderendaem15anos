@@ -41,6 +41,8 @@ import { toast } from "sonner";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
 import { radarAnaliseIA, radarCompletarCache, radarVisao } from "@/lib/radar.functions";
 import { AVISO_DIA_PCT } from "@/lib/radar-base";
+import { ouvirRespostaGestorIA } from "@/lib/radar-sync";
+
 import { exportarRadar, type FormatoExportacaoRadar } from "@/lib/radar-exportacao";
 import { useAtivos } from "@/lib/data";
 import type { LinhaRadarBase } from "@/lib/radar.server";
