@@ -18,6 +18,7 @@ import {
 } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { DialogoAprendizado } from "@/components/ai-elements/dialogo-aprendizado";
+import { DialogoProvedorIA } from "@/components/ai-elements/dialogo-provedor-ia";
 import {
   PromptInput,
   PromptInputTextarea,
@@ -39,6 +40,7 @@ import { listarMensagens, limparConversa } from "@/lib/chat.functions";
 import { gerarRelatorioAuditoria } from "@/lib/relatorio.functions";
 import { gerarPdfRelatorioAuditoria } from "@/lib/relatorio-auditoria-pdf";
 import { PERFIS, usePerfilInvestidor, type PerfilInvestidor } from "@/lib/perfil-investidor";
+import { cabecalhosProvedor, useProvedorIA } from "@/lib/provedor-ia";
 import logoIA from "@/assets/tecnico-ia.png";
 import { urlAbsoluta } from "@/lib/seo";
 
@@ -82,6 +84,7 @@ function ChatPage() {
   const fetchMensagens = useServerFn(listarMensagens);
   const clearFn = useServerFn(limparConversa);
   const { perfil, salvar } = usePerfilInvestidor();
+  const { config: provedor } = useProvedorIA();
   const [showOnboarding, setShowOnboarding] = useState(() => 
     typeof window !== "undefined" ? !window.localStorage.getItem("gestor-ia-onboarded") : false
   );
@@ -119,10 +122,11 @@ function ChatPage() {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             "X-Perfil-Investidor": perfil,
             "X-Modo-Citacoes": citacoes ? "on" : "off",
+            ...cabecalhosProvedor(provedor),
           };
         },
       }),
-    [perfil, citacoes],
+    [perfil, citacoes, provedor],
   );
 
   const { messages, sendMessage, setMessages, status } = useChat({
@@ -335,6 +339,7 @@ function ChatPage() {
               />
             </Button>
             <DialogoAprendizado />
+            <DialogoProvedorIA />
 
             <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
               <div className="hidden h-6 w-px bg-border/60 sm:block" />

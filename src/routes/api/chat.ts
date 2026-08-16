@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
 import { z } from "zod";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
 import {
   brl,
@@ -496,10 +497,25 @@ export const Route = createFileRoute("/api/chat")({
           dy: Number(a.dy),
         }));
 
+        // Provedor de IA externo (gratuito) configurado pelo usuário na página do Gestor IA.
+        const iaBaseUrl = request.headers.get("x-ia-base-url")?.trim();
+        const iaModelo = request.headers.get("x-ia-modelo")?.trim();
+        const iaChave = request.headers.get("x-ia-chave")?.trim();
+        const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
+
         const gateway = createLovableAiGatewayProvider(
           lovableApiKey,
           getLovableAiGatewayRunId(request),
         );
+
+        const modeloEscolhido = provedorExterno ? iaModelo! : MODELO_CHAT;
+        const modeloChat = provedorExterno
+          ? createOpenAICompatible({
+              name: "provedor-usuario",
+              baseURL: iaBaseUrl!.replace(/\/$/, ""),
+              headers: { Authorization: `Bearer ${iaChave}` },
+            })(iaModelo!)
+          : gateway(MODELO_CHAT);
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
@@ -1607,13 +1623,13 @@ export const Route = createFileRoute("/api/chat")({
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(
-          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${MODELO_CHAT}`,
+          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${modeloEscolhido}`,
         );
 
         let resultado;
         try {
           resultado = streamText({
-            model: gateway(MODELO_CHAT),
+            model: modeloChat,
             system: SISTEMA.replace("{PERFIL}", perfilValido)
               .concat(
                 modoCitacoes
