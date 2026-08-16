@@ -179,6 +179,9 @@ function ChatPage() {
     setInput("");
     await sendMessage({ text: valor });
     queryClient.invalidateQueries({ queryKey: ["chat-mensagens"] });
+    const ticker = valor.toUpperCase().match(/\b[A-Z]{4}\d{1,2}\b/)?.[0] ?? null;
+    emitirRespostaGestorIA(ticker);
+
   }
 
   async function limpar() {
