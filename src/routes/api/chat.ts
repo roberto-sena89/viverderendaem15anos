@@ -511,16 +511,26 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const modeloEscolhido = provedorExterno ? iaModelo! : MODELO_CHAT;
+        const gatewayNativo = provedorExterno
+          ? null
+          : createLovableAiGatewayProvider(lovableApiKey!, getLovableAiGatewayRunId(request));
+        const nomeProvedor = provedorExterno
+          ? `provedor externo (${(() => {
+              try {
+                return new URL(iaBaseUrl!).hostname;
+              } catch {
+                return iaBaseUrl!;
+              }
+            })()})`
+          : "Lovable AI Gateway";
         const modeloChat = provedorExterno
           ? createOpenAICompatible({
               name: "provedor-usuario",
               baseURL: iaBaseUrl!.replace(/\/$/, ""),
               headers: { Authorization: `Bearer ${iaChave}` },
             })(iaModelo!)
-          : createLovableAiGatewayProvider(
-              lovableApiKey!,
-              getLovableAiGatewayRunId(request),
-            )(MODELO_CHAT);
+          : gatewayNativo!(MODELO_CHAT);
+
 
 
         const mercado = await import("@/lib/market.server");
