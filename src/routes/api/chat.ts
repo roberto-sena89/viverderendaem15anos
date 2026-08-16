@@ -1682,6 +1682,26 @@ export const Route = createFileRoute("/api/chat")({
 
         return resultado.toUIMessageStreamResponse({
           originalMessages: messages,
+          onError: (erroStream) => {
+            const err = erroStream as { statusCode?: number; message?: string };
+            const msg = String(err?.message ?? erroStream ?? "");
+            const status = err?.statusCode;
+            if (status === 402 || /payment required|not enough credits/i.test(msg)) {
+              return provedorExterno
+                ? "O provedor de IA configurado recusou a chamada por falta de créditos/cota. Verifique sua chave ou escolha outro modelo gratuito."
+                : "Os créditos de IA do workspace acabaram. Adicione créditos em Configurações → Planos e uso, ou configure um provedor gratuito no botão de configurações do Gestor IA.";
+            }
+            if (status === 429 || /rate limit|too many requests/i.test(msg)) {
+              return "Muitas mensagens em sequência. Aguarde alguns instantes e tente novamente.";
+            }
+            if (status === 401 || status === 403 || /unauthorized|invalid api key/i.test(msg)) {
+              return provedorExterno
+                ? "A chave do provedor de IA configurado é inválida ou expirou. Revise-a nas configurações do Gestor IA."
+                : "Falha de autenticação com o serviço de IA.";
+            }
+            return msg || "Falha ao gerar a resposta do Gestor IA.";
+          },
+
           onFinish: async ({ responseMessage }) => {
             const texto = textoDaMensagem(responseMessage);
             if (!texto) return;
