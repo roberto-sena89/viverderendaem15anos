@@ -37,15 +37,45 @@ import {
   useProvedorIA,
   type ConfigProvedorIA,
 } from "@/lib/provedor-ia";
+import {
+  testarProvedorIA,
+  type ResultadoTesteProvedor,
+} from "@/lib/testar-provedor.functions";
 
 export function DialogoProvedorIA() {
   const { config, salvar, limpar, ativo } = useProvedorIA();
   const [aberto, setAberto] = useState(false);
   const [rascunho, setRascunho] = useState<ConfigProvedorIA>(config);
+  const [testando, setTestando] = useState(false);
+  const [teste, setTeste] = useState<ResultadoTesteProvedor | null>(null);
+  const executarTeste = useServerFn(testarProvedorIA);
 
   useEffect(() => {
-    if (aberto) setRascunho(config);
+    if (aberto) {
+      setRascunho(config);
+      setTeste(null);
+    }
   }, [aberto, config]);
+
+  async function testarConexao() {
+    setTestando(true);
+    setTeste(null);
+    try {
+      const resultado = await executarTeste({
+        data: { baseUrl: rascunho.baseUrl.trim(), chave: rascunho.chave.trim() },
+      });
+      setTeste(resultado);
+      if (resultado.ok) toast.success(resultado.mensagem);
+      else toast.error("Falha na conexão", { description: resultado.mensagem });
+    } catch (erro) {
+      const mensagem = erro instanceof Error ? erro.message : "Erro inesperado no teste";
+      setTeste({ ok: false, status: 0, mensagem, modelos: [] });
+      toast.error("Falha ao testar conexão", { description: mensagem });
+    } finally {
+      setTestando(false);
+    }
+  }
+
 
   const preset = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
 
