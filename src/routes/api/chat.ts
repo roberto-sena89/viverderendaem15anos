@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
 import { z } from "zod";
-import { criarProvedorIA, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
 import {
   brl,
   classeDoAtivo,
@@ -34,13 +35,42 @@ const SISTEMA = `Você é o "Gestor IA", consultor PRO da plataforma Investidor 
 
 Sua missão: guiar o usuário em toda a jornada de investimento — diagnóstico da carteira, aportes, dividendos, rebalanceamento, metas e independência financeira — com análises profundas, números reais e planos de ação concretos.
 
-Ferramentas de mercado (use sempre que envolver preços, desempenho, comparações ou juros): cotacao, historico, procurarAtivo, indicadorEconomico, compararAtivos, noticiasMercado, indicesMercado.
+Ferramentas de mercado (use sempre que a pergunta envolver preços, desempenho, comparações ou juros):
+- cotacao: preço em tempo quase real de uma ação, FII, ETF ou índice.
+- historico: série histórica de até 10 anos, com retorno total, retorno anualizado, drawdown máximo, volatilidade e desempenho ano a ano.
+- procurarAtivo: descobre o código correto quando o usuário cita o nome da empresa/fundo.
+- indicadorEconomico: séries do Banco Central (Selic, CDI, IPCA, IGP-M, dólar, poupança).
+- projecaoJuros: projeções do Boletim Focus para os próximos anos (Selic, IPCA, PIB, câmbio).
+- compararAtivos: compara dois ou mais ativos lado a lado (retorno anualizado, drawdown, volatilidade). Prefira esta ferramenta a chamar historico várias vezes.
+- noticiasMercado: últimas notícias financeiras (InfoMoney, Money Times, Investing Brasil).
+- agendaEconomica: próximos eventos (Copom, FOMC, IPCA, payroll, balanços).
+- panoramaMercado: fotografia do mercado hoje (destaques de ações, FIIs, ETFs, índices, cripto e commodities + amplitude).
+- indicesMercado: Ibovespa, IFIX, IBrX, Small Caps, S&P 500, Nasdaq, CDI, Selic, IPCA, IGP-M (benchmarks).
+- mercadoCripto e mercadoCommodities: cotações e variações de criptomoedas e commodities.
 
-Ferramentas fundamentalistas (grades completas da B3): fundamentosAcao, fundamentosFii, listarEtfs, tesouroDireto.
+Ferramentas fundamentalistas (grades completas da B3):
+- fundamentosAcao: todos os indicadores de uma ação (P/L, P/VP, PSR, EV/EBIT, DY, ROE, ROIC, margens, dívida/PL, LPA, VPA, preço-teto de Bazin e preço justo de Graham).
+- rastrearAcoes: screener de ações por setor, DY, P/L, P/VP, ROE ou pontuação.
+- fundamentosFii e rastrearFiis: P/VP, VPA, DY, vacância, cap rate, tipo e segmento dos fundos imobiliários.
+- listarEtfs: ETFs nacionais e internacionais com DY, capitalização e variações de 30d, 12m, 24m e 60m.
+- tesouroDireto: títulos públicos com vencimento, taxa e preço unitário.
 
-Ferramentas de análise da carteira: analisarCarteira, projetarIndependencia, sugerirRebalanceamento, avaliarMetas, alocacaoRecomendada, historicoAportes, historicoDividendos, compararBenchmark, metricasRiscoCarteira, educacaoPush, calcularTributos.
-
-Cada ferramenta descreve quando e como usá-la — prefira chamá-la a responder de cabeça.
+Ferramentas de análise da carteira:
+- analisarCarteira: auditoria completa da carteira (saúde, concentração, diversificação, risco, pontos fortes e fracos). Use em perguntas do tipo "analise minha carteira", "como está minha diversificação", "qual o risco da minha carteira".
+- projetarIndependencia: projeta patrimônio ano a ano, renda passiva e data da independência financeira usando o plano salvo + patrimônio real. Simula aportes/rentabilidade alternativos.
+- projetarRendaPassiva: projeta a evolução dos dividendos/renda passiva da carteira nos próximos anos.
+- sugerirRebalanceamento: compara a alocação atual com a estratégia ideal e indica quanto aportar/vender em cada classe.
+- avaliarMetas: mostra o progresso das metas financeiras do usuário (reserva, primeiro milhão etc.).
+- alocacaoRecomendada: devolve a alocação estratégica ideal para o perfil do usuário.
+- sugerirAtivos: lista ativos da B3 (ações, FIIs, BDRs) por dividend yield, valor de mercado ou receita.
+- historicoAportes: aportes do usuário mês a mês e por ativo (disciplina, média mensal, constância).
+- historicoDividendos: proventos recebidos mês a mês e por ativo, com yield on cost.
+- desempenhoCarteira12m: desempenho de 12 meses de cada ativo da carteira.
+- benchmarkCarteira: retorno de 12 meses da carteira comparado aos benchmarks Ibovespa, IFIX, CDI acumulado e S&P 500 (excedente em pontos percentuais). Use em perguntas de desempenho da carteira frente ao mercado.
+- compararBenchmark: retorno ponderado de 12 meses da carteira vs Ibovespa e IVVB11 (proxy global) com notas 0-10, excedente (alpha), cobertura dos dados e exposição por moeda (BRL/USD/cripto). Use em perguntas do tipo "minha carteira bate o mercado?", "meu desempenho vs Ibovespa".
+- metricasRiscoCarteira: métricas de risco da carteira em 12 meses — volatilidade anual, drawdown máximo, Índice de Sharpe, melhor/pior mês — mais diversificação efetiva (HHI/nº de ativos efetivos) e exposição por moeda. Use em perguntas do tipo "qual o risco da minha carteira", "minha carteira é diversificada".
+- educacaoPush: detecta lacunas (gaps) entre carteira/plano e a estratégia ideal (reserva de emergência, renda fixa, concentração, diversificação, metas, plano, disciplina de aportes) e devolve conteúdo educativo + ações do plano. Use ao final de auditorias e sempre que detectar um gap no diagnóstico.
+- calcularTributos: estima a tributação da carteira (dividendos isentos, JCP 15%, renda fixa regressiva, ganho de capital em ações/FIIs/ETFs). Use em perguntas sobre imposto de renda, DARF, planejamento tributário.
 
 Recursos premium (função PRO/PREMIUM do assistente):
 - O botão "Relatório PDF dos Auditores" na interface gera um PDF profissional completo: visão geral, KPIs, alocação, concentração, pontos fortes e de atenção, plano de rebalanceamento, projeção de independência, metas e detalhamento da carteira. Ao ser acionado, basta o usuário clicar; informe que o relatório está disponível quando solicitado e explique seus principais números.
@@ -63,14 +93,14 @@ Base de conhecimento (use como referência analítica, sempre com bom senso e co
 - Reserva de emergência: 6 a 12 meses de custo de vida em liquidez diária, antes de qualquer renda variável.
 - Independência financeira: regra dos 4% (patrimônio ≈ 25× o gasto anual); juros compostos e constância de aporte pesam mais que acertar o "timing".
 
-Conhecimento profissional (nível PRO — eleve a qualidade das análises):
-- Renda passiva: dividendos de ações e rendimentos de FIIs são isentos para PF; renda fixa paga juros; ETFs de dividendos concentram com custo baixo. Fale com DY projetado, não só histórico.
-- Valuation: P/L < setor + ROE alto sugere subavaliação; EV/EBIT é mais robusto que P/L; PSR ajuda em empresas sem lucro; margem e dívida/EBITDA mostram qualidade do balanço.
-- Renda fixa: escada de títulos reduz risco de reinvestimento; IPCA+ vence a inflação real; compare sempre o prêmio com a Selic/CDI e a inflação implícita.
-- Alocação: diversificar entre classes é o principal controle de risco; rebalancear ao desviar >5%; reduza concentração por moeda e setor.
-- Perfis: conservador/moderação/agressivo — adapte o tom e o risco ao perfil salvo do usuário.
-- Juros compostos: tempo é o multiplicador; aportes regulares e crescentes aceleram a meta; reinvista proventos.
-- Gestão de risco: posição máxima de 10-15% por ativo, stop disciplinado, exposição cambial controlada.
+Conhecimento profissional (nível PRO — use para elevar a qualidade das análises):
+- Renda passiva por ativo: ações pagam dividendos (isenção para PF); FIIs distribuem rendimento isento (tijolo/papel/FOF têm dinâmicas diferentes); renda fixa paga juros (prefixado/IPCA/Selic); ETFs de dividendos concentram exposição com custo baixo. Fale de renda passiva sempre com o DY projetado, não só o histórico.
+- Análise de valuation: P/L abaixo do setor + ROE alto sugere subavaliação; EV/EBIT é mais robusto que P/L para comparar empresas com estruturas de capital diferentes; PSR ajuda em empresas sem lucro; margem líquida e dívida líquida/EBITDA mostram qualidade do balanço.
+- Renda fixa estratégica: escada de títulos (laddering) reduz risco de reinvestimento; IPCA+ vence a inflação real; prefixado paga mais se juros caírem; compare sempre o prêmio em relação à Selic/CDI vigente e à inflação implícita.
+- Alocação de longo prazo: diversificação entre classes (renda fixa, ações, FIIs, exterior) é o principal controle de risco; rebalancear periodicamente (ex.: anual ou ao desviar >5%) mantém o risco do plano; reduza concentração em moeda e em setor.
+- Perfis: conservador prioriza preservação e liquidez; moderado equilibra crescimento e estabilidade; agressivo aceita maior volatilidade por retorno. Adapte o tom e o nível de risco às respostas, respeitando o perfil salvo do usuário.
+- Juros compostos: o tempo é o multiplicador mais importante; aportes regulares e crescentes aceleram a meta; evite rupturas de aporte; reinvista proventos para potencializar o efeito.
+- Técnicas de gestão de risco: posição máxima de 10-15% por ativo, stop disciplinado quando aplicável, exposição cambial controlada e reserva de oportunidade em liquidez.
 
 Regras de projeção e análise:
 - Use analisarCarteira antes de emitir diagnóstico sobre diversificação, risco ou concentração.
@@ -78,7 +108,7 @@ Regras de projeção e análise:
 - Para "quanto devo aportar", projete o cenário atual e simule aportes maiores para mostrar a antecipação da meta.
 - Explique a regra dos 4% (taxa de retirada) quando falar de renda passiva.
 - Ao sugerir rebalanceamento, use sugerirRebalanceamento e alocacaoRecomendada (perfil do usuário) em conjunto.
-- Em auditorias completas, combine analisarCarteira + historicoAportes + historicoDividendos + indicesMercado (comparação com benchmarks) + educacaoPush (conteúdo educativo e ações do plano para cada lacuna detectada).
+- Em auditorias completas, combine analisarCarteira + desempenhoCarteira12m + benchmarkCarteira + historicoAportes + historicoDividendos + indicesMercado (comparação com benchmarks) + educacaoPush (conteúdo educativo e ações do plano para cada lacuna detectada).
 - Ao detectar um gap no plano ou na carteira (sem reserva de emergência, concentração alta, poucos ativos, sem FIIs, DY baixo, sem metas, plano não configurado, disciplina de aporte fraca), chame educacaoPush e apresente ao usuário o conteúdo educativo e as ações do plano — isso é a entrega de valor do consultor PRO.
 - Em perguntas sobre impostos, use calcularTributos e complemente com contexto educacional de planejamento tributário.
 
@@ -117,13 +147,12 @@ function textoDaCarteira(
     return "O usuário ainda não cadastrou ativos nem aportes na plataforma.";
   }
 
-  const linhas = ativos.slice(0, 25).map((a) => {
+  const linhas = ativos.map((a) => {
     const atual = a.quantidade * a.preco_atual;
     const investido = a.quantidade * a.preco_medio;
     const rent = investido > 0 ? ((atual - investido) / investido) * 100 : 0;
     return `- ${a.ticker} (${a.categoria}): ${a.quantidade} cotas, PM R$ ${a.preco_medio.toFixed(2)}, preço atual R$ ${a.preco_atual.toFixed(2)}, valor R$ ${atual.toFixed(2)}, rentabilidade ${rent.toFixed(1)}%, DY ${a.dy}%`;
   });
-  if (ativos.length > 25) linhas.push(`- … mais ${ativos.length - 25} ativos (use analisarCarteira para o detalhe completo)`);
 
   const totalAtual = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
   const totalInvestido = ativos.reduce((s, a) => s + a.quantidade * a.preco_medio, 0);
@@ -175,6 +204,8 @@ function textoDaCarteira(
   ].join("\n");
 }
 
+const MODELO_CHAT = "openai/gpt-5.5";
+
 function textoDaMensagem(message: UIMessage) {
   return message.parts
     .map((part) => (part.type === "text" ? part.text : ""))
@@ -188,7 +219,7 @@ function textoDaMensagem(message: UIMessage) {
  * rejeita com erro "AN ERROR OCCURRED". Descarta do início até caber, sempre
  * mantendo a mensagem atual do usuário.
  */
-const TETO_HISTORICO_CHARS = 10_000;
+const TETO_HISTORICO_CHARS = 60_000;
 
 function apararHistorico(hist: UIMessage[]): UIMessage[] {
   const mantidas = hist.slice();
@@ -227,6 +258,108 @@ function ativosParaModelo(linhas: AtivoLinha[]): Parameters<typeof resumoCarteir
   }));
 }
 
+interface EventoAgenda {
+  id: string;
+  titulo: string;
+  detalhe: string;
+  quando: string;
+  tipo: "Brasil" | "EUA" | "Empresas";
+}
+
+function proximosEventos(): EventoAgenda[] {
+  const agora = new Date();
+  const eventos: EventoAgenda[] = [];
+
+  const copom = [
+    "2026-01-28",
+    "2026-03-18",
+    "2026-05-06",
+    "2026-06-17",
+    "2026-08-05",
+    "2026-09-16",
+    "2026-11-04",
+    "2026-12-09",
+  ];
+  const fomc = [
+    "2026-01-28",
+    "2026-03-18",
+    "2026-04-29",
+    "2026-06-17",
+    "2026-07-29",
+    "2026-09-16",
+    "2026-11-04",
+    "2026-12-16",
+  ];
+
+  for (const data of copom) {
+    eventos.push({
+      id: `copom-${data}`,
+      titulo: "Decisão do Copom",
+      detalhe: "Taxa Selic · Banco Central",
+      quando: `${data}T21:30:00.000Z`,
+      tipo: "Brasil",
+    });
+  }
+  for (const data of fomc) {
+    eventos.push({
+      id: `fomc-${data}`,
+      titulo: "Decisão do Fed (FOMC)",
+      detalhe: "Juros dos EUA",
+      quando: `${data}T19:00:00.000Z`,
+      tipo: "EUA",
+    });
+  }
+
+  const primeiraSexta = (ano: number, mes: number) => {
+    const d = new Date(Date.UTC(ano, mes, 1));
+    while (d.getUTCDay() !== 5) d.setUTCDate(d.getUTCDate() + 1);
+    return d;
+  };
+
+  for (let i = 0; i < 4; i++) {
+    const base = new Date(Date.UTC(agora.getUTCFullYear(), agora.getUTCMonth() + i, 1));
+    const ano = base.getUTCFullYear();
+    const mes = base.getUTCMonth();
+    eventos.push({
+      id: `ipca-${ano}-${mes}`,
+      titulo: "IPCA do mês",
+      detalhe: "Inflação oficial · IBGE",
+      quando: new Date(Date.UTC(ano, mes, 10, 12, 0)).toISOString(),
+      tipo: "Brasil",
+    });
+    eventos.push({
+      id: `ipca15-${ano}-${mes}`,
+      titulo: "IPCA-15",
+      detalhe: "Prévia da inflação · IBGE",
+      quando: new Date(Date.UTC(ano, mes, 25, 12, 0)).toISOString(),
+      tipo: "Brasil",
+    });
+    const sexta = primeiraSexta(ano, mes);
+    sexta.setUTCHours(12, 30);
+    eventos.push({
+      id: `payroll-${ano}-${mes}`,
+      titulo: "Payroll (EUA)",
+      detalhe: "Relatório de emprego norte-americano",
+      quando: sexta.toISOString(),
+      tipo: "EUA",
+    });
+    if ([1, 4, 7, 10].includes(mes)) {
+      eventos.push({
+        id: `balancos-${ano}-${mes}`,
+        titulo: "Temporada de balanços",
+        detalhe: "Resultados trimestrais das companhias da B3",
+        quando: new Date(Date.UTC(ano, mes, 5, 21, 0)).toISOString(),
+        tipo: "Empresas",
+      });
+    }
+  }
+
+  return eventos
+    .filter((e) => new Date(e.quando).getTime() > agora.getTime() - 3 * 3_600_000)
+    .sort((a, b) => a.quando.localeCompare(b.quando))
+    .slice(0, 8);
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
@@ -240,11 +373,9 @@ export const Route = createFileRoute("/api/chat")({
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
         const lovableApiKey = process.env.LOVABLE_API_KEY;
-        const userLlmApiKey = process.env.USER_LLM_API_KEY;
         if (!supabaseUrl || !supabaseKey)
           return new Response("Backend não configurado", { status: 500 });
-        if (!userLlmApiKey && !lovableApiKey)
-          return new Response("IA não configurada", { status: 500 });
+        if (!lovableApiKey) return new Response("IA não configurada", { status: 500 });
 
         const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
           auth: { persistSession: false, autoRefreshToken: false },
@@ -366,11 +497,25 @@ export const Route = createFileRoute("/api/chat")({
           dy: Number(a.dy),
         }));
 
-        const provedorIA = criarProvedorIA({
-          lovableRunId: getLovableAiGatewayRunId(request),
-        });
-        if (!provedorIA) return new Response("IA não configurada", { status: 500 });
-        const { gateway, modelo: modeloChat } = provedorIA;
+        // Provedor de IA externo (gratuito) configurado pelo usuário na página do Gestor IA.
+        const iaBaseUrl = request.headers.get("x-ia-base-url")?.trim();
+        const iaModelo = request.headers.get("x-ia-modelo")?.trim();
+        const iaChave = request.headers.get("x-ia-chave")?.trim();
+        const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
+
+        const gateway = createLovableAiGatewayProvider(
+          lovableApiKey,
+          getLovableAiGatewayRunId(request),
+        );
+
+        const modeloEscolhido = provedorExterno ? iaModelo! : MODELO_CHAT;
+        const modeloChat = provedorExterno
+          ? createOpenAICompatible({
+              name: "provedor-usuario",
+              baseURL: iaBaseUrl!.replace(/\/$/, ""),
+              headers: { Authorization: `Bearer ${iaChave}` },
+            })(iaModelo!)
+          : gateway(MODELO_CHAT);
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
@@ -432,6 +577,15 @@ export const Route = createFileRoute("/api/chat")({
             execute: async ({ indicador, ultimos }) =>
               mercado.buscarIndicador(indicador, ultimos ?? 12).catch(erro),
           }),
+          projecaoJuros: tool({
+            description:
+              "Projeções do Boletim Focus do Banco Central para os próximos anos: taxa de juros (Selic), IPCA, PIB e câmbio.",
+            inputSchema: z.object({
+              indicador: z.enum(["selic", "ipca", "pib", "cambio", "igpm"]).optional(),
+            }),
+            execute: async ({ indicador }) =>
+              mercado.buscarProjecoes(indicador ?? "selic").catch(erro),
+          }),
           projetarIndependencia: tool({
             description:
               "Projeta o patrimônio ano a ano, a renda passiva e a data provável de independência financeira usando o plano salvo do usuário (idade, aportes, rentabilidade, inflação, taxa de retirada) somado ao patrimônio real da carteira. Aceita aporte mensal ou rentabilidade alternativos para simular cenários ('e se eu aportar X por mês?').",
@@ -480,6 +634,44 @@ export const Route = createFileRoute("/api/chat")({
                   renda_passiva_mensal: Math.round(l.rendaPassivaMensal),
                 })),
               };
+            },
+          }),
+          sugerirAtivos: tool({
+            description:
+              "Lista ativos da B3 (ações, FIIs ou BDRs) com melhor dividend yield, valor de mercado ou receita, para sugerir compras que fortalecem a carteira conforme o perfil do investidor e o rebalanceamento. Não é recomendação personalizada regulada pela CVM.",
+            inputSchema: z.object({
+              tipo: z.enum(["acoes", "fiis", "bdrs"]).optional().describe("Tipo de ativo a listar"),
+              foco: z
+                .enum(["dy", "valorMercado", "receita"])
+                .optional()
+                .describe("Critério de ordenação: dividend yield, valor de mercado ou receita"),
+            }),
+            execute: async ({ tipo, foco }) => {
+              try {
+                const r = await mercado.buscarRankingsB3(tipo ?? "acoes");
+                const lista =
+                  foco === "receita"
+                    ? r.receitas
+                    : foco === "valorMercado"
+                      ? r.valorMercado
+                      : r.dividendYield;
+                return {
+                  tipo: r.tipo,
+                  criterio: foco ?? "dy",
+                  atualizado_em: r.atualizadoEm,
+                  sugestoes: lista.slice(0, 12).map((a) => ({
+                    ticker: a.ticker,
+                    nome: a.nome,
+                    preco: a.preco,
+                    dy_pct: a.dy,
+                    valor_de_mercado: a.valorMercado,
+                    receita: a.receita,
+                    variacao_pct: a.variacaoPercent,
+                  })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
             },
           }),
           analisarCarteira: tool({
@@ -624,6 +816,47 @@ export const Route = createFileRoute("/api/chat")({
               };
             },
           }),
+          projetarRendaPassiva: tool({
+            description:
+              "Projeta a evolução dos dividendos/renda passiva da carteira nos próximos anos, usando o DY atual, os aportes e a rentabilidade do plano. Use em perguntas sobre renda passiva, dividendos e 'viver de renda'.",
+            inputSchema: z.object({
+              anos: z
+                .number()
+                .int()
+                .min(1)
+                .max(40)
+                .optional()
+                .describe("Horizonte em anos (padrão: até a aposentadoria do plano)"),
+            }),
+            execute: async ({ anos }) => {
+              const entrada: ProjecaoInput = { ...planoConfig };
+              if (anos && anos > 0) {
+                entrada.idadeAposentadoria = entrada.idadeAtual + anos;
+              }
+              const linhas = projetar(entrada);
+              const modelo = ativosParaModelo(ativosLinha);
+              const dyAtual = ativosLinha.length ? resumoCarteira(modelo).dyCarteira : 0;
+              return {
+                dy_carteira_atual_pct: ARRED(dyAtual),
+                dividendos_estimados_12m_atual: Math.round(
+                  resumoCarteira(modelo).dividendosEstimados12m,
+                ),
+                premissas: {
+                  rentabilidade_anual_pct: entrada.rentabilidadeAnual,
+                  inflacao_anual_pct: entrada.inflacaoAnual,
+                  aporte_mensal: entrada.aporteMensal,
+                  taxa_retirada_pct: entrada.taxaRetirada,
+                },
+                projecao_renda_passiva: linhas.map((l) => ({
+                  ano: l.ano,
+                  idade: l.idade,
+                  patrimonio: Math.round(l.patrimonio),
+                  renda_passiva_mensal_estimada: Math.round(l.rendaPassivaMensal),
+                  renda_passiva_anual_estimada: Math.round(l.rendaPassivaMensal * 12),
+                })),
+              };
+            },
+          }),
           avaliarMetas: tool({
             description:
               "Mostra o progresso das metas financeiras do usuário (reserva de emergência, primeiro milhão etc.) comparado com o patrimônio atual da carteira.",
@@ -672,6 +905,19 @@ export const Route = createFileRoute("/api/chat")({
               }
             },
           }),
+          agendaEconomica: tool({
+            description:
+              "Próximos eventos econômicos: decisões do Copom (Selic), do Fed (FOMC), IPCA, IPCA-15, payroll (EUA) e temporada de balanços da B3, com data e horário.",
+            inputSchema: z.object({}),
+            execute: async () => ({
+              eventos: proximosEventos().map((e) => ({
+                titulo: e.titulo,
+                detalhe: e.detalhe,
+                quando: e.quando,
+                tipo: e.tipo,
+              })),
+            }),
+          }),
           fundamentosAcao: tool({
             description:
               "Indicadores fundamentalistas completos de uma ação da B3: P/L, P/VP, PSR, EV/EBIT, DY 12m, ROE, ROIC, margens, dívida/patrimônio, crescimento de receita, LPA, VPA, preço-teto de Bazin e preço justo de Graham com o upside de cada método. Use sempre que o usuário perguntar se uma ação está cara/barata ou pedir análise fundamentalista.",
@@ -691,6 +937,83 @@ export const Route = createFileRoute("/api/chat")({
               }
             },
           }),
+          rastrearAcoes: tool({
+            description:
+              "Screener de ações da B3: filtra e ordena a grade completa por setor, dividend yield, P/L, P/VP, ROE, liquidez ou pontuação fundamentalista. Use para 'quais ações pagam mais dividendos', 'ações baratas', 'melhores ações do setor financeiro'.",
+            inputSchema: z.object({
+              setor: z.string().optional().describe("Ex.: Financeiro, Utilidade Pública, Saúde"),
+              dyMinimo: z.number().optional().describe("DY 12m mínimo em %"),
+              plMaximo: z.number().optional(),
+              pvpMaximo: z.number().optional(),
+              roeMinimo: z.number().optional().describe("ROE mínimo em %"),
+              ordenar: z.enum(["dy", "pl", "pvp", "roe", "pontuacao", "valorMercado"]).optional(),
+              limite: z.number().int().min(1).max(25).optional(),
+            }),
+            execute: async ({
+              setor,
+              dyMinimo,
+              plMaximo,
+              pvpMaximo,
+              roeMinimo,
+              ordenar,
+              limite,
+            }) => {
+              try {
+                const { gradeAcoesComCache } = await import("@/lib/acoes.server");
+                const grade = await gradeAcoesComCache();
+                const filtradas = grade.linhas.filter((l) => {
+                  if (setor && !l.setor.toLowerCase().includes(setor.toLowerCase())) return false;
+                  if (dyMinimo != null && (l.dy12 ?? 0) < dyMinimo) return false;
+                  if (plMaximo != null && !(l.pl != null && l.pl > 0 && l.pl <= plMaximo))
+                    return false;
+                  if (pvpMaximo != null && !(l.pvp != null && l.pvp > 0 && l.pvp <= pvpMaximo))
+                    return false;
+                  if (roeMinimo != null && (l.roe ?? -999) < roeMinimo) return false;
+                  return true;
+                });
+                const chave = ordenar ?? "pontuacao";
+                const valor = (l: (typeof filtradas)[number]) =>
+                  chave === "dy"
+                    ? (l.dy12 ?? -1)
+                    : chave === "pl"
+                      ? -(l.pl ?? 9999)
+                      : chave === "pvp"
+                        ? -(l.pvp ?? 9999)
+                        : chave === "roe"
+                          ? (l.roe ?? -999)
+                          : chave === "valorMercado"
+                            ? (l.valorMercado ?? -1)
+                            : (l.pontuacao ?? -1);
+                return {
+                  criterio: chave,
+                  total_encontrado: filtradas.length,
+                  atualizado_em: grade.atualizadoEm,
+                  acoes: filtradas
+                    .sort((a, b) => valor(b) - valor(a))
+                    .slice(0, limite ?? 12)
+                    .map((l) => ({
+                      ticker: l.ticker,
+                      nome: l.nome,
+                      setor: l.setor,
+                      preco: l.preco,
+                      dy12_pct: l.dy12,
+                      pl: l.pl,
+                      pvp: l.pvp,
+                      roe_pct: l.roe,
+                      margem_liquida_pct: l.margemLiquida,
+                      divida_patrimonio: l.dividaPatrimonio,
+                      preco_teto_bazin: l.precoTetoBazin,
+                      upside_bazin_pct: l.upsideBazin,
+                      preco_justo_graham: l.precoJustoGraham,
+                      upside_graham_pct: l.upsideGraham,
+                      pontuacao: l.pontuacao,
+                    })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
           fundamentosFii: tool({
             description:
               "Indicadores de um FII: tipo (tijolo, papel, FOF...), segmento, P/VP, VPA, DY 12m, vacância, cap rate, patrimônio e liquidez. Use para avaliar fundos imobiliários específicos.",
@@ -703,6 +1026,76 @@ export const Route = createFileRoute("/api/chat")({
                 const linha = grade.linhas.find((l) => l.ticker === alvo);
                 if (!linha) return { erro: `FII ${alvo} não encontrado na grade.` };
                 return { atualizado_em: grade.atualizadoEm, fii: linha };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          rastrearFiis: tool({
+            description:
+              "Screener de FIIs: filtra por tipo (Tijolo, Papel, Misto, FOF, FI-Infra, Fiagro), segmento, DY mínimo, P/VP máximo e vacância máxima. Use para 'melhores FIIs de papel', 'FIIs baratos', 'FIIs que pagam mais'.",
+            inputSchema: z.object({
+              tipo: z.string().optional(),
+              segmento: z.string().optional(),
+              dyMinimo: z.number().optional(),
+              pvpMaximo: z.number().optional(),
+              vacanciaMaxima: z.number().optional(),
+              ordenar: z.enum(["dy", "pvp", "liquidez", "patrimonio"]).optional(),
+              limite: z.number().int().min(1).max(25).optional(),
+            }),
+            execute: async ({
+              tipo,
+              segmento,
+              dyMinimo,
+              pvpMaximo,
+              vacanciaMaxima,
+              ordenar,
+              limite,
+            }) => {
+              try {
+                const { gradeFiisComCache } = await import("@/lib/fiis.server");
+                const grade = await gradeFiisComCache();
+                const filtrados = grade.linhas.filter((l) => {
+                  if (tipo && !l.tipo.toLowerCase().includes(tipo.toLowerCase())) return false;
+                  if (segmento && !l.segmento.toLowerCase().includes(segmento.toLowerCase()))
+                    return false;
+                  if (dyMinimo != null && (l.dy12 ?? 0) < dyMinimo) return false;
+                  if (pvpMaximo != null && !(l.pvp != null && l.pvp > 0 && l.pvp <= pvpMaximo))
+                    return false;
+                  if (vacanciaMaxima != null && (l.vacancia ?? 0) > vacanciaMaxima) return false;
+                  return true;
+                });
+                const chave = ordenar ?? "dy";
+                const valor = (l: (typeof filtrados)[number]) =>
+                  chave === "pvp"
+                    ? -(l.pvp ?? 9999)
+                    : chave === "liquidez"
+                      ? (l.liquidez ?? -1)
+                      : chave === "patrimonio"
+                        ? (l.patrimonio ?? -1)
+                        : (l.dy12 ?? -1);
+                return {
+                  criterio: chave,
+                  total_encontrado: filtrados.length,
+                  atualizado_em: grade.atualizadoEm,
+                  fiis: filtrados
+                    .sort((a, b) => valor(b) - valor(a))
+                    .slice(0, limite ?? 12)
+                    .map((l) => ({
+                      ticker: l.ticker,
+                      nome: l.nome,
+                      tipo: l.tipo,
+                      segmento: l.segmento,
+                      preco: l.preco,
+                      dy12_pct: l.dy12,
+                      pvp: l.pvp,
+                      vpa: l.vpa,
+                      vacancia_pct: l.vacancia,
+                      cap_rate_pct: l.capRate,
+                      liquidez_diaria: l.liquidez,
+                      patrimonio: l.patrimonio,
+                    })),
+                };
               } catch (e) {
                 return erro(e);
               }
@@ -804,6 +1197,82 @@ export const Route = createFileRoute("/api/chat")({
               }
             },
           }),
+          mercadoCripto: tool({
+            description:
+              "Cotações e variações (1h, 24h, 7d, 30d, 12m) das principais criptomoedas, com capitalização, volume e dominância do Bitcoin. Aceita busca por nome/ticker.",
+            inputSchema: z.object({
+              termo: z.string().optional().describe("Ex.: bitcoin, ETH, SOL"),
+              limite: z.number().int().min(1).max(25).optional(),
+            }),
+            execute: async ({ termo, limite }) => {
+              try {
+                const { gradeCriptoComCache } = await import("@/lib/cripto.server");
+                const grade = await gradeCriptoComCache();
+                const t = termo?.trim().toLowerCase();
+                const linhas = t
+                  ? grade.linhas.filter(
+                      (l) =>
+                        l.ticker.toLowerCase().includes(t) ||
+                        l.nome.toLowerCase().includes(t) ||
+                        l.id.toLowerCase().includes(t),
+                    )
+                  : grade.linhas;
+                return {
+                  usd_brl: grade.usdBrl,
+                  dominancia_btc_pct: grade.dominanciaBtc,
+                  capitalizacao_total: grade.capitalizacaoTotal,
+                  atualizado_em: grade.atualizadoEm,
+                  criptos: linhas.slice(0, limite ?? 10).map((l) => ({
+                    ticker: l.ticker,
+                    nome: l.nome,
+                    categoria: l.categoria,
+                    preco_usd: l.precoUsd,
+                    preco_brl: l.precoUsd != null ? ARRED(l.precoUsd * grade.usdBrl) : null,
+                    var24h_pct: l.variacao24h,
+                    var7d_pct: l.variacao7d,
+                    var30d_pct: l.variacao30d,
+                    var12m_pct: l.variacao12m,
+                    capitalizacao: l.capitalizacao,
+                  })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          mercadoCommodities: tool({
+            description:
+              "Preços de commodities (petróleo, ouro, prata, minério, soja, milho, café, boi) com variação do dia, 30 dias e 12 meses, mínimas e máximas. Use ao analisar setores ligados a commodities (PETR, VALE, agro).",
+            inputSchema: z.object({ categoria: z.string().optional() }),
+            execute: async ({ categoria }) => {
+              try {
+                const { buscarCommodities } = await import("@/lib/commodities.server");
+                const r = await buscarCommodities();
+                const linhas = categoria
+                  ? r.linhas.filter((l) =>
+                      l.categoria.toLowerCase().includes(categoria.toLowerCase()),
+                    )
+                  : r.linhas;
+                return {
+                  usd_brl: r.usdBrl,
+                  atualizado_em: r.atualizadoEm,
+                  commodities: linhas.map((l) => ({
+                    nome: l.nome,
+                    categoria: l.categoria,
+                    unidade: l.unidade,
+                    preco_usd: l.precoUsd,
+                    var_dia_pct: l.variacaoDia,
+                    var30d_pct: l.variacao30d,
+                    var12m_pct: l.variacao12m,
+                    minima_12m: l.minima12m,
+                    maxima_12m: l.maxima12m,
+                  })),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
           indicesMercado: tool({
             description:
               "Índices e taxas de referência (Ibovespa, IFIX, IBrX, Small Caps, S&P 500, Nasdaq, CDI, Selic, IPCA, IGP-M) com valor atual, variação do dia e de 12 meses. Use para comparar a carteira com benchmarks.",
@@ -830,6 +1299,19 @@ export const Route = createFileRoute("/api/chat")({
                     divulgado_em: l.divulgadoEm,
                   })),
                 };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          panoramaMercado: tool({
+            description:
+              "Panorama consolidado do mercado hoje: destaques de ações, FIIs, ETFs, índices, cripto e commodities, com amplitude (altas x baixas) e termômetro geral. Use para 'como está o mercado hoje'.",
+            inputSchema: z.object({}),
+            execute: async () => {
+              try {
+                const { buscarPanorama } = await import("@/lib/panorama-mercado.server");
+                return await buscarPanorama();
               } catch (e) {
                 return erro(e);
               }
@@ -969,6 +1451,48 @@ export const Route = createFileRoute("/api/chat")({
               };
             },
           }),
+          benchmarkCarteira: tool({
+            description:
+              "Compara o retorno de 12 meses da carteira do usuário (ponderado pelo valor atual) com os principais benchmarks: Ibovespa, IFIX, CDI acumulado 12m e S&P 500. Retorna o excedente (pp) da carteira sobre cada benchmark. Use em perguntas do tipo 'como minha carteira está performando frente ao mercado?'.",
+            inputSchema: z.object({}),
+            execute: async () => {
+              try {
+                if (ativosLinha.length === 0) {
+                  return {
+                    retornoCarteira: null,
+                    cobertura: 0,
+                    valorTotal: 0,
+                    benchmarks: [],
+                    comparativo: [],
+                    aviso: "Carteira vazia.",
+                  };
+                }
+                const { benchmarkCarteira } = await import("@/lib/desempenho-12m.server");
+                return await benchmarkCarteira(
+                  ativosLinha.map((a) => ({
+                    ticker: a.ticker,
+                    valor: a.quantidade * a.preco_atual,
+                  })),
+                );
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          desempenhoCarteira12m: tool({
+            description:
+              "Desempenho de 12 meses de cada ativo da carteira do usuário, para identificar os que mais e menos contribuíram e comparar com benchmarks (Ibovespa, IFIX, CDI).",
+            inputSchema: z.object({}),
+            execute: async () => {
+              try {
+                if (ativosLinha.length === 0) return { ativos: [], aviso: "Carteira vazia." };
+                const { desempenho12mLote } = await import("@/lib/desempenho-12m.server");
+                return await desempenho12mLote(ativosLinha.map((a) => a.ticker));
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
           compararBenchmark: tool({
             description:
               "Compara o retorno de 12 meses da carteira do usuário com o Ibovespa (mercado brasileiro) e com o IVVB11 (proxy do exterior/S&P 500). Gera nota 0-10 para cada benchmark, o excedente (alpha) vs cada um, a cobertura dos dados e a exposição por moeda. Use para responder 'minha carteira bate o mercado?', 'meu desempenho vs Ibovespa'.",
@@ -1098,19 +1622,14 @@ export const Route = createFileRoute("/api/chat")({
         };
 
         const mensagensAparadas = apararHistorico(messages);
-        const historicoChars = mensagensAparadas.reduce(
-          (s, m) => s + textoDaMensagem(m).length,
-          0,
-        );
         console.info(
-          `[chat] run ${userId}: ${messages.length} mensagens, ${historicoChars} chars de histórico, SISTEMA ${SISTEMA.length} chars, contexto ${contexto.length} chars, metas ${contextoMetas.length} chars, provedor ${provedorIA.provedor}, modelo ${modeloChat}`,
+          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${modeloEscolhido}`,
         );
 
         let resultado;
         try {
           resultado = streamText({
-            model: gateway(modeloChat),
-            maxOutputTokens: 1536,
+            model: modeloChat,
             system: SISTEMA.replace("{PERFIL}", perfilValido)
               .concat(
                 modoCitacoes
@@ -1130,10 +1649,9 @@ export const Route = createFileRoute("/api/chat")({
                 (habilidades ?? []).length
                   ? "\n\n### Habilidades aprendidas pelo Gestor IA (ativas)\n" +
                       (habilidades ?? [])
-                        .slice(0, 4)
                         .map(
                           (h) =>
-                            `#### ${h.titulo}\nO usuário ensinou esta habilidade — siga-a em todas as conversas enquanto estiver ativa.\n${(h.instrucao ?? "").slice(0, 400)}`,
+                            `#### ${h.titulo}\nO usuário ensinou esta habilidade — siga-a em todas as conversas enquanto estiver ativa.\n${h.instrucao}`,
                         )
                         .join("\n\n")
                   : "",
@@ -1141,18 +1659,11 @@ export const Route = createFileRoute("/api/chat")({
               .concat(`\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`),
             messages: await convertToModelMessages(mensagensAparadas),
             tools: ferramentas,
-            stopWhen: stepCountIs(8),
+            stopWhen: stepCountIs(50),
             onError: ({ error: erroOriginal }) => {
-              const base = erroOriginal as {
-                statusCode?: number;
-                error?: { statusCode?: number; message?: string };
-                cause?: { message?: string };
-              } & Error;
-              const interno = base.error;
-              const status = interno?.statusCode ?? base.statusCode ?? "?";
-              const causa = interno?.message ?? base.cause?.message ?? "?";
+              const err = erroOriginal as { statusCode?: number } & Error;
               console.error(
-                `[chat] erro no stream do gateway: provedor=${provedorIA.provedor} modelo=${modeloChat} status=${status} nome=${base?.name ?? "?"} msg=${base?.message ?? String(erroOriginal)} causa=${causa}`,
+                `[chat] erro no stream do gateway (${userId}): status=${err?.statusCode ?? "?"} nome=${err?.name ?? "?"} msg=${err?.message ?? String(erroOriginal)}`,
               );
             },
           });
@@ -1165,26 +1676,6 @@ export const Route = createFileRoute("/api/chat")({
 
         return resultado.toUIMessageStreamResponse({
           originalMessages: messages,
-          onError: (erroOriginal) => {
-            const base = erroOriginal as {
-              statusCode?: number;
-              error?: { statusCode?: number; message?: string };
-              cause?: { message?: string };
-            } & Error;
-            const interno = base.error;
-            const status = interno?.statusCode ?? base.statusCode;
-            const causa = (interno?.message ?? base.cause?.message ?? "")
-              .slice(0, 160);
-            const detalhes = [
-              provedorIA.provedor,
-              modeloChat,
-              status ? `HTTP ${status}` : "",
-              causa ? `detalhe: ${causa}` : "",
-            ]
-              .filter(Boolean)
-              .join(" · ");
-            return `Falha no provedor de IA (${detalhes}). Veja o detalhe completo em Cloud → Logs.`;
-          },
           onFinish: async ({ responseMessage }) => {
             const texto = textoDaMensagem(responseMessage);
             if (!texto) return;

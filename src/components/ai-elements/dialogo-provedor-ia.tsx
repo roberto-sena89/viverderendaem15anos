@@ -1,0 +1,208 @@
+import { useEffect, useState } from "react";
+import { ExternalLink, Plug, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  CONFIG_PADRAO,
+  PRESETS_PROVEDOR,
+  provedorAtivo,
+  useProvedorIA,
+  type ConfigProvedorIA,
+} from "@/lib/provedor-ia";
+
+export function DialogoProvedorIA() {
+  const { config, salvar, limpar, ativo } = useProvedorIA();
+  const [aberto, setAberto] = useState(false);
+  const [rascunho, setRascunho] = useState<ConfigProvedorIA>(config);
+
+  useEffect(() => {
+    if (aberto) setRascunho(config);
+  }, [aberto, config]);
+
+  const preset = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
+
+  function escolherPreset(id: string) {
+    if (id === "lovable") {
+      setRascunho({ ...CONFIG_PADRAO });
+      return;
+    }
+    const alvo = PRESETS_PROVEDOR.find((p) => p.id === id);
+    setRascunho({
+      preset: id,
+      baseUrl: alvo?.baseUrl ?? "",
+      modelo: alvo?.modelos[0] ?? "",
+      chave: rascunho.preset === id ? rascunho.chave : "",
+    });
+  }
+
+  function confirmar() {
+    if (rascunho.preset === "lovable") {
+      limpar();
+      toast.success("Gestor IA voltou a usar a IA nativa da plataforma");
+      setAberto(false);
+      return;
+    }
+    if (!provedorAtivo(rascunho)) {
+      toast.error("Preencha a URL base, o modelo e a chave de API do provedor");
+      return;
+    }
+    salvar(rascunho);
+    toast.success("Provedor de IA configurado", {
+      description: `${preset?.nome ?? "Personalizado"} · ${rascunho.modelo}`,
+    });
+    setAberto(false);
+  }
+
+  return (
+    <Dialog open={aberto} onOpenChange={setAberto}>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className={`h-8 shrink-0 rounded-full px-3 ${ativo ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
+          aria-label="Configurar provedores de IA gratuitos"
+          title="Configurar provedores de IA gratuitos"
+        >
+          <Plug className="size-4 shrink-0 sm:mr-1.5" />
+          <span className="hidden truncate sm:inline">Provedor IA</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="text-primary size-5" /> Provedores de IA
+          </DialogTitle>
+          <DialogDescription>
+            Use a IA nativa da plataforma ou conecte um provedor gratuito compatível com a API
+            OpenAI. A chave fica salva apenas neste navegador e é usada só nas suas conversas.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Provedor</Label>
+            <Select value={rascunho.preset} onValueChange={escolherPreset}>
+              <SelectTrigger>
+                <SelectValue placeholder="Escolha um provedor" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="lovable">IA nativa da plataforma (padrão)</SelectItem>
+                {PRESETS_PROVEDOR.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {preset ? (
+              <p className="text-muted-foreground text-xs">{preset.descricao}</p>
+            ) : (
+              <p className="text-muted-foreground text-xs">
+                Modelo gerenciado pela plataforma, sem chave nem custo extra para você.
+              </p>
+            )}
+          </div>
+
+          {rascunho.preset !== "lovable" && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="ia-base-url">URL base da API</Label>
+                <Input
+                  id="ia-base-url"
+                  value={rascunho.baseUrl}
+                  onChange={(e) => setRascunho({ ...rascunho, baseUrl: e.target.value })}
+                  placeholder="https://openrouter.ai/api/v1"
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="ia-modelo">Modelo</Label>
+                <Input
+                  id="ia-modelo"
+                  value={rascunho.modelo}
+                  onChange={(e) => setRascunho({ ...rascunho, modelo: e.target.value })}
+                  placeholder="deepseek/deepseek-chat-v3-0324:free"
+                  autoComplete="off"
+                />
+                {(preset?.modelos.length ?? 0) > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {preset?.modelos.map((m) => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => setRascunho({ ...rascunho, modelo: m })}
+                        className={`rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                          rascunho.modelo === m
+                            ? "border-primary/60 bg-primary/10 text-primary"
+                            : "border-border text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="ia-chave">Chave de API</Label>
+                <Input
+                  id="ia-chave"
+                  type="password"
+                  value={rascunho.chave}
+                  onChange={(e) => setRascunho({ ...rascunho, chave: e.target.value })}
+                  placeholder="sk-..."
+                  autoComplete="off"
+                />
+                {preset?.urlChave && (
+                  <a
+                    href={preset.urlChave}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
+                  >
+                    Obter chave gratuita <ExternalLink className="size-3" />
+                  </a>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        <DialogFooter className="gap-2 sm:justify-between">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              limpar();
+              setRascunho({ ...CONFIG_PADRAO });
+              toast.success("Configuração removida");
+              setAberto(false);
+            }}
+          >
+            Restaurar padrão
+          </Button>
+          <Button onClick={confirmar}>Salvar provedor</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

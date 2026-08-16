@@ -18,6 +18,7 @@ import {
 } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { DialogoAprendizado } from "@/components/ai-elements/dialogo-aprendizado";
+import { DialogoProvedorIA } from "@/components/ai-elements/dialogo-provedor-ia";
 import {
   PromptInput,
   PromptInputTextarea,
@@ -39,6 +40,7 @@ import { listarMensagens, limparConversa } from "@/lib/chat.functions";
 import { gerarRelatorioAuditoria } from "@/lib/relatorio.functions";
 import { gerarPdfRelatorioAuditoria } from "@/lib/relatorio-auditoria-pdf";
 import { PERFIS, usePerfilInvestidor, type PerfilInvestidor } from "@/lib/perfil-investidor";
+import { cabecalhosProvedor, useProvedorIA } from "@/lib/provedor-ia";
 import logoIA from "@/assets/tecnico-ia.png";
 import { urlAbsoluta } from "@/lib/seo";
 
@@ -82,6 +84,7 @@ function ChatPage() {
   const fetchMensagens = useServerFn(listarMensagens);
   const clearFn = useServerFn(limparConversa);
   const { perfil, salvar } = usePerfilInvestidor();
+  const { config: provedor } = useProvedorIA();
   const [showOnboarding, setShowOnboarding] = useState(() => 
     typeof window !== "undefined" ? !window.localStorage.getItem("gestor-ia-onboarded") : false
   );
@@ -119,10 +122,11 @@ function ChatPage() {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             "X-Perfil-Investidor": perfil,
             "X-Modo-Citacoes": citacoes ? "on" : "off",
+            ...cabecalhosProvedor(provedor),
           };
         },
       }),
-    [perfil, citacoes],
+    [perfil, citacoes, provedor],
   );
 
   const { messages, sendMessage, setMessages, status } = useChat({
@@ -133,10 +137,8 @@ function ChatPage() {
         description: error.message.includes("429")
           ? "Muitas mensagens em sequência. Aguarde alguns instantes."
           : error.message.includes("402") || /payment required/i.test(error.message)
-            ? "Os créditos/quota de IA acabaram no provedor configurado (Lovable ou OpenRouter). Verifique a chave ou a cota gratuita do provedor."
-            : /error occurred|model.*(not found|does not exist)|ai_apicallerror|404/i.test(error.message)
-              ? "O provedor de IA rejeitou a chamada. Verifique se a chave USER_LLM_API_KEY está correta, se o modelo (USER_LLM_MODEL) existe no provedor configurado e veja o detalhe em Cloud → Logs."
-              : error.message,
+            ? "Os créditos de IA do workspace acabaram. Adicione créditos em Configurações → Planos e uso dentro da Lovable."
+            : error.message,
       }),
   });
 
@@ -337,6 +339,7 @@ function ChatPage() {
               />
             </Button>
             <DialogoAprendizado />
+            <DialogoProvedorIA />
 
             <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
               <div className="hidden h-6 w-px bg-border/60 sm:block" />
