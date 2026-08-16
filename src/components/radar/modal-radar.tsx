@@ -15,11 +15,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useNavigate } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { History, Loader2, Sparkles, FlaskConical } from "lucide-react";
+import { History, Loader2, MessageSquare, Sparkles, FlaskConical } from "lucide-react";
 import { fmtPreco } from "@/components/cotacoes/formatos";
 import { CORES_SINAL, ROTULOS_ZONA } from "@/lib/radar-base";
 import {
@@ -330,6 +331,7 @@ export function ModalRadar({
   aberto: boolean;
   aoFechar: () => void;
 }) {
+  const navegar = useNavigate();
   const ticker = aberto ? (linha?.ticker ?? null) : null;
   const detalhe = useRadarDetalhe(ticker);
   const [versaoIA, setVersaoIA] = useState(0);
