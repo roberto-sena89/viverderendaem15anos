@@ -181,10 +181,13 @@ const normalizar = (t: string) =>
 /** Indexador declarado no ticker/nome do ativo (SELIC, IPCA+, PREFIXADO). */
 function indexador(texto: string): "SELIC" | "IPCA" | "PRE" | null {
   if (/SELIC|LFT/.test(texto)) return "SELIC";
-  if (/IPCA|NTN B|RENDA|EDUCA/.test(texto)) return "IPCA";
+  // Prefixado antes de IPCA: o texto do ativo costuma trazer a categoria
+  // ("Renda Fixa") junto, e "RENDA" sozinho não pode significar Renda+.
   if (/PREFIXAD|PRE\b|LTN|NTN F/.test(texto)) return "PRE";
+  if (/IPCA|NTN B|RENDA\+|EDUCA/.test(texto)) return "IPCA";
   return null;
 }
+
 
 /**
  * Verdadeiro quando o texto parece se referir a um título público do Tesouro.
