@@ -8,6 +8,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { AbasMercado } from "@/components/abas-mercado";
@@ -53,6 +54,7 @@ import {
   Download,
   
   Loader2,
+  MessageSquare,
   Radar,
   RefreshCw,
   Search,
@@ -162,6 +164,7 @@ function paginasNumeradas(total: number, atual: number): (number | "…")[] {
 }
 
 function PaginaRadar() {
+  const navegar = useNavigate();
   const [categoria, setCategoria] = useState<"acao" | "fii">("acao");
   const [abaVisao] = useState<"cotacoes" | "ranking">("ranking");
   const [busca, setBusca] = useState("");
