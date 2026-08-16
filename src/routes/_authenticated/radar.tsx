@@ -6,9 +6,8 @@
  * briefing executivo, contexto macro e o veredito do Gestor IA.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { AbasMercado } from "@/components/abas-mercado";
