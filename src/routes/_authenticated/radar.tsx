@@ -318,7 +318,18 @@ function PaginaRadar() {
     }
   };
 
+  /* Gestor IA respondeu → revalida o Radar na hora (mesma aba e outras abas). */
+  useEffect(() => {
+    return ouvirRespostaGestorIA((msg) => {
+      void queryClient.invalidateQueries({ queryKey: ["radar"] });
+      toast.info("Radar atualizado com a análise do Gestor IA", {
+        description: msg.ticker ? `Dados revisados para ${msg.ticker}.` : undefined,
+      });
+    });
+  }, [queryClient]);
+
   /* Aviso da página: algo ficou sem histórico → uma tentativa automática. */
+
   useEffect(() => {
     tentouPagina.current = false;
   }, [categoria, pagina]);
