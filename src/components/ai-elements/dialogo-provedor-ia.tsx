@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Plug, Sparkles } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  CheckCircle2,
+  ExternalLink,
+  Loader2,
+  Plug,
+  PlugZap,
+  Sparkles,
+  XCircle,
+} from "lucide-react";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
