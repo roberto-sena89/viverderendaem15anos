@@ -511,16 +511,26 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const modeloEscolhido = provedorExterno ? iaModelo! : MODELO_CHAT;
+        const gatewayNativo = provedorExterno
+          ? null
+          : createLovableAiGatewayProvider(lovableApiKey!, getLovableAiGatewayRunId(request));
+        const nomeProvedor = provedorExterno
+          ? `provedor externo (${(() => {
+              try {
+                return new URL(iaBaseUrl!).hostname;
+              } catch {
+                return iaBaseUrl!;
+              }
+            })()})`
+          : "Lovable AI Gateway";
         const modeloChat = provedorExterno
           ? createOpenAICompatible({
               name: "provedor-usuario",
               baseURL: iaBaseUrl!.replace(/\/$/, ""),
               headers: { Authorization: `Bearer ${iaChave}` },
             })(iaModelo!)
-          : createLovableAiGatewayProvider(
-              lovableApiKey!,
-              getLovableAiGatewayRunId(request),
-            )(MODELO_CHAT);
+          : gatewayNativo!(MODELO_CHAT);
+
 
 
         const mercado = await import("@/lib/market.server");
@@ -1683,24 +1693,57 @@ export const Route = createFileRoute("/api/chat")({
         return resultado.toUIMessageStreamResponse({
           originalMessages: messages,
           onError: (erroStream) => {
-            const err = erroStream as { statusCode?: number; message?: string };
+            const err = erroStream as {
+              statusCode?: number;
+              message?: string;
+              responseBody?: string;
+              responseHeaders?: Record<string, string>;
+            };
             const msg = String(err?.message ?? erroStream ?? "");
             const status = err?.statusCode;
-            if (status === 402 || /payment required|not enough credits/i.test(msg)) {
-              return provedorExterno
-                ? "O provedor de IA configurado recusou a chamada por falta de créditos/cota. Verifique sua chave ou escolha outro modelo gratuito."
-                : "Os créditos de IA do workspace acabaram. Adicione créditos em Configurações → Planos e uso, ou configure um provedor gratuito no botão de configurações do Gestor IA.";
+
+            // request id: corpo JSON do provedor, cabeçalhos ou run id do gateway.
+            let requestId: string | undefined;
+            try {
+              const corpo = err?.responseBody ? JSON.parse(err.responseBody) : null;
+              requestId = corpo?.request_id ?? corpo?.id ?? corpo?.error?.request_id;
+            } catch {
+              /* corpo não-JSON */
             }
-            if (status === 429 || /rate limit|too many requests/i.test(msg)) {
-              return "Muitas mensagens em sequência. Aguarde alguns instantes e tente novamente.";
-            }
-            if (status === 401 || status === 403 || /unauthorized|invalid api key/i.test(msg)) {
-              return provedorExterno
-                ? "A chave do provedor de IA configurado é inválida ou expirou. Revise-a nas configurações do Gestor IA."
-                : "Falha de autenticação com o serviço de IA.";
-            }
-            return msg || "Falha ao gerar a resposta do Gestor IA.";
+            const cab = err?.responseHeaders ?? {};
+            requestId =
+              requestId ??
+              cab["x-request-id"] ??
+              cab["x-lovable-aig-run-id"] ??
+              gatewayNativo?.getRunId();
+
+            const detalhes = [
+              `provedor: ${nomeProvedor}`,
+              `modelo: ${modeloEscolhido}`,
+              `status: ${status ?? "sem status"}`,
+              requestId ? `request id: ${requestId}` : null,
+              `hora: ${new Date().toISOString()}`,
+            ]
+              .filter(Boolean)
+              .join(" · ");
+
+            const base =
+              status === 402 || /payment required|not enough credits/i.test(msg)
+                ? provedorExterno
+                  ? "O provedor de IA configurado recusou a chamada por falta de créditos/cota. Verifique sua chave ou escolha outro modelo gratuito."
+                  : "Os créditos de IA do workspace acabaram. Adicione créditos em Configurações → Planos e uso, ou configure um provedor gratuito no botão de configurações do Gestor IA."
+                : status === 429 || /rate limit|too many requests/i.test(msg)
+                  ? "Muitas mensagens em sequência. Aguarde alguns instantes e tente novamente."
+                  : status === 401 || status === 403 || /unauthorized|invalid api key/i.test(msg)
+                    ? provedorExterno
+                      ? "A chave do provedor de IA configurado é inválida ou expirou. Revise-a nas configurações do Gestor IA."
+                      : "Falha de autenticação com o serviço de IA."
+                    : msg || "Falha ao gerar a resposta do Gestor IA.";
+
+            console.error(`[chat] erro entregue ao usuário (${userId}): ${base} | ${detalhes}`);
+            return `${base}\n\n${detalhes}`;
           },
+
 
           onFinish: async ({ responseMessage }) => {
             const texto = textoDaMensagem(responseMessage);
