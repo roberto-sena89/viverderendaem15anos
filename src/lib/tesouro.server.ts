@@ -40,7 +40,8 @@ let emVoo: Promise<TituloTesouro[]> | null = null;
 let proximaTentativa = 0;
 const TTL_MS = 6 * 60 * 60 * 1000;
 /** Aborta o download cedo o bastante para não estourar o limite do chat. */
-const TIMEOUT_MS = 15_000;
+const TIMEOUT_MS = 30_000;
+
 /** Espera entre tentativas após uma falha (o arquivo é caro de baixar). */
 const RECUPERACAO_MS = 5 * 60 * 1000;
 
