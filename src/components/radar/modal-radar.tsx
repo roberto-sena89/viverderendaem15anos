@@ -15,11 +15,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useNavigate } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { History, Loader2, Sparkles, FlaskConical } from "lucide-react";
+import { History, Loader2, MessageSquare, Sparkles, FlaskConical } from "lucide-react";
 import { fmtPreco } from "@/components/cotacoes/formatos";
 import { CORES_SINAL, ROTULOS_ZONA } from "@/lib/radar-base";
 import {
@@ -330,6 +331,7 @@ export function ModalRadar({
   aberto: boolean;
   aoFechar: () => void;
 }) {
+  const navegar = useNavigate();
   const ticker = aberto ? (linha?.ticker ?? null) : null;
   const detalhe = useRadarDetalhe(ticker);
   const [versaoIA, setVersaoIA] = useState(0);
@@ -401,7 +403,29 @@ export function ModalRadar({
               </Badge>
             ) : null}
           </DialogTitle>
+          {linha ? (
+            <div className="pt-1">
+              <Button
+                size="sm"
+                className="h-8 gap-2"
+                onClick={() => {
+                  aoFechar();
+                  void navegar({
+                    to: "/chat",
+                    search: {
+                      q: `Use a ferramenta radarAtivo para ${linha.ticker} e me diga: em que zona de preço está, se é oportunidade de compra agora e como isso se encaixa na minha carteira.`,
+                    },
+                  });
+                }}
+                title="Levar este ativo para o Gestor IA"
+              >
+                <MessageSquare className="size-4 shrink-0" aria-hidden />
+                Analisar no Gestor IA
+              </Button>
+            </div>
+          ) : null}
         </DialogHeader>
+
 
         {linha ? (
           <div className="space-y-5">

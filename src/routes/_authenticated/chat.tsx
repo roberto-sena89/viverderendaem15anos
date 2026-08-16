@@ -45,7 +45,11 @@ import logoIA from "@/assets/tecnico-ia.png";
 import { urlAbsoluta } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/chat")({
+  validateSearch: (search: Record<string, unknown>): { q?: string } =>
+    typeof search["q"] === "string" ? { q: search["q"] as string } : {},
+
   component: ChatPage,
+
   head: () => ({
     meta: [
       { title: "Gestor IA — Assistente da sua carteira | Investidor em 15 Anos" },
@@ -152,6 +156,20 @@ function ChatPage() {
   useEffect(() => {
     if (status === "ready") textareaRef.current?.focus();
   }, [status]);
+
+  /* Pergunta vinda de outra tela (ex.: Radar de Oportunidades) via ?q=... */
+  const { q: perguntaExterna } = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const perguntaEnviada = useRef(false);
+  useEffect(() => {
+    if (perguntaEnviada.current || !perguntaExterna || !historico.isSuccess) return;
+    perguntaEnviada.current = true;
+    setShowOnboarding(false);
+    void enviar(perguntaExterna);
+    void navigate({ to: "/chat", search: {}, replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [perguntaExterna, historico.isSuccess]);
+
 
   const carregando = status === "submitted" || status === "streaming";
 

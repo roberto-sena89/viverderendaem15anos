@@ -1635,7 +1635,118 @@ export const Route = createFileRoute("/api/chat")({
               }
             },
           }),
+          radarOportunidades: tool({
+            description:
+              "Radar de Oportunidades do app: ranking de ações ou FIIs por score de oportunidade, com sinal (comprar/manter/vender/observar), posição histórica de preço (percentil na série, distância da mínima de 52 semanas), DY 12m e P/VP. Use quando o usuário perguntar sobre o Radar, oportunidades de compra, ativos descontados ou o que está barato agora.",
+            inputSchema: z.object({
+              categoria: z.enum(["acao", "fii"]).optional().describe("Padrão: acao"),
+              sinal: z.enum(["comprar", "manter", "vender", "observar"]).optional(),
+              apenasCarteira: z
+                .boolean()
+                .optional()
+                .describe("Somente ativos que o usuário já tem na carteira"),
+              limite: z.number().int().min(1).max(25).optional(),
+            }),
+            execute: async ({ categoria, sinal, apenasCarteira, limite }) => {
+              try {
+                const cat = categoria ?? "acao";
+                const [{ lerPosicoesBanco, contextoMacro }, { sinalRadar, scoreOportunidade }] =
+                  await Promise.all([
+                    import("@/lib/radar.server"),
+                    import("@/lib/radar-base"),
+                  ]);
+                const grade =
+                  cat === "acao"
+                    ? await (await import("@/lib/acoes.server")).gradeAcoesComCache()
+                    : await (await import("@/lib/fiis.server")).gradeFiisComCache();
+                const [banco, macro] = await Promise.all([lerPosicoesBanco(), contextoMacro()]);
+                const daCarteira = new Set(ativosLinha.map((a) => a.ticker.toUpperCase()));
+
+                const linhas = grade.linhas
+                  .map((raw) => {
+                    const ticker = raw.ticker.toUpperCase();
+                    const posicao = banco.posicoes[ticker] ?? null;
+                    const s = sinalRadar({
+                      variacaoDia: raw.variacaoPercent ?? null,
+                      dy12: raw.dy12 ?? null,
+                      pvp: raw.pvp ?? null,
+                      percentil: posicao?.percentil ?? null,
+                      noticiaImpacto: false,
+                    });
+                    return {
+                      ticker,
+                      nome: raw.nome,
+                      na_carteira: daCarteira.has(ticker),
+                      preco: raw.preco ?? null,
+                      variacao_dia_pct: raw.variacaoPercent ?? null,
+                      dy12_pct: raw.dy12 ?? null,
+                      pvp: raw.pvp ?? null,
+                      pl: "pl" in raw ? (raw.pl ?? null) : null,
+                      percentil_historico: posicao?.percentil ?? null,
+                      dist_minima_52s_pct: posicao?.distMinima52sPct ?? null,
+                      drawdown_maximo_pct: posicao?.drawdownMaximoPct ?? null,
+                      sinal: s.tipo,
+                      motivo: s.motivo,
+                      score: scoreOportunidade({
+                        percentil: posicao?.percentil ?? null,
+                        dy12: raw.dy12 ?? null,
+                        drawdownMaximoPct: posicao?.drawdownMaximoPct ?? null,
+                        noticiaImpacto: false,
+                      }),
+                    };
+                  })
+                  .filter((l) => (sinal ? l.sinal === sinal : true))
+                  .filter((l) => (apenasCarteira ? l.na_carteira : true))
+                  .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+
+                return {
+                  categoria: cat,
+                  atualizado_em: grade.atualizadoEm,
+                  selic_pct: macro.selic,
+                  ipca_pct: macro.ipca,
+                  total_avaliado: linhas.length,
+                  ativos: linhas.slice(0, limite ?? 12),
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
+          radarAtivo: tool({
+            description:
+              "Ficha do Radar para um ativo específico: posição histórica de preço (percentil, mínima/máxima de 52 semanas, drawdown), análise salva do Gestor IA (veredito, convicção, horizonte) e backtest do sinal do radar. Use quando o usuário citar um ticker e perguntar se está barato, em que zona está ou o que o Radar diz.",
+            inputSchema: z.object({ ticker: z.string() }),
+            execute: async ({ ticker }) => {
+              try {
+                const alvo = ticker.trim().toUpperCase();
+                const radarFx = await import("@/lib/radar.server");
+                const [mapa, serie, analise, backtest] = await Promise.all([
+                  radarFx.posicoesParaTickers([alvo]).catch(() => ({}) as Record<string, unknown>),
+                  radarFx.serieParaGrafico(alvo).catch(() => null),
+                  radarFx.lerAnaliseIA(alvo).catch(() => null),
+                  radarFx.backtestRadarAtivo(alvo).catch(() => null),
+                ]);
+                const posicao = (mapa as Record<string, unknown>)[alvo] ?? null;
+                return {
+                  ticker: alvo,
+                  posicao_historica: posicao,
+                  serie_resumo: serie
+                    ? {
+                        pontos: serie.pontos?.length ?? 0,
+                        inicio: serie.pontos?.[0]?.d ?? null,
+                        fim: serie.pontos?.[serie.pontos.length - 1]?.d ?? null,
+                      }
+                    : null,
+                  analise_gestor_ia: analise,
+                  backtest_sinal: backtest,
+                };
+              } catch (e) {
+                return erro(e);
+              }
+            },
+          }),
         };
+
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(

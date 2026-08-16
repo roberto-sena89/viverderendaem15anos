@@ -6,7 +6,7 @@
  * briefing executivo, contexto macro e o veredito do Gestor IA.
  */
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
@@ -53,6 +53,7 @@ import {
   Download,
   
   Loader2,
+  MessageSquare,
   Radar,
   RefreshCw,
   Search,
@@ -162,6 +163,7 @@ function paginasNumeradas(total: number, atual: number): (number | "…")[] {
 }
 
 function PaginaRadar() {
+  const navegar = useNavigate();
   const [categoria, setCategoria] = useState<"acao" | "fii">("acao");
   const [abaVisao] = useState<"cotacoes" | "ranking">("ranking");
   const [busca, setBusca] = useState("");
@@ -536,7 +538,25 @@ function PaginaRadar() {
               ? `${lote.atual || "…"} ${lote.processados}/${lote.total}`
               : "Analisar top 20 com IA"}
           </Button>
+          <Button
+            variant="default"
+            size="sm"
+            className="h-9 gap-2"
+            onClick={() =>
+              void navegar({
+                to: "/chat",
+                search: {
+                  q: `Analise o Radar de Oportunidades de ${categoria === "acao" ? "ações" : "FIIs"} usando a ferramenta radarOportunidades: destaque os melhores sinais de compra, compare com a minha carteira e diga o que devo fazer agora.`,
+                },
+              })
+            }
+            title="Levar a visão atual do Radar para o Gestor IA"
+          >
+            <MessageSquare className="size-4 shrink-0" aria-hidden />
+            Perguntar ao Gestor IA
+          </Button>
         </div>
+
       </header>
 
       {isPending ? (
