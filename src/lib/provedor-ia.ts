@@ -141,9 +141,14 @@ export function useProvedorIA() {
   }, []);
 
   const salvar = useCallback((novo: ConfigProvedorIA) => {
-    window.localStorage.setItem(CHAVE_STORAGE, JSON.stringify(novo));
+    const chavesPorProvedor = { ...novo.chavesPorProvedor };
+    if (novo.preset !== "lovable" && novo.chave.trim()) {
+      chavesPorProvedor[novo.preset] = novo.chave.trim();
+    }
+    const completo: ConfigProvedorIA = { ...novo, chavesPorProvedor };
+    window.localStorage.setItem(CHAVE_STORAGE, JSON.stringify(completo));
     window.dispatchEvent(new CustomEvent(EVENTO));
-    setConfig(novo);
+    setConfig(completo);
   }, []);
 
   const limpar = useCallback(() => {
@@ -154,6 +159,7 @@ export function useProvedorIA() {
 
   return { config, salvar, limpar, ativo: provedorAtivo(config) };
 }
+
 
 /** Cabeçalhos enviados ao /api/chat quando há provedor externo configurado. */
 export function cabecalhosProvedor(config: ConfigProvedorIA): Record<string, string> {
