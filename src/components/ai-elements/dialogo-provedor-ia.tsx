@@ -54,7 +54,13 @@ export function DialogoProvedorIA() {
   const [testando, setTestando] = useState(false);
   const [teste, setTeste] = useState<ResultadoTesteProvedor | null>(null);
   const [historico, setHistorico] = useState<RegistroTesteConexao[]>([]);
+  const [apenasFree, setApenasFree] = useState(false);
+  const modelos = teste?.modelos ?? [];
+  const ehFree = (m: string) => /(:free\b|\bfree\b|-free)/i.test(m);
+  const totalFree = modelos.filter(ehFree).length;
+  const modelosVisiveis = apenasFree ? modelos.filter(ehFree) : modelos;
   const executarTeste = useServerFn(testarProvedorIA);
+
 
   useEffect(() => {
     if (aberto) {
@@ -302,11 +308,34 @@ export function DialogoProvedorIA() {
 
                 {teste?.ok && teste.modelos.length > 0 && (
                   <div className="space-y-1.5">
-                    <p className="text-muted-foreground text-xs">
-                      Modelos disponíveis — clique para usar:
-                    </p>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-muted-foreground text-xs">
+                        Modelos disponíveis — clique para usar:
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setApenasFree((v) => !v)}
+                        aria-pressed={apenasFree}
+                        title="Mostrar apenas modelos gratuitos"
+                        className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
+                          apenasFree
+                            ? "border-primary/60 bg-primary/15 text-primary"
+                            : "border-border/60 text-muted-foreground hover:bg-muted/50"
+                        }`}
+                      >
+                        <Sparkles className="size-3" />
+                        Somente FREE
+                        <span className="opacity-70">({totalFree})</span>
+                      </button>
+                    </div>
+                    {apenasFree && modelosVisiveis.length === 0 && (
+                      <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-center text-[11px]">
+                        Nenhum modelo gratuito encontrado neste provedor.
+                      </p>
+                    )}
                     <div className="border-border/60 max-h-48 space-y-1 overflow-y-auto rounded-lg border p-2">
-                      {teste.modelos.map((m) => {
+                      {modelosVisiveis.map((m) => {
+
                         const selecionado = rascunho.modelo === m;
                         return (
                           <div
