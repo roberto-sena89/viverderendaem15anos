@@ -401,7 +401,29 @@ export function ModalRadar({
               </Badge>
             ) : null}
           </DialogTitle>
+          {linha ? (
+            <div className="pt-1">
+              <Button
+                size="sm"
+                className="h-8 gap-2"
+                onClick={() => {
+                  aoFechar();
+                  void navegar({
+                    to: "/chat",
+                    search: {
+                      q: `Use a ferramenta radarAtivo para ${linha.ticker} e me diga: em que zona de preço está, se é oportunidade de compra agora e como isso se encaixa na minha carteira.`,
+                    },
+                  });
+                }}
+                title="Levar este ativo para o Gestor IA"
+              >
+                <MessageSquare className="size-4 shrink-0" aria-hidden />
+                Analisar no Gestor IA
+              </Button>
+            </div>
+          ) : null}
         </DialogHeader>
+
 
         {linha ? (
           <div className="space-y-5">
