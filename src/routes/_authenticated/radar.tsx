@@ -41,6 +41,8 @@ import { toast } from "sonner";
 import { aplicarPosicoes, useRadarPosicoes, useRadarVisao } from "@/lib/radar";
 import { radarAnaliseIA, radarCompletarCache, radarVisao } from "@/lib/radar.functions";
 import { AVISO_DIA_PCT } from "@/lib/radar-base";
+import { ouvirRespostaGestorIA } from "@/lib/radar-sync";
+
 import { exportarRadar, type FormatoExportacaoRadar } from "@/lib/radar-exportacao";
 import { useAtivos } from "@/lib/data";
 import type { LinhaRadarBase } from "@/lib/radar.server";
@@ -318,7 +320,18 @@ function PaginaRadar() {
     }
   };
 
+  /* Gestor IA respondeu → revalida o Radar na hora (mesma aba e outras abas). */
+  useEffect(() => {
+    return ouvirRespostaGestorIA((msg) => {
+      void queryClient.invalidateQueries({ queryKey: ["radar"] });
+      toast.info("Radar atualizado com a análise do Gestor IA", {
+        description: msg.ticker ? `Dados revisados para ${msg.ticker}.` : undefined,
+      });
+    });
+  }, [queryClient]);
+
   /* Aviso da página: algo ficou sem histórico → uma tentativa automática. */
+
   useEffect(() => {
     tentouPagina.current = false;
   }, [categoria, pagina]);

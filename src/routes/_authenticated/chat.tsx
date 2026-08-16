@@ -43,6 +43,8 @@ import { PERFIS, usePerfilInvestidor, type PerfilInvestidor } from "@/lib/perfil
 import { cabecalhosProvedor, useProvedorIA } from "@/lib/provedor-ia";
 import logoIA from "@/assets/tecnico-ia.png";
 import { urlAbsoluta } from "@/lib/seo";
+import { emitirRespostaGestorIA } from "@/lib/radar-sync";
+
 
 export const Route = createFileRoute("/_authenticated/chat")({
   validateSearch: (search: Record<string, unknown>): { q?: string } =>
@@ -179,6 +181,9 @@ function ChatPage() {
     setInput("");
     await sendMessage({ text: valor });
     queryClient.invalidateQueries({ queryKey: ["chat-mensagens"] });
+    const ticker = valor.toUpperCase().match(/\b[A-Z]{4}\d{1,2}\b/)?.[0] ?? null;
+    emitirRespostaGestorIA(ticker);
+
   }
 
   async function limpar() {
