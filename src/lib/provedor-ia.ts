@@ -88,6 +88,7 @@ export const CONFIG_PADRAO: ConfigProvedorIA = {
   baseUrl: "",
   modelo: "",
   chave: "",
+  chavesPorProvedor: {},
 };
 
 export function lerConfigProvedor(): ConfigProvedorIA {
@@ -96,16 +97,25 @@ export function lerConfigProvedor(): ConfigProvedorIA {
     const bruto = window.localStorage.getItem(CHAVE_STORAGE);
     if (!bruto) return CONFIG_PADRAO;
     const dados = JSON.parse(bruto) as Partial<ConfigProvedorIA>;
+    const preset = dados.preset ?? "lovable";
+    const chavesPorProvedor =
+      dados.chavesPorProvedor && typeof dados.chavesPorProvedor === "object"
+        ? { ...dados.chavesPorProvedor }
+        : {};
+    const chave = dados.chave ?? chavesPorProvedor[preset] ?? "";
+    if (chave && preset !== "lovable") chavesPorProvedor[preset] = chave;
     return {
-      preset: dados.preset ?? "lovable",
+      preset,
       baseUrl: dados.baseUrl ?? "",
       modelo: dados.modelo ?? "",
-      chave: dados.chave ?? "",
+      chave,
+      chavesPorProvedor,
     };
   } catch {
     return CONFIG_PADRAO;
   }
 }
+
 
 /** Config válida = provedor externo com URL, modelo e chave preenchidos. */
 export function provedorAtivo(config: ConfigProvedorIA) {
