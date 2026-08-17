@@ -112,8 +112,15 @@
     "vitest": "^4.1.10"
   },
   "overrides": {
-    "js-yaml": "^4.3.0",
+    "js-yaml": "^4.3.1",
     "@hono/node-server": "^2.0.12",
-    "@tanstack/react-router": "1.170.18"
+    "@tanstack/react-router": "1.170.18",
+    "brace-expansion": "^2.1.4",
+    "fast-uri": "^3.1.5",
+    "postcss": "^8.5.18",
+    "vite": {
+      "postcss": "^8.5.18",
+      "nanoid": "^5.0.10"
+    }
   }
 }
