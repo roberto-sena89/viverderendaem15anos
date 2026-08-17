@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "ai": "^7.0.37",
     "@ai-sdk/openai-compatible": "^3.0.14",
-    "@ai-sdk/react": "^4.0.40"
+    "@ai-sdk/react": "^4.0.40",
+    "ai": "^7.0.37",
+    "dompurify": "^3.4.13",
+    "marked": "^18.0.9",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
