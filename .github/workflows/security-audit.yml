@@ -20,12 +20,102 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+          cache: 'npm'
 
-      - name: Instalar dependências
+      - name: Instalar dependências (root)
         run: npm ci
 
-      - name: npm audit (falha em high/critical)
+      - name: Instalar dependências (viverderendaem15anos)
+        working-directory: ./viverderendaem15anos
+        run: npm ci
+
+      - name: npm audit (falha em high/critical) - root
+        run: npm audit --audit-level=high
+
+      - name: npm audit (falha em high/critical) - viverderendaem15anos
+        working-directory: ./viverderendaem15anos
         run: npm audit --audit-level=high
 
       - name: Verificar correções já instaláveis (brace-expansion, uuid)
         run: node scripts/check-vuln-fixes.mjs
+
+  sast:
+    name: Análise estática de código (SAST)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar ESLint com regras de segurança
+        run: npm run lint -- --format=json --output-file=eslint-report.json || true
+
+      - name: Upload SARIF para GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: eslint-report.json
+          category: eslint
+
+  secrets:
+    name: Varredura de segredos (Secret scanning)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Executar TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --fail --json
+
+  licenses:
+    name: Verificação de licenças
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar licenças (root)
+        run: npx license-checker --summary --production --excludePrivatePackages
+
+      - name: Verificar licenças (viverderendaem15anos)
+        working-directory: ./viverderendaem15anos
+        run: npx license-checker --summary --production --excludePrivatePackages
+
+  dependency-review:
+    name: Revisão de dependências (PRs)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          config-file: '.github/dependency-review-config.yml'
+          fail-on-severity: high

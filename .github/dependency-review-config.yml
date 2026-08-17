@@ -1,0 +1,35 @@
+# Configuração para dependency-review-action
+# https://github.com/actions/dependency-review-action
+
+# Falha se encontrar vulnerabilidades high ou critical
+fail-on-severity: high
+
+# Permite licenças compatíveis com MIT/BSD/Apache
+allow-licenses:
+  - MIT
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - Apache-2.0
+  - ISC
+  - CC0-1.0
+  - Unlicense
+
+# Bloqueia licenças problemáticas
+deny-licenses:
+  - GPL-2.0
+  - GPL-3.0
+  - AGPL-3.0
+  - LGPL-2.1
+  - LGPL-3.0
+  - MPL-2.0
+  - EPL-1.0
+  - EPL-2.0
+
+# Permite escopos específicos (ex: tipos apenas para dev)
+allow-scopes:
+  - devDependencies
+  - peerDependencies
+  - optionalDependencies
+
+# Configurações adicionais
+fail-on-license: true
