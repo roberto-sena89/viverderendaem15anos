@@ -21,15 +21,11 @@ jobs:
         with:
           node-version: '24'
 
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Instalar dependências
-        run: bun install --frozen-lockfile
+        run: npm ci
 
-      - name: bun audit (falha em high/critical)
-        run: bun audit --audit-level=high
+      - name: npm audit (falha em high/critical)
+        run: npm audit --audit-level=high
 
       - name: Verificar correções já instaláveis (brace-expansion, uuid)
-        run: bun scripts/check-vuln-fixes.mjs
+        run: node scripts/check-vuln-fixes.mjs
