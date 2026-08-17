@@ -227,9 +227,14 @@ function RootComponent() {
   const router = useRouter();
   const backend = useBackendPronto();
   const pronto = backend.status === "ok";
+  const analyticsIniciado = useRef(false);
 
   useEffect(() => {
-    iniciarAnalytics();
+    if (!analyticsIniciado.current) {
+      iniciarAnalytics();
+      analyticsIniciado.current = true;
+    }
+
     // Só assina o auth quando as variáveis do backend são válidas: criar o
     // client com URL/chave inválidas derruba a aplicação inteira.
     if (!pronto) return;

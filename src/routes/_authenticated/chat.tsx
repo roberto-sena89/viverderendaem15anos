@@ -150,10 +150,11 @@ function ChatPage() {
 
   const hidratado = useRef(false);
   useEffect(() => {
-    if (hidratado.current || !historico.isSuccess) return;
+    if (hidratado.current || !historico.isSuccess || initialMessages.length === 0) return;
     hidratado.current = true;
-    if (initialMessages.length > 0) setMessages(initialMessages);
-  }, [historico.isSuccess, initialMessages, setMessages]);
+    setMessages(initialMessages);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [historico.isSuccess]);
 
   useEffect(() => {
     if (status === "ready") textareaRef.current?.focus();
@@ -162,10 +163,12 @@ function ChatPage() {
   /* Pergunta vinda de outra tela (ex.: Radar de Oportunidades) via ?q=... */
   const { q: perguntaExterna } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const perguntaEnviada = useRef(false);
+  const perguntaEnviadaRef = useRef<string | null>(null);
   useEffect(() => {
-    if (perguntaEnviada.current || !perguntaExterna || !historico.isSuccess) return;
-    perguntaEnviada.current = true;
+    if (!perguntaExterna || !historico.isSuccess) return;
+    if (perguntaEnviadaRef.current === perguntaExterna) return; // Já enviou essa pergunta
+
+    perguntaEnviadaRef.current = perguntaExterna;
     setShowOnboarding(false);
     void enviar(perguntaExterna);
     void navigate({ to: "/chat", search: {}, replace: true });
@@ -178,12 +181,18 @@ function ChatPage() {
   async function enviar(texto: string) {
     const valor = texto.trim();
     if (!valor || carregando) return;
-    setInput("");
-    await sendMessage({ text: valor });
-    queryClient.invalidateQueries({ queryKey: ["chat-mensagens"] });
-    const ticker = valor.toUpperCase().match(/\b[A-Z]{4}\d{1,2}\b/)?.[0] ?? null;
-    emitirRespostaGestorIA(ticker);
 
+    try {
+      setInput(""); // Limpa otimisticamente
+      await sendMessage({ text: valor });
+      queryClient.invalidateQueries({ queryKey: ["chat-mensagens"] });
+      const ticker = valor.toUpperCase().match(/\b[A-Z]{4}\d{1,2}\b/)?.[0] ?? null;
+      emitirRespostaGestorIA(ticker);
+    } catch (error) {
+      // Restaura input em caso de erro
+      setInput(valor);
+      // O erro já é tratado pelo onError do useChat
+    }
   }
 
   async function limpar() {

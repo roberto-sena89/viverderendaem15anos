@@ -282,7 +282,7 @@ export const PromptInputProvider = ({
   useEffect(
     () => () => {
       for (const f of attachmentsRef.current) {
-        if (f.url) {
+        if (f.url?.startsWith('blob:')) {
           URL.revokeObjectURL(f.url);
         }
       }
@@ -512,18 +512,23 @@ export const PromptInput = ({
     inputRef.current?.click();
   }, []);
 
+  const acceptPatterns = useMemo(() => {
+    if (!accept || accept.trim() === "") {
+      return null;
+    }
+    return accept
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }, [accept]);
+
   const matchesAccept = useCallback(
     (f: File) => {
-      if (!accept || accept.trim() === "") {
+      if (!acceptPatterns) {
         return true;
       }
 
-      const patterns = accept
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-      return patterns.some((pattern) => {
+      return acceptPatterns.some((pattern) => {
         if (pattern.endsWith("/*")) {
           // e.g: image/* -> image/
           const prefix = pattern.slice(0, -1);
@@ -532,7 +537,7 @@ export const PromptInput = ({
         return f.type === pattern;
       });
     },
-    [accept],
+    [acceptPatterns],
   );
 
   const addLocal = useCallback(
@@ -739,8 +744,9 @@ export const PromptInput = ({
   useEffect(
     () => () => {
       if (!usingProvider) {
+        // Limpa blobs independente de usar provider ou não
         for (const f of filesRef.current) {
-          if (f.url) {
+          if (f.url?.startsWith('blob:')) {
             URL.revokeObjectURL(f.url);
           }
         }
@@ -805,9 +811,10 @@ export const PromptInput = ({
         form.reset();
       }
 
+      let convertedFiles: FileUIPart[];
       try {
         // Convert blob URLs to data URLs asynchronously
-        const convertedFiles: FileUIPart[] = await Promise.all(
+        convertedFiles = await Promise.all(
           files.map(async ({ id: _id, ...item }) => {
             if (item.url?.startsWith("blob:")) {
               const dataUrl = await convertBlobUrlToDataUrl(item.url);
@@ -820,29 +827,28 @@ export const PromptInput = ({
             return item;
           }),
         );
+      } catch (conversionError) {
+        console.error("Failed to convert blob URLs:", conversionError);
+        // Continua com os blobs originais em caso de erro de conversão
+        convertedFiles = files.map(({ id: _id, ...item }) => item);
+      }
 
+      try {
         const result = onSubmit({ files: convertedFiles, text }, event);
 
         // Handle both sync and async onSubmit
         if (result instanceof Promise) {
-          try {
-            await result;
-            clear();
-            if (usingProvider) {
-              controller.textInput.clear();
-            }
-          } catch {
-            // Don't clear on error - user may want to retry
-          }
-        } else {
-          // Sync function completed without throwing, clear inputs
-          clear();
-          if (usingProvider) {
-            controller.textInput.clear();
-          }
+          await result;
         }
-      } catch {
+
+        // Só limpa se onSubmit não lançou erro
+        clear();
+        if (usingProvider) {
+          controller.textInput.clear();
+        }
+      } catch (submitError) {
         // Don't clear on error - user may want to retry
+        console.error("Submit error:", submitError);
       }
     },
     [usingProvider, controller, files, onSubmit, clear],

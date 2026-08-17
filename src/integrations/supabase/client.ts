@@ -13,7 +13,19 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
     );
 
     if (init?.headers) {
-      new Headers(init.headers).forEach((value, key) => headers.set(key, value));
+      try {
+        new Headers(init.headers).forEach((value, key) => headers.set(key, value));
+      } catch (error) {
+        console.warn("Failed to parse headers:", error);
+        // Fallback: se headers for objeto simples
+        if (typeof init.headers === 'object' && !Array.isArray(init.headers)) {
+          Object.entries(init.headers).forEach(([key, value]) => {
+            if (typeof value === 'string') {
+              headers.set(key, value);
+            }
+          });
+        }
+      }
     }
 
     // New Supabase API keys are opaque strings, not bearer JWTs.
