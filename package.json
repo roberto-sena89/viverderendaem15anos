@@ -117,10 +117,6 @@
     "@tanstack/react-router": "1.170.18",
     "brace-expansion": "^2.1.4",
     "fast-uri": "^3.1.5",
-    "postcss": "^8.5.18",
-    "vite": {
-      "postcss": "^8.5.18",
-      "nanoid": "^5.0.10"
-    }
+    "postcss": "^8.5.18"
   }
 }
