@@ -1,4 +1,4 @@
-import { useBreakpoint, isBreakpointUp, isBreakpointDown } from "@/hooks/use-breakpoint";
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 

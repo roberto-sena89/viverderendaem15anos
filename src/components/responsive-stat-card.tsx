@@ -1,5 +1,6 @@
-import { useBreakpoint, isBreakpointUp, isBreakpointDown } from "@/hooks/use-breakpoint";
-import type { LucideIcon, ReactNode } from "react";
+import { useBreakpoint, isBreakpointDown } from "@/hooks/use-breakpoint";
+import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
 
