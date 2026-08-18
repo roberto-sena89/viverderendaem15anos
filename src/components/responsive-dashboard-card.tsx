@@ -199,7 +199,7 @@ export function DashboardGrid({
         "sm:grid-cols-2",
         // Tablet (≥769px): 3 cols
         "md:grid-cols-3",
-        // Desktop (≥1025px): 4 cols
+        // Desktop (≥1024px): 4 cols
         "lg:grid-cols-4",
         // Ultra-wide (≥2560px): 6 cols
         "min-[2560px]:grid-cols-6",

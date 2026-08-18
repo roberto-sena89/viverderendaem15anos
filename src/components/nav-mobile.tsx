@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logoIcone from "@/assets/logo-icone.webp";
-import { useBreakpoint } from "@/hooks/use-breakpoint";
+import { useBreakpoint, useBreakpointUp } from "@/hooks/use-breakpoint";
 
 export type ItemNav = {
   to: string;
@@ -32,11 +32,17 @@ export function NavMobile({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const breakpoint = useBreakpoint();
+  const isDesktop = useBreakpointUp("desktop");
   const [aberto, setAberto] = useState(false);
 
   useEffect(() => {
     setAberto(false);
   }, [pathname]);
+
+  // Fecha o drawer ao cruzar para desktop (a sidebar lateral assume).
+  useEffect(() => {
+    if (isDesktop) setAberto(false);
+  }, [isDesktop]);
 
   const iniciais = (usuario?.name ?? "IN")
     .split(" ")
@@ -114,7 +120,7 @@ export function NavMobile({
           variant="ghost"
           size="icon"
           aria-label="Abrir menu de navegação"
-          className={`${config.triggerSize} shrink-0 lg:hidden`}
+          className={`${config.triggerSize} alvo-toque shrink-0 lg:hidden`}
         >
           <Menu className={config.triggerIconSize} />
         </Button>
@@ -168,7 +174,7 @@ export function NavMobile({
                       key={to}
                       to={to}
                       aria-current={ativo ? "page" : undefined}
-                      className={`flex min-h-10 items-center gap-2 rounded-lg ${config.itemPadding} ${config.itemFontSize} transition-colors ${
+                      className={`alvo-toque-linha flex items-center gap-2 rounded-lg ${config.itemPadding} ${config.itemFontSize} transition-colors ${
                         ativo
                           ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
                           : "font-medium text-muted-foreground active:bg-sidebar-accent/60"
@@ -208,7 +214,7 @@ export function NavMobile({
             size="icon"
             aria-label="Sair da conta"
             onClick={onSair}
-            className={`${config.logoutButtonSize} shrink-0 text-muted-foreground`}
+            className={`${config.logoutButtonSize} alvo-toque shrink-0 text-muted-foreground`}
           >
             <LogOut className={config.triggerIconSize} />
           </Button>

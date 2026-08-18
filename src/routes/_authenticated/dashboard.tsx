@@ -161,7 +161,7 @@ function NavegacaoSecoes() {
           }
           aria-current={ativa === s.id ? "true" : undefined}
           className={cn(
-            "shrink-0 snap-start rounded-full px-2.5 py-1.5 text-[0.7rem] font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:px-3 sm:text-xs",
+            "alvo-toque-linha shrink-0 snap-start rounded-full px-2.5 py-1.5 text-[0.7rem] font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:px-3 sm:text-xs",
 
             ativa === s.id
               ? "bg-primary text-primary-foreground"

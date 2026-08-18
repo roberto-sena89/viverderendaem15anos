@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { SECOES, secaoPorRota } from "@/lib/navegacao";
 import logoIcone from "@/assets/logo-icone.webp";
-import { useBreakpoint, isBreakpointUp } from "@/hooks/use-breakpoint";
+import { useBreakpointUp } from "@/hooks/use-breakpoint";
 
 const ICONES: Record<string, typeof LayoutDashboard> = {
   "/dashboard": LayoutDashboard,
@@ -76,9 +76,10 @@ export function AppShell({
     avatar?: string;
   } | null>(null);
 
-  // Hook de breakpoint para responsividade avançada
-  const breakpoint = useBreakpoint();
-  const isDesktop = isBreakpointUp(breakpoint, "desktop");
+  // Hook de breakpoint para responsividade avançada.
+  // Re-renderiza apenas quando a viewport cruza o limite do desktop (≥1024px),
+  // mesmo breakpoint `lg:` do Tailwind que controla a visibilidade da sidebar.
+  const isDesktop = useBreakpointUp("desktop");
 
   useEffect(() => {
     let active = true;
@@ -113,16 +114,28 @@ export function AppShell({
     return () => ro.disconnect();
   }, []);
 
-  // Recolhimento da barra lateral (persistido e automático em telas baixas/estreitas).
+  // Recolhimento da barra lateral.
+  // - Preferência explícita do usuário (localStorage) é sempre respeitada;
+  // - sem preferência salva, recolhe automaticamente fora do desktop;
+  // - uma vez que o usuário alterna manualmente, o auto-collapse não
+  //   volta a sobrescrever a escolha dele ao cruzar breakpoints.
   const [recolhida, setRecolhida] = useState(false);
+  const preferenciaManual = useRef(false);
+
   useEffect(() => {
     const salvo = window.localStorage.getItem("sidebar-recolhida");
-    if (salvo != null) setRecolhida(salvo === "1");
-    // Auto-collapse em telas pequenas
-    else setRecolhida(!isDesktop);
+    if (salvo == null) return;
+    preferenciaManual.current = true;
+    setRecolhida(salvo === "1");
+  }, []);
+
+  useEffect(() => {
+    if (preferenciaManual.current) return;
+    setRecolhida(!isDesktop);
   }, [isDesktop]);
 
   function alternarSidebar() {
+    preferenciaManual.current = true;
     setRecolhida((v) => {
       window.localStorage.setItem("sidebar-recolhida", v ? "0" : "1");
       return !v;
@@ -188,7 +201,7 @@ export function AppShell({
           aria-label={recolhida ? "Expandir menu lateral" : "Recolher menu lateral"}
           aria-expanded={!recolhida}
           title={recolhida ? "Expandir menu" : "Recolher menu"}
-          className={`mb-2 size-8 shrink-0 text-muted-foreground ${recolhida ? "self-center" : "self-end"}`}
+          className={`alvo-toque mb-2 size-8 shrink-0 text-muted-foreground ${recolhida ? "self-center" : "self-end"}`}
         >
           {recolhida ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </Button>
@@ -214,7 +227,7 @@ export function AppShell({
                       to={to}
                       aria-current={active ? "page" : undefined}
                       title={label}
-                      className={`group relative flex min-h-11 items-center gap-2.5 rounded-lg py-1.5 text-[0.82rem] leading-none transition-colors lg:min-h-8 ${
+                      className={`group relative flex items-center gap-2.5 rounded-lg py-1.5 text-[0.82rem] leading-none transition-colors alvo-toque-linha ${
                         recolhida ? "justify-center px-0" : "pr-3 pl-4"
                       } ${
                         active
@@ -261,7 +274,7 @@ export function AppShell({
             size="icon"
             aria-label="Sair da conta"
             onClick={handleSignOut}
-            className="size-8 shrink-0 text-muted-foreground"
+            className="alvo-toque size-8 shrink-0 text-muted-foreground"
           >
             <LogOut className="size-4" />
           </Button>

@@ -32,7 +32,7 @@ interface ResponsiveStatCardConfig {
     iconSize: string;
     gap: string;
   };
-  // Desktop (1025-2559px)
+  // Desktop (1024-2559px)
   desktop: {
     padding: string;
     labelFontSize: string;
@@ -110,7 +110,7 @@ export interface ResponsiveStatCardProps {
  * ícones e espaçamento baseado no breakpoint atual.
  *
  * Suporta: watch (≤320px) → mobile (321-768px) → tablet (769-1024px)
- * → desktop (1025-2559px) → ultraWide (≥2560px)
+ * → desktop (1024-2559px) → ultraWide (≥2560px)
  */
 export function ResponsiveStatCard({
   label,

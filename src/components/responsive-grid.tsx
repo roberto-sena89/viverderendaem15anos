@@ -47,7 +47,7 @@ function generateGridClasses(config: GridColumnConfig): string {
   // Tablet (≥769px)
   if (tablet !== mobile) classes.push(`md:grid-cols-${tablet}`);
 
-  // Desktop (≥1025px)
+  // Desktop (≥1024px)
   if (desktop !== tablet) classes.push(`lg:grid-cols-${desktop}`);
 
   // Ultra-wide (≥2560px)

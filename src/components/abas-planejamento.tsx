@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
 import { Bot, Target, Telescope } from "lucide-react";
-import { ABAS_PLANEJAMENTO, secaoPorRota } from "@/lib/navegacao";
+import { BarraAbas, type ItemAba } from "@/components/barra-abas";
+import { ABAS_PLANEJAMENTO } from "@/lib/navegacao";
 
 const ICONES: Record<string, typeof Target> = {
   "/planejador": Telescope,
@@ -8,29 +8,12 @@ const ICONES: Record<string, typeof Target> = {
   "/chat": Bot,
 };
 
+const ITENS: ItemAba[] = ABAS_PLANEJAMENTO.map((to) => ({
+  to,
+  icon: ICONES[to] ?? Target,
+}));
+
 /** Barra horizontal com as seções do grupo Planejamento. */
 export function AbasPlanejamento() {
-  return (
-    <nav aria-label="Seções de planejamento" className="border-b border-border pb-3">
-      <ul className="grid w-full grid-cols-2 gap-1.5 rounded-2xl border border-border/60 bg-muted/40 p-1.5 backdrop-blur-sm sm:flex sm:w-fit sm:flex-wrap sm:justify-start">
-        {ABAS_PLANEJAMENTO.map((to) => {
-          const Icone = ICONES[to] ?? Target;
-          const rotulo = secaoPorRota(to)?.rotulo ?? to;
-          return (
-            <li key={to} className="min-w-0">
-              <Link
-                to={to}
-                activeOptions={{ exact: true }}
-                title={rotulo}
-                className="t-aba group flex h-full min-w-0 items-center justify-start gap-2 rounded-xl px-3 py-2.5 text-muted-foreground transition-all hover:bg-background/70 hover:text-foreground data-[status=active]:bg-background data-[status=active]:font-semibold data-[status=active]:text-foreground data-[status=active]:shadow-[var(--shadow-lift)]"
-              >
-                <Icone className="size-4 shrink-0 transition-colors group-data-[status=active]:text-primary sm:size-[18px]" />
-                <span className="min-w-0 truncate sm:whitespace-nowrap">{rotulo}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-  );
+  return <BarraAbas ariaLabel="Seções de planejamento" itens={ITENS} />;
 }
