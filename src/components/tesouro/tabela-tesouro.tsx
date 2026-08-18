@@ -11,8 +11,23 @@ import {
 import { cn } from "@/lib/utils";
 import { TextoTruncado } from "@/components/texto-truncado";
 import { EstadoVazio } from "@/components/estado-vazio";
+import { TabelaResponsiva } from "@/components/tabela-responsiva";
+import type { ColunaResponsiva } from "@/lib/colunas-responsivas";
 
 const anos = (v: number) => (v >= 1 ? `${fmtNum(v, 1)} anos` : `${Math.round(v * 12)} meses`);
+
+/**
+ * Layout dinâmico de colunas: no tablet (≥769px) a tabela mostra as colunas
+ * essenciais; no desktop (≥1024px) entram Mínimo e Estimada.
+ */
+const COLUNAS_TESOURO: ColunaResponsiva[] = [
+  { id: "titulo", rotulo: "Título", alinhamento: "left", peso: 3, essencial: true },
+  { id: "rentabilidade", rotulo: "Rentabilidade anual", peso: 2, essencial: true },
+  { id: "vencimento", rotulo: "Vencimento", peso: 1.5, essencial: true },
+  { id: "preco", rotulo: "Preço unitário", peso: 1.5, essencial: true },
+  { id: "minimo", rotulo: "Mínimo", peso: 1.5, visivelDe: "desktop" },
+  { id: "estimada", rotulo: "Estimada", peso: 1.5, visivelDe: "desktop" },
+];
 
 /** Grade dos títulos públicos: tabela em telas grandes, cards no mobile. */
 export function TabelaTesouro({
@@ -39,96 +54,94 @@ export function TabelaTesouro({
 
   return (
     <>
-      {/* Desktop */}
-      <div className="hidden overflow-hidden rounded-xl border border-border lg:block">
-        <table className="w-full table-fixed text-sm">
-          <thead className="bg-muted/40">
-            <tr>
-              <th className="w-[34%] px-3 py-2.5 text-left t-label">Título</th>
-              <th className="w-[16%] px-3 py-2.5 text-right t-label">Rentabilidade anual</th>
-              <th className="w-[13%] px-3 py-2.5 text-right t-label">Vencimento</th>
-              <th className="w-[13%] px-3 py-2.5 text-right t-label">Preço unitário</th>
-              <th className="w-[13%] px-3 py-2.5 text-right t-label">Mínimo</th>
-              <th className="w-[11%] px-3 py-2.5 text-right t-label">Estimada</th>
-            </tr>
-          </thead>
-          <tbody>
-            {linhas.map((l) => {
-              const favorito = favoritos.includes(`TD:${l.id}`);
-              const posicao = posicoes[l.id];
-              return (
-                <tr
-                  key={l.id}
-                  onClick={() => aoAbrir(l)}
-                  className="cursor-pointer border-t border-border/60 transition-colors hover:bg-muted/40"
-                >
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-                        aria-pressed={favorito}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          aoFavoritar(l.id);
-                        }}
-                        className="shrink-0 text-muted-foreground transition-colors hover:text-amber-400"
-                      >
-                        <Star
-                          className={cn("size-4", favorito && "fill-amber-400 text-amber-400")}
-                        />
-                      </button>
-                      <span
-                        className={cn(
-                          "shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium",
-                          corIndexador(l.indexador),
-                        )}
-                      >
-                        {rotuloIndexador(l.indexador)}
+      {/* Tablet e desktop: tabela com layout de colunas dinâmico */}
+      <div className="hidden md:block">
+        <TabelaResponsiva
+          ariaLabel="Títulos do Tesouro Direto"
+          linhas={linhas}
+          colunas={COLUNAS_TESOURO}
+          chave={(l) => l.id}
+          aoClicarLinha={aoAbrir}
+          renderizarCelula={(l, coluna) => {
+            const favorito = favoritos.includes(`TD:${l.id}`);
+            const posicao = posicoes[l.id];
+            switch (coluna.id) {
+              case "titulo":
+                return (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                      aria-pressed={favorito}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        aoFavoritar(l.id);
+                      }}
+                      className="shrink-0 text-muted-foreground transition-colors hover:text-amber-400"
+                    >
+                      <Star className={cn("size-4", favorito && "fill-amber-400 text-amber-400")} />
+                    </button>
+                    <span
+                      className={cn(
+                        "shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium",
+                        corIndexador(l.indexador),
+                      )}
+                    >
+                      {rotuloIndexador(l.indexador)}
+                    </span>
+                    <TextoTruncado as="span" className="truncate font-medium">
+                      {l.nome}
+                    </TextoTruncado>
+                    {l.jurosSemestrais ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="shrink-0 rounded border border-border px-1 py-0.5 text-[10px] text-muted-foreground">
+                            JS
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>Paga cupons semestrais</TooltipContent>
+                      </Tooltip>
+                    ) : null}
+                    {posicao ? (
+                      <span className="shrink-0 rounded border border-primary/30 bg-primary/10 px-1 py-0.5 text-[10px] text-primary">
+                        Na carteira
                       </span>
-                      <TextoTruncado as="span" className="truncate font-medium">
-                        {l.nome}
-                      </TextoTruncado>
-                      {l.jurosSemestrais ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="shrink-0 rounded border border-border px-1 py-0.5 text-[10px] text-muted-foreground">
-                              JS
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>Paga cupons semestrais</TooltipContent>
-                        </Tooltip>
-                      ) : null}
-                      {posicao ? (
-                        <span className="shrink-0 rounded border border-primary/30 bg-primary/10 px-1 py-0.5 text-[10px] text-primary">
-                          Na carteira
-                        </span>
-                      ) : null}
-                    </div>
-                  </td>
-                  <td className="px-3 py-2.5 text-right font-semibold tabular-nums">
-                    {textoTaxa(l)}
-                  </td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">
-                    <span className="block">{fmtData(l.vencimento)}</span>
+                    ) : null}
+                  </div>
+                );
+              case "rentabilidade":
+                return <span className="font-semibold tabular-nums">{textoTaxa(l)}</span>;
+              case "vencimento":
+                return (
+                  <>
+                    <span className="block tabular-nums text-muted-foreground">
+                      {fmtData(l.vencimento)}
+                    </span>
                     <span className="block text-[11px]">{anos(l.anosAteVencimento)}</span>
-                  </td>
-                  <td className="px-3 py-2.5 text-right tabular-nums">{fmtBRL(l.precoCompra)}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">
+                  </>
+                );
+              case "preco":
+                return <span className="tabular-nums">{fmtBRL(l.precoCompra)}</span>;
+              case "minimo":
+                return (
+                  <span className="tabular-nums text-muted-foreground">
                     {fmtBRL(l.investimentoMinimo)}
-                  </td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-positive">
+                  </span>
+                );
+              case "estimada":
+                return (
+                  <span className="tabular-nums text-positive">
                     {l.rentabilidadeEstimada === null ? "—" : `${fmtNum(l.rentabilidadeEstimada)}%`}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  </span>
+                );
+            }
+          }}
+          className="rounded-xl"
+        />
       </div>
 
-      {/* Mobile / tablet */}
-      <div className="grid gap-bloco lg:hidden">
+      {/* Mobile: cards */}
+      <div className="grid gap-bloco md:hidden">
         {linhas.map((l) => {
           const favorito = favoritos.includes(`TD:${l.id}`);
           return (
