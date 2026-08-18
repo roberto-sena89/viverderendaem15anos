@@ -46,3 +46,6 @@ tests/__snapshots__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Relatórios de lint/segurança
+eslint-report.json

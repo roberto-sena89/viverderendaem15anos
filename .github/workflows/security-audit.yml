@@ -60,9 +60,12 @@ jobs:
       - name: Executar ESLint com regras de segurança
         run: npm run lint -- --format=@microsoft/eslint-formatter-sarif --output-file=eslint-report.json || true
 
+      - name: Validar relatório SARIF
+        run: node scripts/validate-sarif.mjs eslint-report.json
+
       - name: Upload SARIF para GitHub Code Scanning
+        if: always() && hashFiles('eslint-report.json') != ''
         uses: github/codeql-action/upload-sarif@v4
-        if: always()
         with:
           sarif_file: eslint-report.json
           category: eslint
