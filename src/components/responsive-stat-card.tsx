@@ -1,5 +1,6 @@
-import { useBreakpoint, isBreakpointUp, isBreakpointDown } from "@/hooks/use-breakpoint";
-import type { LucideIcon, ReactNode } from "react";
+import { useBreakpoint, isBreakpointDown } from "@/hooks/use-breakpoint";
+import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
 
@@ -101,6 +102,7 @@ export interface ResponsiveStatCardProps {
   onClick?: () => void;
   ariaLabel?: string;
   config?: Partial<ResponsiveStatCardConfig>;
+  children?: ReactNode;
 }
 
 /**
@@ -121,6 +123,7 @@ export function ResponsiveStatCard({
   onClick,
   ariaLabel,
   config,
+  children,
 }: ResponsiveStatCardProps) {
   const breakpoint = useBreakpoint();
   const resolvedConfig = { ...DEFAULT_CONFIG, ...config };
@@ -166,6 +169,7 @@ export function ResponsiveStatCard({
         {typeof delta === "number" ? <DeltaChip value={delta} /> : null}
         {hint ? <p className="t-caption">{hint}</p> : null}
       </div>
+      {children}
     </Component>
   );
 }

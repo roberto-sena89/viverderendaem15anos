@@ -1,4 +1,4 @@
-import { useBreakpoint, isBreakpointUp, isBreakpointDown } from "@/hooks/use-breakpoint";
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -146,9 +146,6 @@ export function ResponsiveDashboardGrid({
   className,
   columns = "dashboard",
   gap = "md",
-  cardVariant = "default",
-  cardHoverEffect = true,
-  minCardWidth,
 }: ResponsiveDashboardGridProps) {
   // Como não podemos usar hooks aqui (componente não-renderizado),
   // retornamos apenas o container grid
