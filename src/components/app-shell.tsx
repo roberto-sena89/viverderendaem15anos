@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { SECOES, secaoPorRota } from "@/lib/navegacao";
 import logoIcone from "@/assets/logo-icone.webp";
+import { useBreakpoint, isBreakpointUp } from "@/hooks/use-breakpoint";
 
 const ICONES: Record<string, typeof LayoutDashboard> = {
   "/dashboard": LayoutDashboard,
@@ -75,6 +76,10 @@ export function AppShell({
     avatar?: string;
   } | null>(null);
 
+  // Hook de breakpoint para responsividade avançada
+  const breakpoint = useBreakpoint();
+  const isDesktop = isBreakpointUp(breakpoint, "desktop");
+
   useEffect(() => {
     let active = true;
     supabase.auth.getUser().then(({ data }) => {
@@ -113,8 +118,10 @@ export function AppShell({
   useEffect(() => {
     const salvo = window.localStorage.getItem("sidebar-recolhida");
     if (salvo != null) setRecolhida(salvo === "1");
-    else setRecolhida(window.matchMedia("(max-width: 1279px)").matches);
-  }, []);
+    // Auto-collapse em telas pequenas
+    else setRecolhida(!isDesktop);
+  }, [isDesktop]);
+
   function alternarSidebar() {
     setRecolhida((v) => {
       window.localStorage.setItem("sidebar-recolhida", v ? "0" : "1");
@@ -135,7 +142,6 @@ export function AppShell({
   const tituloPagina = secaoAtual?.rotulo ?? title;
 
   const initials = (user?.name ?? "IN")
-
     .split(" ")
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase() ?? "")

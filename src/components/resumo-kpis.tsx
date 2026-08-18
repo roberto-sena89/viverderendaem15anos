@@ -4,7 +4,6 @@ import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DialogTransacao } from "@/components/dialog-transacao";
-import { DashboardCard } from "./dashboard/dashboard-card";
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DashboardGrid } from "@/components/responsive-dashboard-card";
+import { ResponsiveStatCard } from "@/components/responsive-stat-card";
 import { retornoPonderado12m } from "@/lib/analise-carteira";
 import { chaveTicker, useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 import { useDividendos } from "@/lib/data";
@@ -40,9 +41,13 @@ function CartaoResumo({
 }) {
   const tooltipId = useId();
   return (
-    <DashboardCard
+    <ResponsiveStatCard
+      label={titulo}
+      value=""
+      icon={Icone}
       onClick={onClick}
       ariaLabel={`Ver detalhes e fórmulas de ${titulo}`}
+      className="relative"
     >
       <div className="flex items-start gap-2">
         <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground duration-300">
@@ -50,9 +55,7 @@ function CartaoResumo({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <p className="text-[0.68rem] font-black tracking-[0.15em] text-muted-foreground uppercase group-hover:text-foreground transition-colors">
-              {titulo}
-            </p>
+            <span className="sr-only">Ver detalhes</span>
             {tooltip && (
               <TooltipProvider>
                 <Tooltip>
@@ -77,14 +80,13 @@ function CartaoResumo({
               </TooltipProvider>
             )}
           </div>
-          <span className="sr-only">Ver detalhes</span>
         </div>
         <div className="size-5 rounded-full border border-border/40 flex items-center justify-center text-[0.6rem] text-muted-foreground/40 group-hover:border-primary/40 group-hover:text-primary/60 transition-all">
           ?
         </div>
       </div>
       <div className="mt-3">{children}</div>
-    </DashboardCard>
+    </ResponsiveStatCard>
   );
 }
 
@@ -404,7 +406,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           </DashboardCard>
         </div>
       ) : (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0 mt-4">
+      <DashboardGrid gap="md" className="px-2 sm:px-0 mt-4">
         <CartaoResumo
           titulo="Patrimônio total"
           icone={Wallet}
@@ -587,7 +589,7 @@ export function ResumoKpis({ mostrarLancamento = false }: { mostrarLancamento?: 
           </div>
         </CartaoResumo>
 
-      </div>
+      </DashboardGrid>
       )}
 
       <PainelDetalhe detalhe={aberto} onClose={() => setAberto(null)} />
