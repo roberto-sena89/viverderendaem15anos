@@ -51,7 +51,7 @@ function generateGridClasses(config: GridColumnConfig): string {
   if (desktop !== tablet) classes.push(`lg:grid-cols-${desktop}`);
 
   // Ultra-wide (≥2560px)
-  if (ultraWide !== desktop) classes.push(`[&@media(min-width:2560px)]:grid-cols-${ultraWide}`);
+  if (ultraWide !== desktop) classes.push(`min-[2560px]:grid-cols-${ultraWide}`);
 
   return classes.join(" ");
 }
@@ -99,10 +99,10 @@ export function ResponsiveGrid({
   // Gap responsivo
   const gapClasses = {
     none: "gap-0",
-    sm: "gap-2 sm:gap-3 lg:gap-4 [&@media(min-width:2560px)]:gap-6",
-    md: "gap-3 sm:gap-4 lg:gap-5 [&@media(min-width:2560px)]:gap-6",
-    lg: "gap-4 sm:gap-5 lg:gap-6 [&@media(min-width:2560px)]:gap-8",
-    xl: "gap-5 sm:gap-6 lg:gap-8 [&@media(min-width:2560px)]:gap-10",
+    sm: "gap-2 sm:gap-3 lg:gap-4 min-[2560px]:gap-6",
+    md: "gap-3 sm:gap-4 lg:gap-5 min-[2560px]:gap-6",
+    lg: "gap-4 sm:gap-5 lg:gap-6 min-[2560px]:gap-8",
+    xl: "gap-5 sm:gap-6 lg:gap-8 min-[2560px]:gap-10",
   };
 
   const gridClasses = generateGridClasses(resolvedConfig);
