@@ -72,6 +72,14 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     urlChave: "https://cloud.cerebras.ai",
   },
   {
+    id: "tokenrouter",
+    nome: "Token Router",
+    descricao: "Roteador de modelos compatível com a API OpenAI, com opções gratuitas.",
+    baseUrl: "https://api.tokenrouter.io/v1",
+    modelos: ["auto", "openai/gpt-4o-mini", "deepseek/deepseek-chat"],
+    urlChave: "https://tokenrouter.io/keys",
+  },
+  {
     id: "personalizado",
     nome: "Personalizado (compatível OpenAI)",
     descricao: "Qualquer endpoint compatível com a API OpenAI (Ollama, LM Studio, etc.).",
