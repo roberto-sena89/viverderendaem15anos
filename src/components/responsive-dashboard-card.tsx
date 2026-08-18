@@ -185,10 +185,10 @@ export function DashboardGrid({
 }) {
   const gapClasses = {
     none: "gap-0",
-    sm: "gap-2 sm:gap-3 lg:gap-4 [&@media(min-width:2560px)]:gap-6",
-    md: "gap-3 sm:gap-4 lg:gap-5 [&@media(min-width:2560px)]:gap-6",
-    lg: "gap-4 sm:gap-5 lg:gap-6 [&@media(min-width:2560px)]:gap-8",
-    xl: "gap-5 sm:gap-6 lg:gap-8 [&@media(min-width:2560px)]:gap-10",
+    sm: "gap-2 sm:gap-3 lg:gap-4 min-[2560px]:gap-6",
+    md: "gap-3 sm:gap-4 lg:gap-5 min-[2560px]:gap-6",
+    lg: "gap-4 sm:gap-5 lg:gap-6 min-[2560px]:gap-8",
+    xl: "gap-5 sm:gap-6 lg:gap-8 min-[2560px]:gap-10",
   };
 
   return (
@@ -204,7 +204,7 @@ export function DashboardGrid({
         // Desktop (≥1025px): 4 cols
         "lg:grid-cols-4",
         // Ultra-wide (≥2560px): 6 cols
-        "[&@media(min-width:2560px)]:grid-cols-6",
+        "min-[2560px]:grid-cols-6",
         gapClasses[gap],
         className
       )}
@@ -243,7 +243,7 @@ export function MetricsGrid({
         "sm:grid-cols-1",
         "md:grid-cols-2",
         "lg:grid-cols-3",
-        "[&@media(min-width:2560px)]:grid-cols-4",
+        "min-[2560px]:grid-cols-4",
         gapClasses[gap],
         className
       )}
@@ -282,7 +282,7 @@ export function WideCardGrid({
         "sm:grid-cols-1",
         "md:grid-cols-2",
         "lg:grid-cols-2",
-        "[&@media(min-width:2560px)]:grid-cols-3",
+        "min-[2560px]:grid-cols-3",
         gapClasses[gap],
         className
       )}
