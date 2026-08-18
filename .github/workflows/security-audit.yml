@@ -14,7 +14,7 @@ jobs:
     name: Varredura de vulnerabilidades
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
@@ -46,7 +46,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
@@ -74,7 +74,7 @@ jobs:
     name: Varredura de segredos (Secret scanning)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -90,7 +90,7 @@ jobs:
     name: Verificação de licenças
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
@@ -115,7 +115,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
