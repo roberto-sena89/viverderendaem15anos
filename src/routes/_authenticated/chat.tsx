@@ -45,10 +45,9 @@ import logoIA from "@/assets/tecnico-ia.png";
 import { urlAbsoluta } from "@/lib/seo";
 import { emitirRespostaGestorIA } from "@/lib/radar-sync";
 
-
 export const Route = createFileRoute("/_authenticated/chat")({
   validateSearch: (search: Record<string, unknown>): { q?: string } =>
-    typeof search["q"] === "string" ? { q: search["q"] as string } : {},
+    typeof search["q"] === "string" ? { q: search["q"] } : {},
 
   component: ChatPage,
 
@@ -91,8 +90,8 @@ function ChatPage() {
   const clearFn = useServerFn(limparConversa);
   const { perfil, salvar } = usePerfilInvestidor();
   const { config: provedor } = useProvedorIA();
-  const [showOnboarding, setShowOnboarding] = useState(() => 
-    typeof window !== "undefined" ? !window.localStorage.getItem("gestor-ia-onboarded") : false
+  const [showOnboarding, setShowOnboarding] = useState(() =>
+    typeof window !== "undefined" ? !window.localStorage.getItem("gestor-ia-onboarded") : false,
   );
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [input, setInput] = useState("");
@@ -175,7 +174,6 @@ function ChatPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [perguntaExterna, historico.isSuccess]);
 
-
   const carregando = status === "submitted" || status === "streaming";
 
   async function enviar(texto: string) {
@@ -188,7 +186,7 @@ function ChatPage() {
       queryClient.invalidateQueries({ queryKey: ["chat-mensagens"] });
       const ticker = valor.toUpperCase().match(/\b[A-Z]{4}\d{1,2}\b/)?.[0] ?? null;
       emitirRespostaGestorIA(ticker);
-    } catch (error) {
+    } catch {
       // Restaura input em caso de erro
       setInput(valor);
       // O erro já é tratado pelo onError do useChat
@@ -244,79 +242,80 @@ function ChatPage() {
       <div className="flex h-[calc(100dvh-var(--altura-cabecalho-app,0px)-3rem)] min-h-0 flex-col gap-2.5 sm:h-[calc(100dvh-var(--altura-cabecalho-app,0px)-4rem)]">
         {showOnboarding ? (
           <div className="flex flex-1 items-center justify-center p-4">
-            <OnboardingGestorIA onComplete={() => {
-              setShowOnboarding(false);
-              window.localStorage.setItem("gestor-ia-onboarded", "true");
-            }} />
+            <OnboardingGestorIA
+              onComplete={() => {
+                setShowOnboarding(false);
+                window.localStorage.setItem("gestor-ia-onboarded", "true");
+              }}
+            />
           </div>
         ) : (
           <Conversation className="min-h-0 flex-1 rounded-xl border border-border/60 bg-card/40">
-          <ConversationContent>
-            {historico.isLoading ? (
-              <div className="flex h-full items-center justify-center">
-                <Shimmer>Carregando conversa...</Shimmer>
-              </div>
-            ) : messages.length === 0 ? (
-              <ConversationEmptyState
-                icon={
-                  <img
-                    src={logoIA}
-                    alt=""
-                    width={512}
-                    height={512}
-                    loading="lazy"
-                    className="size-14 object-contain"
-                  />
-                }
-                title="Fale com o Gestor IA PRO"
-                description="Ele conhece seus ativos, aportes, dividendos e metas — e usa dados reais de mercado, notícias e agenda econômica."
-              >
-                <div className="mt-4 grid w-full max-w-xl grid-cols-1 gap-2 sm:grid-cols-2">
-                  {SUGESTOES.map((s) => (
-                    <Button
-                      key={s}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => enviar(s)}
-                      className="h-auto w-full min-w-0 whitespace-normal break-words px-3 py-2 text-left text-xs leading-snug sm:text-sm"
-                    >
-                      {s}
-                    </Button>
-                  ))}
+            <ConversationContent>
+              {historico.isLoading ? (
+                <div className="flex h-full items-center justify-center">
+                  <Shimmer>Carregando conversa...</Shimmer>
                 </div>
-
-              </ConversationEmptyState>
-            ) : (
-              messages.map((message) => {
-                const ferramentas = message.parts
-                  .filter((part) => part.type.startsWith("tool-"))
-                  .map((part) => part.type.replace("tool-", ""));
-                const texto = message.parts
-                  .map((part) => (part.type === "text" ? part.text : ""))
-                  .join("");
-                return (
-                  <Message key={message.id} from={message.role}>
-                    <MessageContent>
-                      {ferramentas.length > 0 ? (
-                        <p className="mb-2 text-xs text-muted-foreground">
-                          <LineChart className="mr-1 inline size-3" />
-                          Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}
-                        </p>
-                      ) : null}
-                      <MessageResponse>{texto}</MessageResponse>
-                    </MessageContent>
-                  </Message>
-                );
-              })
-            )}
-            {status === "submitted" ? (
-              <div className="px-2 pt-2">
-                <Shimmer>Analisando sua carteira...</Shimmer>
-              </div>
-            ) : null}
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
+              ) : messages.length === 0 ? (
+                <ConversationEmptyState
+                  icon={
+                    <img
+                      src={logoIA}
+                      alt=""
+                      width={512}
+                      height={512}
+                      loading="lazy"
+                      className="size-14 object-contain"
+                    />
+                  }
+                  title="Fale com o Gestor IA PRO"
+                  description="Ele conhece seus ativos, aportes, dividendos e metas — e usa dados reais de mercado, notícias e agenda econômica."
+                >
+                  <div className="mt-4 grid w-full max-w-xl grid-cols-1 gap-2 sm:grid-cols-2">
+                    {SUGESTOES.map((s) => (
+                      <Button
+                        key={s}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => enviar(s)}
+                        className="h-auto w-full min-w-0 whitespace-normal break-words px-3 py-2 text-left text-xs leading-snug sm:text-sm"
+                      >
+                        {s}
+                      </Button>
+                    ))}
+                  </div>
+                </ConversationEmptyState>
+              ) : (
+                messages.map((message) => {
+                  const ferramentas = message.parts
+                    .filter((part) => part.type.startsWith("tool-"))
+                    .map((part) => part.type.replace("tool-", ""));
+                  const texto = message.parts
+                    .map((part) => (part.type === "text" ? part.text : ""))
+                    .join("");
+                  return (
+                    <Message key={message.id} from={message.role}>
+                      <MessageContent>
+                        {ferramentas.length > 0 ? (
+                          <p className="mb-2 text-xs text-muted-foreground">
+                            <LineChart className="mr-1 inline size-3" />
+                            Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}
+                          </p>
+                        ) : null}
+                        <MessageResponse>{texto}</MessageResponse>
+                      </MessageContent>
+                    </Message>
+                  );
+                })
+              )}
+              {status === "submitted" ? (
+                <div className="px-2 pt-2">
+                  <Shimmer>Analisando sua carteira...</Shimmer>
+                </div>
+              ) : null}
+            </ConversationContent>
+            <ConversationScrollButton />
+          </Conversation>
         )}
 
         <PromptInput
@@ -384,7 +383,7 @@ function ChatPage() {
               <div className="hidden h-6 w-px bg-border/60 sm:block" />
               <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
                 <SelectTrigger
-                  className="h-8 w-24 shrink-0 rounded-full text-xs sm:w-32"
+                  className="h-8 w-28 shrink-0 rounded-full text-xs sm:w-32"
                   aria-label="Perfil de investidor"
                 >
                   <SelectValue placeholder="Perfil" />

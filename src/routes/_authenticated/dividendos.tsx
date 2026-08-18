@@ -132,9 +132,7 @@ function DividendosPage() {
       <div className="flex justify-start px-2 sm:px-0">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button
-              className="font-display h-12 gap-2 bg-primary px-6 text-[15px] font-bold tracking-tight text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.98] sm:h-11"
-            >
+            <Button className="font-display h-12 gap-2 bg-primary px-6 text-[15px] font-bold tracking-tight text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.98] sm:h-11">
               <Plus className="size-5" strokeWidth={3} />
               <span>Novo Provento</span>
             </Button>
@@ -944,8 +942,8 @@ function PainelProventos({
                   type="button"
                   onClick={() => setModo(m)}
                   className={`relative rounded-lg px-5 py-2 text-xs font-bold capitalize transition-all duration-200 ${
-                    modo === m 
-                      ? "bg-background text-primary shadow-md ring-1 ring-black/[0.03] scale-[1.02]" 
+                    modo === m
+                      ? "bg-background text-primary shadow-md ring-1 ring-black/[0.03] scale-[1.02]"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
                   }`}
                 >
@@ -954,7 +952,7 @@ function PainelProventos({
               ))}
             </div>
           </div>
-          
+
           <div className="flex flex-wrap items-center gap-3">
             <div className="h-8 w-px bg-border/60 mx-1 hidden lg:block" />
             <div className="flex flex-wrap items-center gap-2">

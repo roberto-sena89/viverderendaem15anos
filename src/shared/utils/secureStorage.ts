@@ -13,7 +13,7 @@ const ALLOWED_KEYS = [
   "chat-settings",
 ] as const;
 
-type AllowedKey = typeof ALLOWED_KEYS[number];
+type AllowedKey = (typeof ALLOWED_KEYS)[number];
 
 const STORAGE_PREFIX = "app_";
 const MAX_VALUE_LENGTH = 1000;
@@ -36,8 +36,8 @@ export const secureStorage = {
       }
 
       // Validate value
-      if (typeof value !== 'string') {
-        throw new Error('Value must be a string');
+      if (typeof value !== "string") {
+        throw new Error("Value must be a string");
       }
 
       if (value.length > MAX_VALUE_LENGTH) {
@@ -45,15 +45,17 @@ export const secureStorage = {
       }
 
       // Check total items
-      const currentCount = Object.keys(sessionStorage).filter(k => k.startsWith(STORAGE_PREFIX)).length;
+      const currentCount = Object.keys(sessionStorage).filter((k) =>
+        k.startsWith(STORAGE_PREFIX),
+      ).length;
       if (currentCount >= MAX_TOTAL_ITEMS) {
-        console.warn('[Security] Storage limit reached, clearing old items');
+        console.warn("[Security] Storage limit reached, clearing old items");
         this.clearExpired();
       }
 
       sessionStorage.setItem(`${STORAGE_PREFIX}${key}`, value);
-    } catch (error) {
-      console.error('[Security] Storage write failed', { key });
+    } catch {
+      console.error("[Security] Storage write failed", { key });
       // Fail silently - don't expose errors to user
     }
   },
@@ -68,8 +70,8 @@ export const secureStorage = {
       }
 
       return sessionStorage.getItem(`${STORAGE_PREFIX}${key}`);
-    } catch (error) {
-      console.error('[Security] Storage read failed', { key });
+    } catch {
+      console.error("[Security] Storage read failed", { key });
       return null;
     }
   },
@@ -84,8 +86,8 @@ export const secureStorage = {
       }
 
       sessionStorage.removeItem(`${STORAGE_PREFIX}${key}`);
-    } catch (error) {
-      console.error('[Security] Storage remove failed', { key });
+    } catch {
+      console.error("[Security] Storage remove failed", { key });
     }
   },
 
@@ -95,11 +97,9 @@ export const secureStorage = {
   clear(): void {
     try {
       const keys = Object.keys(sessionStorage);
-      keys
-        .filter(k => k.startsWith(STORAGE_PREFIX))
-        .forEach(k => sessionStorage.removeItem(k));
-    } catch (error) {
-      console.error('[Security] Storage clear failed');
+      keys.filter((k) => k.startsWith(STORAGE_PREFIX)).forEach((k) => sessionStorage.removeItem(k));
+    } catch {
+      console.error("[Security] Storage clear failed");
     }
   },
 
@@ -109,11 +109,9 @@ export const secureStorage = {
   clearExpired(): void {
     try {
       const keys = Object.keys(sessionStorage);
-      keys
-        .filter(k => k.startsWith(STORAGE_PREFIX))
-        .forEach(k => sessionStorage.removeItem(k));
-    } catch (error) {
-      console.error('[Security] Storage cleanup failed');
+      keys.filter((k) => k.startsWith(STORAGE_PREFIX)).forEach((k) => sessionStorage.removeItem(k));
+    } catch {
+      console.error("[Security] Storage cleanup failed");
     }
   },
 };
@@ -122,14 +120,12 @@ export const secureStorage = {
  * Convenience functions for specific keys
  */
 export const chatSettings = {
-  getCitacoes: (): boolean =>
-    secureStorage.getItem("chat-citacoes") === "on",
+  getCitacoes: (): boolean => secureStorage.getItem("chat-citacoes") === "on",
 
   setCitacoes: (enabled: boolean): void =>
     secureStorage.setItem("chat-citacoes", enabled ? "on" : "off"),
 
-  getOnboardingCompleted: (): boolean =>
-    secureStorage.getItem("onboarding-completed") === "true",
+  getOnboardingCompleted: (): boolean => secureStorage.getItem("onboarding-completed") === "true",
 
   setOnboardingCompleted: (completed: boolean): void =>
     secureStorage.setItem("onboarding-completed", completed ? "true" : "false"),

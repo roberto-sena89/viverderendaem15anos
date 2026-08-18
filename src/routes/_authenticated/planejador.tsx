@@ -369,7 +369,6 @@ function Planejador() {
               </Table>
             </div>
           </div>
-
         </div>
       </div>
     </AppShell>

@@ -113,7 +113,7 @@ export function ResponsiveGrid({
         gridClasses,
         gapClasses[gap],
         minItemWidth && `[grid-template-columns:repeat(auto-fit,minmax(${minItemWidth},1fr))]`,
-        className
+        className,
       )}
       data-breakpoint={breakpoint}
       role="list"
@@ -184,7 +184,7 @@ export function FluidGrid({
         "grid",
         `grid-cols-[repeat(auto-fit,minmax(${minItemWidth}${maxItemWidth ? `,${maxItemWidth}` : "1fr"}),1fr)]`,
         gapClasses[gap],
-        className
+        className,
       )}
       role="list"
     >

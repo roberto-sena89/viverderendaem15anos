@@ -39,7 +39,15 @@ export function Panel({
 }
 
 /** Selo de variação percentual (verde/vermelho) usado em cotações e rentabilidade. */
-export function DeltaChip({ value, suffix = "%", className }: { value: number; suffix?: string; className?: string }) {
+export function DeltaChip({
+  value,
+  suffix = "%",
+  className,
+}: {
+  value: number;
+  suffix?: string;
+  className?: string;
+}) {
   const positivo = value >= 0;
   const Icon = positivo ? ArrowUpRight : ArrowDownRight;
   return (

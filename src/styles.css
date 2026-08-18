@@ -47,14 +47,10 @@
   --text-base: 1rem;
   --text-base--line-height: 1.55rem;
 
-  --font-sans:
-    "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-display:
-    "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-brand:
-    "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-hero:
-    "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-brand: "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-hero: "Inter Variable", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -1524,5 +1520,33 @@ canvas {
   .aurora-blob,
   .flutuar-lento {
     animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+ * Streamdown em mobile (<=640px) — tabelas e blocos de código quebram
+ * o conteúdo em vez de rolar horizontalmente, evitando clipping.
+ * --------------------------------------------------------------- */
+@media (max-width: 640px) {
+  [data-streamdown="table-wrapper"] {
+    overflow-x: hidden;
+  }
+
+  [data-streamdown="table-wrapper"] table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: auto;
+  }
+
+  [data-streamdown="table-wrapper"] th,
+  [data-streamdown="table-wrapper"] td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  [data-streamdown="code-block-body"] {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 }

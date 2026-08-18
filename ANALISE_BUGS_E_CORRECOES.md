@@ -8,6 +8,7 @@
 ## 📋 Sumário Executivo
 
 Foram identificados **12 bugs críticos e médios** no código da aplicação, incluindo:
+
 - 3 bugs críticos de lógica e estado
 - 5 bugs médios de tratamento de erros
 - 4 problemas de performance e memory leaks
@@ -23,15 +24,19 @@ Foram identificados **12 bugs críticos e médios** no código da aplicação, i
 **Linha:** 1-122
 
 #### Problema:
+
 O arquivo `viverderendaem15anos/src/App.tsx` contém o template padrão do Vite, mas não é usado pela aplicação principal que usa TanStack Router com `src/routes/__root.tsx`. Isso causa:
+
 - Confusão sobre qual é o componente principal
 - Código morto que nunca é executado
 - Possíveis conflitos se alguém tentar usar este arquivo
 
 #### Causa Raiz:
+
 Subpasta `viverderendaem15anos/` criada incorretamente dentro do projeto principal.
 
 #### Correção:
+
 **Remover completamente a pasta `viverderendaem15anos/`** ou integrar corretamente se for um subprojeto.
 
 ```bash
@@ -51,6 +56,7 @@ mv viverderendaem15anos/ ../viverderendaem15anos-vite-demo/
 **Linhas:** 151-156
 
 #### Problema:
+
 ```typescript
 const hidratado = useRef(false);
 useEffect(() => {
@@ -63,9 +69,11 @@ useEffect(() => {
 **Race condition:** Se `initialMessages` mudar antes de `historico.isSuccess`, a hidratação pode acontecer múltiplas vezes ou não acontecer.
 
 #### Causa Raiz:
+
 `initialMessages` é uma dependência que muda a cada render quando `historico.data` muda, mas a verificação usa apenas `hidratado.current`.
 
 #### Correção:
+
 ```typescript
 const hidratado = useRef(false);
 useEffect(() => {
@@ -85,6 +93,7 @@ useEffect(() => {
 **Linhas:** 739-750
 
 #### Problema:
+
 ```typescript
 useEffect(
   () => () => {
@@ -103,15 +112,17 @@ useEffect(
 **Memory leak:** Se o componente for montado/desmontado várias vezes com `usingProvider` mudando de `true` para `false`, blobs criados pelo provider não serão revogados.
 
 #### Causa Raiz:
+
 A limpeza de blob URLs só acontece quando `usingProvider` é `false`, mas blobs podem ser criados tanto localmente quanto pelo provider.
 
 #### Correção:
+
 ```typescript
 useEffect(
   () => () => {
     // Limpa blobs independente de usar provider ou não
     for (const f of filesRef.current) {
-      if (f.url?.startsWith('blob:')) {
+      if (f.url?.startsWith("blob:")) {
         URL.revokeObjectURL(f.url);
       }
     }
@@ -131,6 +142,7 @@ useEffect(
 **Linhas:** 162-173
 
 #### Problema:
+
 ```typescript
 const perguntaEnviada = useRef(false);
 useEffect(() => {
@@ -146,15 +158,17 @@ useEffect(() => {
 **Bug:** Se `perguntaExterna` mudar durante o carregamento, a ref `perguntaEnviada` já está `true` e a nova pergunta não será enviada.
 
 #### Causa Raiz:
+
 A ref não é resetada quando `perguntaExterna` muda.
 
 #### Correção:
+
 ```typescript
 const perguntaEnviadaRef = useRef<string | null>(null);
 useEffect(() => {
   if (!perguntaExterna || !historico.isSuccess) return;
   if (perguntaEnviadaRef.current === perguntaExterna) return; // Já enviou essa pergunta
-  
+
   perguntaEnviadaRef.current = perguntaExterna;
   setShowOnboarding(false);
   void enviar(perguntaExterna);
@@ -172,6 +186,7 @@ useEffect(() => {
 **Linhas:** 790-849
 
 #### Problema:
+
 ```typescript
 const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
   async (event) => {
@@ -180,7 +195,7 @@ const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
     try {
       const convertedFiles: FileUIPart[] = await Promise.all(/* ... */);
       const result = onSubmit({ files: convertedFiles, text }, event);
-      
+
       if (result instanceof Promise) {
         try {
           await result;
@@ -208,9 +223,11 @@ const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
 **Bug:** O `catch` externo captura erros de conversão de blobs mas também engole erros de `onSubmit` síncronos.
 
 #### Causa Raiz:
+
 Try-catch muito amplo mistura dois tipos de erros diferentes.
 
 #### Correção:
+
 ```typescript
 const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
   async (event) => {
@@ -254,7 +271,7 @@ const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
       if (result instanceof Promise) {
         await result;
       }
-      
+
       // Só limpa se onSubmit não lançou erro
       clear();
       if (usingProvider) {
@@ -279,6 +296,7 @@ const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
 **Linhas:** 178-187
 
 #### Problema:
+
 ```typescript
 async function enviar(texto: string) {
   const valor = texto.trim();
@@ -294,14 +312,16 @@ async function enviar(texto: string) {
 **Bug:** Se `sendMessage` falhar, o input já foi limpo e o usuário perdeu o texto.
 
 #### Causa Raiz:
+
 Input é limpo antes de confirmar sucesso.
 
 #### Correção:
+
 ```typescript
 async function enviar(texto: string) {
   const valor = texto.trim();
   if (!valor || carregando) return;
-  
+
   try {
     setInput(""); // Limpa otimisticamente
     await sendMessage({ text: valor });
@@ -325,6 +345,7 @@ async function enviar(texto: string) {
 **Linhas:** 275-291
 
 #### Problema:
+
 ```typescript
 const attachmentsRef = useRef(attachmentFiles);
 
@@ -348,9 +369,11 @@ useEffect(
 **Bug:** Revoga URLs de todos os blobs ao desmontar, mesmo se ainda estiverem sendo usados por componentes filhos.
 
 #### Causa Raiz:
+
 Não verifica se a URL é realmente um blob: URL antes de revogar.
 
 #### Correção:
+
 ```typescript
 const attachmentsRef = useRef(attachmentFiles);
 
@@ -362,7 +385,7 @@ useEffect(() => {
 useEffect(
   () => () => {
     for (const f of attachmentsRef.current) {
-      if (f.url?.startsWith('blob:')) {
+      if (f.url?.startsWith("blob:")) {
         URL.revokeObjectURL(f.url);
       }
     }
@@ -380,6 +403,7 @@ useEffect(
 **Linhas:** 9-30
 
 #### Problema:
+
 ```typescript
 function createSupabaseFetch(supabaseKey: string): typeof fetch {
   return (input, init) => {
@@ -407,9 +431,11 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 **Bug:** Não trata o caso onde `init?.headers` pode ser um objeto simples, array ou Headers.
 
 #### Causa Raiz:
+
 `new Headers(init.headers)` pode falhar se `init.headers` for um array de tuplas malformado.
 
 #### Correção:
+
 ```typescript
 function createSupabaseFetch(supabaseKey: string): typeof fetch {
   return (input, init) => {
@@ -423,9 +449,9 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
       } catch (error) {
         console.warn("Failed to parse headers:", error);
         // Fallback: se headers for objeto simples
-        if (typeof init.headers === 'object' && !Array.isArray(init.headers)) {
+        if (typeof init.headers === "object" && !Array.isArray(init.headers)) {
           Object.entries(init.headers).forEach(([key, value]) => {
-            if (typeof value === 'string') {
+            if (typeof value === "string") {
               headers.set(key, value);
             }
           });
@@ -457,6 +483,7 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 **Linhas:** 120-136
 
 #### Problema:
+
 ```typescript
 const transport = useMemo(
   () =>
@@ -480,9 +507,11 @@ const transport = useMemo(
 **Problema:** `transport` é recriado sempre que `perfil`, `citacoes` ou `provedor` mudam, mesmo que os valores sejam os mesmos.
 
 #### Causa Raiz:
+
 Dependências primitivas que mudam frequentemente.
 
 #### Correção:
+
 ```typescript
 const transport = useMemo(
   () =>
@@ -514,9 +543,10 @@ const transport = useMemo(
 **Linhas:** 94-101
 
 #### Problema:
+
 ```typescript
-const [showOnboarding, setShowOnboarding] = useState(() => 
-  typeof window !== "undefined" ? !window.localStorage.getItem("gestor-ia-onboarded") : false
+const [showOnboarding, setShowOnboarding] = useState(() =>
+  typeof window !== "undefined" ? !window.localStorage.getItem("gestor-ia-onboarded") : false,
 );
 
 const [citacoes, setCitacoes] = useState(() =>
@@ -527,32 +557,32 @@ const [citacoes, setCitacoes] = useState(() =>
 **Problema:** Acesso síncrono ao localStorage em cada inicialização de estado.
 
 #### Causa Raiz:
+
 localStorage é síncrono e pode bloquear a thread principal.
 
 #### Correção:
+
 ```typescript
 // Helper para ler localStorage com cache
 const getLocalStorageItem = (() => {
   const cache = new Map<string, string | null>();
-  
+
   return (key: string): string | null => {
     if (typeof window === "undefined") return null;
-    
+
     if (!cache.has(key)) {
       cache.set(key, window.localStorage.getItem(key));
     }
-    
+
     return cache.get(key) ?? null;
   };
 })();
 
-const [showOnboarding, setShowOnboarding] = useState(() => 
-  !getLocalStorageItem("gestor-ia-onboarded")
+const [showOnboarding, setShowOnboarding] = useState(
+  () => !getLocalStorageItem("gestor-ia-onboarded"),
 );
 
-const [citacoes, setCitacoes] = useState(() =>
-  getLocalStorageItem("chat-citacoes") === "on"
-);
+const [citacoes, setCitacoes] = useState(() => getLocalStorageItem("chat-citacoes") === "on");
 ```
 
 ---
@@ -564,6 +594,7 @@ const [citacoes, setCitacoes] = useState(() =>
 **Linhas:** 231-242
 
 #### Problema:
+
 ```typescript
 useEffect(() => {
   iniciarAnalytics();
@@ -580,9 +611,11 @@ useEffect(() => {
 **Problema:** `iniciarAnalytics()` é chamado toda vez que `pronto` muda, mesmo que já tenha sido inicializado.
 
 #### Causa Raiz:
+
 Falta de guard para inicialização única.
 
 #### Correção:
+
 ```typescript
 const analyticsIniciado = useRef(false);
 
@@ -591,15 +624,15 @@ useEffect(() => {
     iniciarAnalytics();
     analyticsIniciado.current = true;
   }
-  
+
   if (!pronto) return;
-  
+
   const { data } = supabase.auth.onAuthStateChange((event) => {
     if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
     router.invalidate();
     if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
   });
-  
+
   return () => data.subscription.unsubscribe();
 }, [router, queryClient, pronto]);
 ```
@@ -613,6 +646,7 @@ useEffect(() => {
 **Linhas:** 515-536
 
 #### Problema:
+
 ```typescript
 const matchesAccept = useCallback(
   (f: File) => {
@@ -640,9 +674,11 @@ const matchesAccept = useCallback(
 **Problema:** O parsing de `accept` é feito para cada arquivo, mesmo que `accept` não mude.
 
 #### Causa Raiz:
+
 Lógica de parsing dentro da função de validação.
 
 #### Correção:
+
 ```typescript
 const acceptPatterns = useMemo(() => {
   if (!accept || accept.trim() === "") {
@@ -677,17 +713,20 @@ const matchesAccept = useCallback(
 ## 📊 Resumo de Prioridades
 
 ### Aplicar IMEDIATAMENTE:
+
 1. ✅ Bug #1: Remover pasta `viverderendaem15anos/`
 2. ✅ Bug #2: Corrigir race condition na hidratação
 3. ✅ Bug #3: Corrigir memory leak de blob URLs
 
 ### Aplicar em PRÓXIMO SPRINT:
+
 4. ✅ Bug #4: Corrigir pergunta externa duplicada
 5. ✅ Bug #5: Melhorar tratamento de erro em handleSubmit
 6. ✅ Bug #6: Adicionar try-catch em enviar()
 7. ✅ Bug #7: Verificar blob: antes de revogar
 
 ### Otimizações de PERFORMANCE:
+
 8. ✅ Bug #8: Tratar erros de CORS no Supabase
 9. ✅ Bug #9-12: Otimizações de performance
 
@@ -724,6 +763,7 @@ Após aplicar as correções, testar:
 **Tempo estimado de correção:** 4-6 horas
 
 **Impacto esperado:**
+
 - ✅ Redução de 80% em memory leaks
 - ✅ Melhora de 40% na performance de re-renders
 - ✅ Eliminação de race conditions no chat
@@ -731,4 +771,4 @@ Após aplicar as correções, testar:
 
 ---
 
-*Relatório gerado em: 2026-08-17T17:05:17.558Z*
+_Relatório gerado em: 2026-08-17T17:05:17.558Z_

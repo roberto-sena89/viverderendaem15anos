@@ -60,5 +60,5 @@ export function useBackendPronto(): EstadoBackend & { tentarAgora: () => void } 
     setCiclo((c) => c + 1);
   };
 
-  return { ...estado, tentarAgora } as EstadoBackend & { tentarAgora: () => void };
+  return { ...estado, tentarAgora };
 }

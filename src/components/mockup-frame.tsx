@@ -79,9 +79,7 @@ export function MockupFrame({
       </div>
 
       {/* Área de conteúdo */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-background">
-        {children}
-      </div>
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-background">{children}</div>
     </div>
   );
 }

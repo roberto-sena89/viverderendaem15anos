@@ -22,12 +22,13 @@ chegar lá.
 ## Funcionalidades
 
 ### Carteira e patrimônio
+
 - **Resumo** — patrimônio, valor investido, rentabilidade, dividend yield, meta
   financeira e tempo estimado para a independência, com gráficos de evolução.
 - **Carteira** — tabela completa por ativo (ticker, quantidade, preço médio, preço
   atual, lucro, rentabilidade, DY, participação) com filtros por categoria
   (ações, FIIs, ETFs, Tesouro, renda fixa).
-- **Proventos** — dividendos mensais/anuais, *yield on cost*, calendário e histórico.
+- **Proventos** — dividendos mensais/anuais, _yield on cost_, calendário e histórico.
 - **Aportes** — cadastro de aportes (data, corretora, ativo, categoria, quantidade,
   preço, taxas e observações) e **histórico de aportes**.
 - **Importar B3** — importação de notas de corretagem e exportação em Excel/PDF,
@@ -36,6 +37,7 @@ chegar lá.
   ajustar, com alocação-alvo personalizável.
 
 ### Mercado e oportunidades
+
 - **Cotações** — painel ao vivo de ações, FIIs, ETFs, Tesouro, criptomoedas, índices
   e commodities, com comparadores, histórico e modal de detalhe por ativo.
 - **Ranking de Ativos** — rankings da B3 por dividend yield, valor de mercado e
@@ -45,6 +47,7 @@ chegar lá.
   identificar oportunidades.
 
 ### Planejamento e inteligência
+
 - **Planejador Financeiro** — simule a aposentadoria informando idade, patrimônio,
   aportes, aumento anual, rentabilidade, inflação e taxa de retirada; o sistema
   projeta o patrimônio ano a ano, a renda passiva e a data estimada da independência,
@@ -58,6 +61,7 @@ chegar lá.
   risco da carteira.
 
 ### Conteúdo público
+
 - Blog e páginas educativas (guia de liberdade financeira, calculadora de juros
   compostos, o que é renda passiva, quanto rende 1 milhão por mês) com integração
   de newsletter.
@@ -66,15 +70,15 @@ chegar lá.
 
 Os dados de mercado são obtidos de fontes públicas gratuitas:
 
-| Fonte | Uso |
-| --- | --- |
-| [Yahoo Finance](https://finance.yahoo.com) | Cotações e histórico de ações, FIIs, ETFs e índices |
-| [brapi.dev](https://brapi.dev) | Cotações, módulos de perfil/financeiro e rankings da B3 |
-| [Fundamentus](https://www.fundamentus.com.br) | Indicadores fundamentalistas, DRE e resultados de FIIs |
-| [Banco Central do Brasil](https://www.bcb.gov.br) | SGS (Selic, CDI, IPCA, dólar) e Expectativas Focus |
-| Google News RSS | Agregador de notícias financeiras |
+| Fonte                                             | Uso                                                     |
+| ------------------------------------------------- | ------------------------------------------------------- |
+| [Yahoo Finance](https://finance.yahoo.com)        | Cotações e histórico de ações, FIIs, ETFs e índices     |
+| [brapi.dev](https://brapi.dev)                    | Cotações, módulos de perfil/financeiro e rankings da B3 |
+| [Fundamentus](https://www.fundamentus.com.br)     | Indicadores fundamentalistas, DRE e resultados de FIIs  |
+| [Banco Central do Brasil](https://www.bcb.gov.br) | SGS (Selic, CDI, IPCA, dólar) e Expectativas Focus      |
+| Google News RSS                                   | Agregador de notícias financeiras                       |
 
-Todas as consultas contam com cache em memória, *retry* e *rate limiting* amigável
+Todas as consultas contam com cache em memória, _retry_ e _rate limiting_ amigável
 às fontes públicas.
 
 ## Tecnologias
@@ -121,15 +125,15 @@ npm run dev
 
 ### Scripts
 
-| Comando | Descrição |
-| --- | --- |
-| `npm run dev` | Ambiente de desenvolvimento (Vite) |
-| `npm run build` | Build de produção |
-| `npm run build:dev` | Build em modo desenvolvimento |
-| `npm run preview` | Pré-visualização do build |
-| `npm run lint` | Verificação de lint (ESLint) |
-| `npm run format` | Formatação com Prettier |
-| `npm test` | Testes com Vitest |
+| Comando             | Descrição                          |
+| ------------------- | ---------------------------------- |
+| `npm run dev`       | Ambiente de desenvolvimento (Vite) |
+| `npm run build`     | Build de produção                  |
+| `npm run build:dev` | Build em modo desenvolvimento      |
+| `npm run preview`   | Pré-visualização do build          |
+| `npm run lint`      | Verificação de lint (ESLint)       |
+| `npm run format`    | Formatação com Prettier            |
+| `npm test`          | Testes com Vitest                  |
 
 ### Variáveis de ambiente
 
@@ -141,6 +145,7 @@ VITE_SUPABASE_ANON_KEY=...
 ```
 
 Opcional:
+
 - `BRAPI_TOKEN` — token do brapi.dev para ampliar os limites de cotações.
 - Variáveis `USER_LLM_*` — credenciais do provedor de IA para o assistente.
 

@@ -282,7 +282,7 @@ export const PromptInputProvider = ({
   useEffect(
     () => () => {
       for (const f of attachmentsRef.current) {
-        if (f.url?.startsWith('blob:')) {
+        if (f.url?.startsWith("blob:")) {
           URL.revokeObjectURL(f.url);
         }
       }
@@ -746,7 +746,7 @@ export const PromptInput = ({
       if (!usingProvider) {
         // Limpa blobs independente de usar provider ou não
         for (const f of filesRef.current) {
-          if (f.url?.startsWith('blob:')) {
+          if (f.url?.startsWith("blob:")) {
             URL.revokeObjectURL(f.url);
           }
         }

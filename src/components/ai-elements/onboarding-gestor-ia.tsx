@@ -1,7 +1,23 @@
 import { useState, useEffect } from "react";
-import { CheckCircle2, Circle, Settings2, Wallet, Target, Sparkles, ArrowRight } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Settings2,
+  Wallet,
+  Target,
+  Sparkles,
+  ArrowRight,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useAtivos, usePlano } from "@/lib/data";
 import { usePerfilInvestidor } from "@/lib/perfil-investidor";
@@ -10,7 +26,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
-  icon: any;
+  icon: LucideIcon;
   completed: boolean;
   actionLabel: string;
   actionHref: string;
@@ -20,15 +36,16 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
   const { data: ativos } = useAtivos();
   const { data: plano } = usePlano();
   const { perfil } = usePerfilInvestidor();
-  
+
   const [steps, setSteps] = useState<Step[]>([]);
-  
+
   useEffect(() => {
     const newSteps: Step[] = [
       {
         id: "perfil",
         title: "Definir Perfil de Investidor",
-        description: "Ajuste seu perfil (Conservador, Moderado ou Agressivo) para o Gestor entender seu apetite a risco.",
+        description:
+          "Ajuste seu perfil (Conservador, Moderado ou Agressivo) para o Gestor entender seu apetite a risco.",
         icon: Settings2,
         completed: !!perfil,
         actionLabel: "Ajustar no Chat",
@@ -37,7 +54,8 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
       {
         id: "ativos",
         title: "Registrar Carteira",
-        description: "Adicione seus ativos atuais para que a IA possa analisar diversificação e rentabilidade.",
+        description:
+          "Adicione seus ativos atuais para que a IA possa analisar diversificação e rentabilidade.",
         icon: Wallet,
         completed: (ativos?.length ?? 0) > 0,
         actionLabel: "Adicionar Ativos",
@@ -55,17 +73,18 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
       {
         id: "auditoria",
         title: "Primeira Auditoria",
-        description: "Peça ao Gestor IA uma auditoria completa para identificar gaps na sua estratégia.",
+        description:
+          "Peça ao Gestor IA uma auditoria completa para identificar gaps na sua estratégia.",
         icon: Sparkles,
         completed: false, // This will be the final step to trigger
         actionLabel: "Falar com Gestor",
         actionHref: "/chat",
-      }
+      },
     ];
     setSteps(newSteps);
   }, [ativos, plano, perfil]);
 
-  const completedCount = steps.filter(s => s.completed).length;
+  const completedCount = steps.filter((s) => s.completed).length;
   const progress = (completedCount / steps.length) * 100;
 
   return (
@@ -100,19 +119,27 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
                 step.completed ? "bg-primary/5 border-primary/20" : "bg-background/50 border-border"
               }`}
             >
-              <div className={`mt-1 shrink-0 ${step.completed ? "text-primary" : "text-muted-foreground"}`}>
-                {step.completed ? <CheckCircle2 className="size-5" /> : <Circle className="size-5" />}
+              <div
+                className={`mt-1 shrink-0 ${step.completed ? "text-primary" : "text-muted-foreground"}`}
+              >
+                {step.completed ? (
+                  <CheckCircle2 className="size-5" />
+                ) : (
+                  <Circle className="size-5" />
+                )}
               </div>
               <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
-                  <step.icon className={`size-4 ${step.completed ? "text-primary" : "text-muted-foreground"}`} />
-                  <h4 className={`font-semibold ${step.completed ? "text-primary" : "text-foreground"}`}>
+                  <step.icon
+                    className={`size-4 ${step.completed ? "text-primary" : "text-muted-foreground"}`}
+                  />
+                  <h4
+                    className={`font-semibold ${step.completed ? "text-primary" : "text-foreground"}`}
+                  >
                     {step.title}
                   </h4>
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {step.description}
-                </p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
               </div>
               {!step.completed && (
                 <Button variant="ghost" size="sm" className="shrink-0 gap-1" asChild>
@@ -127,7 +154,9 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between border-t pt-6">
-        <Button variant="ghost" onClick={onComplete}>Pular agora</Button>
+        <Button variant="ghost" onClick={onComplete}>
+          Pular agora
+        </Button>
         <Button onClick={onComplete} disabled={completedCount < 3}>
           Começar a usar
         </Button>

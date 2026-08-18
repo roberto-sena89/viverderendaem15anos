@@ -14,11 +14,11 @@ export function generateCSRFToken(): string {
 
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
-  csrfToken = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  csrfToken = Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 
   // Store in session storage
-  if (typeof window !== 'undefined') {
-    sessionStorage.setItem('csrf_token', csrfToken);
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem("csrf_token", csrfToken);
   }
 
   return csrfToken;
@@ -28,8 +28,8 @@ export function generateCSRFToken(): string {
  * Get current CSRF token (generates if not exists)
  */
 export function getCSRFToken(): string {
-  if (!csrfToken && typeof window !== 'undefined') {
-    csrfToken = sessionStorage.getItem('csrf_token');
+  if (!csrfToken && typeof window !== "undefined") {
+    csrfToken = sessionStorage.getItem("csrf_token");
   }
   if (!csrfToken) {
     return generateCSRFToken();
@@ -70,7 +70,7 @@ export async function validateCSRFToken(token: string | null | undefined): Promi
  * Initialize CSRF protection on app startup
  */
 export function initializeCSRFProtection(): void {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     generateCSRFToken();
   }
 }
@@ -79,17 +79,17 @@ export function initializeCSRFProtection(): void {
  * Fetch wrapper that adds CSRF token to mutating requests
  */
 export function secureFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-  const method = (init?.method || 'GET').toUpperCase();
+  const method = (init?.method || "GET").toUpperCase();
 
   // Add CSRF token for mutating methods
-  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+  if (["POST", "PUT", "DELETE", "PATCH"].includes(method)) {
     const token = getCSRFToken();
 
     init = {
       ...init,
       headers: {
         ...init?.headers,
-        'X-CSRF-Token': token,
+        "X-CSRF-Token": token,
       },
     };
   }

@@ -25,7 +25,7 @@ export const COR_CLASSE: Record<string, string> = {
 /** Categorias da carteira mapeadas para a mesma cor da sua classe de estratégia. */
 export const COR_CATEGORIA: Record<string, string> = {
   Ações: COR_CLASSE["Ações"],
-  "FIIS": COR_CLASSE.FIIs,
+  FIIS: COR_CLASSE.FIIs,
   FIIs: COR_CLASSE.FIIs,
   Fiagro: COR_CLASSE.FIIs,
   "Tesouro Direto": COR_CLASSE[CLASSE_POS_FIXADO],

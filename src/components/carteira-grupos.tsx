@@ -1,12 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  BarChart3,
-  ChevronDown,
-  CircleCheck,
-  CircleSlash,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { BarChart3, ChevronDown, CircleCheck, CircleSlash, Pencil, Trash2 } from "lucide-react";
 
 import { TickerMark } from "@/components/panel";
 import { DialogTransacao } from "@/components/dialog-transacao";
@@ -239,7 +232,6 @@ export function CarteiraGrupos({
       toast.error("Não foi possível salvar o preço.");
     }
   }
-
 
   /** Ativos com o preço atual sincronizado com a cotação de mercado. */
   const ativos = useMemo(
@@ -543,38 +535,38 @@ export function CarteiraGrupos({
                               </p>
                             </div>
                             {onEditar && onExcluir ? (
-                                <div className="flex gap-1">
-                                  <DialogTransacao
-                                    aporte={{
-                                      id: a.id,
-                                      ticker: a.ticker,
-                                      categoria: a.categoria,
-                                      quantidade: a.quantidade,
-                                      preco: a.precoMedio,
-                                      data: new Date().toISOString().slice(0, 10),
-                                      corretora: "",
-                                      taxas: 0,
-                                    }}
-                                  >
-                                    <Button
-                                      size="icon"
-                                      variant="ghost"
-                                      title={`Editar ${a.ticker}`}
-                                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                                    >
-                                      <Pencil className="size-4" />
-                                    </Button>
-                                  </DialogTransacao>
+                              <div className="flex gap-1">
+                                <DialogTransacao
+                                  aporte={{
+                                    id: a.id,
+                                    ticker: a.ticker,
+                                    categoria: a.categoria,
+                                    quantidade: a.quantidade,
+                                    preco: a.precoMedio,
+                                    data: new Date().toISOString().slice(0, 10),
+                                    corretora: "",
+                                    taxas: 0,
+                                  }}
+                                >
                                   <Button
                                     size="icon"
                                     variant="ghost"
-                                    title={`Excluir ${a.ticker}`}
-                                    onClick={() => onExcluir?.(a)}
-                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                    title={`Editar ${a.ticker}`}
+                                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
                                   >
-                                    <Trash2 className="size-4" />
+                                    <Pencil className="size-4" />
                                   </Button>
-                                </div>
+                                </DialogTransacao>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  title={`Excluir ${a.ticker}`}
+                                  onClick={() => onExcluir?.(a)}
+                                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                >
+                                  <Trash2 className="size-4" />
+                                </Button>
+                              </div>
                             ) : null}
                           </div>
                         </div>
@@ -712,9 +704,7 @@ export function CarteiraGrupos({
                           </TableHead>
                         )}
                         {colunas.saldo && (
-                          <TableHead className="w-[5.5rem] text-right sm:w-[7rem]">
-                            Saldo
-                          </TableHead>
+                          <TableHead className="w-[5.5rem] text-right sm:w-[7rem]">Saldo</TableHead>
                         )}
                         {colunas.participacao && (
                           <TableHead className={`w-[4rem] text-right sm:w-[4.5rem] ${colSm}`}>
@@ -733,7 +723,9 @@ export function CarteiraGrupos({
                         )}
 
                         {onEditar && onExcluir ? (
-                          <TableHead className="w-[4rem] pr-2 text-center sm:w-[5rem] sm:pr-3">Ação</TableHead>
+                          <TableHead className="w-[4rem] pr-2 text-center sm:w-[5rem] sm:pr-3">
+                            Ação
+                          </TableHead>
                         ) : null}
                       </TableRow>
                     </TableHeader>

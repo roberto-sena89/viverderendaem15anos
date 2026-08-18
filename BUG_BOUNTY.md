@@ -14,29 +14,29 @@ Este programa recompensa pesquisadores de segurança que descobrem e reportam vu
 
 ### ✅ In Scope (Elegíveis para recompensa)
 
-| Categoria | Exemplos | Severidade Máxima |
-|-----------|----------|-------------------|
-| **Aplicação Web** (https://viverderendaem15anos.com) | XSS, CSRF, IDOR, SSRF, RCE, Auth bypass, Logic flaws | Critical |
-| **API** (`/api/*`, `/mcp/*`) | Broken auth, rate limit bypass, injection, data exposure | Critical |
-| **Autenticação/Autorização** | OAuth flaws, session fixation, privilege escalation | Critical |
-| **Client-side** | DOM XSS, prototype pollution, unsafe postMessage | High |
-| **Infraestrutura exposta** | Subdomain takeover, exposed .git, cloud misconfig | High |
-| **Dependências** | Vulnerabilidades em deps com PoC explorável no nosso contexto | Medium-High |
+| Categoria                                            | Exemplos                                                      | Severidade Máxima |
+| ---------------------------------------------------- | ------------------------------------------------------------- | ----------------- |
+| **Aplicação Web** (https://viverderendaem15anos.com) | XSS, CSRF, IDOR, SSRF, RCE, Auth bypass, Logic flaws          | Critical          |
+| **API** (`/api/*`, `/mcp/*`)                         | Broken auth, rate limit bypass, injection, data exposure      | Critical          |
+| **Autenticação/Autorização**                         | OAuth flaws, session fixation, privilege escalation           | Critical          |
+| **Client-side**                                      | DOM XSS, prototype pollution, unsafe postMessage              | High              |
+| **Infraestrutura exposta**                           | Subdomain takeover, exposed .git, cloud misconfig             | High              |
+| **Dependências**                                     | Vulnerabilidades em deps com PoC explorável no nosso contexto | Medium-High       |
 
 ### ❌ Out of Scope (Não elegíveis)
 
-| Categoria | Motivo |
-|-----------|--------|
-| **DoS/DDoS** | Testa disponibilidade, não segurança |
-| **Engenharia social/Phishing** | Alvo: usuários, não sistemas |
-| **Ausência de headers** (HSTS, CSP, etc.) | Já conhecidos, em roadmap |
-| **Rate limiting ausente** | Em implementação |
-| **Informational** (versão do server, directory listing) | Baixo impacto |
-| **Vulnerabilidades em deps sem PoC explorável** | Não demonstram risco real |
-| **Autocompletar/senhas no navegador** | Comportamento do browser |
-| **Clickjacking em páginas públicas sem ação sensível** | Sem impacto de segurança |
-| **Auto-XSS** (requer interação da vítima colando payload) | Não explorável remotamente |
-| **Issues em ambientes de dev/staging não produzidos** | Não afetam usuários reais |
+| Categoria                                                 | Motivo                               |
+| --------------------------------------------------------- | ------------------------------------ |
+| **DoS/DDoS**                                              | Testa disponibilidade, não segurança |
+| **Engenharia social/Phishing**                            | Alvo: usuários, não sistemas         |
+| **Ausência de headers** (HSTS, CSP, etc.)                 | Já conhecidos, em roadmap            |
+| **Rate limiting ausente**                                 | Em implementação                     |
+| **Informational** (versão do server, directory listing)   | Baixo impacto                        |
+| **Vulnerabilidades em deps sem PoC explorável**           | Não demonstram risco real            |
+| **Autocompletar/senhas no navegador**                     | Comportamento do browser             |
+| **Clickjacking em páginas públicas sem ação sensível**    | Sem impacto de segurança             |
+| **Auto-XSS** (requer interação da vítima colando payload) | Não explorável remotamente           |
+| **Issues em ambientes de dev/staging não produzidos**     | Não afetam usuários reais            |
 
 ### 🎯 Ativos Principais
 
@@ -50,22 +50,22 @@ https://*.viverderendaem15anos.com        # Subdomínios oficiais
 
 ## Recompensas (USD)
 
-| Severidade (CVSS 4.0) | Valor | Exemplos |
-|------------------------|-------|----------|
-| **Critical** (9.0–10.0) | **$500–$2.000** | RCE, Auth bypass, SQLi, SSRF c/ acesso interno |
-| **High** (7.0–8.9) | **$200–$500** | XSS stored/reflected, IDOR crítico, PrivEsc |
-| **Medium** (4.0–6.9) | **$50–$200** | XSS DOM, CSRF em ação sensível, Info disclosure |
-| **Low** (0.1–3.9) | **$25–$50** | Info disclosure menor, headers faltando |
+| Severidade (CVSS 4.0)   | Valor           | Exemplos                                        |
+| ----------------------- | --------------- | ----------------------------------------------- |
+| **Critical** (9.0–10.0) | **$500–$2.000** | RCE, Auth bypass, SQLi, SSRF c/ acesso interno  |
+| **High** (7.0–8.9)      | **$200–$500**   | XSS stored/reflected, IDOR crítico, PrivEsc     |
+| **Medium** (4.0–6.9)    | **$50–$200**    | XSS DOM, CSRF em ação sensível, Info disclosure |
+| **Low** (0.1–3.9)       | **$25–$50**     | Info disclosure menor, headers faltando         |
 
 ### Multiplicadores
 
-| Condição | Multiplicador |
-|----------|---------------|
-| **PoC funcional + vídeo** | 1.25x |
-| **Patch/sugestão de correção** | 1.25x |
-| **Cadeia de exploração (chaining)** | 1.5x |
-| **Primeira descoberta do tipo** | 1.25x |
-| **Máximo por relatório** | **$2.000** |
+| Condição                            | Multiplicador |
+| ----------------------------------- | ------------- |
+| **PoC funcional + vídeo**           | 1.25x         |
+| **Patch/sugestão de correção**      | 1.25x         |
+| **Cadeia de exploração (chaining)** | 1.5x          |
+| **Primeira descoberta do tipo**     | 1.25x         |
+| **Máximo por relatório**            | **$2.000**    |
 
 ### Pagamento
 
@@ -144,10 +144,10 @@ Corpo:
 ## Hall of Fame
 
 | Pesquisador | Vulnerabilidade | Data | Recompensa |
-|-------------|----------------|------|------------|
-| — | — | — | — |
+| ----------- | --------------- | ---- | ---------- |
+| —           | —               | —    | —          |
 
-*Seu nome aqui na próxima descoberta válida!*
+_Seu nome aqui na próxima descoberta válida!_
 
 ---
 
@@ -167,19 +167,19 @@ Esta proteção cobre: CFAA, DMCA 1201, leis estaduais de computação, e termos
 
 ## Contato
 
-| Finalidade | Canal |
-|------------|-------|
-| Submissão de bug bounty | [GitHub Security Advisories](https://github.com/roberto-sena89/viverderendaem15anos/security/advisories/new) |
-| Dúvidas sobre o programa | security@roberto-sena89.github.io |
-| Emergência (vuln ativa em produção) | Abra advisory + marque @roberto-sena89 |
+| Finalidade                          | Canal                                                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Submissão de bug bounty             | [GitHub Security Advisories](https://github.com/roberto-sena89/viverderendaem15anos/security/advisories/new) |
+| Dúvidas sobre o programa            | security@roberto-sena89.github.io                                                                            |
+| Emergência (vuln ativa em produção) | Abra advisory + marque @roberto-sena89                                                                       |
 
 ---
 
 ## Changelog
 
-| Data | Versão | Mudanças |
-|------|--------|----------|
-| 2026-08-17 | 1.0 | Lançamento do programa |
+| Data       | Versão | Mudanças               |
+| ---------- | ------ | ---------------------- |
+| 2026-08-17 | 1.0    | Lançamento do programa |
 
 ---
 

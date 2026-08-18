@@ -376,7 +376,6 @@ export const Route = createFileRoute("/api/chat")({
         if (!supabaseUrl || !supabaseKey)
           return new Response("Backend não configurado", { status: 500 });
 
-
         const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
           auth: { persistSession: false, autoRefreshToken: false },
           global: { headers: { Authorization: `Bearer ${token}` } },
@@ -530,8 +529,6 @@ export const Route = createFileRoute("/api/chat")({
               headers: { Authorization: `Bearer ${iaChave}` },
             })(iaModelo!)
           : gatewayNativo!(MODELO_CHAT);
-
-
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
@@ -1651,10 +1648,7 @@ export const Route = createFileRoute("/api/chat")({
               try {
                 const cat = categoria ?? "acao";
                 const [{ lerPosicoesBanco, contextoMacro }, { sinalRadar, scoreOportunidade }] =
-                  await Promise.all([
-                    import("@/lib/radar.server"),
-                    import("@/lib/radar-base"),
-                  ]);
+                  await Promise.all([import("@/lib/radar.server"), import("@/lib/radar-base")]);
                 const grade =
                   cat === "acao"
                     ? await (await import("@/lib/acoes.server")).gradeAcoesComCache()
@@ -1721,7 +1715,7 @@ export const Route = createFileRoute("/api/chat")({
                 const alvo = ticker.trim().toUpperCase();
                 const radarFx = await import("@/lib/radar.server");
                 const [mapa, serie, analise, backtest] = await Promise.all([
-                  radarFx.posicoesParaTickers([alvo]).catch(() => ({}) as Record<string, unknown>),
+                  radarFx.posicoesParaTickers([alvo]).catch(() => ({})),
                   radarFx.serieParaGrafico(alvo).catch(() => null),
                   radarFx.lerAnaliseIA(alvo).catch(() => null),
                   radarFx.backtestRadarAtivo(alvo).catch(() => null),
@@ -1746,7 +1740,6 @@ export const Route = createFileRoute("/api/chat")({
             },
           }),
         };
-
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(
@@ -1816,8 +1809,17 @@ export const Route = createFileRoute("/api/chat")({
             // request id: corpo JSON do provedor, cabeçalhos ou run id do gateway.
             let requestId: string | undefined;
             try {
-              const corpo = err?.responseBody ? JSON.parse(err.responseBody) : null;
-              requestId = corpo?.request_id ?? corpo?.id ?? corpo?.error?.request_id;
+              const corpo: unknown = err?.responseBody ? JSON.parse(err.responseBody) : null;
+              if (typeof corpo === "object" && corpo !== null) {
+                const c = corpo as Record<string, unknown>;
+                const raw = c.request_id ?? c.id;
+                if (typeof raw === "string") requestId = raw;
+                const erroObj = c.error;
+                if (requestId === undefined && typeof erroObj === "object" && erroObj !== null) {
+                  const erroRequestId = (erroObj as Record<string, unknown>).request_id;
+                  if (typeof erroRequestId === "string") requestId = erroRequestId;
+                }
+              }
             } catch {
               /* corpo não-JSON */
             }
@@ -1854,7 +1856,6 @@ export const Route = createFileRoute("/api/chat")({
             console.error(`[chat] erro entregue ao usuário (${userId}): ${base} | ${detalhes}`);
             return `${base}\n\n${detalhes}`;
           },
-
 
           onFinish: async ({ responseMessage }) => {
             const texto = textoDaMensagem(responseMessage);

@@ -206,7 +206,8 @@ export function AppShell({
                   // Sincroniza o estado ativo com o pathname real.
                   // Se o usuário estiver em /, tratamos como /dashboard para fins de navegação lateral
                   // se o usuário estiver autenticado (o redirecionamento cuida disso no TanStack Router).
-                  const active = pathname.startsWith(to) || (to === "/dashboard" && pathname === "/");
+                  const active =
+                    pathname.startsWith(to) || (to === "/dashboard" && pathname === "/");
                   return (
                     <Link
                       key={to}

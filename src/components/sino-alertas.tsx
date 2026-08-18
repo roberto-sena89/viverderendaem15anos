@@ -30,10 +30,13 @@ export function SinoAlertas() {
   };
 
   return (
-    <Popover open={aberto} onOpenChange={(val) => {
-      setAberto(val);
-      if (val && naoLidos > 0) marcarTodosLidos();
-    }}>
+    <Popover
+      open={aberto}
+      onOpenChange={(val) => {
+        setAberto(val);
+        if (val && naoLidos > 0) marcarTodosLidos();
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -101,8 +104,8 @@ export function SinoAlertas() {
               }
               const alta = a.variacaoPercent >= 0;
               return (
-                <li 
-                  key={a.id} 
+                <li
+                  key={a.id}
                   className="flex items-start gap-3 px-3 py-2.5 hover:bg-muted/30 cursor-pointer transition-colors group/alerta"
                   onClick={() => abrirCategoria(a.categoria)}
                 >

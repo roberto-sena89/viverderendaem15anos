@@ -201,7 +201,9 @@ function AvisoBackend({ mensagem, onTentar }: { mensagem: string; onTentar: () =
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md rounded-lg border border-border bg-card p-6 text-center">
-        <h1 className="text-lg font-semibold text-foreground">Serviço temporariamente indisponível</h1>
+        <h1 className="text-lg font-semibold text-foreground">
+          Serviço temporariamente indisponível
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">{mensagem}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button

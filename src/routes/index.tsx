@@ -460,7 +460,10 @@ function HomePage() {
           fetchPriority="low"
         />
         <div className="from-background via-background/80 to-background absolute inset-0 -z-10 bg-gradient-to-b" />
-        <div aria-hidden className="aurora-blob -top-44 left-[6%] -z-10 h-[30rem] w-[30rem] bg-primary/25" />
+        <div
+          aria-hidden
+          className="aurora-blob -top-44 left-[6%] -z-10 h-[30rem] w-[30rem] bg-primary/25"
+        />
         <div
           aria-hidden
           className="aurora-blob top-[8%] right-[4%] -z-10 h-[26rem] w-[26rem] bg-accent-warm/15"
@@ -688,7 +691,12 @@ function HomePage() {
             </div>
 
             <motion.div
-              style={{ y: mockupY, rotate: mockupRotate, rotateX: tiltX, transformPerspective: 1400 }}
+              style={{
+                y: mockupY,
+                rotate: mockupRotate,
+                rotateX: tiltX,
+                transformPerspective: 1400,
+              }}
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
@@ -908,8 +916,8 @@ function HomePage() {
                 Receba o guia "Viver de Renda em 15 Anos"
               </h2>
               <p className="text-muted-foreground mt-3 max-w-xl text-sm leading-relaxed text-pretty">
-                Dicas sobre renda passiva, dividendos e independência financeira, direto na sua caixa
-                de entrada. Sem spam — cancele quando quiser.
+                Dicas sobre renda passiva, dividendos e independência financeira, direto na sua
+                caixa de entrada. Sem spam — cancele quando quiser.
               </p>
               <FormularioNewsletter origem="landing" />
             </div>

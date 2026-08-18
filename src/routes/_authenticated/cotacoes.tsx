@@ -104,7 +104,6 @@ function Cotacoes() {
     <AppShell title="Cotações" description={legenda}>
       <AbasMercado />
       <div className="space-y-4">
-
         {/* Status do pregão */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className="inline-flex min-w-0 items-center gap-2 text-sm">

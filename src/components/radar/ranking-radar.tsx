@@ -26,12 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { fmtPercent, fmtPreco } from "@/components/cotacoes/formatos";
 import {
@@ -731,7 +726,9 @@ export function RankingRadar({
           sub={
             <div className="flex items-center gap-1 text-[0.65rem] text-muted-foreground">
               <span>de</span>
-              <span className="font-bold text-foreground">{totalUniverso.toLocaleString("pt-BR")}</span>
+              <span className="font-bold text-foreground">
+                {totalUniverso.toLocaleString("pt-BR")}
+              </span>
               <span>ativos totais</span>
             </div>
           }
@@ -763,8 +760,10 @@ export function RankingRadar({
           valor={estatisticas.scoreMedio !== null ? estatisticas.scoreMedio.toFixed(0) : "—"}
           sub={
             <p className="t-caption leading-relaxed">
-              Média de oportunidade baseada em <span className="text-foreground font-medium">Preço</span>, 
-              <span className="text-foreground font-medium"> DY</span> e <span className="text-foreground font-medium">Risco</span>.
+              Média de oportunidade baseada em{" "}
+              <span className="text-foreground font-medium">Preço</span>,
+              <span className="text-foreground font-medium"> DY</span> e{" "}
+              <span className="text-foreground font-medium">Risco</span>.
             </p>
           }
           cor="text-foreground"
@@ -787,7 +786,8 @@ export function RankingRadar({
           valor={String(estatisticas.minimas52)}
           sub={
             <p className="t-caption leading-relaxed">
-              Ativos a menos de <span className="text-sky-600 font-bold">5%</span> da menor cotação do último ano.
+              Ativos a menos de <span className="text-sky-600 font-bold">5%</span> da menor cotação
+              do último ano.
             </p>
           }
           cor="text-sky-600"
@@ -797,9 +797,7 @@ export function RankingRadar({
           rotulo="Ativos em Carteira"
           valor={String(estatisticas.naCarteira)}
           sub={
-            <p className="t-caption">
-              Total de ativos que você já possui neste universo filtrado.
-            </p>
+            <p className="t-caption">Total de ativos que você já possui neste universo filtrado.</p>
           }
           cor="text-foreground"
           icone={<Wallet className="size-4" />}
@@ -810,14 +808,31 @@ export function RankingRadar({
           sub={
             <div className="space-y-1">
               <div className="flex justify-between text-[0.65rem] font-medium">
-                <span className="text-emerald-600">A/B: {estatisticas.porRating.A + estatisticas.porRating.B}</span>
+                <span className="text-emerald-600">
+                  A/B: {estatisticas.porRating.A + estatisticas.porRating.B}
+                </span>
                 <span className="text-amber-600">C: {estatisticas.porRating.C}</span>
                 <span className="text-red-600">D: {estatisticas.porRating.D}</span>
               </div>
               <div className="h-1 flex overflow-hidden rounded-full bg-muted/30">
-                <div className="bg-emerald-500" style={{ width: `${((estatisticas.porRating.A + estatisticas.porRating.B) / Math.max(1, estatisticas.total)) * 100}%` }} />
-                <div className="bg-amber-500" style={{ width: `${(estatisticas.porRating.C / Math.max(1, estatisticas.total)) * 100}%` }} />
-                <div className="bg-red-500" style={{ width: `${(estatisticas.porRating.D / Math.max(1, estatisticas.total)) * 100}%` }} />
+                <div
+                  className="bg-emerald-500"
+                  style={{
+                    width: `${((estatisticas.porRating.A + estatisticas.porRating.B) / Math.max(1, estatisticas.total)) * 100}%`,
+                  }}
+                />
+                <div
+                  className="bg-amber-500"
+                  style={{
+                    width: `${(estatisticas.porRating.C / Math.max(1, estatisticas.total)) * 100}%`,
+                  }}
+                />
+                <div
+                  className="bg-red-500"
+                  style={{
+                    width: `${(estatisticas.porRating.D / Math.max(1, estatisticas.total)) * 100}%`,
+                  }}
+                />
               </div>
             </div>
           }
@@ -898,33 +913,50 @@ export function RankingRadar({
         </p>
       </section>
       {/* Legenda de Cores e Zonas de Preço */}
-      <section aria-label="Legenda de zonas de preço" className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-6">
+      <section
+        aria-label="Legenda de zonas de preço"
+        className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-6"
+      >
         <div className="flex items-center gap-2">
           <div className="size-3 shrink-0 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-500/90">Oportunidade</p>
-            <p className="truncate text-[11px] font-medium text-muted-foreground">Mínima histórica / Barata</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-500/90">
+              Oportunidade
+            </p>
+            <p className="truncate text-[11px] font-medium text-muted-foreground">
+              Mínima histórica / Barata
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="size-3 shrink-0 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.4)]" />
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-sky-500/90">Acompanhar</p>
-            <p className="truncate text-[11px] font-medium text-muted-foreground">Faixa de valor justo</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-sky-500/90">
+              Acompanhar
+            </p>
+            <p className="truncate text-[11px] font-medium text-muted-foreground">
+              Faixa de valor justo
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="size-3 shrink-0 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-500/90">Atenção</p>
-            <p className="truncate text-[11px] font-medium text-muted-foreground">Topo de canal / Médio</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-500/90">
+              Atenção
+            </p>
+            <p className="truncate text-[11px] font-medium text-muted-foreground">
+              Topo de canal / Médio
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="size-3 shrink-0 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]" />
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-wider text-red-500/90">Risco</p>
-            <p className="truncate text-[11px] font-medium text-muted-foreground">Máxima histórica / Cara</p>
+            <p className="truncate text-[11px] font-medium text-muted-foreground">
+              Máxima histórica / Cara
+            </p>
           </div>
         </div>
       </section>
@@ -976,7 +1008,9 @@ export function RankingRadar({
                           <p className="mt-1">
                             Oscilação percentual do preço hoje em relação ao fechamento de ontem.
                           </p>
-                          <p className="mt-1 text-[10px] text-muted-foreground">Ex: +1,50% indica alta; -0,80% indica queda.</p>
+                          <p className="mt-1 text-[10px] text-muted-foreground">
+                            Ex: +1,50% indica alta; -0,80% indica queda.
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -992,7 +1026,10 @@ export function RankingRadar({
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[240px] leading-relaxed">
                           <p className="font-semibold">Dividend Yield 12 Meses</p>
-                          <p className="mt-1 text-xs">Rendimento total pago em dividendos nos últimos 12 meses dividido pelo preço atual.</p>
+                          <p className="mt-1 text-xs">
+                            Rendimento total pago em dividendos nos últimos 12 meses dividido pelo
+                            preço atual.
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -1008,7 +1045,10 @@ export function RankingRadar({
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[220px]">
                           <p className="font-semibold">Preço / Valor Patrimonial</p>
-                          <p className="mt-1 text-xs">Abaixo de 1,00 pode indicar que o ativo está sendo negociado com desconto sobre seu patrimônio líquido.</p>
+                          <p className="mt-1 text-xs">
+                            Abaixo de 1,00 pode indicar que o ativo está sendo negociado com
+                            desconto sobre seu patrimônio líquido.
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -1024,15 +1064,16 @@ export function RankingRadar({
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[240px] leading-relaxed">
                           <p className="font-semibold">Posição na História</p>
-                          <p className="mt-1 text-xs">Onde o preço atual está dentro de toda a série histórica do ativo (0% = mínima histórica, 100% = máxima).</p>
+                          <p className="mt-1 text-xs">
+                            Onde o preço atual está dentro de toda a série histórica do ativo (0% =
+                            mínima histórica, 100% = máxima).
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
                 </TableHead>
-                <TableHead
-                  className="hidden w-[12%] min-w-[120px] 2xl:table-cell"
-                >
+                <TableHead className="hidden w-[12%] min-w-[120px] 2xl:table-cell">
                   <div className="flex items-center justify-center gap-1.5">
                     Faixa 52s
                     <TooltipProvider>
@@ -1043,10 +1084,12 @@ export function RankingRadar({
                         <TooltipContent className="max-w-[280px] leading-relaxed">
                           <p className="font-semibold">Range de 52 Semanas</p>
                           <p className="mt-1">
-                            Indica onde o preço atual está em relação à mínima (0%) e à máxima (100%) do último ano.
+                            Indica onde o preço atual está em relação à mínima (0%) e à máxima
+                            (100%) do último ano.
                           </p>
                           <p className="mt-1.5 text-emerald-500/90 font-medium italic">
-                            Valores baixos sugerem que o ativo está "barato" em relação aos preços recentes.
+                            Valores baixos sugerem que o ativo está "barato" em relação aos preços
+                            recentes.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -1062,7 +1105,9 @@ export function RankingRadar({
                           <Info className="size-3 cursor-help text-muted-foreground/60 transition-colors hover:text-primary" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="text-xs">Distância percentual até a mínima de 52 semanas.</p>
+                          <p className="text-xs">
+                            Distância percentual até a mínima de 52 semanas.
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -1079,7 +1124,9 @@ export function RankingRadar({
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[240px]">
                           <p className="font-semibold">Risco e Volatilidade</p>
-                          <p className="mt-1 text-xs">Queda máxima desde o pico histórico e desvio padrão anualizado.</p>
+                          <p className="mt-1 text-xs">
+                            Queda máxima desde o pico histórico e desvio padrão anualizado.
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -1095,7 +1142,9 @@ export function RankingRadar({
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[220px]">
                           <p className="font-semibold">Score de Oportunidade</p>
-                          <p className="mt-1 text-xs">Nota de 0 a 100 baseada em fundamentos, preço histórico e dividendos.</p>
+                          <p className="mt-1 text-xs">
+                            Nota de 0 a 100 baseada em fundamentos, preço histórico e dividendos.
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -1112,7 +1161,8 @@ export function RankingRadar({
                         <TooltipContent className="max-w-[280px] leading-relaxed">
                           <p className="font-semibold">Rating do Gestor</p>
                           <p className="mt-1 text-[11px]">
-                            Nota profissional considerando: Fundamentos (35%), Oportunidade (20%), Dividendos (20%), Prêmio vs Selic (10%), Liquidez (8%) e Dívida (7%).
+                            Nota profissional considerando: Fundamentos (35%), Oportunidade (20%),
+                            Dividendos (20%), Prêmio vs Selic (10%), Liquidez (8%) e Dívida (7%).
                           </p>
                         </TooltipContent>
                       </Tooltip>

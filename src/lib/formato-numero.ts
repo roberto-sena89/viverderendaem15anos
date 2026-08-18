@@ -1,6 +1,6 @@
 /** Utilitários de formatação de números e moedas no padrão brasileiro. */
 
-/** 
+/**
  * Arredonda um número para uma quantidade específica de casas decimais.
  * Útil para garantir consistência em cálculos financeiros.
  */
@@ -9,7 +9,7 @@ export const arredondar = (v: number, casas = 2): number => {
   return Math.round((v + Number.EPSILON) * fator) / fator;
 };
 
-/** 
+/**
  * Converte texto no padrão brasileiro ("1.234,56") para número (1234.56).
  */
 export const numeroBR = (v: string | number): number => {
@@ -24,13 +24,13 @@ export const numeroBR = (v: string | number): number => {
   return Number.isFinite(n) ? n : 0;
 };
 
-/** 
+/**
  * Aceita apenas dígitos, ponto e vírgula (formato monetário brasileiro).
  */
 export const monetarioValido = (v: string): boolean =>
   /^\d{1,3}(\.\d{3})*(,\d{1,8})?$|^\d+([.,]\d{1,8})?$/.test(v.trim());
 
-/** 
+/**
  * Formata um número para o padrão de moeda brasileiro (R$ 1.234,56).
  * Por padrão usa 2 casas decimais e aplica arredondamento.
  */
@@ -45,7 +45,7 @@ export const brl = (v: number | string | null | undefined, casas = 2): string =>
   });
 };
 
-/** 
+/**
  * Formata um número para o padrão de porcentagem brasileiro (12,34%).
  * Por padrão usa 2 casas decimais e aplica arredondamento.
  */
@@ -58,7 +58,7 @@ export const pct = (v: number | string | null | undefined, casas = 2): string =>
   })}%`;
 };
 
-/** 
+/**
  * Formata um número puro para o padrão brasileiro (1.234,56).
  */
 export const formatarNumeroBR = (v: string | number, casas = 2): string => {
@@ -69,5 +69,3 @@ export const formatarNumeroBR = (v: string | number, casas = 2): string => {
     maximumFractionDigits: casas,
   });
 };
-
-

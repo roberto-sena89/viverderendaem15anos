@@ -133,20 +133,31 @@ export function NavMobile({
               height={512}
               className={`${config.headerLogoSize} shrink-0 rounded-xl object-contain`}
             />
-            <span className={`font-brand ${config.headerFontSize} leading-[1.15] font-bold uppercase`}>
+            <span
+              className={`font-brand ${config.headerFontSize} leading-[1.15] font-bold uppercase`}
+            >
               VIVER DE RENDA
               <br />
-              <span className={`font-brand text-[0.6rem] sm:text-xs font-semibold tracking-[0.1em] text-muted-foreground`}>
+              <span
+                className={`font-brand text-[0.6rem] sm:text-xs font-semibold tracking-[0.1em] text-muted-foreground`}
+              >
                 EM 15 ANOS
               </span>
             </span>
           </SheetTitle>
         </SheetHeader>
 
-        <nav className={`scrollbar-none flex min-h-0 flex-1 flex-col ${config.navGap} overflow-y-auto overscroll-contain ${config.navPadding}`}>
+        <nav
+          className={`scrollbar-none flex min-h-0 flex-1 flex-col ${config.navGap} overflow-y-auto overscroll-contain ${config.navPadding}`}
+        >
           {grupos.map((grupo, i) => (
-            <div key={grupo.titulo} className={i > 0 ? "border-t border-sidebar-border pt-2 sm:pt-3" : ""}>
-              <p className={`mb-1 px-2 sm:px-3 ${config.headerFontSize} leading-none font-semibold tracking-[0.16em] text-muted-foreground uppercase`}>
+            <div
+              key={grupo.titulo}
+              className={i > 0 ? "border-t border-sidebar-border pt-2 sm:pt-3" : ""}
+            >
+              <p
+                className={`mb-1 px-2 sm:px-3 ${config.headerFontSize} leading-none font-semibold tracking-[0.16em] text-muted-foreground uppercase`}
+              >
                 {grupo.titulo}
               </p>
               <div className={`flex flex-col ${config.navGap}`}>
@@ -163,7 +174,9 @@ export function NavMobile({
                           : "font-medium text-muted-foreground active:bg-sidebar-accent/60"
                       }`}
                     >
-                      <Icon className={`${config.itemIconSize} shrink-0 ${ativo ? "text-primary" : ""}`} />
+                      <Icon
+                        className={`${config.itemIconSize} shrink-0 ${ativo ? "text-primary" : ""}`}
+                      />
                       <span className="min-w-0 flex-1 truncate">{label}</span>
                     </Link>
                   );
@@ -173,7 +186,9 @@ export function NavMobile({
           ))}
         </nav>
 
-        <div className={`flex items-center gap-2 border-t border-sidebar-border ${config.footerPadding} sm:gap-3`}>
+        <div
+          className={`flex items-center gap-2 border-t border-sidebar-border ${config.footerPadding} sm:gap-3`}
+        >
           <Avatar className={config.avatarSize}>
             {usuario?.avatar ? <AvatarImage src={usuario.avatar} alt="" /> : null}
             <AvatarFallback className="bg-primary-soft text-xs text-accent-foreground">

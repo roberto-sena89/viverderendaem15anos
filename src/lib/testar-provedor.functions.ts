@@ -45,7 +45,8 @@ export const testarProvedorIA = createServerFn({ method: "POST" })
         return {
           ok: false,
           status: resposta.status,
-          mensagem: `${mensagens[resposta.status] ?? "Falha ao conectar no provedor."} ${detalhe}`.trim(),
+          mensagem:
+            `${mensagens[resposta.status] ?? "Falha ao conectar no provedor."} ${detalhe}`.trim(),
           modelos: [],
         };
       }

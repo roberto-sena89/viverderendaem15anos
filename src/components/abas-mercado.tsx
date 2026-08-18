@@ -32,8 +32,6 @@ export function AbasMercado() {
           );
         })}
       </ul>
-
-
     </nav>
   );
 }

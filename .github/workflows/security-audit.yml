@@ -19,8 +19,8 @@ jobs:
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: "24"
+          cache: "npm"
 
       - name: Instalar dependências (root)
         run: npm ci
@@ -51,8 +51,8 @@ jobs:
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: "24"
+          cache: "npm"
 
       - name: Instalar dependências
         run: npm ci
@@ -92,8 +92,8 @@ jobs:
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: "24"
+          cache: "npm"
 
       - name: Instalar dependências
         run: npm ci
@@ -117,5 +117,5 @@ jobs:
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
         with:
-          config-file: '.github/dependency-review-config.yml'
+          config-file: ".github/dependency-review-config.yml"
           fail-on-severity: high

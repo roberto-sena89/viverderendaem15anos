@@ -189,7 +189,6 @@ function indexador(texto: string): "SELIC" | "IPCA" | "PRE" | null {
   return null;
 }
 
-
 /**
  * Verdadeiro quando o texto parece se referir a um título público do Tesouro.
  * O limite de palavra evita falsos positivos em tickers da B3 como "SELIC11"

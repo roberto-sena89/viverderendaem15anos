@@ -50,7 +50,8 @@ export function verificarConfigBackend(): ConfigBackend {
   if (!url) {
     return {
       ok: false,
-      mensagem: "O endereço do backend não foi encontrado. Recarregue a página para tentar de novo.",
+      mensagem:
+        "O endereço do backend não foi encontrado. Recarregue a página para tentar de novo.",
     };
   }
   if (!urlValida(url)) {

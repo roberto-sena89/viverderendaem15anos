@@ -53,7 +53,6 @@ import {
   ChevronRight,
   DatabaseZap,
   Download,
-  
   Loader2,
   MessageSquare,
   Radar,
@@ -255,16 +254,16 @@ function PaginaRadar() {
   }, [busca, filtroSinal, filtroSetor, apenasPosicao, apenasMinimas52, categoria]);
 
   useEffect(() => {
-    const handleAbrirAtivo = (e: any) => {
-      const ticker = e.detail?.ticker;
+    const handleAbrirAtivo = (e: Event) => {
+      const ticker = (e as CustomEvent<{ ticker: string }>).detail?.ticker;
       if (!ticker || !visao?.linhas) return;
-      const encontrado = visao.linhas.find(l => l.ticker === ticker);
+      const encontrado = visao.linhas.find((l) => l.ticker === ticker);
       if (encontrado) {
         setSelecionado(encontrado);
       }
     };
-    window.addEventListener('app:abrir-radar-ativo', handleAbrirAtivo);
-    return () => window.removeEventListener('app:abrir-radar-ativo', handleAbrirAtivo);
+    window.addEventListener("app:abrir-radar-ativo", handleAbrirAtivo);
+    return () => window.removeEventListener("app:abrir-radar-ativo", handleAbrirAtivo);
   }, [visao]);
 
   const { posicoes, sparklines, carregando } = useRadarPosicoes(
@@ -423,9 +422,11 @@ function PaginaRadar() {
       // Busca todas as posições para garantir que o export tenha o histórico completo
       const tickersTodos = linhasFiltradas.map((l) => l.ticker);
       const { radarPosicoesLote } = await import("@/lib/radar.functions");
-      const { posicoes: todasPosicoes } = await radarPosicoesLote({ data: { tickers: tickersTodos } });
+      const { posicoes: todasPosicoes } = await radarPosicoesLote({
+        data: { tickers: tickersTodos },
+      });
       const completas = aplicarPosicoes(linhasFiltradas, todasPosicoes);
-      
+
       await exportarRadar(formato, completas, categoria);
       toast.success(`Radar exportado em ${formato.toUpperCase()}.`);
     } catch {
@@ -474,7 +475,6 @@ function PaginaRadar() {
     >
       <AbasMercado />
       <TopAlertBar />
-
 
       <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -525,7 +525,9 @@ function PaginaRadar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Visão filtrada ({linhasFiltradas.length} ativos)</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                Visão filtrada ({linhasFiltradas.length} ativos)
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => void exportarVisao("csv")}>CSV</DropdownMenuItem>
               <DropdownMenuItem onClick={() => void exportarVisao("xlsx")}>
@@ -569,7 +571,6 @@ function PaginaRadar() {
             Perguntar ao Gestor IA
           </Button>
         </div>
-
       </header>
 
       {isPending ? (
@@ -604,9 +605,9 @@ function PaginaRadar() {
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-              <ResumoCard 
-                rotulo="Total Monitorado" 
-                valor={String(visao.contagem.total)} 
+              <ResumoCard
+                rotulo="Total Monitorado"
+                valor={String(visao.contagem.total)}
                 sub="Ativos na cobertura do Radar"
               />
               <ResumoCard

@@ -17,7 +17,13 @@ interface CountUpProps {
  * Animação de contagem (count-up) disparada quando o elemento entra na viewport.
  * Usa a biblioteca `motion` já disponível no projeto.
  */
-export function CountUp({ to, duration = 1.6, suffix = "", formatBR = false, className }: CountUpProps) {
+export function CountUp({
+  to,
+  duration = 1.6,
+  suffix = "",
+  formatBR = false,
+  className,
+}: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [valor, setValor] = useState(0);

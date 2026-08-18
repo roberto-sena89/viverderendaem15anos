@@ -29,19 +29,21 @@ export function ResumoCategorias() {
   // Escutar evento de abertura de categoria (do Sino de Alertas)
   useEffect(() => {
     const handleAbrir = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
+      const detail = (e as CustomEvent<{ categoria: string }>).detail;
       if (detail?.categoria) {
         setCategoriaSelecionada(detail.categoria);
-        
+
         // Buscar tickers que causaram alertas nesta categoria nas últimas 24h
-        const catAtivos = ativos.filter(a => a.categoria === detail.categoria);
+        const catAtivos = ativos.filter((a) => a.categoria === detail.categoria);
         const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
-        const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
-        
+        const tickersDaCat = new Set(catAtivos.map((a) => chaveTicker(a.ticker)));
+
         const tickersComAlerta = alertas
-          .filter(alerta => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)))
-          .map(alerta => chaveTicker(alerta.ticker));
-        
+          .filter(
+            (alerta) => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)),
+          )
+          .map((alerta) => chaveTicker(alerta.ticker));
+
         setDestacarTickers(Array.from(new Set(tickersComAlerta)));
       }
     };
@@ -64,34 +66,39 @@ export function ResumoCategorias() {
 
   const categoriasUnicas = useMemo(
     () => Array.from(new Set(ativos.map((a) => a.categoria))),
-    [ativos]
+    [ativos],
   );
 
   const resumoPorCategoria = useMemo(() => {
-    return categoriasUnicas.map((cat) => {
-      const ativosDaCat = ativos.filter((a) => a.categoria === cat);
-      const totalInvestido = ativosDaCat.reduce((sum, a) => sum + arredondar(Number(a.quantidade) * Number(a.precoMedio)), 0);
-      const totalAtual = ativosDaCat.reduce((sum, a) => sum + arredondar(valorAtual(a)), 0);
-      const lucro = arredondar(totalAtual - totalInvestido);
-      const lucroPct = totalInvestido > 0 ? arredondar((lucro / totalInvestido) * 100) : 0;
-      
-      const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
-      const tickersDaCat = new Set(ativosDaCat.map(a => a.ticker.toUpperCase().replace(/\.SA$/i, "")));
-      const alertasRecentes = alertas.filter(alerta => 
-        alerta.em > umDiaAtras && 
-        tickersDaCat.has(alerta.ticker.toUpperCase())
-      );
-      
-      return {
-        nome: cat,
-        lucro,
-        lucroPct,
-        cor: corCategoria(cat),
-        alertas: alertasRecentes.length
-      };
-    }).sort((a, b) => b.lucro - a.lucro);
-  }, [categoriasUnicas, ativos, alertas]);
+    return categoriasUnicas
+      .map((cat) => {
+        const ativosDaCat = ativos.filter((a) => a.categoria === cat);
+        const totalInvestido = ativosDaCat.reduce(
+          (sum, a) => sum + arredondar(Number(a.quantidade) * Number(a.precoMedio)),
+          0,
+        );
+        const totalAtual = ativosDaCat.reduce((sum, a) => sum + arredondar(valorAtual(a)), 0);
+        const lucro = arredondar(totalAtual - totalInvestido);
+        const lucroPct = totalInvestido > 0 ? arredondar((lucro / totalInvestido) * 100) : 0;
 
+        const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
+        const tickersDaCat = new Set(
+          ativosDaCat.map((a) => a.ticker.toUpperCase().replace(/\.SA$/i, "")),
+        );
+        const alertasRecentes = alertas.filter(
+          (alerta) => alerta.em > umDiaAtras && tickersDaCat.has(alerta.ticker.toUpperCase()),
+        );
+
+        return {
+          nome: cat,
+          lucro,
+          lucroPct,
+          cor: corCategoria(cat),
+          alertas: alertasRecentes.length,
+        };
+      })
+      .sort((a, b) => b.lucro - a.lucro);
+  }, [categoriasUnicas, ativos, alertas]);
 
   if (ativos.length === 0) {
     return (
@@ -100,11 +107,17 @@ export function ResumoCategorias() {
           <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 mb-4">
             <PieChart className="size-6 text-primary" />
           </div>
-          <h3 className="text-sm font-bold text-foreground mb-1 uppercase tracking-wider">Nenhum ativo cadastrado</h3>
+          <h3 className="text-sm font-bold text-foreground mb-1 uppercase tracking-wider">
+            Nenhum ativo cadastrado
+          </h3>
           <p className="text-xs text-muted-foreground max-w-[280px] mb-6">
             Adicione seus primeiros ativos para visualizar o resumo de performance por categoria.
           </p>
-          <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-[0.7rem] font-bold uppercase tracking-wider h-8">
+          <Button
+            asChild
+            size="sm"
+            className="bg-primary hover:bg-primary/90 text-[0.7rem] font-bold uppercase tracking-wider h-8"
+          >
             <Link to="/carteira" search={{ openAdd: true }}>
               <Plus className="mr-2 size-3" />
               Começar Agora
@@ -130,25 +143,26 @@ export function ResumoCategorias() {
                 />
               </TooltipTrigger>
               <TooltipContent className="max-w-[200px] text-[0.7rem] bg-background/95 backdrop-blur-xl border-border/50">
-                <p>Lucro acumulado e variação percentual por classe de ativo em relação ao custo médio.</p>
+                <p>
+                  Lucro acumulado e variação percentual por classe de ativo em relação ao custo
+                  médio.
+                </p>
               </TooltipContent>
             </Tooltip>
           </div>
         </TooltipProvider>
-
-
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-2 sm:px-0">
         {resumoPorCategoria.map((cat, idx) => {
           const cardId = `${baseId}-card-${idx}`;
           const descId = `${baseId}-desc-${idx}`;
-          
+
           return (
             <TooltipProvider key={cat.nome}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <DashboardCard 
+                  <DashboardCard
                     id={cardId}
                     role="button"
                     tabIndex={0}
@@ -157,40 +171,50 @@ export function ResumoCategorias() {
                     ariaExpanded={categoriaSelecionada === cat.nome}
                     className={cn(
                       "group relative border-border/40 hover:border-primary/20 transition-all duration-300 min-h-[152px] flex items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none",
-                      categoriaSelecionada === cat.nome && "ring-2 ring-primary ring-offset-2 ring-offset-background border-primary/40 bg-primary/5"
+                      categoriaSelecionada === cat.nome &&
+                        "ring-2 ring-primary ring-offset-2 ring-offset-background border-primary/40 bg-primary/5",
                     )}
                     onKeyDown={(e: React.KeyboardEvent) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        const catAtivos = ativos.filter(a => a.categoria === cat.nome);
+                        const catAtivos = ativos.filter((a) => a.categoria === cat.nome);
                         const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
-                        const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
+                        const tickersDaCat = new Set(catAtivos.map((a) => chaveTicker(a.ticker)));
                         const tickersComAlerta = alertas
-                          .filter(alerta => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)))
-                          .map(alerta => chaveTicker(alerta.ticker));
-                        
+                          .filter(
+                            (alerta) =>
+                              alerta.em > umDiaAtras &&
+                              tickersDaCat.has(chaveTicker(alerta.ticker)),
+                          )
+                          .map((alerta) => chaveTicker(alerta.ticker));
+
                         setDestacarTickers(Array.from(new Set(tickersComAlerta)));
                         setCategoriaSelecionada(cat.nome);
                       }
                     }}
                     onClick={() => {
-                      const catAtivos = ativos.filter(a => a.categoria === cat.nome);
+                      const catAtivos = ativos.filter((a) => a.categoria === cat.nome);
                       const umDiaAtras = Date.now() - 24 * 60 * 60 * 1000;
-                      const tickersDaCat = new Set(catAtivos.map(a => chaveTicker(a.ticker)));
+                      const tickersDaCat = new Set(catAtivos.map((a) => chaveTicker(a.ticker)));
                       const tickersComAlerta = alertas
-                        .filter(alerta => alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)))
-                        .map(alerta => chaveTicker(alerta.ticker));
-                      
+                        .filter(
+                          (alerta) =>
+                            alerta.em > umDiaAtras && tickersDaCat.has(chaveTicker(alerta.ticker)),
+                        )
+                        .map((alerta) => chaveTicker(alerta.ticker));
+
                       setDestacarTickers(Array.from(new Set(tickersComAlerta)));
                       setCategoriaSelecionada(cat.nome);
                     }}
                   >
                     {/* Efeito de brilho dinâmico sofisticado */}
-                    <div 
+                    <div
                       className="absolute -inset-1 opacity-[0.03] transition-opacity duration-700 group-hover:opacity-[0.08]"
-                      style={{ background: `radial-gradient(circle at center, ${cat.cor}, transparent)` }}
+                      style={{
+                        background: `radial-gradient(circle at center, ${cat.cor}, transparent)`,
+                      }}
                     />
-                    
+
                     <div className="flex flex-col gap-4 w-full relative z-10 px-4">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-3">
@@ -204,13 +228,15 @@ export function ResumoCategorias() {
                             <span className="text-muted-foreground font-black uppercase text-[0.62rem] tracking-[0.15em] group-hover:text-foreground transition-colors truncate max-w-[120px]">
                               {cat.nome}
                             </span>
-                            <span className="text-[0.55rem] font-bold text-muted-foreground/60 uppercase tracking-widest">Categoria</span>
+                            <span className="text-[0.55rem] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                              Categoria
+                            </span>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           {cat.alertas > 0 && (
-                            <div 
+                            <div
                               role="img"
                               aria-label={`${cat.alertas} alerta(s) recente(s) em ${cat.nome}`}
                               className="flex size-5 items-center justify-center rounded-full bg-negative/10 text-negative animate-pulse-slow shadow-sm"
@@ -219,25 +245,37 @@ export function ResumoCategorias() {
                               <AlertTriangle className="size-3" />
                             </div>
                           )}
-                          <div aria-hidden="true" className="size-6 flex items-center justify-center rounded-full border border-border/40 text-muted-foreground/40 group-hover:border-primary/30 group-hover:text-primary/60 transition-all">
+                          <div
+                            aria-hidden="true"
+                            className="size-6 flex items-center justify-center rounded-full border border-border/40 text-muted-foreground/40 group-hover:border-primary/30 group-hover:text-primary/60 transition-all"
+                          >
                             <ChevronRight className="size-3" />
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-wrap items-baseline gap-2">
-                          <p className={cn(
-                            "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none transition-colors duration-300",
-                            cat.lucro === 0 ? "text-foreground" : cat.lucro >= 0 ? "text-positive" : "text-negative"
-                          )}>
+                          <p
+                            className={cn(
+                              "text-[1.625rem] font-bold tabular-nums tracking-tighter leading-none transition-colors duration-300",
+                              cat.lucro === 0
+                                ? "text-foreground"
+                                : cat.lucro >= 0
+                                  ? "text-positive"
+                                  : "text-negative",
+                            )}
+                          >
                             {brl(cat.lucro, 2)}
                           </p>
                           <DeltaChip value={cat.lucroPct} />
                         </div>
-                        
+
                         <div className="flex items-center justify-between w-full border-t border-border/40 pt-2">
-                          <span id={descId} className="text-[0.6rem] font-bold text-muted-foreground/30 uppercase tracking-tighter">
+                          <span
+                            id={descId}
+                            className="text-[0.6rem] font-bold text-muted-foreground/30 uppercase tracking-tighter"
+                          >
                             Resultado: {cat.lucro >= 0 ? "Lucro" : "Prejuízo"}
                           </span>
                           <span className="text-[0.65rem] font-bold tabular-nums text-muted-foreground/40">
@@ -246,18 +284,20 @@ export function ResumoCategorias() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Overlay de profundidade no hover */}
-                    <div 
+                    <div
                       className="pointer-events-none absolute inset-0 opacity-0 transition-all duration-500 group-hover:opacity-100"
-                      style={{ 
-                        background: `radial-gradient(120px circle at center, ${cat.cor}15, transparent)` 
-                        }}
-                      />
+                      style={{
+                        background: `radial-gradient(120px circle at center, ${cat.cor}15, transparent)`,
+                      }}
+                    />
                   </DashboardCard>
                 </TooltipTrigger>
                 <TooltipContent className="text-[0.7rem] bg-background/95 backdrop-blur-xl border-border/50">
-                  <p>Clique para ver detalhes de <strong>{cat.nome}</strong></p>
+                  <p>
+                    Clique para ver detalhes de <strong>{cat.nome}</strong>
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -265,7 +305,7 @@ export function ResumoCategorias() {
         })}
       </div>
 
-      <OverlayDetalhesCategoria 
+      <OverlayDetalhesCategoria
         categoria={categoriaSelecionada}
         onClose={handleCloseOverlay}
         tickersDestacados={destacarTickers}

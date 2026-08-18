@@ -12,12 +12,12 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useServerFn } from "@tanstack/react-start";
-import { getRadarAlertas } from "@/lib/radar-alertas.functions";
+import { getRadarAlertas, type AlertaRadar } from "@/lib/radar-alertas.functions";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export function TopAlertBar() {
-  const [alertas, setAlertas] = useState<any[]>([]);
+  const [alertas, setAlertas] = useState<AlertaRadar[]>([]);
   const [indiceAtivo, setIndiceAtivo] = useState(0);
   const [visivel, setVisivel] = useState(true);
   const fetchAlertas = useServerFn(getRadarAlertas);
@@ -64,7 +64,7 @@ export function TopAlertBar() {
                   {alerta.ticker}
                 </span>
               </div>
-              
+
               <div className="flex-1 truncate py-0.5">
                 <span className="font-bold text-emerald-50 opacity-95 text-xs sm:text-sm block sm:inline truncate">
                   {alerta.titulo}:
@@ -92,7 +92,9 @@ export function TopAlertBar() {
                             LIVE
                           </span>
                         </h4>
-                        <p className="text-[11px] text-emerald-100/60 font-bold tracking-tight">RELATÓRIO DE IMPACTO IA</p>
+                        <p className="text-[11px] text-emerald-100/60 font-bold tracking-tight">
+                          RELATÓRIO DE IMPACTO IA
+                        </p>
                       </div>
                       <div className="text-right">
                         <div
@@ -116,7 +118,9 @@ export function TopAlertBar() {
                           RANKING RADAR
                         </span>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs text-emerald-100/30 line-through">#{alerta.detalhes.ranking.de}</span>
+                          <span className="text-xs text-emerald-100/30 line-through">
+                            #{alerta.detalhes.ranking.de}
+                          </span>
                           <ArrowRight className="size-3 text-emerald-400" />
                           <span className="text-base font-black text-emerald-400 tracking-tighter">
                             #{alerta.detalhes.ranking.para}
@@ -127,7 +131,9 @@ export function TopAlertBar() {
                         <span className="text-[10px] text-emerald-100/50 uppercase tracking-widest font-black">
                           ZONA DE PREÇO
                         </span>
-                        <div className="text-sm font-black text-emerald-100 tracking-tight">{alerta.detalhes.zona}</div>
+                        <div className="text-sm font-black text-emerald-100 tracking-tight">
+                          {alerta.detalhes.zona}
+                        </div>
                       </div>
                       <div className="space-y-1.5 bg-emerald-500/5 p-3 rounded-lg border border-emerald-500/10">
                         <span className="text-[10px] text-emerald-100/50 uppercase tracking-widest font-black">
@@ -160,7 +166,9 @@ export function TopAlertBar() {
                       <div className="h-20 sm:h-24 w-full bg-emerald-500/10 rounded-xl p-2 border border-emerald-500/20 relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none" />
                         <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={alerta.detalhes.serie.map((v: number, i: number) => ({ v, i }))}>
+                          <LineChart
+                            data={alerta.detalhes.serie.map((v: number, i: number) => ({ v, i }))}
+                          >
                             <YAxis hide domain={["dataMin - 1", "dataMax + 1"]} />
                             <Line
                               type="monotone"
@@ -177,11 +185,13 @@ export function TopAlertBar() {
                     </div>
                   </div>
                   <div className="bg-emerald-500/10 p-4 text-center border-t border-emerald-500/20">
-                    <button 
+                    <button
                       onClick={() => {
-                        window.dispatchEvent(new CustomEvent('app:abrir-radar-ativo', { 
-                          detail: { ticker: alerta.ticker } 
-                        }));
+                        window.dispatchEvent(
+                          new CustomEvent("app:abrir-radar-ativo", {
+                            detail: { ticker: alerta.ticker },
+                          }),
+                        );
                       }}
                       className="w-full py-2.5 rounded-lg bg-emerald-500 text-xs font-black text-emerald-950 hover:bg-emerald-400 active:scale-[0.98] transition-all uppercase tracking-[0.2em] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] flex items-center justify-center gap-3"
                     >

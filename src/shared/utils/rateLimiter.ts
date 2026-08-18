@@ -128,10 +128,7 @@ export function getRateLimitKey(prefix: string, userId: string): string {
 /**
  * Express-style middleware helper for server functions
  */
-export function createRateLimitMiddleware(
-  limiter: RateLimiter,
-  keyPrefix: string
-) {
+export function createRateLimitMiddleware(limiter: RateLimiter, keyPrefix: string) {
   return async (context: { userId?: string }) => {
     if (!context.userId) {
       return { allowed: true }; // Skip if no user (shouldn't happen in protected routes)

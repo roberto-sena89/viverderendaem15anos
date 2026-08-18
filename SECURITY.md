@@ -2,10 +2,10 @@
 
 ## Versões Suportadas
 
-| Versão | Suportada |
-|--------|-----------|
-| main (latest) | ✅ |
-| Versões anteriores | ❌ |
+| Versão             | Suportada |
+| ------------------ | --------- |
+| main (latest)      | ✅        |
+| Versões anteriores | ❌        |
 
 **Nota:** Apenas a branch `main` recebe atualizações de segurança. Recomendamos manter sua instalação atualizada com o último commit da main.
 
@@ -32,12 +32,12 @@ Inclua no relatório:
 
 ### Tempo de Resposta
 
-| Severidade | Confirmação | Correção |
-|------------|-------------|----------|
-| Critical | ≤ 24h | ≤ 72h |
-| High | ≤ 48h | ≤ 7 dias |
-| Medium | ≤ 7 dias | ≤ 30 dias |
-| Low | ≤ 14 dias | Próximo release |
+| Severidade | Confirmação | Correção        |
+| ---------- | ----------- | --------------- |
+| Critical   | ≤ 24h       | ≤ 72h           |
+| High       | ≤ 48h       | ≤ 7 dias        |
+| Medium     | ≤ 7 dias    | ≤ 30 dias       |
+| Low        | ≤ 14 dias   | Próximo release |
 
 ---
 
@@ -45,13 +45,13 @@ Inclua no relatório:
 
 ### CI/CD Pipeline (`.github/workflows/security-audit.yml`)
 
-| Job | Frequência | Ferramentas |
-|-----|------------|-------------|
-| **Dependency Audit** | Push, PR, Diário | `npm audit`, script customizado |
-| **SAST** | Push, PR | ESLint + `eslint-plugin-security`, SARIF upload |
-| **Secret Scanning** | Push, PR | TruffleHog |
-| **License Compliance** | Push, PR | license-checker |
-| **Dependency Review** | PR apenas | actions/dependency-review-action |
+| Job                    | Frequência       | Ferramentas                                     |
+| ---------------------- | ---------------- | ----------------------------------------------- |
+| **Dependency Audit**   | Push, PR, Diário | `npm audit`, script customizado                 |
+| **SAST**               | Push, PR         | ESLint + `eslint-plugin-security`, SARIF upload |
+| **Secret Scanning**    | Push, PR         | TruffleHog                                      |
+| **License Compliance** | Push, PR         | license-checker                                 |
+| **Dependency Review**  | PR apenas        | actions/dependency-review-action                |
 
 ### Proteções de Código
 
@@ -87,6 +87,7 @@ Inclua no relatório:
 ### Coordinated Disclosure
 
 Se você descobriu uma vulnerabilidade:
+
 - Damos crédito no advisory (se desejado)
 - Coordenamos timeline de divulgação
 - Não processamos legalmente pesquisadores de boa-fé
@@ -154,19 +155,19 @@ npx trufflehog filesystem . --fail
 
 ## Contato
 
-| Assunto | Canal |
-|---------|-------|
-| Vulnerabilidade | GitHub Security Advisories |
-| Dúvidas gerais | Issues (público) |
-| Melhorias de segurança | PR ou Issue |
+| Assunto                | Canal                      |
+| ---------------------- | -------------------------- |
+| Vulnerabilidade        | GitHub Security Advisories |
+| Dúvidas gerais         | Issues (público)           |
+| Melhorias de segurança | PR ou Issue                |
 
 ---
 
 ## Histórico de Atualizações
 
-| Data | Versão | Mudanças |
-|------|--------|----------|
-| 2026-08-17 | 1.0 | Política inicial + CI/CD security pipeline |
+| Data       | Versão | Mudanças                                   |
+| ---------- | ------ | ------------------------------------------ |
+| 2026-08-17 | 1.0    | Política inicial + CI/CD security pipeline |
 
 ---
 

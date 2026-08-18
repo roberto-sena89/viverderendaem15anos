@@ -14,7 +14,6 @@ export interface ConfigProvedorIA {
   chavesPorProvedor: Record<string, string>;
 }
 
-
 export interface PresetProvedor {
   id: string;
   nome: string;
@@ -124,11 +123,13 @@ export function lerConfigProvedor(): ConfigProvedorIA {
   }
 }
 
-
 /** Config válida = provedor externo com URL, modelo e chave preenchidos. */
 export function provedorAtivo(config: ConfigProvedorIA) {
   return Boolean(
-    config.preset !== "lovable" && config.baseUrl.trim() && config.modelo.trim() && config.chave.trim(),
+    config.preset !== "lovable" &&
+    config.baseUrl.trim() &&
+    config.modelo.trim() &&
+    config.chave.trim(),
   );
 }
 
@@ -168,7 +169,6 @@ export function useProvedorIA() {
   return { config, salvar, limpar, ativo: provedorAtivo(config) };
 }
 
-
 /** Cabeçalhos enviados ao /api/chat quando há provedor externo configurado. */
 export function cabecalhosProvedor(config: ConfigProvedorIA): Record<string, string> {
   if (!provedorAtivo(config)) return {};
@@ -178,7 +178,6 @@ export function cabecalhosProvedor(config: ConfigProvedorIA): Record<string, str
     "X-IA-Chave": config.chave.trim(),
   };
 }
-
 
 // ──────────────────────────────────────────────────────────────────────────
 // Histórico de testes de conexão (localStorage — diagnóstico client-side)
@@ -200,22 +199,25 @@ export interface RegistroTesteConexao {
 const CHAVE_HISTORICO = "gestor-ia-testes-conexao";
 const LIMITE_HISTORICO = 12;
 
+function isRegistroTesteConexao(valor: unknown): valor is RegistroTesteConexao {
+  if (!valor || typeof valor !== "object") return false;
+  const r = valor as Record<string, unknown>;
+  return (
+    typeof r.timestamp === "string" &&
+    typeof r.provedor === "string" &&
+    typeof r.ok === "boolean" &&
+    typeof r.status === "number" &&
+    typeof r.resumo === "string"
+  );
+}
+
 export function lerHistoricoTestes(): RegistroTesteConexao[] {
   if (typeof window === "undefined") return [];
   try {
     const bruto = window.localStorage.getItem(CHAVE_HISTORICO);
     if (!bruto) return [];
-    const dados = JSON.parse(bruto);
-    return Array.isArray(dados)
-      ? dados.filter(
-          (d) =>
-            d &&
-            typeof d.timestamp === "string" &&
-            typeof d.provedor === "string" &&
-            typeof d.ok === "boolean" &&
-            typeof d.status === "number",
-        )
-      : [];
+    const dados: unknown = JSON.parse(bruto);
+    return Array.isArray(dados) ? dados.filter(isRegistroTesteConexao) : [];
   } catch {
     return [];
   }
@@ -238,4 +240,3 @@ export function limparHistoricoTestes() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(CHAVE_HISTORICO);
 }
-

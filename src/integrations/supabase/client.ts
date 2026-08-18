@@ -21,12 +21,12 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
     if (init?.headers) {
       try {
         new Headers(init.headers).forEach((value, key) => headers.set(key, value));
-      } catch (error) {
+      } catch {
         console.warn("Failed to parse headers (redacted for security)");
         // Fallback: se headers for objeto simples
-        if (typeof init.headers === 'object' && !Array.isArray(init.headers)) {
+        if (typeof init.headers === "object" && !Array.isArray(init.headers)) {
           Object.entries(init.headers).forEach(([key, value]) => {
-            if (typeof value === 'string') {
+            if (typeof value === "string") {
               headers.set(key, value);
             }
           });
@@ -54,19 +54,12 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 function validateEnvironmentVariables(): void {
   // Only validate in development mode to avoid leaking config details
   if (process.env.NODE_ENV === "development") {
-    const REQUIRED_VARS = [
-      "VITE_SUPABASE_URL",
-      "VITE_SUPABASE_PUBLISHABLE_KEY"
-    ] as const;
+    const REQUIRED_VARS = ["VITE_SUPABASE_URL", "VITE_SUPABASE_PUBLISHABLE_KEY"] as const;
 
-    const missing = REQUIRED_VARS.filter(
-      key => !import.meta.env[key as keyof ImportMetaEnv]
-    );
+    const missing = REQUIRED_VARS.filter((key) => !import.meta.env[key as keyof ImportMetaEnv]);
 
     if (missing.length > 0) {
-      throw new Error(
-        "[Security] Supabase configuration incomplete. Contact your administrator."
-      );
+      throw new Error("[Security] Supabase configuration incomplete. Contact your administrator.");
     }
   }
 }
@@ -76,14 +69,12 @@ function createSupabaseClient() {
   validateEnvironmentVariables();
 
   // Use Vite environment variables only (build-time replacement, safe for production)
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-  const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+  const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 
   // Generic error message - doesn't reveal which specific variable is missing
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    throw new Error(
-      "[Security] Supabase configuration incomplete. Contact your administrator."
-    );
+    throw new Error("[Security] Supabase configuration incomplete. Contact your administrator.");
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {

@@ -60,7 +60,8 @@ export function PaginacaoAtivos({
         <span className="font-semibold tabular-nums text-foreground">
           {inicio.toLocaleString("pt-BR")}–{fim.toLocaleString("pt-BR")}
         </span>{" "}
-        de <span className="font-semibold tabular-nums text-foreground">
+        de{" "}
+        <span className="font-semibold tabular-nums text-foreground">
           {totalItens.toLocaleString("pt-BR")}
         </span>{" "}
         ativos
@@ -107,11 +108,7 @@ export function PaginacaoAtivos({
           <ul className="hidden items-center gap-1 sm:flex">
             {janelaPaginas(pagina, totalPaginas).map((p, i) =>
               p === "…" ? (
-                <li
-                  key={`gap-${i}`}
-                  className="px-1 text-xs text-muted-foreground"
-                  aria-hidden
-                >
+                <li key={`gap-${i}`} className="px-1 text-xs text-muted-foreground" aria-hidden>
                   …
                 </li>
               ) : (

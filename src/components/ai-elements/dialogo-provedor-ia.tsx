@@ -42,10 +42,7 @@ import {
   type ConfigProvedorIA,
   type RegistroTesteConexao,
 } from "@/lib/provedor-ia";
-import {
-  testarProvedorIA,
-  type ResultadoTesteProvedor,
-} from "@/lib/testar-provedor.functions";
+import { testarProvedorIA, type ResultadoTesteProvedor } from "@/lib/testar-provedor.functions";
 
 export function DialogoProvedorIA() {
   const { config, salvar, limpar, ativo } = useProvedorIA();
@@ -60,7 +57,6 @@ export function DialogoProvedorIA() {
   const totalFree = modelos.filter(ehFree).length;
   const modelosVisiveis = apenasFree ? modelos.filter(ehFree) : modelos;
   const executarTeste = useServerFn(testarProvedorIA);
-
 
   useEffect(() => {
     if (aberto) {
@@ -113,7 +109,6 @@ export function DialogoProvedorIA() {
     }
   }
 
-
   const preset = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
 
   function escolherPreset(id: string) {
@@ -127,8 +122,7 @@ export function DialogoProvedorIA() {
       baseUrl: alvo?.baseUrl ?? "",
       modelo: alvo?.modelos[0] ?? "",
       // lembra a chave já usada neste navegador para o provedor escolhido
-      chave:
-        rascunho.preset === id ? rascunho.chave : (rascunho.chavesPorProvedor[id] ?? ""),
+      chave: rascunho.preset === id ? rascunho.chave : (rascunho.chavesPorProvedor[id] ?? ""),
       chavesPorProvedor: rascunho.chavesPorProvedor,
     });
   }
@@ -150,7 +144,6 @@ export function DialogoProvedorIA() {
     });
     setAberto(false);
   }
-
 
   return (
     <Dialog open={aberto} onOpenChange={setAberto}>
@@ -335,7 +328,6 @@ export function DialogoProvedorIA() {
                     )}
                     <div className="border-border/60 max-h-48 space-y-1 overflow-y-auto rounded-lg border p-2">
                       {modelosVisiveis.map((m) => {
-
                         const selecionado = rascunho.modelo === m;
                         return (
                           <div
@@ -359,9 +351,7 @@ export function DialogoProvedorIA() {
                               />
                               <span
                                 className={`truncate font-mono text-[11px] ${
-                                  selecionado
-                                    ? "text-primary"
-                                    : "text-muted-foreground"
+                                  selecionado ? "text-primary" : "text-muted-foreground"
                                 }`}
                               >
                                 {m}
@@ -428,9 +418,7 @@ export function DialogoProvedorIA() {
                         >
                           <span
                             className={`mt-0.5 flex size-3.5 shrink-0 items-center justify-center rounded-full ${
-                              r.ok
-                                ? "bg-positive/15 text-positive"
-                                : "bg-negative/15 text-negative"
+                              r.ok ? "bg-positive/15 text-positive" : "bg-negative/15 text-negative"
                             }`}
                             aria-label={r.ok ? "Sucesso" : "Falha"}
                           >
@@ -442,9 +430,7 @@ export function DialogoProvedorIA() {
                           </span>
                           <div className="min-w-0 flex-1">
                             <p className="flex items-center gap-1.5">
-                              <span className="truncate font-medium">
-                                {r.provedor}
-                              </span>
+                              <span className="truncate font-medium">{r.provedor}</span>
                               <span className="text-muted-foreground shrink-0">
                                 {new Date(r.timestamp).toLocaleString("pt-BR", {
                                   day: "2-digit",
@@ -465,9 +451,7 @@ export function DialogoProvedorIA() {
                                 </span>
                               ) : null}
                             </p>
-                            <p className="text-muted-foreground truncate">
-                              {r.resumo}
-                            </p>
+                            <p className="text-muted-foreground truncate">{r.resumo}</p>
                           </div>
                         </li>
                       ))}
@@ -475,7 +459,6 @@ export function DialogoProvedorIA() {
                   )}
                 </div>
               </div>
-
             </>
           )}
         </div>

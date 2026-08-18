@@ -36,13 +36,13 @@ export default defineConfig({
       allowedHosts: [".monkeycode-ai.live"],
       headers: {
         // SECURITY HEADERS
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "1; mode=block",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
         // Content-Security-Policy (adjust based on your specific needs)
-        'Content-Security-Policy': [
+        "Content-Security-Policy": [
           "default-src 'self'",
           "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
           "style-src 'self' 'unsafe-inline'",

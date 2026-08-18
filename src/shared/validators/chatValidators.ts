@@ -34,7 +34,8 @@ export const MensagemSalvaSchema = z.object({
 export const SendMessageInputSchema = z.object({
   userId: z.string().uuid(),
   sessionId: z.string().uuid(),
-  content: z.string()
+  content: z
+    .string()
     .min(1, "Message cannot be empty")
     .max(10000, "Message too long (max 10,000 characters)"),
   parts: z.array(ChatPartSchema).optional().default([]),

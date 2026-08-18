@@ -1,8 +1,27 @@
 import { createServerFn } from "@tanstack/react-start";
 
+export interface AlertaRadarDetalhes {
+  ranking: { de: number; para: number };
+  dy12m: number;
+  preco: number;
+  zona: string;
+  variacao: number;
+  serie: number[];
+}
+
+export interface AlertaRadar {
+  id: string;
+  ticker: string;
+  tipo: string;
+  titulo: string;
+  corpo: string;
+  detalhes: AlertaRadarDetalhes;
+  criadoEm: string;
+}
+
 export const getRadarAlertas = createServerFn({ method: "GET" })
   .middleware([])
-  .handler(async () => {
+  .handler(async (): Promise<AlertaRadar[]> => {
     // Em um cenário real, isso leria do banco/IA.
     // Para o MVP, geramos alertas baseados em movimentos significativos.
     return [
@@ -40,4 +59,3 @@ export const getRadarAlertas = createServerFn({ method: "GET" })
       },
     ];
   });
-

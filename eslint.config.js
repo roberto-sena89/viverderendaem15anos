@@ -8,7 +8,18 @@ import security from "eslint-plugin-security";
 
 export default tseslint.config(
   {
-    ignores: ["dist", ".output", ".vinxi", ".wrangler", "node_modules", "src/routeTree.gen.ts"],
+    ignores: [
+      "dist",
+      ".output",
+      ".vinxi",
+      ".wrangler",
+      "node_modules",
+      "src/routeTree.gen.ts",
+      // Scaffold Vite padrão commitado por engano — não faz parte do app.
+      "viverderendaem15anos/**",
+      // Specs Playwright fora do escopo do tsconfig (executados via Playwright).
+      "tests/**",
+    ],
   },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],

@@ -426,7 +426,6 @@ export function ModalRadar({
           ) : null}
         </DialogHeader>
 
-
         {linha ? (
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -507,7 +506,8 @@ export function ModalRadar({
               {!pedidoBacktest ? (
                 <div className="rounded-md bg-muted/30 p-4 text-center">
                   <p className="text-xs text-muted-foreground">
-                    Compare a performance de comprar nas mínimas de 52 semanas deste ativo contra o índice Bovespa.
+                    Compare a performance de comprar nas mínimas de 52 semanas deste ativo contra o
+                    índice Bovespa.
                   </p>
                 </div>
               ) : backtestQuery.isFetching ? (
@@ -520,13 +520,17 @@ export function ModalRadar({
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                     <div className="rounded-md border p-2 text-center">
                       <p className="text-[10px] uppercase text-muted-foreground">Retorno Radar</p>
-                      <p className={`text-sm font-bold ${(backtestQuery.data.resultado?.retornoTotalPct ?? 0) >= 0 ? "text-positive" : "text-negative"}`}>
+                      <p
+                        className={`text-sm font-bold ${(backtestQuery.data.resultado?.retornoTotalPct ?? 0) >= 0 ? "text-positive" : "text-negative"}`}
+                      >
                         {fmtPct(backtestQuery.data.resultado?.retornoTotalPct, 1)}
                       </p>
                     </div>
                     <div className="rounded-md border p-2 text-center">
                       <p className="text-[10px] uppercase text-muted-foreground">Retorno BOVA11</p>
-                      <p className={`text-sm font-bold ${(backtestQuery.data.ibov?.buyHoldPct ?? 0) >= 0 ? "text-positive" : "text-negative"}`}>
+                      <p
+                        className={`text-sm font-bold ${(backtestQuery.data.ibov?.buyHoldPct ?? 0) >= 0 ? "text-positive" : "text-negative"}`}
+                      >
                         {fmtPct(backtestQuery.data.ibov?.buyHoldPct, 1)}
                       </p>
                     </div>
@@ -538,12 +542,15 @@ export function ModalRadar({
                     </div>
                     <div className="rounded-md border p-2 text-center">
                       <p className="text-[10px] uppercase text-muted-foreground">Negócios</p>
-                      <p className="text-sm font-bold">{backtestQuery.data.resultado?.negocios ?? 0}</p>
+                      <p className="text-sm font-bold">
+                        {backtestQuery.data.resultado?.negocios ?? 0}
+                      </p>
                     </div>
                   </div>
                   <p className="text-[11px] leading-relaxed text-muted-foreground italic">
-                    Simulação: Compra em {ticker} quando ≤2% acima da mínima de 52s. Alvo: +20% ou Stop: -12%. 
-                    Período: ~{backtestQuery.data.resultado?.anos.toFixed(1) ?? "—"} anos. Benchmark: Buy & Hold BOVA11.
+                    Simulação: Compra em {ticker} quando ≤2% acima da mínima de 52s. Alvo: +20% ou
+                    Stop: -12%. Período: ~{backtestQuery.data.resultado?.anos.toFixed(1) ?? "—"}{" "}
+                    anos. Benchmark: Buy & Hold BOVA11.
                   </p>
                 </div>
               ) : backtestQuery.isError ? (
