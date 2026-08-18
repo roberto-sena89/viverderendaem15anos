@@ -271,13 +271,20 @@ function ChatPage() {
                 title="Fale com o Gestor IA PRO"
                 description="Ele conhece seus ativos, aportes, dividendos e metas — e usa dados reais de mercado, notícias e agenda econômica."
               >
-                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <div className="mt-4 grid w-full max-w-xl grid-cols-1 gap-2 sm:grid-cols-2">
                   {SUGESTOES.map((s) => (
-                    <Button key={s} variant="outline" size="sm" onClick={() => enviar(s)}>
+                    <Button
+                      key={s}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => enviar(s)}
+                      className="h-auto w-full min-w-0 whitespace-normal break-words px-3 py-2 text-left text-xs leading-snug sm:text-sm"
+                    >
                       {s}
                     </Button>
                   ))}
                 </div>
+
               </ConversationEmptyState>
             ) : (
               messages.map((message) => {
