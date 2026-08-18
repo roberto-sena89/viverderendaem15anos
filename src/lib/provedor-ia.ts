@@ -21,6 +21,8 @@ export interface PresetProvedor {
   baseUrl: string;
   modelos: string[];
   urlChave: string;
+  /** Modelos gratuitos verificados para este provedor (o sufixo -free/:free nem sempre é confiável). */
+  modelosGratuitos?: string[];
 }
 
 /** Provedores com camada gratuita (free tier) compatíveis com a API OpenAI. */
@@ -73,10 +75,22 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
   {
     id: "tokenrouter",
     nome: "Token Router",
-    descricao: "Roteador de modelos compatível com a API OpenAI, com opções gratuitas.",
-    baseUrl: "https://api.tokenrouter.io/v1",
-    modelos: ["auto", "openai/gpt-4o-mini", "deepseek/deepseek-chat"],
-    urlChave: "https://tokenrouter.io/keys",
+    descricao:
+      "Roteador de modelos compatível com a API OpenAI (tokenrouter.com), com catálogo de 300+ modelos.",
+    baseUrl: "https://api.tokenrouter.com/v1",
+    modelos: [
+      "deepseek/deepseek-v4-pro-0813-free",
+      "deepseek/deepseek-v4-pro",
+      "qwen/qwen3.8-max-free",
+      "qwen/qwen3.8-max",
+      "openai/gpt-5.4-mini",
+      "google/gemini-3.5-flash",
+      "minimax/minimax-m2.5",
+      "z-ai/glm-5",
+    ],
+    // Verificado com a API real: apenas este modelo responde sem crédito na conta.
+    modelosGratuitos: ["deepseek/deepseek-v4-pro-0813-free"],
+    urlChave: "https://www.tokenrouter.com/dashboard",
   },
   {
     id: "personalizado",

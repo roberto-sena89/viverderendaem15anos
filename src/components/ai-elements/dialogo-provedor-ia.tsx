@@ -51,9 +51,11 @@ export function DialogoProvedorIA() {
   const [testando, setTestando] = useState(false);
   const [teste, setTeste] = useState<ResultadoTesteProvedor | null>(null);
   const [historico, setHistorico] = useState<RegistroTesteConexao[]>([]);
-  const [apenasFree, setApenasFree] = useState(false);
+  const [apenasFree, setApenasFree] = useState(true);
+  const presetAtual = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
   const modelos = teste?.modelos ?? [];
-  const ehFree = (m: string) => /(:free\b|\bfree\b|-free)/i.test(m);
+  const ehFree = (m: string) =>
+    Boolean(presetAtual?.modelosGratuitos?.includes(m)) || /(:free\b|\bfree\b|-free)/i.test(m);
   const totalFree = modelos.filter(ehFree).length;
   const modelosVisiveis = apenasFree ? modelos.filter(ehFree) : modelos;
   const executarTeste = useServerFn(testarProvedorIA);
@@ -303,13 +305,19 @@ export function DialogoProvedorIA() {
                   <div className="space-y-1.5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-muted-foreground text-xs">
-                        Modelos disponíveis — clique para usar:
+                        {apenasFree
+                          ? "Modelos gratuitos — clique para usar:"
+                          : "Modelos disponíveis — clique para usar:"}
                       </p>
                       <button
                         type="button"
                         onClick={() => setApenasFree((v) => !v)}
                         aria-pressed={apenasFree}
-                        title="Mostrar apenas modelos gratuitos"
+                        title={
+                          apenasFree
+                            ? "Mostrar todos os modelos"
+                            : "Mostrar apenas modelos gratuitos"
+                        }
                         className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
                           apenasFree
                             ? "border-primary/60 bg-primary/15 text-primary"
@@ -317,7 +325,7 @@ export function DialogoProvedorIA() {
                         }`}
                       >
                         <Sparkles className="size-3" />
-                        Somente FREE
+                        {apenasFree ? "Somente FREE" : "Mostrar todos"}
                         <span className="opacity-70">({totalFree})</span>
                       </button>
                     </div>
