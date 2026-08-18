@@ -12,9 +12,31 @@ import DOMPurify from "dompurify";
 // ✅ Configure DOMPurify with strict whitelist
 DOMPurify.setConfig({
   ALLOWED_TAGS: [
-    "p", "br", "strong", "em", "u", "h1", "h2", "h3", "h4", "h5", "h6",
-    "ul", "ol", "li", "code", "pre", "blockquote", "a", "img", "table",
-    "thead", "tbody", "tr", "th", "td"
+    "p",
+    "br",
+    "strong",
+    "em",
+    "u",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "ul",
+    "ol",
+    "li",
+    "code",
+    "pre",
+    "blockquote",
+    "a",
+    "img",
+    "table",
+    "thead",
+    "tbody",
+    "tr",
+    "th",
+    "td",
   ],
   ALLOWED_ATTR: ["href", "src", "alt", "title", "class"],
   KEEP_CONTENT: true,
@@ -50,14 +72,36 @@ export const MessageDisplay: React.FC<MessageDisplayProps> = ({ content }) => {
   const safeHtml = useMemo(() => {
     try {
       // 1. Parse markdown
-      const html = marked.parse(content, { breaks: true, async: false }) as string;
+      const html = marked.parse(content, { breaks: true, async: false });
 
       // 2. Sanitize HTML with DOMPurify
       const sanitized = DOMPurify.sanitize(html, {
         ALLOWED_TAGS: [
-          "p", "br", "strong", "em", "u", "h1", "h2", "h3", "h4", "h5", "h6",
-          "ul", "ol", "li", "code", "pre", "blockquote", "a", "img", "table",
-          "thead", "tbody", "tr", "th", "td"
+          "p",
+          "br",
+          "strong",
+          "em",
+          "u",
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "ul",
+          "ol",
+          "li",
+          "code",
+          "pre",
+          "blockquote",
+          "a",
+          "img",
+          "table",
+          "thead",
+          "tbody",
+          "tr",
+          "th",
+          "td",
         ],
         ALLOWED_ATTR: ["href", "src", "alt", "title", "class"],
       });

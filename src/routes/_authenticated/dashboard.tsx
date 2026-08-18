@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DashboardGrid, ResponsiveDashboardCard } from "@/components/responsive-dashboard-card";
 import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { useAportes, useDividendos } from "@/lib/data";
 import { classeDoAtivo } from "@/lib/portfolio";
@@ -275,276 +276,278 @@ function Dashboard() {
         <PainelAnaliseRisco carteira={ativos} aportes={aportes} />
       </section>
 
-      <div
-        id="evolucao"
-        className="scroll-mt-32 grid gap-4 text-[12px] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] sm:scroll-mt-40"
-      >
-        <Panel
-          title="Evolução do Patrimônio"
-          action={
-            <div className="flex flex-wrap items-center gap-2">
-              <FiltroSelect
-                valor={periodo}
-                onChange={setPeriodo}
-                icone={Calendar}
-                opcoes={PERIODOS}
-                rotuloAcessivel="Período do gráfico de evolução"
-              />
-              {periodo === "custom" ? (
-                <div className="flex w-full items-center gap-1 sm:w-auto">
-                  <input
-                    type="month"
-                    aria-label="Mês inicial"
-                    value={inicioCustom}
-                    onChange={(e) => setInicioCustom(e.target.value)}
-                    className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-2 text-xs"
+      <div id="evolucao" className="scroll-mt-32 text-[12px] sm:scroll-mt-40">
+        <DashboardGrid gap="md" className="mb-6">
+          <ResponsiveDashboardCard variant="interactive" hoverEffect={false} className="h-full">
+            <Panel
+              title="Evolução do Patrimônio"
+              action={
+                <div className="flex flex-wrap items-center gap-2">
+                  <FiltroSelect
+                    valor={periodo}
+                    onChange={setPeriodo}
+                    icone={Calendar}
+                    opcoes={PERIODOS}
+                    rotuloAcessivel="Período do gráfico de evolução"
                   />
-                  <span className="shrink-0 text-xs text-muted-foreground">até</span>
-                  <input
-                    type="month"
-                    aria-label="Mês final"
-                    value={fimCustom}
-                    onChange={(e) => setFimCustom(e.target.value)}
-                    className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-2 text-xs"
+                  {periodo === "custom" ? (
+                    <div className="flex w-full items-center gap-1 sm:w-auto">
+                      <input
+                        type="month"
+                        aria-label="Mês inicial"
+                        value={inicioCustom}
+                        onChange={(e) => setInicioCustom(e.target.value)}
+                        className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-2 text-xs"
+                      />
+                      <span className="shrink-0 text-xs text-muted-foreground">até</span>
+                      <input
+                        type="month"
+                        aria-label="Mês final"
+                        value={fimCustom}
+                        onChange={(e) => setFimCustom(e.target.value)}
+                        className="h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-2 text-xs"
+                      />
+                    </div>
+                  ) : null}
+                  <FiltroSelect
+                    valor={tipoEvolucao}
+                    onChange={setTipoEvolucao}
+                    icone={CircleDollarSign}
+                    opcoes={opcoesTipo}
+                    rotuloAcessivel="Tipo de ativo na evolução"
                   />
                 </div>
-              ) : null}
-              <FiltroSelect
-                valor={tipoEvolucao}
-                onChange={setTipoEvolucao}
-                icone={CircleDollarSign}
-                opcoes={opcoesTipo}
-                rotuloAcessivel="Tipo de ativo na evolução"
-              />
-            </div>
-          }
-        >
-          {(() => {
-            const ultimo = dadosEvolucao[dadosEvolucao.length - 1];
-            const totalAplicado = ultimo?.aplicado ?? 0;
-            const totalGanho = ultimo?.ganho ?? 0;
-            const variacao = totalAplicado > 0 ? (totalGanho / totalAplicado) * 100 : 0;
-            return (
-              <div className="mb-4 grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setDetalheAberto(true)}
-                  title="Ver detalhamento mês a mês"
-                  className="chip-legenda serie-aplicado flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <span className="flex items-center gap-2 text-xs font-medium text-foreground">
-                    <span className="ponto-legenda serie-aplicado" aria-hidden />
-                    Valor aplicado
-                  </span>
-                  <strong className="text-lg font-semibold tabular-nums">
-                    {brl(totalAplicado, 2)}
-                  </strong>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDetalheAberto(true)}
-                  title="Ver detalhamento mês a mês"
-                  className="chip-legenda serie-ganho flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <span className="flex items-center gap-2 text-xs font-medium text-foreground">
-                    <span className="ponto-legenda serie-ganho" aria-hidden />
-                    Ganho de Capital
-                  </span>
-                  <span className="flex flex-wrap items-baseline gap-2">
-                    <strong className="text-lg font-semibold tabular-nums">
-                      {brl(totalGanho, 2)}
-                    </strong>
-                    <span className="text-xs font-medium tabular-nums">
-                      {variacao >= 0 ? "+" : ""}
-                      {variacao.toFixed(2).replace(".", ",")}%
-                    </span>
-                  </span>
-                </button>
-              </div>
-            );
-          })()}
-
-          <DetalheEvolucaoMensal
-            aberto={detalheAberto}
-            onOpenChange={setDetalheAberto}
-            dados={dadosEvolucao}
-          />
-
-          <div className="h-64 sm:h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={dadosEvolucao}
-                margin={{ top: 12, right: 12, left: 4, bottom: 8 }}
-                barGap={0}
-                barCategoryGap="35%"
-                maxBarSize={14}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="var(--color-border)"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="mes"
-                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
-                  tickLine={false}
-                  axisLine={{ stroke: "var(--color-border)" }}
-                  tickMargin={8}
-                />
-                <YAxis
-                  tickFormatter={(v: number) => brl(v, 2)}
-                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
-                  tickLine={false}
-                  axisLine={false}
-                  width={78}
-                  tickMargin={4}
-                />
-                <Tooltip
-                  cursor={{ fill: "var(--color-muted)", opacity: 0.22 }}
-                  wrapperStyle={{ outline: "none", zIndex: 30 }}
-                  offset={16}
-                  content={<TooltipEvolucao rotuloPeriodo="Mês" serie={dadosEvolucao} />}
-                />
-                <Bar
-                  dataKey="aplicado"
-                  stackId="p"
-                  fill="var(--color-serie-investido)"
-                  name="Valor aplicado"
-                  isAnimationActive={false}
-                />
-                <Bar
-                  dataKey="ganho"
-                  stackId="p"
-                  fill="var(--color-serie-ganho)"
-                  name="Ganho de Capital"
-                  radius={[3, 3, 0, 0]}
-                  isAnimationActive={false}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Panel>
-
-        <Panel
-          title="Ativos na Carteira"
-          action={
-            <FiltroSelect
-              valor={tipoComposicao}
-              onChange={setTipoComposicao}
-              icone={CircleDollarSign}
-              opcoes={opcoesTipo}
-              rotuloAcessivel="Tipo de ativo na composição"
-            />
-          }
-        >
-          {porCategoria.length === 0 ? (
-            <p className="grid h-52 place-items-center text-center text-sm text-muted-foreground">
-              Sem ativos para exibir neste filtro.
-            </p>
-          ) : (
-            <div className="flex flex-wrap items-center gap-5">
-              <div className="relative h-56 min-w-[13rem] flex-1" aria-hidden="true" inert>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={porCategoria}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={58}
-                      outerRadius={88}
-                      paddingAngle={3}
-                      cornerRadius={4}
-                      stroke="var(--color-card)"
-                      strokeWidth={2}
+              }
+            >
+              {(() => {
+                const ultimo = dadosEvolucao[dadosEvolucao.length - 1];
+                const totalAplicado = ultimo?.aplicado ?? 0;
+                const totalGanho = ultimo?.ganho ?? 0;
+                const variacao = totalAplicado > 0 ? (totalGanho / totalAplicado) * 100 : 0;
+                return (
+                  <div className="mb-4 grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setDetalheAberto(true)}
+                      title="Ver detalhamento mês a mês"
+                      className="chip-legenda serie-aplicado flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      {porCategoria.map((_, i) => (
-                        <Cell key={i} fill={porCategoria[i].cor} />
-                      ))}
-                    </Pie>
-                    <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="pointer-events-none absolute inset-0 grid place-items-center">
-                  <div className="text-center">
-                    <p className="text-[0.85rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-                      Total
-                    </p>
-                    <p className="num font-display text-base font-bold">
-                      {brl(totalComposicao, 2)}
-                    </p>
+                      <span className="flex items-center gap-2 text-xs font-medium text-foreground">
+                        <span className="ponto-legenda serie-aplicado" aria-hidden />
+                        Valor aplicado
+                      </span>
+                      <strong className="text-lg font-semibold tabular-nums">
+                        {brl(totalAplicado, 2)}
+                      </strong>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDetalheAberto(true)}
+                      title="Ver detalhamento mês a mês"
+                      className="chip-legenda serie-ganho flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <span className="flex items-center gap-2 text-xs font-medium text-foreground">
+                        <span className="ponto-legenda serie-ganho" aria-hidden />
+                        Ganho de Capital
+                      </span>
+                      <span className="flex flex-wrap items-baseline gap-2">
+                        <strong className="text-lg font-semibold tabular-nums">
+                          {brl(totalGanho, 2)}
+                        </strong>
+                        <span className="text-xs font-medium tabular-nums">
+                          {variacao >= 0 ? "+" : ""}
+                          {variacao.toFixed(2).replace(".", ",")}%
+                        </span>
+                      </span>
+                    </button>
                   </div>
-                </div>
+                );
+              })()}
+
+              <DetalheEvolucaoMensal
+                aberto={detalheAberto}
+                onOpenChange={setDetalheAberto}
+                dados={dadosEvolucao}
+              />
+
+              <div className="h-64 sm:h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={dadosEvolucao}
+                    margin={{ top: 12, right: 12, left: 4, bottom: 8 }}
+                    barGap={0}
+                    barCategoryGap="35%"
+                    maxBarSize={14}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--color-border)"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="mes"
+                      tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                      tickLine={false}
+                      axisLine={{ stroke: "var(--color-border)" }}
+                      tickMargin={8}
+                    />
+                    <YAxis
+                      tickFormatter={(v: number) => brl(v, 2)}
+                      tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                      tickLine={false}
+                      axisLine={false}
+                      width={78}
+                      tickMargin={4}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "var(--color-muted)", opacity: 0.22 }}
+                      wrapperStyle={{ outline: "none", zIndex: 30 }}
+                      offset={16}
+                      content={<TooltipEvolucao rotuloPeriodo="Mês" serie={dadosEvolucao} />}
+                    />
+                    <Bar
+                      dataKey="aplicado"
+                      stackId="p"
+                      fill="var(--color-serie-investido)"
+                      name="Valor aplicado"
+                      isAnimationActive={false}
+                    />
+                    <Bar
+                      dataKey="ganho"
+                      stackId="p"
+                      fill="var(--color-serie-ganho)"
+                      name="Ganho de Capital"
+                      radius={[3, 3, 0, 0]}
+                      isAnimationActive={false}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-              <ul className="min-w-[15rem] flex-1 space-y-1.5 text-xs">
-                {porCategoria.map((c) => {
-                  const cor = c.cor;
-                  const percentual = totalComposicao > 0 ? (c.value / totalComposicao) * 100 : 0;
-                  return (
-                    <li key={c.name} className="space-y-1.5">
-                      <div
-                        className="flex items-center gap-3 rounded-md border border-transparent bg-muted/40 px-2.5 py-2 transition-colors hover:border-border hover:bg-muted"
-                        style={{ borderLeft: `3px solid ${cor}` }}
-                      >
-                        <span className="flex min-w-0 items-center gap-2 font-medium text-foreground">
-                          <span
-                            className="size-2.5 shrink-0 rounded-full"
-                            style={{ backgroundColor: cor }}
-                          />
-                          <span className="truncate whitespace-pre-line">{c.name}</span>
-                        </span>
-                        <span className="ml-auto flex shrink-0 items-baseline gap-2">
-                          <span className="num text-[0.875rem] text-muted-foreground">
-                            {brl(c.value, 2)}
-                          </span>
-                          <span
-                            className="num w-12 text-right font-semibold"
-                            style={{ color: cor }}
-                          >
-                            {pct(percentual)}
-                          </span>
-                        </span>
+            </Panel>
+
+            <Panel
+              title="Ativos na Carteira"
+              action={
+                <FiltroSelect
+                  valor={tipoComposicao}
+                  onChange={setTipoComposicao}
+                  icone={CircleDollarSign}
+                  opcoes={opcoesTipo}
+                  rotuloAcessivel="Tipo de ativo na composição"
+                />
+              }
+            >
+              {porCategoria.length === 0 ? (
+                <p className="grid h-52 place-items-center text-center text-sm text-muted-foreground">
+                  Sem ativos para exibir neste filtro.
+                </p>
+              ) : (
+                <div className="flex flex-wrap items-center gap-5">
+                  <div className="relative h-56 min-w-[13rem] flex-1" aria-hidden="true" inert>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={porCategoria}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={58}
+                          outerRadius={88}
+                          paddingAngle={3}
+                          cornerRadius={4}
+                          stroke="var(--color-card)"
+                          strokeWidth={2}
+                        >
+                          {porCategoria.map((_, i) => (
+                            <Cell key={i} fill={porCategoria[i].cor} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => brl(v, 2)} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                      <div className="text-center">
+                        <p className="text-[0.85rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                          Total
+                        </p>
+                        <p className="num font-display text-base font-bold">
+                          {brl(totalComposicao, 2)}
+                        </p>
                       </div>
-                      {c.subs.length > 0 && (
-                        <ul className="ml-4 space-y-1.5 border-l border-border pl-3">
-                          {c.subs.map((s) => {
-                            const corSub = s.cor;
-                            const pctSub =
-                              totalComposicao > 0 ? (s.value / totalComposicao) * 100 : 0;
-                            return (
-                              <li
-                                key={s.name}
-                                className="flex items-center gap-3 rounded-md bg-muted/20 px-2.5 py-1.5"
+                    </div>
+                  </div>
+                  <ul className="min-w-[15rem] flex-1 space-y-1.5 text-xs">
+                    {porCategoria.map((c) => {
+                      const cor = c.cor;
+                      const percentual =
+                        totalComposicao > 0 ? (c.value / totalComposicao) * 100 : 0;
+                      return (
+                        <li key={c.name} className="space-y-1.5">
+                          <div
+                            className="flex items-center gap-3 rounded-md border border-transparent bg-muted/40 px-2.5 py-2 transition-colors hover:border-border hover:bg-muted"
+                            style={{ borderLeft: `3px solid ${cor}` }}
+                          >
+                            <span className="flex min-w-0 items-center gap-2 font-medium text-foreground">
+                              <span
+                                className="size-2.5 shrink-0 rounded-full"
+                                style={{ backgroundColor: cor }}
+                              />
+                              <span className="truncate whitespace-pre-line">{c.name}</span>
+                            </span>
+                            <span className="ml-auto flex shrink-0 items-baseline gap-2">
+                              <span className="num text-[0.875rem] text-muted-foreground">
+                                {brl(c.value, 2)}
+                              </span>
+                              <span
+                                className="num w-12 text-right font-semibold"
+                                style={{ color: cor }}
                               >
-                                <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
-                                  <span
-                                    className="size-2 shrink-0 rounded-full"
-                                    style={{ backgroundColor: corSub }}
-                                  />
-                                  <span className="truncate">{s.name}</span>
-                                </span>
-                                <span className="ml-auto flex shrink-0 items-baseline gap-2">
-                                  <span className="num text-[0.8rem] text-muted-foreground">
-                                    {brl(s.value, 2)}
-                                  </span>
-                                  <span
-                                    className="num w-12 text-right font-semibold"
-                                    style={{ color: corSub }}
+                                {pct(percentual)}
+                              </span>
+                            </span>
+                          </div>
+                          {c.subs.length > 0 && (
+                            <ul className="ml-4 space-y-1.5 border-l border-border pl-3">
+                              {c.subs.map((s) => {
+                                const corSub = s.cor;
+                                const pctSub =
+                                  totalComposicao > 0 ? (s.value / totalComposicao) * 100 : 0;
+                                return (
+                                  <li
+                                    key={s.name}
+                                    className="flex items-center gap-3 rounded-md bg-muted/20 px-2.5 py-1.5"
                                   >
-                                    {pct(pctSub)}
-                                  </span>
-                                </span>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
-        </Panel>
+                                    <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                                      <span
+                                        className="size-2 shrink-0 rounded-full"
+                                        style={{ backgroundColor: corSub }}
+                                      />
+                                      <span className="truncate">{s.name}</span>
+                                    </span>
+                                    <span className="ml-auto flex shrink-0 items-baseline gap-2">
+                                      <span className="num text-[0.8rem] text-muted-foreground">
+                                        {brl(s.value, 2)}
+                                      </span>
+                                      <span
+                                        className="num w-12 text-right font-semibold"
+                                        style={{ color: corSub }}
+                                      >
+                                        {pct(pctSub)}
+                                      </span>
+                                    </span>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+            </Panel>
+          </ResponsiveDashboardCard>
+        </DashboardGrid>
       </div>
 
       <section

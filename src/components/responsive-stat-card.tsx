@@ -1,6 +1,6 @@
 import { useBreakpoint, isBreakpointDown } from "@/hooks/use-breakpoint";
-import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { DeltaChip } from "@/components/panel";
 import { cn } from "@/lib/utils";
 
@@ -146,8 +146,9 @@ export function ResponsiveStatCard({
         "panel group relative",
         currentConfig.padding,
         "transition-colors duration-200 hover:border-primary/40",
-        onClick && "cursor-pointer hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none",
-        className
+        onClick &&
+          "cursor-pointer hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none",
+        className,
       )}
     >
       <span
@@ -155,16 +156,12 @@ export function ResponsiveStatCard({
         className="absolute inset-x-0 top-0 h-px bg-gradient-brand opacity-0 transition-opacity group-hover:opacity-100"
       />
       <div className={cn("grid grid-cols-[minmax(0,1fr)_auto] items-start", currentConfig.gap)}>
-        <p className={cn("t-label truncate", currentConfig.labelFontSize)}>
-          {label}
-        </p>
+        <p className={cn("t-label truncate", currentConfig.labelFontSize)}>{label}</p>
         {Icon ? (
           <Icon className={cn("shrink-0 text-muted-foreground/70", currentConfig.iconSize)} />
         ) : null}
       </div>
-      <p className={cn("t-metric mt-2", toneClass, currentConfig.valueFontSize)}>
-        {value}
-      </p>
+      <p className={cn("t-metric mt-2", toneClass, currentConfig.valueFontSize)}>{value}</p>
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {typeof delta === "number" ? <DeltaChip value={delta} /> : null}
         {hint ? <p className="t-caption">{hint}</p> : null}
@@ -205,13 +202,7 @@ export function CompactStatCard({
         : "text-foreground";
 
   return (
-    <div
-      className={cn(
-        "panel p-3",
-        isSmallScreen && "p-2",
-        className
-      )}
-    >
+    <div className={cn("panel p-3", isSmallScreen && "p-2", className)}>
       <div className="flex items-center justify-between gap-2">
         <p className={cn("t-label truncate flex-1 min-w-0", isSmallScreen && "text-[0.55rem]")}>
           {label}
@@ -220,14 +211,12 @@ export function CompactStatCard({
           <Icon
             className={cn(
               "shrink-0 text-muted-foreground/70",
-              isSmallScreen ? "size-3.5" : "size-4"
+              isSmallScreen ? "size-3.5" : "size-4",
             )}
           />
         )}
       </div>
-      <p className={cn("mt-1 t-metric", toneClass, isSmallScreen && "text-[1.125rem]")}>
-        {value}
-      </p>
+      <p className={cn("mt-1 t-metric", toneClass, isSmallScreen && "text-[1.125rem]")}>{value}</p>
       {typeof delta === "number" && (
         <div className="mt-1.5">
           <DeltaChip value={delta} />

@@ -117,12 +117,10 @@ export function ResponsiveDashboardCard({
         hasHover && "hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]",
         hasHover && "focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none",
         isInteractive && "group",
-        className
+        className,
       )}
     >
-      <div className={cn("flex flex-col w-full", currentConfig.contentGap)}>
-        {children}
-      </div>
+      <div className={cn("flex flex-col w-full", currentConfig.contentGap)}>{children}</div>
     </Component>
   );
 }
@@ -160,7 +158,7 @@ export function ResponsiveDashboardGrid({
         gap === "md" && "gap-3 sm:gap-4 lg:gap-5",
         gap === "lg" && "gap-4 sm:gap-5 lg:gap-6",
         gap === "xl" && "gap-5 sm:gap-6 lg:gap-8",
-        className
+        className,
       )}
       data-columns={columns}
       role="list"
@@ -206,7 +204,7 @@ export function DashboardGrid({
         // Ultra-wide (≥2560px): 6 cols
         "min-[2560px]:grid-cols-6",
         gapClasses[gap],
-        className
+        className,
       )}
       role="list"
     >
@@ -245,7 +243,7 @@ export function MetricsGrid({
         "lg:grid-cols-3",
         "min-[2560px]:grid-cols-4",
         gapClasses[gap],
-        className
+        className,
       )}
       role="list"
     >
@@ -284,7 +282,7 @@ export function WideCardGrid({
         "lg:grid-cols-2",
         "min-[2560px]:grid-cols-3",
         gapClasses[gap],
-        className
+        className,
       )}
       role="list"
     >

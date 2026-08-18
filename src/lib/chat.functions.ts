@@ -17,82 +17,86 @@ import {
  */
 export const listarMensagens = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<Array<{
-    id: string;
-    role: "user" | "assistant";
-    texto: string;
-  }>> => {
-    try {
-      // ✅ Prepared statement via Supabase (safe from SQL injection)
-      const result = await context.supabase
-        .from("chat_mensagens")
-        .select("id, role, parts, created_at")
-        .eq("user_id", context.userId) // ✅ RLS filter
-        .order("created_at", { ascending: true })
-        .limit(1000); // ✅ Prevent DoS via large result sets
-
-      const { data, error } = result;
-
-      if (error) {
-        console.error("[Security] Database query failed (redacted)", {
-          userId: context.userId,
-          timestamp: new Date().toISOString(),
-        });
-        throw new Error("Falha ao carregar mensagens. Tente novamente.");
-      }
-
-      // ✅ Validate each message with Zod
-      const validMessages: Array<{
+  .handler(
+    async ({
+      context,
+    }): Promise<
+      Array<{
         id: string;
         role: "user" | "assistant";
         texto: string;
-      }> = [];
+      }>
+    > => {
+      try {
+        // ✅ Prepared statement via Supabase (safe from SQL injection)
+        const result = await context.supabase
+          .from("chat_mensagens")
+          .select("id, role, parts, created_at")
+          .eq("user_id", context.userId) // ✅ RLS filter
+          .order("created_at", { ascending: true })
+          .limit(1000); // ✅ Prevent DoS via large result sets
 
-      for (const row of data ?? []) {
-        try {
-          // Validate database structure
-          const validatedRow = ChatMessageDBSchema.parse(row);
+        const { data, error } = result;
 
-          // Extract text from parts safely
-          const parts = Array.isArray(validatedRow.parts)
-            ? validatedRow.parts
-            : [];
-
-          const texto = [
-            ...parts
-              .filter((p): p is (typeof parts)[number] & { text: string } =>
-                p.type === "text" && !!p.text
-              )
-              .map((p) => p.text),
-          ].join("\n");
-
-          // Validate final message
-          const mensagem = MensagemSalvaSchema.parse({
-            id: validatedRow.id,
-            role: validatedRow.role,
-            texto: texto || "",
+        if (error) {
+          console.error("[Security] Database query failed (redacted)", {
+            userId: context.userId,
+            timestamp: new Date().toISOString(),
           });
-
-          validMessages.push(mensagem);
-        } catch (parseError) {
-          // ✅ Skip malformed messages instead of failing
-          console.warn(
-            `[Security] Invalid message structure for user ${context.userId}`,
-            { messageId: row.id }
-          );
-          continue;
+          throw new Error("Falha ao carregar mensagens. Tente novamente.");
         }
-      }
 
-      return validMessages;
-    } catch (err) {
-      // ✅ Generic error message - doesn't expose database details
-      console.error("[Security] Message retrieval failed (redacted)", {
-        userId: context.userId,
-      });
-      throw new Error("Falha ao carregar mensagens. Tente novamente.");
-    }
-  });
+        // ✅ Validate each message with Zod
+        const validMessages: Array<{
+          id: string;
+          role: "user" | "assistant";
+          texto: string;
+        }> = [];
+
+        for (const row of data ?? []) {
+          try {
+            // Validate database structure
+            const validatedRow = ChatMessageDBSchema.parse(row);
+
+            // Extract text from parts safely
+            const parts = Array.isArray(validatedRow.parts) ? validatedRow.parts : [];
+
+            const texto = [
+              ...parts
+                .filter(
+                  (p): p is (typeof parts)[number] & { text: string } =>
+                    p.type === "text" && !!p.text,
+                )
+                .map((p) => p.text),
+            ].join("\n");
+
+            // Validate final message
+            const mensagem = MensagemSalvaSchema.parse({
+              id: validatedRow.id,
+              role: validatedRow.role,
+              texto: texto || "",
+            });
+
+            validMessages.push(mensagem);
+          } catch {
+            // ✅ Skip malformed messages instead of failing
+            console.warn(`[Security] Invalid message structure for user ${context.userId}`, {
+              messageId: row.id,
+            });
+            continue;
+          }
+        }
+
+        return validMessages;
+      } catch {
+        // ✅ Generic error message - doesn't expose database details
+        console.error("[Security] Message retrieval failed (redacted)", {
+          userId: context.userId,
+        });
+        throw new Error("Falha ao carregar mensagens. Tente novamente.");
+      }
+    },
+  );
 
 /**
  * Clear conversation with validation
@@ -127,7 +131,7 @@ export const limparConversa = createServerFn({ method: "POST" })
       });
 
       return { ok: true, deletedCount: count };
-    } catch (err) {
+    } catch {
       // ✅ Generic error message
       console.error("[Security] Clear conversation failed (redacted)", {
         userId: context.userId,
@@ -135,4 +139,3 @@ export const limparConversa = createServerFn({ method: "POST" })
       throw new Error("Falha ao limpar conversa. Tente novamente.");
     }
   });
-
