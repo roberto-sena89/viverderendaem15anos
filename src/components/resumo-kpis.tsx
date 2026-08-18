@@ -1,6 +1,7 @@
 import { useMemo, useState, useId } from "react";
 import { Coins, PiggyBank, Plus, TrendingUp, Wallet, Info } from "lucide-react";
 import { DeltaChip } from "@/components/panel";
+import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DialogTransacao } from "@/components/dialog-transacao";
