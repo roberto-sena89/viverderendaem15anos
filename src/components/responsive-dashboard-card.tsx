@@ -146,9 +146,6 @@ export function ResponsiveDashboardGrid({
   className,
   columns = "dashboard",
   gap = "md",
-  cardVariant = "default",
-  cardHoverEffect = true,
-  minCardWidth,
 }: ResponsiveDashboardGridProps) {
   // Como não podemos usar hooks aqui (componente não-renderizado),
   // retornamos apenas o container grid
