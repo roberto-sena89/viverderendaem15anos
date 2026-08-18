@@ -1,7 +1,11 @@
-import { useBreakpoint, isBreakpointDown } from "@/hooks/use-breakpoint";
+import { useConfigResponsiva, type ConfigResponsiva } from "@/hooks/use-config-responsiva";
 import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { DeltaChip } from "@/components/panel";
+import {
+  ESCALA_CONTEUDO_CARD,
+  VARIAVEIS_ESCALA_CARD,
+} from "@/components/responsive-dashboard-card";
 import { cn } from "@/lib/utils";
 
 /**
@@ -125,9 +129,8 @@ export function ResponsiveStatCard({
   config,
   children,
 }: ResponsiveStatCardProps) {
-  const breakpoint = useBreakpoint();
-  const resolvedConfig = { ...DEFAULT_CONFIG, ...config };
-  const currentConfig = resolvedConfig[breakpoint];
+  const currentConfig = useConfigResponsiva(DEFAULT_CONFIG, config);
+  const escala = useConfigResponsiva(ESCALA_CONTEUDO_CARD);
 
   const toneClass =
     tone === "positive"
@@ -142,6 +145,15 @@ export function ResponsiveStatCard({
     <Component
       onClick={onClick}
       aria-label={ariaLabel}
+      style={
+        {
+          [VARIAVEIS_ESCALA_CARD.titulo]: escala.titulo,
+          [VARIAVEIS_ESCALA_CARD.corpo]: escala.corpo,
+          [VARIAVEIS_ESCALA_CARD.metrica]: escala.metrica,
+          [VARIAVEIS_ESCALA_CARD.legenda]: escala.legenda,
+          [VARIAVEIS_ESCALA_CARD.icone]: escala.icone,
+        } as CSSProperties
+      }
       className={cn(
         "panel group relative",
         currentConfig.padding,
@@ -183,6 +195,55 @@ export interface CompactStatCardProps {
   className?: string;
 }
 
+/**
+ * Configuração de tamanho responsivo do StatCard compacto.
+ */
+interface CompactStatCardConfig {
+  padding: string;
+  labelFontSize: string;
+  valueFontSize: string;
+  iconSize: string;
+  gap: string;
+}
+
+const COMPACT_CONFIG: ConfigResponsiva<CompactStatCardConfig> = {
+  watch: {
+    padding: "p-2",
+    labelFontSize: "text-[0.55rem]",
+    valueFontSize: "text-[1.125rem]",
+    iconSize: "size-3.5",
+    gap: "gap-1.5",
+  },
+  mobile: {
+    padding: "p-2.5",
+    labelFontSize: "text-[0.6rem]",
+    valueFontSize: "text-[1.25rem]",
+    iconSize: "size-4",
+    gap: "gap-2",
+  },
+  tablet: {
+    padding: "p-3",
+    labelFontSize: "text-[0.65rem]",
+    valueFontSize: "text-[1.375rem]",
+    iconSize: "size-4.5",
+    gap: "gap-2",
+  },
+  desktop: {
+    padding: "p-3",
+    labelFontSize: "text-[0.68rem]",
+    valueFontSize: "text-[1.5rem]",
+    iconSize: "size-5",
+    gap: "gap-2.5",
+  },
+  ultraWide: {
+    padding: "p-3.5",
+    labelFontSize: "text-[0.75rem]",
+    valueFontSize: "text-[1.625rem]",
+    iconSize: "size-5.5",
+    gap: "gap-2.5",
+  },
+};
+
 export function CompactStatCard({
   label,
   value,
@@ -191,8 +252,7 @@ export function CompactStatCard({
   delta,
   className,
 }: CompactStatCardProps) {
-  const breakpoint = useBreakpoint();
-  const isSmallScreen = isBreakpointDown(breakpoint, "mobile");
+  const config = useConfigResponsiva(COMPACT_CONFIG);
 
   const toneClass =
     tone === "positive"
@@ -202,21 +262,12 @@ export function CompactStatCard({
         : "text-foreground";
 
   return (
-    <div className={cn("panel p-3", isSmallScreen && "p-2", className)}>
-      <div className="flex items-center justify-between gap-2">
-        <p className={cn("t-label truncate flex-1 min-w-0", isSmallScreen && "text-[0.55rem]")}>
-          {label}
-        </p>
-        {Icon && (
-          <Icon
-            className={cn(
-              "shrink-0 text-muted-foreground/70",
-              isSmallScreen ? "size-3.5" : "size-4",
-            )}
-          />
-        )}
+    <div className={cn("panel", config.padding, className)}>
+      <div className={cn("flex items-center justify-between", config.gap)}>
+        <p className={cn("t-label truncate flex-1 min-w-0", config.labelFontSize)}>{label}</p>
+        {Icon && <Icon className={cn("shrink-0 text-muted-foreground/70", config.iconSize)} />}
       </div>
-      <p className={cn("mt-1 t-metric", toneClass, isSmallScreen && "text-[1.125rem]")}>{value}</p>
+      <p className={cn("mt-1 t-metric", toneClass, config.valueFontSize)}>{value}</p>
       {typeof delta === "number" && (
         <div className="mt-1.5">
           <DeltaChip value={delta} />

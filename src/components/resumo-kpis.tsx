@@ -13,7 +13,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DashboardGrid, ResponsiveDashboardCard } from "@/components/responsive-dashboard-card";
+import {
+  DashboardGrid,
+  ResponsiveDashboardCard,
+  CardIcone,
+} from "@/components/responsive-dashboard-card";
 import { ResponsiveStatCard } from "@/components/responsive-stat-card";
 import { retornoPonderado12m } from "@/lib/analise-carteira";
 import { chaveTicker, useAtivosAoVivo, useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
@@ -46,7 +50,7 @@ function CartaoResumo({
     >
       <div className="flex items-start gap-2">
         <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground duration-300">
-          <Icone className="size-5 shrink-0" />
+          <CardIcone icon={Icone} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">

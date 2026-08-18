@@ -1,6 +1,7 @@
-import { useBreakpoint } from "@/hooks/use-breakpoint";
+import { useConfigResponsiva, type ConfigResponsiva } from "@/hooks/use-config-responsiva";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 /**
  * Configuração de tamanho responsivo para o DashboardCard
@@ -61,6 +62,130 @@ const DEFAULT_CARD_CONFIG: ResponsiveDashboardCardConfig = {
   },
 };
 
+/**
+ * Escala tipográfica do conteúdo do card por breakpoint.
+ * Valores em CSS length (rem/px); expostos como variáveis CSS
+ * `--card-titulo`, `--card-corpo`, `--card-metrica`, `--card-legenda`
+ * e `--card-icone` no wrapper do card.
+ */
+export interface EscalaConteudoCard {
+  titulo: string;
+  corpo: string;
+  metrica: string;
+  legenda: string;
+  icone: string;
+}
+
+export const ESCALA_CONTEUDO_CARD: ConfigResponsiva<EscalaConteudoCard> = {
+  watch: {
+    titulo: "0.8rem",
+    corpo: "0.72rem",
+    metrica: "1.125rem",
+    legenda: "0.625rem",
+    icone: "14px",
+  },
+  mobile: {
+    titulo: "0.875rem",
+    corpo: "0.8125rem",
+    metrica: "1.375rem",
+    legenda: "0.6875rem",
+    icone: "16px",
+  },
+  tablet: {
+    titulo: "0.9375rem",
+    corpo: "0.875rem",
+    metrica: "1.5rem",
+    legenda: "0.75rem",
+    icone: "18px",
+  },
+  desktop: {
+    titulo: "1rem",
+    corpo: "0.9125rem",
+    metrica: "1.625rem",
+    legenda: "0.8125rem",
+    icone: "20px",
+  },
+  ultraWide: {
+    titulo: "1.125rem",
+    corpo: "1rem",
+    metrica: "1.875rem",
+    legenda: "0.875rem",
+    icone: "24px",
+  },
+};
+
+export const VARIAVEIS_ESCALA_CARD = {
+  titulo: "--card-titulo",
+  corpo: "--card-corpo",
+  metrica: "--card-metrica",
+  legenda: "--card-legenda",
+  icone: "--card-icone",
+} as const;
+
+/**
+ * Conteúdo tipográfico do card que segue a escala de breakpoint do card pai.
+ * Use dentro de <ResponsiveDashboardCard> ou <ResponsiveStatCard>.
+ */
+export function CardTitulo({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <h3
+      className={cn(
+        "font-display text-[length:var(--card-titulo)] leading-snug font-semibold tracking-[0.02em]",
+        className,
+      )}
+    >
+      {children}
+    </h3>
+  );
+}
+
+export function CardCorpo({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <p
+      className={cn(
+        "text-[length:var(--card-corpo)] leading-relaxed text-muted-foreground",
+        className,
+      )}
+    >
+      {children}
+    </p>
+  );
+}
+
+export function CardMetrica({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <p
+      className={cn(
+        "font-display text-[length:var(--card-metrica)] leading-tight font-bold tabular-nums",
+        className,
+      )}
+    >
+      {children}
+    </p>
+  );
+}
+
+export function CardLegenda({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <span
+      className={cn(
+        "text-[length:var(--card-legenda)] leading-normal font-medium text-muted-foreground",
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+export function CardIcone({
+  icon: Icon,
+  className,
+  ...rest
+}: { icon: LucideIcon; className?: string } & React.SVGProps<SVGSVGElement>) {
+  return <Icon className={cn("shrink-0 size-[length:var(--card-icone)]", className)} {...rest} />;
+}
+
 export interface ResponsiveDashboardCardProps {
   children: ReactNode;
   className?: string;
@@ -93,9 +218,8 @@ export function ResponsiveDashboardCard({
   variant = "default",
   hoverEffect = true,
 }: ResponsiveDashboardCardProps) {
-  const breakpoint = useBreakpoint();
-  const resolvedConfig = { ...DEFAULT_CARD_CONFIG, ...config };
-  const currentConfig = resolvedConfig[breakpoint];
+  const currentConfig = useConfigResponsiva(DEFAULT_CARD_CONFIG, config);
+  const escala = useConfigResponsiva(ESCALA_CONTEUDO_CARD);
 
   const Component = onClick ? "button" : "div";
 
@@ -120,7 +244,20 @@ export function ResponsiveDashboardCard({
         className,
       )}
     >
-      <div className={cn("flex flex-col w-full", currentConfig.contentGap)}>{children}</div>
+      <div
+        className={cn("flex flex-col w-full", currentConfig.contentGap)}
+        style={
+          {
+            [VARIAVEIS_ESCALA_CARD.titulo]: escala.titulo,
+            [VARIAVEIS_ESCALA_CARD.corpo]: escala.corpo,
+            [VARIAVEIS_ESCALA_CARD.metrica]: escala.metrica,
+            [VARIAVEIS_ESCALA_CARD.legenda]: escala.legenda,
+            [VARIAVEIS_ESCALA_CARD.icone]: escala.icone,
+          } as CSSProperties
+        }
+      >
+        {children}
+      </div>
     </Component>
   );
 }
