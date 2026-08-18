@@ -7,10 +7,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   MensagemSalvaSchema,
-  ChatMessageFilterSchema,
   ClearConversationInputSchema,
   ChatMessageDBSchema,
-  SendMessageInputSchema,
 } from "@/shared/validators/chatValidators";
 
 /**
@@ -107,7 +105,6 @@ export const limparConversa = createServerFn({ method: "POST" })
       // ✅ Validate input
       const input = ClearConversationInputSchema.parse({
         userId: context.userId,
-        sessionId: context.sessionId, // This would come from the request
       });
 
       // ✅ RLS ensures this only deletes the user's own messages
