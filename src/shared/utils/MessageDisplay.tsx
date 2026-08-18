@@ -24,18 +24,6 @@ DOMPurify.setConfig({
 });
 
 /**
- * Validate that URL is safe (http/https only)
- */
-function isSafeUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://localhost");
-    return ["http:", "https:"].includes(parsed.protocol);
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Escape HTML for safe text rendering
  */
 function escapeHtml(text: string): string {
@@ -57,12 +45,12 @@ interface MessageDisplayProps {
 /**
  * Safe message renderer with XSS protection
  */
-export const MessageDisplay: React.FC<MessageDisplayProps> = ({ content, isUser }) => {
+export const MessageDisplay: React.FC<MessageDisplayProps> = ({ content }) => {
   // ✅ Memoize sanitized HTML to prevent recalculation
   const safeHtml = useMemo(() => {
     try {
       // 1. Parse markdown
-      let html = marked.parse(content, { breaks: true });
+      const html = marked.parse(content, { breaks: true, async: false }) as string;
 
       // 2. Sanitize HTML with DOMPurify
       const sanitized = DOMPurify.sanitize(html, {
