@@ -1772,6 +1772,34 @@ export const Route = createFileRoute("/api/chat")({
           `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${modeloEscolhido}`,
         );
 
+        // Conhecimento de mercado dinâmico (scanner web): injeta os itens mais
+        // relevantes para a pergunta dentro do orçamento de tokens.
+        let trechoConhecimento = "";
+        try {
+          const conhecimentoMod = await import("@/lib/conhecimento.server");
+          const baseConhecimento = await conhecimentoMod.lerConhecimento();
+          const pergunta = textoDaMensagem(ultima) || "";
+          const relevantes = conhecimentoMod.selecionarConhecimento(
+            pergunta,
+            baseConhecimento.itens,
+          );
+          if (relevantes.length > 0) {
+            trechoConhecimento =
+              "\n\n### Conhecimento de mercado (base dinâmica do scanner — use para enriquecer a análise, sempre com bom senso)\n" +
+              relevantes
+                .map(
+                  (i) =>
+                    `- [${i.categoria}] ${i.titulo}: ${i.conteudo} (${i.fonte}, ${new Date(i.atualizadoEm).toISOString().slice(0, 10)})`,
+                )
+                .join("\n");
+          }
+        } catch (e) {
+          console.error(
+            "[chat] falha ao carregar conhecimento:",
+            e instanceof Error ? e.message : String(e),
+          );
+        }
+
         let resultado;
         try {
           resultado = streamText({
@@ -1802,6 +1830,7 @@ export const Route = createFileRoute("/api/chat")({
                         .join("\n\n")
                   : "",
               )
+              .concat(trechoConhecimento)
               .concat(`\n\nData de hoje: ${new Date().toISOString().slice(0, 10)}`),
             messages: await convertToModelMessages(mensagensAparadas),
             tools: ferramentas,

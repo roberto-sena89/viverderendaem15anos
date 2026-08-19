@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { GraduationCap, Plus, Trash2 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { GraduationCap, Loader2, Plus, ScanSearch, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +23,25 @@ import {
   useExcluirHabilidade,
   useIaHabilidades,
 } from "@/lib/ia-habilidades";
+import {
+  executarScanMercado,
+  lerConhecimentoMercado,
+  type ConhecimentoItem,
+} from "@/lib/conhecimento.functions";
+
+const CORES_CATEGORIA: Record<ConhecimentoItem["categoria"], string> = {
+  macro: "bg-sky-600/10 text-sky-600 border-sky-600/30",
+  mercado: "bg-violet-600/10 text-violet-600 border-violet-600/30",
+  educacao: "bg-emerald-600/10 text-emerald-600 border-emerald-600/30",
+  noticias: "bg-amber-600/10 text-amber-600 border-amber-600/30",
+};
+
+const ROTULO_CATEGORIA: Record<ConhecimentoItem["categoria"], string> = {
+  macro: "Macro",
+  mercado: "Mercado",
+  educacao: "Educação",
+  noticias: "Notícias",
+};
 
 export function DialogoAprendizado() {
   const [open, setOpen] = useState(false);
@@ -30,8 +51,43 @@ export function DialogoAprendizado() {
   const criar = useCriarHabilidade();
   const alternar = useAlternarHabilidade();
   const excluir = useExcluirHabilidade();
+  const queryClient = useQueryClient();
+  const lerConhecimento = useServerFn(lerConhecimentoMercado);
+  const scanear = useServerFn(executarScanMercado);
 
   const conhecidas = new Set((habilidades.data ?? []).map((h) => h.nome));
+
+  const conhecimento = useQuery({
+    queryKey: ["gestor-conhecimento"],
+    enabled: open,
+    queryFn: () => lerConhecimento({ data: undefined }),
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+
+  const scan = useMutation({
+    mutationFn: () => scanear({ data: undefined }),
+    onSuccess: (r) => {
+      void queryClient.invalidateQueries({ queryKey: ["gestor-conhecimento"] });
+      if (r.ignorado) {
+        toast.info("O scan de conhecimento foi feito há pouco — os dados já estão atualizados.");
+      } else {
+        toast.success(`Scan concluído: ${r.base.itens.length} itens de conhecimento.`);
+      }
+    },
+    onError: (e) =>
+      toast.error("Não foi possível executar o scan agora", {
+        description: e instanceof Error ? e.message : undefined,
+      }),
+  });
+
+  function haQuantoTempo(iso: string): string {
+    const min = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60_000));
+    if (min < 1) return "agora";
+    if (min < 60) return `há ${min} min`;
+    const h = Math.floor(min / 60);
+    return `há ${h}h${min % 60 ? ` ${min % 60}min` : ""}`;
+  }
 
   async function ensinar(e: React.FormEvent) {
     e.preventDefault();
@@ -200,6 +256,69 @@ export function DialogoAprendizado() {
               );
             })}
           </div>
+        </div>
+
+        <div className="grid gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-sm font-semibold">
+              Conhecimento de mercado ({conhecimento.data?.itens.length ?? 0} itens)
+            </p>
+            {conhecimento.data?.atualizadoEm ? (
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                scan {haQuantoTempo(conhecimento.data.atualizadoEm)}
+              </span>
+            ) : null}
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto shrink-0 rounded-full"
+              disabled={scan.isPending}
+              onClick={() => scan.mutate()}
+              title="Varre a internet (Banco Central, notícias e Google News) e atualiza a base do Gestor IA"
+            >
+              {scan.isPending ? (
+                <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+              ) : (
+                <ScanSearch className="mr-1.5 size-3.5" />
+              )}
+              Scanear agora
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            O scanner varre a internet (Banco Central, feeds de notícias e Google News) e estrutura
+            o conhecimento que o Gestor IA usa nas conversas — ele escolhe os itens mais relevantes
+            para cada pergunta automaticamente.
+          </p>
+          {conhecimento.isLoading ? (
+            <p className="text-sm text-muted-foreground">Carregando conhecimento...</p>
+          ) : (
+            <div className="grid gap-2">
+              {(conhecimento.data?.itens ?? []).slice(0, 12).map((i) => (
+                <div
+                  key={`${i.categoria}-${i.titulo}`}
+                  className="flex items-start gap-3 rounded-xl border border-border/60 bg-card/60 p-3"
+                >
+                  <span
+                    className={`mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${CORES_CATEGORIA[i.categoria]}`}
+                  >
+                    {ROTULO_CATEGORIA[i.categoria]}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold leading-snug">{i.titulo}</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{i.conteudo}</p>
+                    <p className="mt-1 text-[10px] text-muted-foreground/80">
+                      {i.fonte} · {new Date(i.atualizadoEm).toLocaleDateString("pt-BR")}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              {(conhecimento.data?.itens.length ?? 0) === 0 && !conhecimento.isLoading ? (
+                <p className="text-sm text-muted-foreground">
+                  Base vazia. Clique em "Scanear agora" para montar o conhecimento de mercado.
+                </p>
+              ) : null}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
