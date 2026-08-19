@@ -217,7 +217,7 @@ export function DialogoProvedorIA() {
                   id="ia-modelo"
                   value={rascunho.modelo}
                   onChange={(e) => setRascunho({ ...rascunho, modelo: e.target.value })}
-                  placeholder="deepseek/deepseek-chat-v3-0324:free"
+                  placeholder="nvidia/nemotron-3-ultra-550b-a55b:free"
                   autoComplete="off"
                 />
                 {(preset?.modelos.length ?? 0) > 0 && (

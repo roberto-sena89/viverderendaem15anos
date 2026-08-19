@@ -38,14 +38,14 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     variavel: "OPENROUTER_API_KEY",
     nome: "OpenRouter",
     baseUrl: "https://openrouter.ai/api/v1",
-    modelo: "deepseek/deepseek-chat-v3-0324:free",
+    modelo: "nvidia/nemotron-3-ultra-550b-a55b:free",
     urlChave: "https://openrouter.ai/keys",
   },
   {
     variavel: "NVIDIA_API_KEY",
     nome: "NVIDIA NIM",
     baseUrl: "https://integrate.api.nvidia.com/v1",
-    modelo: "meta/llama-3.3-70b-instruct",
+    modelo: "z-ai/glm-5.2",
     urlChave: "https://build.nvidia.com/settings/api-keys",
   },
   {
@@ -59,7 +59,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     variavel: "CLINE_API_KEY",
     nome: "Cline",
     baseUrl: "https://api.cline.bot/api/v1",
-    modelo: "minimax/minimax-m2.5",
+    modelo: "minimax/minimax-m3",
     urlChave: "https://app.cline.bot",
   },
 ];
