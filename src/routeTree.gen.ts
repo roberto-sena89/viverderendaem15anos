@@ -45,6 +45,7 @@ import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.me
 import { Route as ConteudoSlugRouteImport } from './routes/conteudo/$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as ApiIaProvedoresRouteImport } from './routes/api/ia/provedores'
 import { Route as ApiPublicNewsletterRouteImport } from './routes/api/public/newsletter'
 import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
@@ -241,6 +242,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiIaProvedoresRoute = ApiIaProvedoresRouteImport.update({
+  id: '/api/ia/provedores',
+  path: '/api/ia/provedores',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicNewsletterRoute = ApiPublicNewsletterRouteImport.update({
   id: '/api/public/newsletter',
   path: '/api/public/newsletter',
@@ -312,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/ia/provedores': typeof ApiIaProvedoresRoute
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
@@ -355,6 +362,7 @@ export interface FileRoutesByTo {
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/ia/provedores': typeof ApiIaProvedoresRoute
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
@@ -400,6 +408,7 @@ export interface FileRoutesById {
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/ia/provedores': typeof ApiIaProvedoresRoute
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
@@ -445,6 +454,7 @@ export interface FileRouteTypes {
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/ia/provedores'
     | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
@@ -488,6 +498,7 @@ export interface FileRouteTypes {
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/ia/provedores'
     | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
@@ -532,6 +543,7 @@ export interface FileRouteTypes {
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/ia/provedores'
     | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
@@ -563,6 +575,7 @@ export interface RootRouteChildren {
   ConteudoSlugRoute: typeof ConteudoSlugRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiIaProvedoresRoute: typeof ApiIaProvedoresRoute
   ApiPublicNewsletterRoute: typeof ApiPublicNewsletterRoute
   ApiPublicHooksAtualizarCotacoesRoute: typeof ApiPublicHooksAtualizarCotacoesRoute
   ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
@@ -825,6 +838,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ia/provedores': {
+      id: '/api/ia/provedores'
+      path: '/api/ia/provedores'
+      fullPath: '/api/ia/provedores'
+      preLoaderRoute: typeof ApiIaProvedoresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/newsletter': {
       id: '/api/public/newsletter'
       path: '/api/public/newsletter'
@@ -932,6 +952,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConteudoSlugRoute: ConteudoSlugRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiIaProvedoresRoute: ApiIaProvedoresRoute,
   ApiPublicNewsletterRoute: ApiPublicNewsletterRoute,
   ApiPublicHooksAtualizarCotacoesRoute: ApiPublicHooksAtualizarCotacoesRoute,
   ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
