@@ -60,6 +60,10 @@ interface VerificadorProvedor {
   /** true = chave vai na query string (?key=) em vez do header Authorization. */
   chaveViaQuery?: boolean;
   /**
+   * Nome do header de autenticacao (default: "Authorization: Bearer ..."); use "x-api-key" para provedores como Token Router.
+   */
+  authHeader?: string;
+  /**
    * Provedores sem endpoint /models: modelos gratuitos a sondar diretamente
    * via chat/completions (pedido mínimo de 1 token) para confirmar se existem.
    */
@@ -82,6 +86,7 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     variavelChave: "TOKEN_ROUTER_API_KEY",
     padroesGratuitos: [/-free$/i],
     exigeChave: true,
+    authHeader: "x-api-key",
   },
   {
     chave: "orcarouter",
@@ -253,8 +258,11 @@ async function buscarCatalogo(
       const resposta = await fetch(url, {
         headers: {
           "User-Agent": "viverderenda-verificador/1.0",
-          ...(chaveTentativa && !provedor.chaveViaQuery
+          ...(chaveTentativa && !provedor.chaveViaQuery && provedor.authHeader !== "x-api-key"
             ? { Authorization: `Bearer ${chaveTentativa}` }
+            : {}),
+          ...(chaveTentativa && provedor.authHeader === "x-api-key"
+            ? { "x-api-key": chaveTentativa }
             : {}),
         },
         signal: AbortSignal.timeout(15_000),
