@@ -98,8 +98,16 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     descricao:
       "Roteador aberto que conecta OpenAI, Anthropic, Google e DeepSeek a preço de custo, com camada gratuita de modelos DeepSeek V4.",
     baseUrl: "https://api.orcarouter.ai/v1",
-    modelos: ["deepseek/deepseek-v4-pro-free", "deepseek/deepseek-v4-flash-free"],
-    modelosGratuitos: ["deepseek/deepseek-v4-pro-free", "deepseek/deepseek-v4-flash-free"],
+    modelos: [
+      "qwen/qwen3.8-27b-free",
+      "deepseek/deepseek-v4-pro-free",
+      "deepseek/deepseek-v4-flash-free",
+    ],
+    modelosGratuitos: [
+      "qwen/qwen3.8-27b-free",
+      "deepseek/deepseek-v4-pro-free",
+      "deepseek/deepseek-v4-flash-free",
+    ],
     urlChave: "https://www.orcarouter.ai",
   },
   {

@@ -31,7 +31,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     variavel: "ORCAROUTER_API_KEY",
     nome: "OrcaRouter",
     baseUrl: "https://api.orcarouter.ai/v1",
-    modelo: "deepseek/deepseek-v4-pro-free",
+    modelo: "qwen/qwen3.8-27b-free",
     urlChave: "https://www.orcarouter.ai",
   },
   {
