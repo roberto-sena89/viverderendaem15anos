@@ -115,18 +115,22 @@ export function DialogoProvedorIA() {
   const preset = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
 
   function escolherPreset(id: string) {
-    if (id === "lovable") {
-      setRascunho({ ...CONFIG_IA_NATIVA, chavesPorProvedor: rascunho.chavesPorProvedor });
-      return;
-    }
-    const alvo = PRESETS_PROVEDOR.find((p) => p.id === id);
-    setRascunho({
-      preset: id,
-      baseUrl: alvo?.baseUrl ?? "",
-      modelo: alvo?.modelos[0] ?? "",
-      // lembra a chave já usada neste navegador para o provedor escolhido
-      chave: rascunho.preset === id ? rascunho.chave : (rascunho.chavesPorProvedor[id] ?? ""),
-      chavesPorProvedor: rascunho.chavesPorProvedor,
+    setRascunho((r) => {
+      const chaves =
+        r.preset !== "lovable" && r.chave.trim()
+          ? { ...r.chavesPorProvedor, [r.preset]: r.chave.trim() }
+          : r.chavesPorProvedor;
+      if (id === "lovable") {
+        return { ...CONFIG_IA_NATIVA, chavesPorProvedor: chaves };
+      }
+      const alvo = PRESETS_PROVEDOR.find((p) => p.id === id);
+      return {
+        preset: id,
+        baseUrl: alvo?.baseUrl ?? "",
+        modelo: alvo?.modelos[0] ?? r.modelo,
+        chave: chaves[id] ?? "",
+        chavesPorProvedor: chaves,
+      };
     });
   }
 
@@ -246,7 +250,16 @@ export function DialogoProvedorIA() {
                   id="ia-chave"
                   type="password"
                   value={rascunho.chave}
-                  onChange={(e) => setRascunho({ ...rascunho, chave: e.target.value })}
+                  onChange={(e) =>
+                    setRascunho((r) => ({
+                      ...r,
+                      chave: e.target.value,
+                      chavesPorProvedor:
+                        r.preset !== "lovable"
+                          ? { ...r.chavesPorProvedor, [r.preset]: e.target.value }
+                          : r.chavesPorProvedor,
+                    }))
+                  }
                   placeholder="sk-..."
                   autoComplete="off"
                 />
