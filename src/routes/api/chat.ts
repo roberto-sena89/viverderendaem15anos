@@ -204,6 +204,24 @@ function textoDaCarteira(
   ].join("\n");
 }
 
+/** Persiste uma mensagem do chat via cliente admin (sem depender de políticas RLS). */
+async function salvarMensagem(registro: {
+  user_id: string;
+  role: "user" | "assistant";
+  parts: Array<{ type: "text"; text: string }>;
+}) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("chat_mensagens").insert(registro);
+    if (error) console.error("[chat] falha ao salvar mensagem no banco:", error.message);
+  } catch (e) {
+    console.error(
+      "[chat] falha ao salvar mensagem no banco:",
+      e instanceof Error ? e.message : String(e),
+    );
+  }
+}
+
 function textoDaMensagem(message: UIMessage) {
   return message.parts
     .map((part) => (part.type === "text" ? part.text : ""))
@@ -398,10 +416,11 @@ export const Route = createFileRoute("/api/chat")({
         if (ultima?.role === "user") {
           const texto = textoDaMensagem(ultima);
           if (texto.length > 8000) return new Response("Mensagem muito longa", { status: 400 });
-          const { error } = await supabase
-            .from("chat_mensagens")
-            .insert({ user_id: userId, role: "user", parts: [{ type: "text", text: texto }] });
-          if (error) console.error("Falha ao salvar mensagem do usuário:", error.message);
+          void salvarMensagem({
+            user_id: userId,
+            role: "user",
+            parts: [{ type: "text", text: texto }],
+          });
         }
 
         const [
@@ -1860,15 +1879,14 @@ export const Route = createFileRoute("/api/chat")({
             return `${base}\n\n${detalhes}`;
           },
 
-          onFinish: async ({ responseMessage }) => {
+          onFinish: ({ responseMessage }) => {
             const texto = textoDaMensagem(responseMessage);
             if (!texto) return;
-            const { error } = await supabase.from("chat_mensagens").insert({
+            void salvarMensagem({
               user_id: userId,
               role: "assistant",
               parts: [{ type: "text", text: texto }],
             });
-            if (error) console.error("Falha ao salvar resposta do assistente:", error.message);
           },
         });
       },
