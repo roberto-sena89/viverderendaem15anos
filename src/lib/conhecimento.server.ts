@@ -1,15 +1,19 @@
 /**
  * Conhecimento de mercado do Gestor IA — base dinâmica alimentada por um
- * scanner que varre a internet (Banco Central, feeds de notícias e Google
- * News educacional) e a estrutura em itens curados de macro, mercado,
- * notícias e educação. O conhecimento é persistido em `cotacoes_cache`
- * (chave `gestor:conhecimento`) e injetado no prompt do chat conforme a
- * relevância com a pergunta do usuário.
+ * scanner que varre a internet (Banco Central, órgãos como CVM e ANBIMA,
+ * feeds de notícias, Google News educacional e setores da B3) e a estrutura
+ * em itens curados de macro, mercado, setor, notícias e educação. O scanner
+ * ainda monta um "Painel do analista" (síntese gerada pelo provedor de IA
+ * do usuário) com o tom de um analista sênior. Tudo é persistido em
+ * `cotacoes_cache` (chave `gestor:conhecimento`) e injetado no prompt do
+ * chat conforme a relevância com a pergunta do usuário.
  */
 
 import type { Json } from "@/integrations/supabase/types";
+import { baseUrlProvedorEnv, provedorEnvAtivo } from "@/lib/provedores-env.server";
 
-export type CategoriaConhecimento = "macro" | "mercado" | "educacao" | "noticias";
+export type CategoriaConhecimento =
+  "macro" | "mercado" | "setor" | "educacao" | "noticias" | "painel";
 
 export interface ConhecimentoItem {
   categoria: CategoriaConhecimento;
@@ -30,6 +34,9 @@ export const INTERVALO_MINIMO_MS = 10 * 60 * 1000;
 
 /** Orçamento de caracteres do trecho de conhecimento injetado no prompt. */
 export const MAX_CONHECIMENTO_CHARS = 1300;
+
+/** Teto de itens colecionados num scan (após deduplicação). */
+const MAX_ITENS_SCAN = 60;
 
 /* ------------------------------------------------------------------ *
  * Base de conhecimento curada (determinística — sempre disponível)
@@ -121,7 +128,11 @@ function decodificarXml(texto: string): string {
     .trim();
 }
 
-async function buscarRss(consulta: string, limite: number): Promise<ConhecimentoItem[]> {
+async function buscarRss(
+  consulta: string,
+  limite: number,
+  categoria: CategoriaConhecimento = "mercado",
+): Promise<ConhecimentoItem[]> {
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(
     consulta,
   )}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
@@ -155,7 +166,7 @@ async function buscarRss(consulta: string, limite: number): Promise<Conhecimento
       const data = bloco.match(/<pubDate(?:\s[^>]*)?>([\s\S]*?)<\/pubDate>/i)?.[1] ?? "";
       const dataIso = data ? new Date(data).toISOString() : new Date().toISOString();
       itens.push({
-        categoria: "mercado",
+        categoria,
         titulo: titulo.slice(0, 180),
         conteudo: (descricao || titulo).slice(0, 320),
         fonte: fonte || "Google News",
@@ -168,6 +179,24 @@ async function buscarRss(consulta: string, limite: number): Promise<Conhecimento
   }
 }
 
+const BUSCAS_ORGAOS = [
+  'when:3d (ANBIMA OR "índices de mercado" OR IMA) lang:pt',
+  'when:3d (CVM OR "Comissão de Valores Mobiliários") lang:pt',
+  'when:3d (Copom OR "Comitê de Política Monetária" OR "decisão de juros") lang:pt',
+  'when:3d ("Banco Central" OR BCB OR "relatório de inflação") lang:pt',
+  'when:3d (B3 OR "oferta pública" OR "listagem") lang:pt',
+];
+
+const BUSCAS_SETORES = [
+  'when:3d (bancos OR "setor financeiro") (resultado OR lucro) lang:pt',
+  "when:3d (energia OR petróleo OR elétrica) (resultado OR dividendos) lang:pt",
+  "when:3d (varejo OR consumo) (resultado OR balanço) lang:pt",
+  "when:3d (mineração OR siderurgia) (resultado OR minério) lang:pt",
+  "when:3d (tecnologia OR software) (Brasil OR bolsa) lang:pt",
+  'when:3d (imobiliário OR "construção civil" OR FII) lang:pt',
+  'when:7d ("resultado trimestral" OR balanço OR "temporada de resultados") (empresas OR B3 OR bolsa) lang:pt',
+];
+
 const BUSCAS_EDUCACIONAIS = [
   'when:2d ("educação financeira" OR "investidor iniciante") lang:pt',
   'when:2d ("renda passiva" OR "dividendos") lang:pt',
@@ -177,29 +206,196 @@ const BUSCAS_EDUCACIONAIS = [
   'when:2d ("aposentadoria" OR "independência financeira" OR "reserva de emergência") lang:pt',
 ];
 
-/** Varre a internet e monta a base de conhecimento do Gestor IA. */
-export async function executarScanConhecimento(agora = new Date()): Promise<BaseConhecimento> {
-  const macro = await import("@/lib/radar.server").then((m) =>
-    m.contextoMacro().catch(() => ({ selic: null as number | null, ipca: null as number | null })),
-  );
+/* ------------------------------------------------------------------ *
+ * Painel macro (Banco Central — SGS) e fundamentos reais (CVM)
+ * ------------------------------------------------------------------ */
 
-  const itens: ConhecimentoItem[] = [
-    {
+export interface EntradaIndicador {
+  indicador: string;
+  unidade: string;
+  serie: { data: string; valor: number }[];
+}
+
+/** Formata os últimos pontos das séries SGS em texto compacto. Função pura. */
+export function formatarPainelMacro(entradas: EntradaIndicador[]): string {
+  const partes: string[] = [];
+  for (const r of entradas) {
+    const ultimo = r.serie[r.serie.length - 1];
+    if (!ultimo || !Number.isFinite(ultimo.valor)) continue;
+    partes.push(
+      `${r.indicador}: ${ultimo.valor} ${r.unidade} (${String(ultimo.data).slice(0, 10)})`,
+    );
+  }
+  return partes.join(" | ");
+}
+
+async function buscarPainelMacro(agora = new Date()): Promise<ConhecimentoItem | null> {
+  try {
+    const { buscarIndicador } = await import("@/lib/market.server");
+    const chaves = ["selic", "cdi", "ipca", "igpm", "dolar", "poupanca"] as const;
+    const resultados = await Promise.all(
+      chaves.map((k) => buscarIndicador(k, 2).catch(() => null)),
+    );
+    const formato = formatarPainelMacro(
+      resultados
+        .filter((r): r is NonNullable<(typeof resultados)[number]> => r !== null)
+        .map((r) => ({ indicador: r.indicador, unidade: r.unidade, serie: r.serie })),
+    );
+    if (!formato) return null;
+    return {
       categoria: "macro",
-      titulo: "Cenário macro (Banco Central)",
-      conteudo:
-        `Meta Selic: ${macro.selic !== null ? `${macro.selic}%` : "dado indisponível"} | ` +
-        `IPCA mensal: ${macro.ipca !== null ? `${macro.ipca}%` : "dado indisponível"}. ` +
-        "Use estes números para ancorar análises de renda fixa, prêmio de risco e timing de aportes.",
+      titulo: "Painel macro (Banco Central do Brasil)",
+      conteudo: `${formato}. Âncore estas cifras em análises de renda fixa, prêmio de risco e timing de aportes.`,
       fonte: "Banco Central do Brasil (SGS)",
       atualizadoEm: agora.toISOString(),
-    },
-  ];
+    };
+  } catch {
+    return null;
+  }
+}
 
-  const [noticiasMod, resultados] = await Promise.all([
+export interface EntradaCvmMinima {
+  plAtual: number | null;
+}
+
+/** Resume o mapa de fundamentos CVM em um item de conhecimento. Função pura. */
+export function montarItemCvm(
+  mapa: Record<string, EntradaCvmMinima | undefined>,
+  atualizadoEm: string | null,
+  agora = new Date(),
+): ConhecimentoItem | null {
+  if (!atualizadoEm) return null;
+  const comPl = Object.entries(mapa)
+    .map(([ticker, f]) => ({ ticker, plAtual: f?.plAtual ?? null }))
+    .filter((f): f is { ticker: string; plAtual: number } => f.plAtual !== null && f.plAtual > 0);
+  if (comPl.length === 0) return null;
+  const destaques = [...comPl].sort((a, b) => a.plAtual - b.plAtual).slice(0, 3);
+  return {
+    categoria: "mercado",
+    titulo: "Fundamentos reais da CVM (balanços DFP/ITR)",
+    conteudo:
+      `${comPl.length} empresas com P/L e EV/EBIT derivados dos balanços oficiais (DFP/ITR). ` +
+      `Destaques por menor P/L: ${destaques
+        .map(
+          (d) => `${d.ticker} ${d.plAtual.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}x`,
+        )
+        .join(", ")}. ` +
+      `Atualizado em ${atualizadoEm.slice(0, 10)}.`,
+    fonte: "CVM (Dados Abertos — DFP/ITR)",
+    atualizadoEm: agora.toISOString(),
+  };
+}
+
+async function buscarCvm(agora = new Date()): Promise<ConhecimentoItem | null> {
+  try {
+    const { lerFundamentosCvm } = await import("@/lib/cvm.server");
+    const fundos = await lerFundamentosCvm();
+    return montarItemCvm(fundos.mapa, fundos.atualizadoEm, agora);
+  } catch {
+    return null;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Painel do analista (síntese LLM com o provedor configurado)
+ * ------------------------------------------------------------------ */
+
+const SISTEMA_PAINEL = `Você é o "Painel do Analista": síntese executiva diária do mercado financeiro brasileiro produzida por um analista sênior de mesa proprietária.
+
+A partir do material varrido abaixo (indicadores do Banco Central, fundamentos reais da CVM e manchetes de órgãos, setores e notícias), escreva um resumo de 6 seções curtas:
+- visaoGeral: 1-2 frases com o clima do mercado hoje.
+- macro: juros, inflação, câmbio e o que mais mover a renda fixa.
+- mercados: Bolsa, setores e o que está em destaque.
+- empresas: balanços, resultados e eventos corporativos relevantes.
+- riscos: 1-2 frases com o que exige atenção (eventos, dados, narrativas sem número).
+- agenda: próximos eventos importantes (Copom, dados de inflação, balanços etc.).
+
+Regras:
+1. Números reais: use apenas o que está no material; nunca invente cotações ou datas.
+2. Tom: objetivo, direto, de analista profissional — sem enrolação e sem recomendações formais.
+3. Distinga fato de expectativa; se algo não está no material, não mencione.
+4. Total de no máximo 900 caracteres.
+
+Responda APENAS com JSON válido, sem markdown, com exatamente estas chaves:
+{"visaoGeral":"...","macro":"...","mercados":"...","empresas":"...","riscos":"...","agenda":"..."}`;
+
+const ROTULOS_SECOES_PAINEL: Record<string, string> = {
+  visaoGeral: "Visão geral",
+  macro: "Macro",
+  mercados: "Mercados",
+  empresas: "Empresas",
+  riscos: "Riscos",
+  agenda: "Agenda",
+};
+
+async function sintetizarPainelAnalista(
+  itens: ConhecimentoItem[],
+  agora = new Date(),
+): Promise<ConhecimentoItem | null> {
+  const ativo = provedorEnvAtivo(process.env);
+  if (!ativo) return null;
+  const material = itens
+    .slice(0, 25)
+    .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, 200)}`)
+    .join("\n");
+  try {
+    const { generateText } = await import("ai");
+    const { createOpenAICompatible } = await import("@ai-sdk/openai-compatible");
+    const modeloIA = createOpenAICompatible({
+      name: "gestor-ia-painel",
+      baseURL: baseUrlProvedorEnv(ativo.provedor, process.env),
+      headers: { Authorization: `Bearer ${ativo.chave}` },
+    })(ativo.provedor.modelo);
+    const resposta = await generateText({
+      model: modeloIA,
+      system: SISTEMA_PAINEL,
+      prompt: `Material varrido em ${agora.toISOString().slice(0, 10)}:\n\n${material}`,
+      maxOutputTokens: 700,
+    });
+    const texto = resposta.text.trim();
+    const ini = texto.indexOf("{");
+    const fim = texto.lastIndexOf("}");
+    if (ini < 0 || fim <= ini) return null;
+    const parsed = JSON.parse(texto.slice(ini, fim + 1)) as Record<string, unknown>;
+    const linhas = Object.entries(ROTULOS_SECOES_PAINEL)
+      .map(([chave, rotulo]) => {
+        const valor = String(parsed[chave] ?? "").trim();
+        return valor ? `- ${rotulo}: ${valor}` : null;
+      })
+      .filter((l): l is string => l !== null);
+    if (linhas.length === 0) return null;
+    return {
+      categoria: "painel",
+      titulo: "Painel do analista (síntese do Gestor IA)",
+      conteudo: linhas.join("\n"),
+      fonte: `Síntese do Gestor IA via ${ativo.provedor.nome}`,
+      atualizadoEm: agora.toISOString(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Scanner: coleta de macro, órgãos, setores, notícias e educação
+ * ------------------------------------------------------------------ */
+
+/** Varre a internet e monta a base de conhecimento do Gestor IA. */
+export async function executarScanConhecimento(agora = new Date()): Promise<BaseConhecimento> {
+  const [itemMacro, itemCvm, noticiasMod, resultados] = await Promise.all([
+    buscarPainelMacro(agora),
+    buscarCvm(agora),
     import("@/lib/noticias.server").catch(() => null),
-    Promise.all(BUSCAS_EDUCACIONAIS.map((q) => buscarRss(q, 6))),
+    Promise.all([
+      ...BUSCAS_ORGAOS.map((q) => buscarRss(q, 4, "mercado")),
+      ...BUSCAS_SETORES.map((q) => buscarRss(q, 4, "setor")),
+      ...BUSCAS_EDUCACIONAIS.map((q) => buscarRss(q, 5, "educacao")),
+    ]),
   ]);
+
+  const itens: ConhecimentoItem[] = [];
+  if (itemMacro) itens.push(itemMacro);
+  if (itemCvm) itens.push(itemCvm);
 
   try {
     const feed = noticiasMod ? await noticiasMod.agregarNoticias().catch(() => []) : [];
@@ -221,13 +417,24 @@ export async function executarScanConhecimento(agora = new Date()): Promise<Base
     /* sem notícias: o conhecimento curado e o Google News cobrem */
   }
 
-  for (const grupo of resultados) {
-    for (const item of grupo) {
-      if (itens.length >= 40) break;
-      if (itens.some((i) => i.titulo === item.titulo)) continue;
-      itens.push(item);
-    }
+  const vistas = new Set<string>();
+  for (const item of resultados.flat()) {
+    if (itens.length >= MAX_ITENS_SCAN) break;
+    if (vistas.has(item.titulo)) continue;
+    vistas.add(item.titulo);
+    itens.push(item);
   }
+
+  let painel: ConhecimentoItem | null = null;
+  try {
+    const anterior = await lerConhecimento();
+    painel = anterior.itens.find((i) => i.categoria === "painel") ?? null;
+  } catch {
+    /* sem base anterior: painel nasce só da síntese */
+  }
+  const sintese = await sintetizarPainelAnalista(itens, agora).catch(() => null);
+  if (sintese) painel = sintese;
+  if (painel) itens.unshift(painel);
 
   const base: BaseConhecimento = {
     atualizadoEm: agora.toISOString(),

@@ -32,15 +32,19 @@ import {
 const CORES_CATEGORIA: Record<ConhecimentoItem["categoria"], string> = {
   macro: "bg-sky-600/10 text-sky-600 border-sky-600/30",
   mercado: "bg-violet-600/10 text-violet-600 border-violet-600/30",
+  setor: "bg-orange-600/10 text-orange-600 border-orange-600/30",
   educacao: "bg-emerald-600/10 text-emerald-600 border-emerald-600/30",
   noticias: "bg-amber-600/10 text-amber-600 border-amber-600/30",
+  painel: "bg-rose-600/10 text-rose-600 border-rose-600/30",
 };
 
 const ROTULO_CATEGORIA: Record<ConhecimentoItem["categoria"], string> = {
   macro: "Macro",
   mercado: "Mercado",
+  setor: "Setor",
   educacao: "Educação",
   noticias: "Notícias",
+  painel: "Painel",
 };
 
 export function DialogoAprendizado() {

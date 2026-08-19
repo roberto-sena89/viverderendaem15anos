@@ -35,6 +35,8 @@ const SISTEMA = `Você é o "Gestor IA", consultor PRO da plataforma Investidor 
 
 Sua missão: guiar o usuário em toda a jornada de investimento — diagnóstico da carteira, aportes, dividendos, rebalanceamento, metas e independência financeira — com análises profundas, números reais e planos de ação concretos.
 
+Você opera como um analista financeiro sênior de mesa proprietária: começa pelo contexto, fundamenta cada conclusão em números reais com fonte e data, distingue fato de opinião e diz claramente quando um dado não está disponível. Tom objetivo, direto e educacional — sem promessas e sem recomendações formais.
+
 Ferramentas de mercado (use sempre que a pergunta envolver preços, desempenho, comparações ou juros):
 - cotacao: preço em tempo quase real de uma ação, FII, ETF ou índice.
 - historico: série histórica de até 10 anos, com retorno total, retorno anualizado, drawdown máximo, volatilidade e desempenho ano a ano.
@@ -1772,26 +1774,38 @@ export const Route = createFileRoute("/api/chat")({
           `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${modeloEscolhido}`,
         );
 
-        // Conhecimento de mercado dinâmico (scanner web): injeta os itens mais
-        // relevantes para a pergunta dentro do orçamento de tokens.
+        // Conhecimento de mercado dinâmico (scanner web): o Painel do
+        // Analista entra sempre; os demais itens conforme a relevância com
+        // a pergunta, dentro do orçamento de tokens.
         let trechoConhecimento = "";
         try {
           const conhecimentoMod = await import("@/lib/conhecimento.server");
           const baseConhecimento = await conhecimentoMod.lerConhecimento();
           const pergunta = textoDaMensagem(ultima) || "";
-          const relevantes = conhecimentoMod.selecionarConhecimento(
-            pergunta,
-            baseConhecimento.itens,
-          );
+          const painel = baseConhecimento.itens.find((i) => i.categoria === "painel") ?? null;
+          const demais = baseConhecimento.itens.filter((i) => i.categoria !== "painel");
+          const relevantes = conhecimentoMod.selecionarConhecimento(pergunta, demais);
+          const blocos: string[] = [];
+          if (painel) {
+            blocos.push(
+              "PAINEL DO ANALISTA (síntese do scanner — contexto principal de mercado)\n" +
+                painel.conteudo +
+                `\n(Fonte: ${painel.fonte}, gerado em ${new Date(painel.atualizadoEm).toISOString().slice(0, 10)})`,
+            );
+          }
           if (relevantes.length > 0) {
-            trechoConhecimento =
-              "\n\n### Conhecimento de mercado (base dinâmica do scanner — use para enriquecer a análise, sempre com bom senso)\n" +
-              relevantes
-                .map(
-                  (i) =>
-                    `- [${i.categoria}] ${i.titulo}: ${i.conteudo} (${i.fonte}, ${new Date(i.atualizadoEm).toISOString().slice(0, 10)})`,
-                )
-                .join("\n");
+            blocos.push(
+              "Conhecimento de mercado (base dinâmica do scanner — use para enriquecer a análise, sempre com bom senso)\n" +
+                relevantes
+                  .map(
+                    (i) =>
+                      `- [${i.categoria}] ${i.titulo}: ${i.conteudo} (${i.fonte}, ${new Date(i.atualizadoEm).toISOString().slice(0, 10)})`,
+                  )
+                  .join("\n"),
+            );
+          }
+          if (blocos.length > 0) {
+            trechoConhecimento = "\n\n### " + blocos.join("\n\n### ");
           }
         } catch (e) {
           console.error(

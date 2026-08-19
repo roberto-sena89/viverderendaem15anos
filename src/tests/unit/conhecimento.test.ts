@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { selecionarConhecimento, type ConhecimentoItem } from "../../lib/conhecimento.server";
+import {
+  formatarPainelMacro,
+  montarItemCvm,
+  selecionarConhecimento,
+  type ConhecimentoItem,
+} from "../../lib/conhecimento.server";
 
 const item = (titulo: string, conteudo: string, categoria: ConhecimentoItem["categoria"] = "educacao"): ConhecimentoItem => ({
   categoria,
@@ -41,5 +46,55 @@ describe("selecionarConhecimento", () => {
 
   it("base vazia retorna lista vazia", () => {
     expect(selecionarConhecimento("pergunta", [])).toEqual([]);
+  });
+});
+
+describe("formatarPainelMacro", () => {
+  it("formata os últimos pontos das séries com indicador, unidade e data", () => {
+    const texto = formatarPainelMacro([
+      { indicador: "Meta Selic", unidade: "% a.a.", serie: [{ data: "10/08/2026", valor: 15 }] },
+      { indicador: "Dólar comercial (venda)", unidade: "BRL", serie: [{ data: "10/08/2026", valor: 5.42 }] },
+    ]);
+    expect(texto).toContain("Meta Selic: 15 % a.a.");
+    expect(texto).toContain("Dólar comercial (venda): 5.42 BRL");
+    expect(texto).toContain("10/08/2026");
+  });
+
+  it("ignora séries vazias ou com valor não numérico", () => {
+    const texto = formatarPainelMacro([
+      { indicador: "Vazia", unidade: "x", serie: [] },
+      { indicador: "Inválida", unidade: "x", serie: [{ data: "10/08/2026", valor: Number.NaN }] },
+    ]);
+    expect(texto).toBe("");
+  });
+});
+
+describe("montarItemCvm", () => {
+  it("retorna null sem data de atualização ou sem tickers com P/L", () => {
+    expect(montarItemCvm({}, null)).toBeNull();
+    expect(montarItemCvm({ PETR4: { plAtual: null } }, "2026-08-01T00:00:00.000Z")).toBeNull();
+  });
+
+  it("destaca os 3 tickers com menor P/L positivo", () => {
+    const item = montarItemCvm(
+      {
+        A: { plAtual: 12.3 },
+        B: { plAtual: 4.5 },
+        C: { plAtual: 8.9 },
+        D: { plAtual: -2 },
+        E: { plAtual: 20 },
+      },
+      "2026-08-01T00:00:00.000Z",
+      new Date("2026-08-10T12:00:00.000Z"),
+    );
+    expect(item).not.toBeNull();
+    expect(item!.titulo).toContain("CVM");
+    expect(item!.conteudo).toContain("B 4,5x");
+    expect(item!.conteudo).toContain("C 8,9x");
+    expect(item!.conteudo).toContain("A 12,3x");
+    expect(item!.conteudo).not.toContain("-2x");
+    expect(item!.conteudo).not.toContain("20x");
+    expect(item!.conteudo).toContain("4 empresas");
+    expect(item!.fonte).toContain("CVM");
   });
 });
