@@ -3,7 +3,6 @@ import { createClient } from "@supabase/supabase-js";
 import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
 import { z } from "zod";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
 import { baseUrlProvedorEnv, provedorEnvAtivo } from "@/lib/provedores-env.server";
 import {
   brl,
@@ -205,8 +204,6 @@ function textoDaCarteira(
   ].join("\n");
 }
 
-const MODELO_CHAT = "openai/gpt-5.5";
-
 function textoDaMensagem(message: UIMessage) {
   return message.parts
     .map((part) => (part.type === "text" ? part.text : ""))
@@ -373,7 +370,6 @@ export const Route = createFileRoute("/api/chat")({
 
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
-        const lovableApiKey = process.env.LOVABLE_API_KEY;
         if (!supabaseUrl || !supabaseKey)
           return new Response("Backend não configurado", { status: 500 });
 
@@ -508,9 +504,9 @@ export const Route = createFileRoute("/api/chat")({
         const envProvedor = provedorEnvAtivo(process.env);
         const provedorPadrao = envProvedor?.provedor ?? null;
 
-        if (!provedorExterno && !provedorPadrao && !lovableApiKey) {
+        if (!provedorExterno && !provedorPadrao) {
           return new Response(
-            "A IA nativa não está configurada. Configure um provedor gratuito no botão de configurações do Gestor IA.",
+            "A IA não está configurada. Configure um provedor gratuito nas variáveis de ambiente do deploy (ou no botão de configurações do Gestor IA).",
             { status: 503 },
           );
         }
@@ -519,11 +515,7 @@ export const Route = createFileRoute("/api/chat")({
           ? iaModelo!
           : provedorPadrao
             ? envProvedor!.provedor.modelo
-            : MODELO_CHAT;
-        const gatewayNativo =
-          provedorExterno || provedorPadrao
-            ? null
-            : createLovableAiGatewayProvider(lovableApiKey!, getLovableAiGatewayRunId(request));
+            : "";
         const nomeProvedor = provedorExterno
           ? `provedor externo (${(() => {
               try {
@@ -532,22 +524,18 @@ export const Route = createFileRoute("/api/chat")({
                 return iaBaseUrl!;
               }
             })()})`
-          : provedorPadrao
-            ? `${envProvedor!.provedor.nome} (servidor)`
-            : "Lovable AI Gateway";
+          : `${envProvedor!.provedor.nome} (servidor)`;
         const modeloChat = provedorExterno
           ? createOpenAICompatible({
               name: "provedor-usuario",
               baseURL: iaBaseUrl!.replace(/\/$/, ""),
               headers: { Authorization: `Bearer ${iaChave}` },
             })(iaModelo!)
-          : provedorPadrao
-            ? createOpenAICompatible({
-                name: "provedor-env",
-                baseURL: baseUrlProvedorEnv(envProvedor!.provedor, process.env),
-                headers: { Authorization: `Bearer ${envProvedor!.chave}` },
-              })(envProvedor!.provedor.modelo)
-            : gatewayNativo!(MODELO_CHAT);
+          : createOpenAICompatible({
+              name: "provedor-env",
+              baseURL: baseUrlProvedorEnv(envProvedor!.provedor, process.env),
+              headers: { Authorization: `Bearer ${envProvedor!.chave}` },
+            })(envProvedor!.provedor.modelo);
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
@@ -1843,11 +1831,7 @@ export const Route = createFileRoute("/api/chat")({
               /* corpo não-JSON */
             }
             const cab = err?.responseHeaders ?? {};
-            requestId =
-              requestId ??
-              cab["x-request-id"] ??
-              cab["x-lovable-aig-run-id"] ??
-              gatewayNativo?.getRunId();
+            requestId = requestId ?? cab["x-request-id"] ?? cab["x-lovable-aig-run-id"];
 
             const detalhes = [
               `provedor: ${nomeProvedor}`,

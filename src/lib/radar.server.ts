@@ -22,6 +22,7 @@ import {
 import type { Json } from "@/integrations/supabase/types";
 import type { LinhaAcao } from "@/lib/acoes-base";
 import type { LinhaFii } from "@/lib/fiis-base";
+import { baseUrlProvedorEnv, type ProvedorEnv } from "@/lib/provedores-env.server";
 
 export type PosicaoHistorica = {
   ticker: string;
@@ -1043,7 +1044,7 @@ function textoDeFundamentos(l: LinhaAcao | LinhaFii | null): string {
 /** Gera (e persiste) a análise completa de um ativo com o Gestor IA. */
 export async function gerarAnaliseIA(
   ticker: string,
-  lovableApiKey: string,
+  provedor: { provedor: ProvedorEnv; chave: string },
 ): Promise<AnaliseIA | null> {
   try {
     const [acoesMod, fiisMod] = await Promise.all([
@@ -1150,15 +1151,17 @@ export async function gerarAnaliseIA(
       '"fatoresExternos":["lista curta de manchetes/fatores que pesaram na decisão, máx 4 itens"]}.';
 
     const { generateText } = await import("ai");
-    const { createLovableAiGatewayProvider } = await import("@/lib/ai-gateway.server");
-    const gateway = createLovableAiGatewayProvider(lovableApiKey);
+    const { createOpenAICompatible } = await import("@ai-sdk/openai-compatible");
+    const modeloIA = createOpenAICompatible({
+      name: "gestor-ia-radar",
+      baseURL: baseUrlProvedorEnv(provedor.provedor, process.env),
+      headers: { Authorization: `Bearer ${provedor.chave}` },
+    })(provedor.provedor.modelo);
     const resultadoIA = await generateText({
-      model: gateway("openai/gpt-5.5"),
-      providerOptions: {
-        lovable: { max_completion_tokens: 1300 },
-      },
+      model: modeloIA,
       system,
       prompt,
+      maxOutputTokens: 1300,
     });
 
     const texto = resultadoIA.text.trim();

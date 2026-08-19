@@ -476,15 +476,16 @@ export const radarAnaliseIA = createServerFn({ method: "GET" })
           erro: "Muitas análises em pouco tempo. Aguarde alguns minutos e tente de novo.",
         };
       }
-      const lovableApiKey = process.env.LOVABLE_API_KEY;
-      if (!lovableApiKey) {
+      const { provedorEnvAtivo } = await import("@/lib/provedores-env.server");
+      const envProvedor = provedorEnvAtivo(process.env);
+      if (!envProvedor) {
         return {
           analise: null,
-          erro: "A geração de IA não está configurada neste ambiente. Peça ao administrador para definir a chave LOVABLE_API_KEY.",
+          erro: "A geração de IA não está configurada neste ambiente. Configure a chave de um provedor gratuito nas variáveis de ambiente (ex.: TOKEN_ROUTER_API_KEY) para o Gestor IA funcionar.",
         };
       }
       try {
-        const analise = await radarServer.gerarAnaliseIA(data.ticker, lovableApiKey);
+        const analise = await radarServer.gerarAnaliseIA(data.ticker, envProvedor);
         return {
           analise,
           erro: analise
