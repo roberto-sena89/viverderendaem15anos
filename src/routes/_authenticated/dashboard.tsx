@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DashboardGrid, ResponsiveDashboardCard } from "@/components/responsive-dashboard-card";
+
 import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { useAportes, useDividendos } from "@/lib/data";
 import { classeDoAtivo } from "@/lib/portfolio";
@@ -276,10 +276,11 @@ function Dashboard() {
         <PainelAnaliseRisco carteira={ativos} aportes={aportes} />
       </section>
 
-      <div id="evolucao" className="scroll-mt-32 text-[12px] sm:scroll-mt-40">
-        <DashboardGrid gap="md" className="mb-6">
-          <ResponsiveDashboardCard variant="interactive" hoverEffect={false} className="h-full">
+      <section id="evolucao" className="scroll-mt-32 text-[12px] sm:scroll-mt-40">
+        <div className="mb-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
+          <div className="min-w-0">
             <Panel
+              className="h-full"
               title="Evolução do Patrimônio"
               action={
                 <div className="flex flex-wrap items-center gap-2">
@@ -424,8 +425,11 @@ function Dashboard() {
                 </ResponsiveContainer>
               </div>
             </Panel>
+          </div>
 
+          <div className="min-w-0">
             <Panel
+              className="h-full"
               title="Ativos na Carteira"
               action={
                 <FiltroSelect
@@ -442,8 +446,8 @@ function Dashboard() {
                   Sem ativos para exibir neste filtro.
                 </p>
               ) : (
-                <div className="flex flex-wrap items-center gap-5">
-                  <div className="relative h-56 min-w-[13rem] flex-1" aria-hidden="true" inert>
+                <div className="flex flex-col items-stretch gap-4">
+                  <div className="relative h-56 w-full min-w-0" aria-hidden="true" inert>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -475,7 +479,7 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <ul className="min-w-[15rem] flex-1 space-y-1.5 text-xs">
+                  <ul className="w-full min-w-0 space-y-1.5 text-xs">
                     {porCategoria.map((c) => {
                       const cor = c.cor;
                       const percentual =
@@ -546,9 +550,9 @@ function Dashboard() {
                 </div>
               )}
             </Panel>
-          </ResponsiveDashboardCard>
-        </DashboardGrid>
-      </div>
+          </div>
+        </div>
+      </section>
 
       <section
         id="ativos"
