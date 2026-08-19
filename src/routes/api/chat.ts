@@ -514,49 +514,102 @@ export const Route = createFileRoute("/api/chat")({
           dy: Number(a.dy),
         }));
 
-        // Provedor de IA externo (gratuito) configurado pelo usuário na página do Gestor IA.
+        // Lista de combinações provedor/modelo para tentar, em ordem de preferência
+        const combinacoesParaTentar: Array<{
+          nome: string;
+          modelo: string;
+          criarModelo: () => ReturnType<typeof createOpenAICompatible>;
+        }> = [];
+
+        // Adicionar provedor externo (se configurado) como primeira opção
         const iaBaseUrl = request.headers.get("x-ia-base-url")?.trim();
         const iaModelo = request.headers.get("x-ia-modelo")?.trim();
         const iaChave = request.headers.get("x-ia-chave")?.trim();
-        const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
+        if (iaBaseUrl && iaModelo && iaChave) {
+          combinacoesParaTentar.push({
+            nome: `provedor externo (${(() => {
+              try {
+                return new URL(iaBaseUrl!).hostname;
+              } catch {
+                return iaBaseUrl!;
+              }
+            })()})`,
+            modelo: iaModelo,
+            criarModelo: () =>
+              createOpenAICompatible({
+                name: "provedor-usuario",
+                baseURL: iaBaseUrl!.replace(/\/$/, ""),
+                headers: { Authorization: `Bearer ${iaChave}` },
+              })(iaModelo!),
+          });
+        }
 
-        // Provedores padrão via variáveis de ambiente do servidor (a chave nunca
-        // vai para o cliente nem para o repositório). Ordem: tabela em provedores-env.server.ts.
-        const envProvedor = provedorEnvAtivo(process.env);
-        const provedorPadrao = envProvedor?.provedor ?? null;
+        // Adicionar provedores padrão do servidor (do provedores-env.server.ts)
+        // Em ordem de precedência (mesma ordem do array PROVEDORES_ENV)
+        for (const provedor of PROVEDORES_ENV) {
+          const chave = process.env[provedor.variavel]?.trim();
+          if (chave) {
+            combinacoesParaTentar.push({
+              nome: `${provedor.nome} (servidor)`,
+              modelo: provedor.modelo,
+              criarModelo: () =>
+                createOpenAICompatible({
+                  name: `provedor-${provedor.variavel.toLowerCase()}`,
+                  baseURL: baseUrlProvedorEnv(provedor, process.env),
+                  headers: { Authorization: `Bearer ${chave}` },
+                })(provedor.modelo),
+            });
+          }
+        }
 
-        if (!provedorExterno && !provedorPadrao) {
+        if (combinacoesParaTentar.length === 0) {
           return new Response(
             "A IA não está configurada. Configure um provedor gratuito nas variáveis de ambiente do deploy (ou no botão de configurações do Gestor IA).",
             { status: 503 },
           );
         }
 
-        const modeloEscolhido = provedorExterno
-          ? iaModelo!
-          : provedorPadrao
-            ? envProvedor!.provedor.modelo
-            : "";
-        const nomeProvedor = provedorExterno
-          ? `provedor externo (${(() => {
-              try {
-                return new URL(iaBaseUrl!).hostname;
-              } catch {
-                return iaBaseUrl!;
-              }
-            })()})`
-          : `${envProvedor!.provedor.nome} (servidor)`;
-        const modeloChat = provedorExterno
-          ? createOpenAICompatible({
-              name: "provedor-usuario",
-              baseURL: iaBaseUrl!.replace(/\/$/, ""),
-              headers: { Authorization: `Bearer ${iaChave}` },
-            })(iaModelo!)
-          : createOpenAICompatible({
-              name: "provedor-env",
-              baseURL: baseUrlProvedorEnv(envProvedor!.provedor, process.env),
-              headers: { Authorization: `Bearer ${envProvedor!.chave}` },
-            })(envProvedor!.provedor.modelo);
+        // Tentar cada combinação até uma funcionar
+        let ultimoErro: unknown = null;
+        let modeloChatFinal: ReturnType<typeof createOpenAICompatible> | null = null;
+        let nomeProvedorFinal = "";
+        let modeloEscolhidoFinal = "";
+
+        for (const combinacao of combinacoesParaTentar) {
+          try {
+            // Tentar criar o modelo e fazer uma chamada simples para testar
+            const modeloTeste = combinacao.criarModelo();
+
+            // Fazer uma chamada mínima para verificar se o modelo funciona
+            // Usamos max_tokens: 1 para minimizar o custo
+            const testeResposta = await streamText({
+              model: modeloTeste,
+              system: "teste",
+              messages: [{ role: "user", content: "ok" }],
+              max_tokens: 1,
+            });
+
+            // Se chegou aqui, o modelo funcionou
+            modeloChatFinal = modeloTeste;
+            nomeProvedorFinal = combinacao.nome;
+            modeloEscolhidoFinal = combinacao.modelo;
+            break;
+          } catch (erro) {
+            // Guardar o último erro para caso todas as tentativas falhem
+            ultimoErro = erro;
+            console.log(`[chat] Tentativa falhou para ${combinacao.nome}:`, erro);
+            continue;
+          }
+        }
+
+        if (!modeloChatFinal) {
+          // Todas as tentativas falharam
+          const erroMsg = ultimoErro instanceof Error ? ultimoErro.message : String(ultimoErro);
+          return new Response(
+            `Nenhum provedor de IA disponível. Último erro: ${erroMsg}`,
+            { status: 503 },
+          );
+        }
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
@@ -1771,7 +1824,7 @@ export const Route = createFileRoute("/api/chat")({
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(
-          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, modelo ${modeloEscolhido}`,
+          `[chat] run ${userId}: ${messages.length} mensagens, ${mensagensAparadas.reduce((s, m) => s + textoDaMensagem(m).length, 0)} chars após aparar, provedor: ${nomeProvedorFinal}, modelo: ${modeloEscolhidoFinal}`,
         );
 
         // Conhecimento de mercado dinâmico (scanner web): o Painel do
@@ -1817,7 +1870,7 @@ export const Route = createFileRoute("/api/chat")({
         let resultado;
         try {
           resultado = streamText({
-            model: modeloChat,
+            model: modeloChatFinal,
             system: SISTEMA.replace("{PERFIL}", perfilValido)
               .concat(
                 modoCitacoes
@@ -1896,8 +1949,8 @@ export const Route = createFileRoute("/api/chat")({
             requestId = requestId ?? cab["x-request-id"] ?? cab["x-lovable-aig-run-id"];
 
             const detalhes = [
-              `provedor: ${nomeProvedor}`,
-              `modelo: ${modeloEscolhido}`,
+              `provedor: ${nomeProvedorFinal}`,
+              `modelo: ${modeloEscolhidoFinal}`,
               `status: ${status ?? "sem status"}`,
               requestId ? `request id: ${requestId}` : null,
               `hora: ${new Date().toISOString()}`,
