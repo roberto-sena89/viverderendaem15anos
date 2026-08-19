@@ -446,8 +446,8 @@ function Dashboard() {
                   Sem ativos para exibir neste filtro.
                 </p>
               ) : (
-                <div className="flex flex-wrap items-center gap-5">
-                  <div className="relative h-56 min-w-[13rem] flex-1" aria-hidden="true" inert>
+                <div className="flex flex-col items-stretch gap-4">
+                  <div className="relative h-56 w-full min-w-0" aria-hidden="true" inert>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
