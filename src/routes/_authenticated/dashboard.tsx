@@ -479,7 +479,7 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <ul className="min-w-[15rem] flex-1 space-y-1.5 text-xs">
+                  <ul className="w-full min-w-0 space-y-1.5 text-xs">
                     {porCategoria.map((c) => {
                       const cor = c.cor;
                       const percentual =
