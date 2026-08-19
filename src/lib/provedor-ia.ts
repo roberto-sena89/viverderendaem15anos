@@ -50,6 +50,25 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "nvidia/nemotron-nano-9b-v2:free",
       "nvidia/nemotron-3.5-content-safety:free",
     ],
+    // Todos os modelos listados possuem sufixo :free e são considerados gratuitos
+    modelosGratuitos: [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "dots-studio/dots-3-note-preview:free",
+      "google/gemma-4-31b-it:free",
+      "google/gemma-4-26b-a4b-it:free",
+      "poolside/laguna-s-2.1:free",
+      "poolside/laguna-xs-2.1:free",
+      "nvidia/nemotron-3-super-120b-a12b:free",
+      "cohere/north-mini-code:free",
+      "nvidia/nemotron-3-nano-30b-a3b:free",
+      "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+      "z-ai/glm-5.2:free",
+      "openai/gpt-oss-20b:free",
+      "nvidia/nemotron-nano-12b-v2-vl:free",
+      "nvidia/nemotron-nano-9b-v2:free",
+      "nvidia/nemotron-3.5-content-safety:free",
+    ],
     urlChave: "https://openrouter.ai/keys",
   },
   {
@@ -58,6 +77,17 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     descricao: "Camada gratuita muito rápida com modelos Compound, GPT-OSS e Qwen.",
     baseUrl: "https://api.groq.com/openai/v1",
     modelos: [
+      "groq/compound",
+      "groq/compound-mini",
+      "openai/gpt-oss-120b",
+      "openai/gpt-oss-20b",
+      "qwen/qwen3.6-27b",
+      "allam-2-7b",
+      "canopylabs/orpheus-v1-english",
+      "whisper-large-v3-turbo",
+    ],
+    // Todos os modelos listados estão disponíveis na camada gratuita do Groq
+    modelosGratuitos: [
       "groq/compound",
       "groq/compound-mini",
       "openai/gpt-oss-120b",
@@ -80,6 +110,13 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "gemini-3.5-flash",
       "gemini-3.5-flash-lite",
     ],
+    // Todos os modelos listados estão disponíveis na camada gratuita do Gemini
+    modelosGratuitos: [
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite",
+    ],
     urlChave: "https://aistudio.google.com/apikey",
   },
   {
@@ -88,6 +125,8 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     descricao: "Camada gratuita com inferência de altíssima velocidade.",
     baseUrl: "https://api.cerebras.ai/v1",
     modelos: ["gpt-oss-120b", "gemma-4-31b"],
+    // Ambos os modelos listados estão disponíveis na camada gratuita do Cerebras
+    modelosGratuitos: ["gpt-oss-120b", "gemma-4-31b"],
     urlChave: "https://cloud.cerebras.ai",
   },
   {

@@ -160,10 +160,11 @@ configure-as uma única vez e elas nunca vão para o navegador nem para o reposi
 | Variável               | Provedor     | Onde gerar a chave                  | Modelo gratuito padrão                |
 | ---------------------- | ------------ | ----------------------------------- | ------------------------------------- |
 | `TOKEN_ROUTER_API_KEY` | Token Router | tokenrouter.com/dashboard           | `deepseek/deepseek-v4-pro-0813-free`  |
-| `OPENROUTER_API_KEY`   | OpenRouter   | openrouter.ai/keys                  | `deepseek/deepseek-chat-v3-0324:free` |
-| `NVIDIA_API_KEY`       | NVIDIA NIM   | build.nvidia.com/settings/api-keys  | `meta/llama-3.3-70b-instruct`         |
+| `ORCAROUTER_API_KEY`   | OrcaRouter   | orcarouter.ai                       | `qwen/qwen3.8-27b-free`               |
+| `OPENROUTER_API_KEY`   | OpenRouter   | openrouter.ai/keys                  | `nvidia/nemotron-3-ultra-550b-a55b:free` |
+| `NVIDIA_API_KEY`       | NVIDIA NIM   | build.nvidia.com/settings/api-keys  | `z-ai/glm-5.2`                        |
 | `OPENCODE_API_KEY`     | OpenCode Zen | opencode.ai/auth                    | `deepseek-v4-flash-free`              |
-| `CLINE_API_KEY`        | Cline        | app.cline.bot → Settings → API Keys | `minimax/minimax-m2.5`                |
+| `CLINE_API_KEY`        | Cline        | app.cline.bot → Settings → API Keys | `minimax/minimax-m3`                  |
 
 Override opcional de URL base por provedor: `<PREFIXO>_BASE_URL`
 (ex.: `TOKEN_ROUTER_BASE_URL`, `OPENROUTER_BASE_URL`).

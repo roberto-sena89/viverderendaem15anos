@@ -46,3 +46,20 @@ jobs:
                 --body "$(node -e 'const r=require("./data/modelos-gratuitos.json"); console.log("A verificação diária detectou modelos configurados que não estão mais gratuitos:\n\n" + r.desaparecidos.map(d => "- **" + d.provedor + "**: `" + d.modelo + "`").join("\n"))')"
             fi
           fi
+
+      - name: Abrir issue se novos modelos gratuitos foram detectados
+        if: success()  # Run even if verification succeeded
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f data/modelos-gratuitos.json ]; then
+            NOVOS=$(node -e "const r=require('./data/modelos-gratuitos.json'); console.log(r.novosSugeridos.length)")
+            if [ "$NOVOS" -gt 0 ]; then
+              ABERTAS=$(gh issue list --state open --search "novos modelos gratuitos detectados" --json number --jq 'length')
+              if [ "$ABERTAS" = "0" ]; then
+                gh issue create \
+                  --title "Novos modelos gratuitos detectados nos provedores de IA" \
+                  --body "$(node -e 'const r=require("./data/modelos-gratuitos.json"); console.log("Novos modelos gratuitos detectados na verificação diária:\n\n" + r.novosSugeridos.map(n => "- **" + n.provedor + "**: `" + n.modelo + `"${n.ctx ? ` (${n.ctx.toLocaleString()} tokens)` : ``}`").join("\n"));\n\n💡 Considere atualizar o Gestor IA para aproveitar esses novos modelos!')"
+              fi
+            fi
+          fi

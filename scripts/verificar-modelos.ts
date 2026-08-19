@@ -47,5 +47,17 @@ if (relatorio.desaparecidos.length > 0) {
   }
 }
 
+if (relatorio.novosSugeridos.length > 0) {
+  console.log("\n🚀 NOVIDADE — novos modelos gratuitos detectados nos provedores:");
+  for (const n of relatorio.novosSugeridos.slice(0, 10)) {
+    const ctxInfo = n.ctx ? ` (${n.ctx.toLocaleString()} tokens)` : "";
+    console.log(`  - ${n.provedor}: ${n.modelo}${ctxInfo}`);
+  }
+  if (relatorio.novosSugeridos.length > 10) {
+    console.log(`  … e mais ${relatorio.novosSugeridos.length - 10} novos modelos gratuitos`);
+  }
+  console.log("\n💡 Considere atualizar o Gestor IA para aproveitar esses novos modelos!");
+}
+
 console.log(`\nResumo: ${relatorio.resumo}`);
 if (relatorio.desaparecidos.length > 0) process.exitCode = 1;
