@@ -332,6 +332,7 @@ function Dashboard() {
                       onClick={() => setDetalheAberto(true)}
                       title="Ver detalhamento mês a mês"
                       className="chip-legenda serie-aplicado flex-col items-start gap-0.5 rounded-lg px-3 py-2 text-left transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      style={{ background: "var(--color-background)" }}
                     >
                       <span className="flex items-center gap-2 text-[length:var(--card-legenda)] font-medium text-foreground">
                         <span className="ponto-legenda serie-aplicado" aria-hidden />
