@@ -59,6 +59,11 @@ interface VerificadorProvedor {
   caminhoModels?: string;
   /** true = chave vai na query string (?key=) em vez do header Authorization. */
   chaveViaQuery?: boolean;
+  /**
+   * Provedores sem endpoint /models: modelos gratuitos a sondar diretamente
+   * via chat/completions (pedido mínimo de 1 token) para confirmar se existem.
+   */
+  modelosProbe?: string[];
   nota?: string;
 }
 
@@ -109,6 +114,7 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     padroesGratuitos: [/-free$/i],
     idsGratuitosAdicionais: ["minimax/minimax-m3", "xiaomi/mimo-v2.5", "deepseek-v4-flash"],
     exigeChave: true,
+    modelosProbe: ["minimax/minimax-m3", "xiaomi/mimo-v2.5", "deepseek-v4-flash"],
   },
   {
     chave: "groq",
@@ -158,6 +164,63 @@ function ehGratuito(provedor: VerificadorProvedor, id: string): boolean {
       (adicional) => id.toLowerCase() === adicional.toLowerCase(),
     ) ?? false
   );
+}
+
+async function sondarModelos(
+  provedor: VerificadorProvedor,
+  env: NodeJS.ProcessEnv,
+): Promise<VerificacaoProvedor | null> {
+  const chave = chaveDoProvedor(provedor, env);
+  const modelos = provedor.modelosProbe ?? [];
+  if (!chave || modelos.length === 0) return null;
+
+  const resultados: ModeloGratuito[] = [];
+  for (const modelo of modelos) {
+    try {
+      const resposta = await fetch(`${provedor.baseUrl.replace(/\/$/, "")}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "User-Agent": "viverderenda-verificador/1.0",
+          Authorization: `Bearer ${chave}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: modelo,
+          messages: [{ role: "user", content: "ping" }],
+          max_tokens: 1,
+        }),
+        signal: AbortSignal.timeout(20_000),
+      });
+      if (resposta.ok) {
+        resultados.push({
+          id: modelo,
+          ctx: null,
+          nota: "disponível (sondagem de 1 token)",
+        });
+      } else if (resposta.status !== 404) {
+        resultados.push({
+          id: modelo,
+          ctx: null,
+          nota: `falha na sondagem (HTTP ${resposta.status})`,
+        });
+      }
+    } catch (e) {
+      resultados.push({
+        id: modelo,
+        ctx: null,
+        nota: e instanceof Error ? `erro de rede: ${e.message}` : "erro de rede",
+      });
+    }
+  }
+
+  const disponiveis = resultados.filter((r) => r.nota?.startsWith("disponível"));
+  return {
+    chave: provedor.chave,
+    nome: provedor.nome,
+    status: resultados.length > 0 ? "ok" : "erro",
+    mensagem: `${disponiveis.length}/${resultados.length} modelos gratuitos respondendo`,
+    modelosGratuitos: disponiveis,
+  };
 }
 
 async function buscarCatalogo(
@@ -211,6 +274,10 @@ async function buscarCatalogo(
       }
 
       if (!resposta.ok) {
+        if (resposta.status === 404 || resposta.status === 405) {
+          const sondagem = await sondarModelos(provedor, env);
+          if (sondagem) return sondagem;
+        }
         return {
           chave: provedor.chave,
           nome: provedor.nome,
@@ -327,7 +394,9 @@ export function modelosConfiguradosDe(
   for (const p of presets) {
     const chave = chavePorNome(p.nome);
     if (!chave) continue;
-    for (const modelo of [...(p.modelos ?? []), ...(p.modelosGratuitos ?? [])]) {
+    const modelos =
+      p.modelosGratuitos && p.modelosGratuitos.length > 0 ? p.modelosGratuitos : p.modelos;
+    for (const modelo of modelos) {
       const id = `${chave}:${modelo.toLowerCase()}`;
       if (vistos.has(id)) continue;
       vistos.add(id);

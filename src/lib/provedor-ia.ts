@@ -99,8 +99,8 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "minimax/minimax-m2.5",
       "z-ai/glm-5",
     ],
-    // Verificado com a API real: apenas este modelo responde sem crédito na conta.
-    modelosGratuitos: ["deepseek/deepseek-v4-pro-0813-free"],
+    // Verificado com a API real: somente estes respondem sem crédito na conta.
+    modelosGratuitos: ["deepseek/deepseek-v4-pro-0813-free", "qwen/qwen3.8-max-free"],
     urlChave: "https://www.tokenrouter.com/dashboard",
   },
   {
