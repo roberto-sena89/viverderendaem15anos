@@ -315,6 +315,7 @@ Regras:
 2. Tom: objetivo, direto, de analista profissional — sem enrolação e sem recomendações formais.
 3. Distinga fato de expectativa; se algo não está no material, não mencione.
 4. Total de no máximo 900 caracteres.
+5. PROIBIDO markdown: nada de ##, asteriscos, negrito ou blocos de código.
 
 Responda APENAS com JSON válido, sem markdown, com exatamente estas chaves:
 {"visaoGeral":"...","macro":"...","mercados":"...","empresas":"...","riscos":"...","agenda":"..."}`;
@@ -350,28 +351,55 @@ async function sintetizarPainelAnalista(
       model: modeloIA,
       system: SISTEMA_PAINEL,
       prompt: `Material varrido em ${agora.toISOString().slice(0, 10)}:\n\n${material}`,
-      maxOutputTokens: 700,
+      maxOutputTokens: 2000,
     });
     const texto = resposta.text.trim();
     const ini = texto.indexOf("{");
     const fim = texto.lastIndexOf("}");
-    if (ini < 0 || fim <= ini) return null;
-    const parsed = JSON.parse(texto.slice(ini, fim + 1)) as Record<string, unknown>;
+    let secoes: Record<string, unknown> = {};
+    if (ini >= 0 && fim > ini) {
+      try {
+        secoes = JSON.parse(texto.slice(ini, fim + 1)) as Record<string, unknown>;
+      } catch {
+        secoes = {};
+      }
+    }
     const linhas = Object.entries(ROTULOS_SECOES_PAINEL)
       .map(([chave, rotulo]) => {
-        const valor = String(parsed[chave] ?? "").trim();
+        const valor = String(secoes[chave] ?? "")
+          .trim()
+          .slice(0, 300);
         return valor ? `- ${rotulo}: ${valor}` : null;
       })
       .filter((l): l is string => l !== null);
-    if (linhas.length === 0) return null;
+    if (linhas.length === 0 && texto) {
+      console.warn(
+        "[conhecimento] painel: modelo não retornou JSON — usando texto cru como fallback.",
+      );
+      return {
+        categoria: "painel",
+        titulo: "Painel do analista (síntese do Gestor IA)",
+        conteudo: texto.slice(0, 1500),
+        fonte: `Síntese do Gestor IA via ${ativo.provedor.nome}`,
+        atualizadoEm: agora.toISOString(),
+      };
+    }
+    if (linhas.length === 0) {
+      console.error(`[conhecimento] painel: resposta vazia (finish=${resposta.finishReason})`);
+      return null;
+    }
     return {
       categoria: "painel",
       titulo: "Painel do analista (síntese do Gestor IA)",
-      conteudo: linhas.join("\n"),
+      conteudo: linhas.join("\n").slice(0, 1500),
       fonte: `Síntese do Gestor IA via ${ativo.provedor.nome}`,
       atualizadoEm: agora.toISOString(),
     };
-  } catch {
+  } catch (e) {
+    console.error(
+      "[conhecimento] falha ao sintetizar painel:",
+      e instanceof Error ? e.message : String(e),
+    );
     return null;
   }
 }
