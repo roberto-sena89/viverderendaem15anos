@@ -408,18 +408,40 @@ async function sintetizarPainelAnalista(
  * Scanner: coleta de macro, órgãos, setores, notícias e educação
  * ------------------------------------------------------------------ */
 
+/** Executa promessas com limite de concorrência (ondas) para não sobrecarregar o runtime. */
+async function mapComLimite<T, R>(
+  entradas: readonly T[],
+  limite: number,
+  fn: (entrada: T, indice: number) => Promise<R>,
+): Promise<R[]> {
+  const resultados: R[] = new Array<R>(entradas.length);
+  let proximo = 0;
+  const trabalhadores = Array.from({ length: Math.min(limite, entradas.length) }, async () => {
+    while (proximo < entradas.length) {
+      const indice = proximo++;
+      resultados[indice] = await fn(entradas[indice], indice);
+    }
+  });
+  await Promise.all(trabalhadores);
+  return resultados;
+}
+
 /** Varre a internet e monta a base de conhecimento do Gestor IA. */
 export async function executarScanConhecimento(agora = new Date()): Promise<BaseConhecimento> {
-  const [itemMacro, itemCvm, noticiasMod, resultados] = await Promise.all([
+  const [itemMacro, itemCvm, noticiasMod] = await Promise.all([
     buscarPainelMacro(agora),
     buscarCvm(agora),
     import("@/lib/noticias.server").catch(() => null),
-    Promise.all([
-      ...BUSCAS_ORGAOS.map((q) => buscarRss(q, 4, "mercado")),
-      ...BUSCAS_SETORES.map((q) => buscarRss(q, 4, "setor")),
-      ...BUSCAS_EDUCACIONAIS.map((q) => buscarRss(q, 5, "educacao")),
-    ]),
   ]);
+
+  const consultas = [
+    ...BUSCAS_ORGAOS.map((q) => ({ consulta: q, limite: 4, categoria: "mercado" as const })),
+    ...BUSCAS_SETORES.map((q) => ({ consulta: q, limite: 4, categoria: "setor" as const })),
+    ...BUSCAS_EDUCACIONAIS.map((q) => ({ consulta: q, limite: 5, categoria: "educacao" as const })),
+  ];
+  const resultados = await mapComLimite(consultas, 6, ({ consulta, limite, categoria }) =>
+    buscarRss(consulta, limite, categoria),
+  );
 
   const itens: ConhecimentoItem[] = [];
   if (itemMacro) itens.push(itemMacro);
