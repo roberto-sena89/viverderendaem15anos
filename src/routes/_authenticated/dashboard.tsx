@@ -425,8 +425,11 @@ function Dashboard() {
                 </ResponsiveContainer>
               </div>
             </Panel>
+          </div>
 
+          <div className="min-w-0">
             <Panel
+              className="h-full"
               title="Ativos na Carteira"
               action={
                 <FiltroSelect
