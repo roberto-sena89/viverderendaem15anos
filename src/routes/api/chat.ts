@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
 import { z } from "zod";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import { baseUrlProvedorEnv, provedorEnvAtivo } from "@/lib/provedores-env.server";
+import { baseUrlProvedorEnv, PROVEDORES_ENV, provedorEnvAtivo } from "@/lib/provedores-env.server";
 import {
   brl,
   classeDoAtivo,
@@ -520,10 +520,25 @@ export const Route = createFileRoute("/api/chat")({
         const iaChave = request.headers.get("x-ia-chave")?.trim();
         const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
 
+        const iaProvedorHeader = request.headers.get("x-ia-provedor")?.trim() || "";
+        const provedorEnvPorId = iaProvedorHeader
+          ? PROVEDORES_ENV.find((p) => p.variavel === iaProvedorHeader || p.nome === iaProvedorHeader)
+          : null;
+        const provedorExternoViaBackend = Boolean(provedorEnvPorId && process.env[provedorEnvPorId.variavel]?.trim());
+
+        if (provedorExternoViaBackend && !process.env[provedorEnvPorId.variavel]?.trim()) {
+          return new Response(
+            "Provedor de ambiente selecionado, mas a variável de ambiente não está preenchida.",
+            { status: 503 },
+          );
+        }
         // Provedores padrão via variáveis de ambiente do servidor (a chave nunca
         // vai para o cliente nem para o repositório). Ordem: tabela em provedores-env.server.ts.
         const envProvedor = provedorEnvAtivo(process.env);
-        const provedorPadrao = envProvedor?.provedor ?? null;
+        const provedorPadrao = provedorExternoViaBackend
+          ? provedorEnvPorId
+          : envProvedor?.provedor ?? null;
+        const provedorAtivo = provedorExterno || provedorPadrao;
 
         if (!provedorExterno && !provedorPadrao) {
           return new Response(
@@ -535,7 +550,7 @@ export const Route = createFileRoute("/api/chat")({
         const modeloEscolhido = provedorExterno
           ? iaModelo!
           : provedorPadrao
-            ? envProvedor!.provedor.modelo
+            ? (provedorExternoViaBackend ? provedorEnvPorId!.modelo : envProvedor!.provedor.modelo)
             : "";
         const nomeProvedor = provedorExterno
           ? `provedor externo (${(() => {
@@ -545,7 +560,9 @@ export const Route = createFileRoute("/api/chat")({
                 return iaBaseUrl!;
               }
             })()})`
-          : `${envProvedor!.provedor.nome} (servidor)`;
+          : provedorPadrao
+            ? `${provedorPadrao.nome} (servidor)`
+            : "";
         const modeloChat = provedorExterno
           ? createOpenAICompatible({
               name: "provedor-usuario",
@@ -554,10 +571,9 @@ export const Route = createFileRoute("/api/chat")({
             })(iaModelo!)
           : createOpenAICompatible({
               name: "provedor-env",
-              baseURL: baseUrlProvedorEnv(envProvedor!.provedor, process.env),
-              headers: { Authorization: `Bearer ${envProvedor!.chave}` },
-            })(envProvedor!.provedor.modelo);
-
+              baseURL: baseUrlProvedorEnv(provedorPadrao!, process.env),
+              headers: { Authorization: `Bearer ${process.env[provedorPadrao!.variavel]!.trim()}` },
+            })(modeloEscolhido);
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
           erro: e instanceof Error ? e.message : "Falha ao consultar a fonte de dados.",

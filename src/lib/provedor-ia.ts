@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+﻿import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 /** Configuração de um provedor de IA compatível com a API OpenAI. */
 export interface ConfigProvedorIA {
@@ -301,15 +302,65 @@ export function useProvedorIA() {
 }
 
 /** Cabeçalhos enviados ao /api/chat quando há provedor externo configurado. */
+export const PRESET_PARA_VARIAVEL_BACKEND: Record<string, string> = {
+  tokenrouter: "TOKEN_ROUTER_API_KEY",
+  orcarouter: "ORCAROUTER_API_KEY",
+  openrouter: "OPENROUTER_API_KEY",
+  nvidia: "NVIDIA_API_KEY",
+  opencodezen: "OPENCODE_API_KEY",
+  groq: "GROQ_API_KEY",
+  gemini: "GOOGLE_GENERATIVE_AI_API_KEY",
+  cerebras: "CEREBRAS_API_KEY",
+};
+
 export function cabecalhosProvedor(config: ConfigProvedorIA): Record<string, string> {
-  if (!provedorAtivo(config)) return {};
-  return {
-    "X-IA-Base-Url": config.baseUrl.trim(),
-    "X-IA-Modelo": config.modelo.trim(),
-    "X-IA-Chave": config.chave.trim(),
-  };
+  const variavelBackend = PRESET_PARA_VARIAVEL_BACKEND[config.preset];
+  
+  if (variavelBackend && !config.chave.trim() && config.baseUrl.trim() && config.modelo.trim()) {
+    return {
+      "X-IA-Provedor": variavelBackend,
+      "X-IA-Modelo": config.modelo.trim(),
+    };
+  }
+  
+  if (provedorAtivo(config)) {
+    return {
+      "X-IA-Base-Url": config.baseUrl.trim(),
+      "X-IA-Modelo": config.modelo.trim(),
+      "X-IA-Chave": config.chave.trim(),
+    };
+  }
+  
+  return {};
 }
 
+export interface ProvedorBackend {
+  id: string;
+  nome: string;
+  baseUrl: string;
+  modelo: string;
+  urlChave: string;
+  configurado: boolean;
+}
+
+export async function listarProvedoresBackend(): Promise<ProvedorBackend[]> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    throw new Error("Não autenticado");
+  }
+
+  const response = await fetch("/api/ia/provedores", {
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erro ao listar provedores: ${response.status}`);
+  }
+
+  return response.json();
+}
 // ──────────────────────────────────────────────────────────────────────────
 // Histórico de testes de conexão (localStorage — diagnóstico client-side)
 // ──────────────────────────────────────────────────────────────────────────

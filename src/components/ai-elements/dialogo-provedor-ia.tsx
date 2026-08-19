@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   CheckCircle2,
   ExternalLink,
   Loader2,
+  Lock,
   Plug,
   PlugZap,
   Sparkles,
@@ -39,8 +40,10 @@ import {
   useProvedorIA,
   limparHistoricoTestes,
   lerHistoricoTestes,
+  listarProvedoresBackend,
   registrarTeste,
   type ConfigProvedorIA,
+  type ProvedorBackend,
   type RegistroTesteConexao,
 } from "@/lib/provedor-ia";
 import { testarProvedorIA, type ResultadoTesteProvedor } from "@/lib/testar-provedor.functions";
@@ -53,6 +56,7 @@ export function DialogoProvedorIA() {
   const [teste, setTeste] = useState<ResultadoTesteProvedor | null>(null);
   const [historico, setHistorico] = useState<RegistroTesteConexao[]>([]);
   const [apenasFree, setApenasFree] = useState(true);
+  const [provedoresBackend, setProvedoresBackend] = useState<ProvedorBackend[]>([]);
   const presetAtual = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
   const modelos = teste?.modelos ?? [];
   const ehFree = (m: string) =>
@@ -66,6 +70,9 @@ export function DialogoProvedorIA() {
       setRascunho(config);
       setTeste(null);
       setHistorico(lerHistoricoTestes());
+      listarProvedoresBackend()
+        .then(setProvedoresBackend)
+        .catch(() => {});
     }
   }, [aberto, config]);
 
@@ -114,6 +121,12 @@ export function DialogoProvedorIA() {
 
   const preset = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
 
+  function provedorBackendConfigurado(id: string): ProvedorBackend | undefined {
+    return provedoresBackend.find((p) => p.configurado && (p.id === id || p.nome === id));
+  }
+
+  const backendConfigurado = provedorBackendConfigurado(rascunho.preset);
+
   function escolherPreset(id: string) {
     setRascunho((r) => {
       const chaves =
@@ -138,6 +151,15 @@ export function DialogoProvedorIA() {
     if (rascunho.preset === "lovable") {
       salvar({ ...CONFIG_IA_NATIVA, chavesPorProvedor: rascunho.chavesPorProvedor });
       toast.success("Gestor IA voltou a usar a IA nativa da plataforma");
+      setAberto(false);
+      return;
+    }
+    const backend = provedorBackendConfigurado(rascunho.preset);
+    if (backend) {
+      salvar({ ...rascunho, chave: "" });
+      toast.success("Provedor de IA configurado", {
+        description: `${preset?.nome ?? "Personalizado"} · ${rascunho.modelo} · via servidor`,
+      });
       setAberto(false);
       return;
     }
@@ -186,11 +208,15 @@ export function DialogoProvedorIA() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="lovable">IA nativa da plataforma</SelectItem>
-                {PRESETS_PROVEDOR.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.nome}
-                  </SelectItem>
-                ))}
+                {PRESETS_PROVEDOR.map((p) => {
+                  const backend = provedorBackendConfigurado(p.id);
+                  return (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.nome}
+                      {backend ? " (servidor)" : ""}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
             {preset ? (
@@ -246,32 +272,44 @@ export function DialogoProvedorIA() {
 
               <div className="space-y-2">
                 <Label htmlFor="ia-chave">Chave de API</Label>
-                <Input
-                  id="ia-chave"
-                  type="password"
-                  value={rascunho.chave}
-                  onChange={(e) =>
-                    setRascunho((r) => ({
-                      ...r,
-                      chave: e.target.value,
-                      chavesPorProvedor:
-                        r.preset !== "lovable"
-                          ? { ...r.chavesPorProvedor, [r.preset]: e.target.value }
-                          : r.chavesPorProvedor,
-                    }))
-                  }
-                  placeholder="sk-..."
-                  autoComplete="off"
-                />
-                {preset?.urlChave && (
-                  <a
-                    href={preset.urlChave}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
-                  >
-                    Obter chave gratuita <ExternalLink className="size-3" />
-                  </a>
+                <div className="relative">
+                  <Input
+                    id="ia-chave"
+                    type="password"
+                    value={rascunho.chave}
+                    disabled={Boolean(backendConfigurado)}
+                    onChange={(e) =>
+                      setRascunho((r) => ({
+                        ...r,
+                        chave: e.target.value,
+                        chavesPorProvedor:
+                          r.preset !== "lovable"
+                            ? { ...r.chavesPorProvedor, [r.preset]: e.target.value }
+                            : r.chavesPorProvedor,
+                      }))
+                    }
+                    placeholder={backendConfigurado ? "Configurado no servidor" : "sk-..."}
+                    autoComplete="off"
+                  />
+                  {backendConfigurado && (
+                    <Lock className="text-muted-foreground absolute right-3 top-1/2 size-4 -translate-y-1/2" />
+                  )}
+                </div>
+                {backendConfigurado ? (
+                  <p className="text-muted-foreground text-xs">
+                    Configurado no servidor • chave não precisa ser digitada
+                  </p>
+                ) : (
+                  preset?.urlChave && (
+                    <a
+                      href={preset.urlChave}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
+                    >
+                      Obter chave gratuita <ExternalLink className="size-3" />
+                    </a>
+                  )
                 )}
               </div>
 
