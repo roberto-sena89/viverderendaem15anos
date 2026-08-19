@@ -469,8 +469,8 @@ let memoria: { valor: BaseConhecimento; em: number } | null = null;
 const TTL_MEMORIA_MS = 60 * 1000;
 let scanEmVoo: Promise<BaseConhecimento> | null = null;
 
-export async function lerConhecimento(): Promise<BaseConhecimento> {
-  if (memoria && Date.now() - memoria.em < TTL_MEMORIA_MS) return memoria.valor;
+/** Lê a base persistida no banco (sem cair no fallback de base curada). */
+async function lerDoBanco(): Promise<BaseConhecimento | null> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
@@ -481,17 +481,25 @@ export async function lerConhecimento(): Promise<BaseConhecimento> {
     if (data?.payload && typeof data.payload === "object") {
       const p = data.payload as unknown as BaseConhecimento | null;
       if (p && Array.isArray(p.itens)) {
-        const base: BaseConhecimento = {
+        return {
           atualizadoEm: p.atualizadoEm ?? new Date().toISOString(),
           itens: p.itens,
           erro: p.erro ?? null,
         };
-        memoria = { valor: base, em: Date.now() };
-        return base;
       }
     }
   } catch {
-    /* sem cache: retorna a base curada pura */
+    /* sem cache: retorna null para o chamador decidir */
+  }
+  return null;
+}
+
+export async function lerConhecimento(): Promise<BaseConhecimento> {
+  if (memoria && Date.now() - memoria.em < TTL_MEMORIA_MS) return memoria.valor;
+  const doBanco = await lerDoBanco();
+  if (doBanco) {
+    memoria = { valor: doBanco, em: Date.now() };
+    return doBanco;
   }
   const base: BaseConhecimento = {
     atualizadoEm: new Date().toISOString(),
@@ -504,8 +512,8 @@ export async function lerConhecimento(): Promise<BaseConhecimento> {
 export async function executarScanComThrottle(agora = new Date()): Promise<BaseConhecimento> {
   if (scanEmVoo) return scanEmVoo;
   scanEmVoo = (async () => {
-    const atual = await lerConhecimento();
-    if (atual.atualizadoEm) {
+    const atual = await lerDoBanco();
+    if (atual?.atualizadoEm) {
       const desde = agora.getTime() - new Date(atual.atualizadoEm).getTime();
       if (desde < INTERVALO_MINIMO_MS) return atual;
     }
