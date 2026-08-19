@@ -59,7 +59,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     variavel: "GROQ_API_KEY",
     nome: "Groq",
     baseUrl: "https://api.groq.com/openai/v1",
-    modelo: "llama-3.3-70b-versatile",
+    modelo: "groq/compound",
     urlChave: "https://console.groq.com/keys",
   },
   {
@@ -75,13 +75,6 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
     modelo: "gemini-3.5-flash",
     urlChave: "https://aistudio.google.com/apikey",
-  },
-  {
-    variavel: "CLINE_API_KEY",
-    nome: "Cline",
-    baseUrl: "https://api.cline.bot/api/v1",
-    modelo: "minimax/minimax-m2.5",
-    urlChave: "https://app.cline.bot",
   },
   ];
 
@@ -101,4 +94,5 @@ export function baseUrlProvedorEnv(provedor: ProvedorEnv, env: NodeJS.ProcessEnv
   const prefixo = provedor.variavel.replace(/_API_KEY$/, "");
   return env[`${prefixo}_BASE_URL`]?.trim() || provedor.baseUrl;
 }
+
 
