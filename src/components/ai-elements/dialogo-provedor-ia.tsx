@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  CONFIG_IA_NATIVA,
   CONFIG_PADRAO,
   PRESETS_PROVEDOR,
   provedorAtivo,
@@ -115,7 +116,7 @@ export function DialogoProvedorIA() {
 
   function escolherPreset(id: string) {
     if (id === "lovable") {
-      setRascunho({ ...CONFIG_PADRAO, chavesPorProvedor: rascunho.chavesPorProvedor });
+      setRascunho({ ...CONFIG_IA_NATIVA, chavesPorProvedor: rascunho.chavesPorProvedor });
       return;
     }
     const alvo = PRESETS_PROVEDOR.find((p) => p.id === id);
@@ -131,7 +132,7 @@ export function DialogoProvedorIA() {
 
   function confirmar() {
     if (rascunho.preset === "lovable") {
-      salvar({ ...CONFIG_PADRAO, chavesPorProvedor: rascunho.chavesPorProvedor });
+      salvar({ ...CONFIG_IA_NATIVA, chavesPorProvedor: rascunho.chavesPorProvedor });
       toast.success("Gestor IA voltou a usar a IA nativa da plataforma");
       setAberto(false);
       return;
@@ -180,7 +181,7 @@ export function DialogoProvedorIA() {
                 <SelectValue placeholder="Escolha um provedor" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="lovable">IA nativa da plataforma (padrão)</SelectItem>
+                <SelectItem value="lovable">IA nativa da plataforma</SelectItem>
                 {PRESETS_PROVEDOR.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.nome}

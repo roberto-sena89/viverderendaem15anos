@@ -104,10 +104,20 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
 
 export const CHAVE_STORAGE = "gestor-ia-provedor";
 
-export const CONFIG_PADRAO: ConfigProvedorIA = {
+/** Configuração da IA nativa da plataforma (sem provedor externo). */
+export const CONFIG_IA_NATIVA: ConfigProvedorIA = {
   preset: "lovable",
   baseUrl: "",
   modelo: "",
+  chave: "",
+  chavesPorProvedor: {},
+};
+
+/** Configuração padrão do Gestor IA: provedor Token Router (modelo gratuito). */
+export const CONFIG_PADRAO: ConfigProvedorIA = {
+  preset: "tokenrouter",
+  baseUrl: "https://api.tokenrouter.com/v1",
+  modelo: "deepseek/deepseek-v4-pro-0813-free",
   chave: "",
   chavesPorProvedor: {},
 };
@@ -118,7 +128,7 @@ export function lerConfigProvedor(): ConfigProvedorIA {
     const bruto = window.localStorage.getItem(CHAVE_STORAGE);
     if (!bruto) return CONFIG_PADRAO;
     const dados = JSON.parse(bruto) as Partial<ConfigProvedorIA>;
-    const preset = dados.preset ?? "lovable";
+    const preset = dados.preset ?? "tokenrouter";
     const chavesPorProvedor =
       dados.chavesPorProvedor && typeof dados.chavesPorProvedor === "object"
         ? { ...dados.chavesPorProvedor }
