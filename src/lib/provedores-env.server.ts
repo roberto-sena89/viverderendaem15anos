@@ -55,6 +55,34 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     modelo: "deepseek-v4-flash-free",
     urlChave: "https://opencode.ai/auth",
   },
+  {
+    variavel: "GROQ_API_KEY",
+    nome: "Groq",
+    baseUrl: "https://api.groq.com/openai/v1",
+    modelo: "llama-3.3-70b-versatile",
+    urlChave: "https://console.groq.com/keys",
+  },
+  {
+    variavel: "CEREBRAS_API_KEY",
+    nome: "Cerebras",
+    baseUrl: "https://api.cerebras.ai/v1",
+    modelo: "gpt-oss-120b",
+    urlChave: "https://cerebras.ai/cloud",
+  },
+  {
+    variavel: "GOOGLE_GENERATIVE_AI_API_KEY",
+    nome: "Google Generative AI",
+    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
+    modelo: "gemini-3.5-flash",
+    urlChave: "https://aistudio.google.com/apikey",
+  },
+  {
+    variavel: "CLINE_API_KEY",
+    nome: "Cline",
+    baseUrl: "https://api.cline.bot/api/v1",
+    modelo: "minimax/minimax-m2.5",
+    urlChave: "https://app.cline.bot",
+  },
   ];
 
 /** Encontra o primeiro provedor com chave configurada nas variáveis de ambiente. */
@@ -73,3 +101,4 @@ export function baseUrlProvedorEnv(provedor: ProvedorEnv, env: NodeJS.ProcessEnv
   const prefixo = provedor.variavel.replace(/_API_KEY$/, "");
   return env[`${prefixo}_BASE_URL`]?.trim() || provedor.baseUrl;
 }
+
