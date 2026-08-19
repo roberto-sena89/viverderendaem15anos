@@ -55,14 +55,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     modelo: "deepseek-v4-flash-free",
     urlChave: "https://opencode.ai/auth",
   },
-  {
-    variavel: "CLINE_API_KEY",
-    nome: "Cline",
-    baseUrl: "https://api.cline.bot/api/v1",
-    modelo: "minimax/minimax-m3",
-    urlChave: "https://app.cline.bot",
-  },
-];
+  ];
 
 /** Encontra o primeiro provedor com chave configurada nas variáveis de ambiente. */
 export function provedorEnvAtivo(
