@@ -28,6 +28,13 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     urlChave: "https://www.tokenrouter.com/dashboard",
   },
   {
+    variavel: "ORCAROUTER_API_KEY",
+    nome: "OrcaRouter",
+    baseUrl: "https://api.orcarouter.ai/v1",
+    modelo: "deepseek/deepseek-v4-pro-free",
+    urlChave: "https://www.orcarouter.ai",
+  },
+  {
     variavel: "OPENROUTER_API_KEY",
     nome: "OpenRouter",
     baseUrl: "https://openrouter.ai/api/v1",

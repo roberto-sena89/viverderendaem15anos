@@ -93,6 +93,16 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     urlChave: "https://www.tokenrouter.com/dashboard",
   },
   {
+    id: "orcarouter",
+    nome: "OrcaRouter (modelos -free)",
+    descricao:
+      "Roteador aberto que conecta OpenAI, Anthropic, Google e DeepSeek a preço de custo, com camada gratuita de modelos DeepSeek V4.",
+    baseUrl: "https://api.orcarouter.ai/v1",
+    modelos: ["deepseek/deepseek-v4-pro-free", "deepseek/deepseek-v4-flash-free"],
+    modelosGratuitos: ["deepseek/deepseek-v4-pro-free", "deepseek/deepseek-v4-flash-free"],
+    urlChave: "https://www.orcarouter.ai",
+  },
+  {
     id: "personalizado",
     nome: "Personalizado (compatível OpenAI)",
     descricao: "Qualquer endpoint compatível com a API OpenAI (Ollama, LM Studio, etc.).",
