@@ -276,10 +276,11 @@ function Dashboard() {
         <PainelAnaliseRisco carteira={ativos} aportes={aportes} />
       </section>
 
-      <div id="evolucao" className="scroll-mt-32 text-[12px] sm:scroll-mt-40">
-        <DashboardGrid gap="md" className="mb-6">
-          <ResponsiveDashboardCard variant="interactive" hoverEffect={false} className="h-full">
+      <section id="evolucao" className="scroll-mt-32 text-[12px] sm:scroll-mt-40">
+        <div className="mb-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
+          <div className="min-w-0">
             <Panel
+              className="h-full"
               title="Evolução do Patrimônio"
               action={
                 <div className="flex flex-wrap items-center gap-2">
