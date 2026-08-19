@@ -550,9 +550,9 @@ function Dashboard() {
                 </div>
               )}
             </Panel>
-          </ResponsiveDashboardCard>
-        </DashboardGrid>
-      </div>
+          </div>
+        </div>
+      </section>
 
       <section
         id="ativos"
