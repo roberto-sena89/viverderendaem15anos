@@ -294,8 +294,18 @@ async function buscarCatalogo(
       const lista = Array.isArray(corpo.data) ? corpo.data : (corpo.models ?? []);
       const modelos = lista
         .map((item) => {
-          const m = item as { id?: unknown; context_length?: unknown; contextWindow?: unknown };
-          const id = typeof m.id === "string" ? m.id.trim() : "";
+          const m = item as {
+            id?: unknown;
+            name?: unknown;
+            context_length?: unknown;
+            contextWindow?: unknown;
+          };
+          const id =
+            typeof m.id === "string"
+              ? m.id.trim()
+              : typeof m.name === "string"
+                ? m.name.replace(/^models\//, "").trim()
+                : "";
           const ctx =
             typeof m.context_length === "number"
               ? m.context_length

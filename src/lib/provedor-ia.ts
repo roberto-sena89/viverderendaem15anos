@@ -74,7 +74,12 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     nome: "Google AI Studio (Gemini)",
     descricao: "Camada gratuita do Gemini via endpoint compatível com OpenAI.",
     baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
-    modelos: ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3-flash"],
+    modelos: [
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite",
+    ],
     urlChave: "https://aistudio.google.com/apikey",
   },
   {
