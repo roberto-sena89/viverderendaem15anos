@@ -27,6 +27,7 @@ export interface PresetProvedor {
 
 /** Provedores com camada gratuita (free tier) compatíveis com a API OpenAI. */
 export const PRESETS_PROVEDOR: PresetProvedor[] = [
+  /* 1. OpenRouter */
   {
     id: "openrouter",
     nome: "OpenRouter (modelos :free)",
@@ -50,7 +51,6 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "nvidia/nemotron-nano-9b-v2:free",
       "nvidia/nemotron-3.5-content-safety:free",
     ],
-    // Todos os modelos listados possuem sufixo :free e são considerados gratuitos
     modelosGratuitos: [
       "nvidia/nemotron-3.5-lightning:free",
       "nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -71,69 +71,11 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://openrouter.ai/keys",
   },
-  {
-    id: "groq",
-    nome: "Groq Cloud",
-    descricao: "Camada gratuita muito rápida com modelos Compound, GPT-OSS e Qwen.",
-    baseUrl: "https://api.groq.com/openai/v1",
-    modelos: [
-      "groq/compound",
-      "groq/compound-mini",
-      "openai/gpt-oss-120b",
-      "openai/gpt-oss-20b",
-      "qwen/qwen3.6-27b",
-      "allam-2-7b",
-      "canopylabs/orpheus-v1-english",
-      "whisper-large-v3-turbo",
-    ],
-    // Todos os modelos listados estão disponíveis na camada gratuita do Groq
-    modelosGratuitos: [
-      "groq/compound",
-      "groq/compound-mini",
-      "openai/gpt-oss-120b",
-      "openai/gpt-oss-20b",
-      "qwen/qwen3.6-27b",
-      "allam-2-7b",
-      "canopylabs/orpheus-v1-english",
-      "whisper-large-v3-turbo",
-    ],
-    urlChave: "https://console.groq.com/keys",
-  },
-  {
-    id: "gemini",
-    nome: "Google AI Studio (Gemini)",
-    descricao: "Camada gratuita do Gemini via endpoint compatível com OpenAI.",
-    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
-    modelos: [
-      "gemini-3.7-flash",
-      "gemini-3.6-flash",
-      "gemini-3.5-flash",
-      "gemini-3.5-flash-lite",
-    ],
-    // Todos os modelos listados estão disponíveis na camada gratuita do Gemini
-    modelosGratuitos: [
-      "gemini-3.7-flash",
-      "gemini-3.6-flash",
-      "gemini-3.5-flash",
-      "gemini-3.5-flash-lite",
-    ],
-    urlChave: "https://aistudio.google.com/apikey",
-  },
-  {
-    id: "cerebras",
-    nome: "Cerebras",
-    descricao: "Camada gratuita com inferência de altíssima velocidade.",
-    baseUrl: "https://api.cerebras.ai/v1",
-    modelos: ["gpt-oss-120b", "gemma-4-31b"],
-    // Ambos os modelos listados estão disponíveis na camada gratuita do Cerebras
-    modelosGratuitos: ["gpt-oss-120b", "gemma-4-31b"],
-    urlChave: "https://cloud.cerebras.ai",
-  },
+  /* 2. Token Router */
   {
     id: "tokenrouter",
     nome: "Token Router",
-    descricao:
-      "Roteador de modelos compatível com a API OpenAI (tokenrouter.com), com catálogo de 300+ modelos.",
+    descricao: "Roteador de modelos compatível com a API OpenAI (tokenrouter.com), com catálogo de 300+ modelos.",
     baseUrl: "https://api.tokenrouter.com/v1",
     modelos: [
       "deepseek/deepseek-v4-pro-0813-free",
@@ -145,15 +87,14 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "minimax/minimax-m2.5",
       "z-ai/glm-5",
     ],
-    // Verificado com a API real: somente estes respondem sem crédito na conta.
     modelosGratuitos: ["deepseek/deepseek-v4-pro-0813-free", "qwen/qwen3.8-max-free"],
     urlChave: "https://www.tokenrouter.com/dashboard",
   },
+  /* 3. OrcaRouter */
   {
     id: "orcarouter",
     nome: "OrcaRouter (modelos -free)",
-    descricao:
-      "Roteador aberto que conecta OpenAI, Anthropic, Google e DeepSeek a preço de custo, com camada gratuita de modelos DeepSeek V4.",
+    descricao: "Roteador aberto que conecta OpenAI, Anthropic, Google e DeepSeek a preço de custo, com camada gratuita de modelos DeepSeek V4.",
     baseUrl: "https://api.orcarouter.ai/v1",
     modelos: [
       "qwen/qwen3.8-27b-free",
@@ -169,6 +110,95 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://www.orcarouter.ai",
   },
+  /* 4. NVIDIA NIM */
+  {
+    id: "nvidia",
+    nome: "NVIDIA NIM",
+    descricao: "Camada gratuita NVIDIA (build.nvidia.com, com limites de requisição).",
+    baseUrl: "https://integrate.api.nvidia.com/v1",
+    modelos: [],
+    modelosGratuitos: [],
+    urlChave: "https://build.nvidia.com/",
+  },
+  /* 5. OpenCode Zen */
+  {
+    id: "opencodezen",
+    nome: "OpenCode Zen",
+    descricao: "Camada gratuita do OpenCode Zen.",
+    baseUrl: "https://opencode.ai/zen/v1",
+    modelos: [],
+    modelosGratuitos: [],
+    urlChave: "https://opencode.ai/",
+  },
+  /* 6. Cline */
+  {
+    id: "cline",
+    nome: "Cline",
+    descricao: "Camada gratuita do Cline.",
+    baseUrl: "https://api.cline.bot/api/v1",
+    modelos: [],
+    modelosGratuitos: [],
+    urlChave: "https://cline.bot/",
+  },
+  /* 7. Groq */
+  {
+    id: "groq",
+    nome: "Groq Cloud",
+    descricao: "Camada gratuita muito rápida com modelos Compound, GPT-OSS e Qwen.",
+    baseUrl: "https://api.groq.com/openai/v1",
+    modelos: [
+      "groq/compound",
+      "groq/compound-mini",
+      "openai/gpt-oss-120b",
+      "openai/gpt-oss-20b",
+      "qwen/qwen3.6-27b",
+      "allam-2-7b",
+      "canopylabs/orpheus-v1-english",
+      "whisper-large-v3-turbo",
+    ],
+    modelosGratuitos: [
+      "groq/compound",
+      "groq/compound-mini",
+      "openai/gpt-oss-120b",
+      "openai/gpt-oss-20b",
+      "qwen/qwen3.6-27b",
+      "allam-2-7b",
+      "canopylabs/orpheus-v1-english",
+      "whisper-large-v3-turbo",
+    ],
+    urlChave: "https://console.groq.com/keys",
+  },
+  /* 8. Gemini */
+  {
+    id: "gemini",
+    nome: "Google AI Studio (Gemini)",
+    descricao: "Camada gratuita do Gemini via endpoint compatível com OpenAI.",
+    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
+    modelos: [
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite",
+    ],
+    modelosGratuitos: [
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite",
+    ],
+    urlChave: "https://aistudio.google.com/apikey",
+  },
+  /* 9. Cerebras */
+  {
+    id: "cerebras",
+    nome: "Cerebras",
+    descricao: "Camada gratuita com inferência de altíssima velocidade.",
+    baseUrl: "https://api.cerebras.ai/v1",
+    modelos: ["gpt-oss-120b", "gemma-4-31b"],
+    modelosGratuitos: ["gpt-oss-120b", "gemma-4-31b"],
+    urlChave: "https://cloud.cerebras.ai",
+  },
+  /* 10. Personalizado */
   {
     id: "personalizado",
     nome: "Personalizado (compatível OpenAI)",
