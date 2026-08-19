@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DashboardGrid, ResponsiveDashboardCard } from "@/components/responsive-dashboard-card";
+
 import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { useAportes, useDividendos } from "@/lib/data";
 import { classeDoAtivo } from "@/lib/portfolio";
