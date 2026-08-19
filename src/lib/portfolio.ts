@@ -174,6 +174,63 @@ export function resumoCarteira(ativos: Ativo[]): ResumoCarteira {
 
 const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
+/** Fluxo de caixa datado usado na anualização da carteira. */
+export interface FluxoData {
+  /** Dias entre o fluxo e a data final (hoje = 0). */
+  dias: number;
+  /** Valor do fluxo (negativo = saída, positivo = entrada). */
+  valor: number;
+}
+
+/**
+ * Retorno anualizado (TIR/XIRR) da carteira a partir do histórico de aportes
+ * (saídas) e do saldo atual (entrada final em hoje). Retorna null quando não
+ * é possível anualizar: sem aportes datados, saldo zerado ou fluxos de um
+ * único sinal.
+ */
+export function retornoAnualizado(
+  aportes: Aporte[],
+  totalAtual: number,
+  hoje: Date = new Date(),
+): number | null {
+  const fluxos: FluxoData[] = [];
+  for (const a of aportes) {
+    const data = new Date(`${a.data}T12:00:00`);
+    if (Number.isNaN(data.getTime())) continue;
+    const dias = (hoje.getTime() - data.getTime()) / 86_400_000;
+    if (dias <= 0) continue;
+    // Aporte (quantidade positiva) tira dinheiro; venda (quantidade negativa)
+    // traz dinheiro; taxas sempre são pagas pelo investidor.
+    fluxos.push({ dias, valor: -(a.quantidade * a.preco + a.taxas) });
+  }
+  if (fluxos.length === 0 || totalAtual <= 0) return null;
+  fluxos.push({ dias: 0, valor: totalAtual });
+
+  const temSaida = fluxos.some((f) => f.valor < 0);
+  const temEntrada = fluxos.some((f) => f.valor > 0);
+  if (!temSaida || !temEntrada) return null;
+
+  // Newton-Raphson sobre f(r) = Σ vᵢ · (1+r)^(dᵢ/365) = 0 (fluxos passados
+  // capitalizados até hoje).
+  let taxa = 0.1;
+  for (let i = 0; i < 100; i++) {
+    let f = 0;
+    let derivada = 0;
+    for (const { dias, valor } of fluxos) {
+      const anos = dias / 365;
+      const base = Math.pow(1 + taxa, anos);
+      f += valor * base;
+      derivada += anos > 0 ? (valor * anos * base) / (1 + taxa) : 0;
+    }
+    if (!Number.isFinite(derivada) || derivada === 0) return null;
+    const proxima = Math.max(-0.999, Math.min(10, taxa - f / derivada));
+    if (!Number.isFinite(proxima)) return null;
+    if (Math.abs(proxima - taxa) < 1e-7) return proxima * 100;
+    taxa = proxima;
+  }
+  return null;
+}
+
 /** Últimos 12 meses (rótulo curto + chave AAAA-MM). */
 export function ultimos12Meses(): { chave: string; mes: string }[] {
   const hoje = new Date();

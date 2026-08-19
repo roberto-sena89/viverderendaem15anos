@@ -19,6 +19,7 @@ import {
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { DialogoAprendizado } from "@/components/ai-elements/dialogo-aprendizado";
 import { DialogoProvedorIA } from "@/components/ai-elements/dialogo-provedor-ia";
+import { ResumoCarteiraDialog } from "@/components/ai-elements/resumo-carteira-dialog";
 import {
   PromptInput,
   PromptInputTextarea,
@@ -377,6 +378,7 @@ function ChatPage() {
               />
             </Button>
             <DialogoAprendizado />
+            <ResumoCarteiraDialog />
             <DialogoProvedorIA />
 
             <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
