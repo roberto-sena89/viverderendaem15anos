@@ -1,0 +1,23 @@
+name: Observador de Mercado
+
+on:
+  schedule:
+    # A cada hora, nos minutos 0, 20 e 40 (UTC) — 20 em 20 minutos.
+    # O hook aplica intervalo mínimo de 10 min entre varreduras, então
+    # atrasos do GitHub Actions nunca geram chamadas em excesso.
+    - cron: "0,20,40 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar o hook do Observador
+        run: |
+          curl -s -X POST \
+            -H "content-type: application/json" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            -d '{}' \
+            https://viverderendaem15anos.lovable.app/api/public/hooks/observador-mercado
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
