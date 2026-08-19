@@ -4,6 +4,7 @@ import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage }
 import { z } from "zod";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
+import { baseUrlProvedorEnv, provedorEnvAtivo } from "@/lib/provedores-env.server";
 import {
   brl,
   classeDoAtivo,
@@ -502,17 +503,27 @@ export const Route = createFileRoute("/api/chat")({
         const iaChave = request.headers.get("x-ia-chave")?.trim();
         const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
 
-        if (!provedorExterno && !lovableApiKey) {
+        // Provedores padrão via variáveis de ambiente do servidor (a chave nunca
+        // vai para o cliente nem para o repositório). Ordem: tabela em provedores-env.server.ts.
+        const envProvedor = provedorEnvAtivo(process.env);
+        const provedorPadrao = envProvedor?.provedor ?? null;
+
+        if (!provedorExterno && !provedorPadrao && !lovableApiKey) {
           return new Response(
             "A IA nativa não está configurada. Configure um provedor gratuito no botão de configurações do Gestor IA.",
             { status: 503 },
           );
         }
 
-        const modeloEscolhido = provedorExterno ? iaModelo! : MODELO_CHAT;
-        const gatewayNativo = provedorExterno
-          ? null
-          : createLovableAiGatewayProvider(lovableApiKey!, getLovableAiGatewayRunId(request));
+        const modeloEscolhido = provedorExterno
+          ? iaModelo!
+          : provedorPadrao
+            ? envProvedor!.provedor.modelo
+            : MODELO_CHAT;
+        const gatewayNativo =
+          provedorExterno || provedorPadrao
+            ? null
+            : createLovableAiGatewayProvider(lovableApiKey!, getLovableAiGatewayRunId(request));
         const nomeProvedor = provedorExterno
           ? `provedor externo (${(() => {
               try {
@@ -521,14 +532,22 @@ export const Route = createFileRoute("/api/chat")({
                 return iaBaseUrl!;
               }
             })()})`
-          : "Lovable AI Gateway";
+          : provedorPadrao
+            ? `${envProvedor!.provedor.nome} (servidor)`
+            : "Lovable AI Gateway";
         const modeloChat = provedorExterno
           ? createOpenAICompatible({
               name: "provedor-usuario",
               baseURL: iaBaseUrl!.replace(/\/$/, ""),
               headers: { Authorization: `Bearer ${iaChave}` },
             })(iaModelo!)
-          : gatewayNativo!(MODELO_CHAT);
+          : provedorPadrao
+            ? createOpenAICompatible({
+                name: "provedor-env",
+                baseURL: baseUrlProvedorEnv(envProvedor!.provedor, process.env),
+                headers: { Authorization: `Bearer ${envProvedor!.chave}` },
+              })(envProvedor!.provedor.modelo)
+            : gatewayNativo!(MODELO_CHAT);
 
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
