@@ -27,10 +27,15 @@ export const Route = createFileRoute("/api/public/hooks/conhecimento")({
         if (!autorizado(request)) return Response.json({ error: "unauthorized" }, { status: 401 });
         const mod = await import("@/lib/conhecimento.server");
         const base = await mod.executarScanComThrottle();
+        const categorias: Record<string, number> = {};
+        for (const item of base.itens) {
+          categorias[item.categoria] = (categorias[item.categoria] ?? 0) + 1;
+        }
         return Response.json({
           ok: true,
           atualizadoEm: base.atualizadoEm,
           itens: base.itens.length,
+          categorias,
           erro: base.erro,
         });
       },
