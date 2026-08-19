@@ -58,7 +58,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/router-devtools": "^1.78.1",
     "@tanstack/react-router": "^1.78.1",
-    "@tanstack/react-store": "^0.5.5",
+    "@tanstack/react-store": "^0.9.3",
     "@tanstack/virtual-file-routes": "^1.78.1",
     "@types/node": "^20.14.2",
     "ansi-colors": "^4.1.3",
