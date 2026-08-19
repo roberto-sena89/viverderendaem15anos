@@ -1,0 +1,48 @@
+name: Verificação diária de modelos gratuitos
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm ci
+
+      - name: Verificar modelos gratuitos
+        run: npm run verificar:modelos
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TOKEN_ROUTER_API_KEY: ${{ secrets.TOKEN_ROUTER_API_KEY }}
+          ORCAROUTER_API_KEY: ${{ secrets.ORCAROUTER_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          CLINE_API_KEY: ${{ secrets.CLINE_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+
+      - name: Abrir issue se modelos configurados sumiram do catálogo
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f data/modelos-gratuitos.json ]; then
+            ABERTAS=$(gh issue list --state open --search "modelos gratuitos sumiram" --json number --jq 'length')
+            if [ "$ABERTAS" = "0" ]; then
+              gh issue create \
+                --title "Modelos gratuitos sumiram do catálogo dos provedores" \
+                --body "$(node -e 'const r=require("./data/modelos-gratuitos.json"); console.log("A verificação diária detectou modelos configurados que não estão mais gratuitos:\n\n" + r.desaparecidos.map(d => "- **" + d.provedor + "**: `" + d.modelo + "`").join("\n"))')"
+            fi
+          fi

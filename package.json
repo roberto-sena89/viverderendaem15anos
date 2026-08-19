@@ -14,7 +14,8 @@
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
     "postinstall": "patch-package",
-    "audit:fixes": "bun scripts/check-vuln-fixes.mjs"
+    "audit:fixes": "bun scripts/check-vuln-fixes.mjs",
+    "verificar:modelos": "node scripts/verificar-modelos.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.14",

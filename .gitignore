@@ -52,3 +52,6 @@ eslint-report.json
 
 # Artefatos de build/typecheck
 *.tsbuildinfo
+
+# Relatórios da verificação diária de modelos gratuitos
+data/

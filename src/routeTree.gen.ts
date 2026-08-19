@@ -40,6 +40,7 @@ import { Route as AuthenticatedRadarRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedRankingsRouteImport } from './routes/_authenticated/rankings'
 import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_authenticated/rebalanceamento'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiModelosGratuitosRouteImport } from './routes/api/modelos-gratuitos'
 import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.melhores-livros-financas'
 import { Route as ConteudoSlugRouteImport } from './routes/conteudo/$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -213,6 +214,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiModelosGratuitosRoute = ApiModelosGratuitosRouteImport.update({
+  id: '/api/modelos-gratuitos',
+  path: '/api/modelos-gratuitos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogMelhoresLivrosFinancasRoute =
   BlogMelhoresLivrosFinancasRouteImport.update({
     id: '/blog/melhores-livros-financas',
@@ -301,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/modelos-gratuitos': typeof ApiModelosGratuitosRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -343,6 +350,7 @@ export interface FileRoutesByTo {
   '/rankings': typeof AuthenticatedRankingsRoute
   '/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/modelos-gratuitos': typeof ApiModelosGratuitosRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -387,6 +395,7 @@ export interface FileRoutesById {
   '/_authenticated/rankings': typeof AuthenticatedRankingsRoute
   '/_authenticated/rebalanceamento': typeof AuthenticatedRebalanceamentoRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/modelos-gratuitos': typeof ApiModelosGratuitosRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -431,6 +440,7 @@ export interface FileRouteTypes {
     | '/rankings'
     | '/rebalanceamento'
     | '/api/chat'
+    | '/api/modelos-gratuitos'
     | '/blog/melhores-livros-financas'
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
@@ -473,6 +483,7 @@ export interface FileRouteTypes {
     | '/rankings'
     | '/rebalanceamento'
     | '/api/chat'
+    | '/api/modelos-gratuitos'
     | '/blog/melhores-livros-financas'
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
@@ -516,6 +527,7 @@ export interface FileRouteTypes {
     | '/_authenticated/rankings'
     | '/_authenticated/rebalanceamento'
     | '/api/chat'
+    | '/api/modelos-gratuitos'
     | '/blog/melhores-livros-financas'
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
@@ -546,6 +558,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiModelosGratuitosRoute: typeof ApiModelosGratuitosRoute
   BlogMelhoresLivrosFinancasRoute: typeof BlogMelhoresLivrosFinancasRoute
   ConteudoSlugRoute: typeof ConteudoSlugRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -777,6 +790,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/modelos-gratuitos': {
+      id: '/api/modelos-gratuitos'
+      path: '/api/modelos-gratuitos'
+      fullPath: '/api/modelos-gratuitos'
+      preLoaderRoute: typeof ApiModelosGratuitosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/melhores-livros-financas': {
       id: '/blog/melhores-livros-financas'
       path: '/blog/melhores-livros-financas'
@@ -907,6 +927,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiModelosGratuitosRoute: ApiModelosGratuitosRoute,
   BlogMelhoresLivrosFinancasRoute: BlogMelhoresLivrosFinancasRoute,
   ConteudoSlugRoute: ConteudoSlugRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
