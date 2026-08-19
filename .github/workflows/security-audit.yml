@@ -22,18 +22,10 @@ jobs:
           node-version: "24"
           cache: "npm"
 
-      - name: Instalar dependências (root)
+      - name: Instalar dependências
         run: npm ci
 
-      - name: Instalar dependências (viverderendaem15anos)
-        working-directory: ./viverderendaem15anos
-        run: npm ci
-
-      - name: npm audit (falha em high/critical) - root
-        run: npm audit --audit-level=high
-
-      - name: npm audit (falha em high/critical) - viverderendaem15anos
-        working-directory: ./viverderendaem15anos
+      - name: npm audit (falha em high/critical)
         run: npm audit --audit-level=high
 
       - name: Verificar correções já instaláveis (brace-expansion, uuid)
@@ -101,11 +93,7 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
-      - name: Verificar licenças (root)
-        run: npx license-checker --summary --production --excludePrivatePackages
-
-      - name: Verificar licenças (viverderendaem15anos)
-        working-directory: ./viverderendaem15anos
+      - name: Verificar licenças
         run: npx license-checker --summary --production --excludePrivatePackages
 
   dependency-review:
