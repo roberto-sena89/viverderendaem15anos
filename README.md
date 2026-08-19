@@ -172,6 +172,47 @@ Override opcional de URL base por provedor: `<PREFIXO>_BASE_URL`
 Gestor IA); 2. primeira chave de ambiente existente, na ordem da tabela; 3. IA nativa
 da plataforma (Lovable AI Gateway).
 
+### Observador de Mercado (Radar)
+
+O **Observador de Mercado** é o "relógio do mercado" do Radar: a cada 10–30 minutos
+ele varre o universo completo (Ações + FIIs), submete os melhores candidatos à IA do
+seu provedor **gratuito** (as mesmas variáveis da tabela acima — nunca usa o gateway
+pago) e publica um briefing executivo na página Radar, destacando as oportunidades
+novas desde a última varredura.
+
+Como funciona:
+
+- **Candidatos:** as ~12 melhores linhas por score de oportunidade do Radar (mesma
+  metodologia da página, usando percentil da posição, DY, drawdown e notícias de
+  impacto), junto do contexto macro (Selic/IPCA) e das notícias urgentes.
+- **Briefing:** resumo do estado do mercado, oportunidades com veredito
+  (`comprar`/`manter`/`observar`/`vender`), convicção, motivo e gatilho, além de
+  alertas de risco. O observador segue uma disciplina de mesa proprietária: cita
+  números, não inventa preço-alvo e trata manchete como ruído até confirmada.
+- **Proteções:** intervalo mínimo de 10 minutos entre varreduras e deduplicação de
+  execuções concorrentes — o provedor gratuito nunca é bombardeado.
+- **Persistência:** a última e a penúltima varredura ficam em `cotacoes_cache`
+  (chave `observador:mercado`), permitindo marcar "NOVO" no que mudou.
+
+**Agendamento automático (opcional):** rode no SQL editor do Supabase, trocando a
+URL pelo endereço do seu deploy e `x-cron-secret` pelo valor da env `CRON_SECRET`
+(configurada no painel):
+
+```sql
+select cron.schedule('observador-mercado', '0,20,40 * * * *', $$
+  select net.http_post(
+    url := 'https://SEU-APP.lovable.app/api/public/hooks/observador-mercado',
+    headers := jsonb_build_object(
+      'content-type', 'application/json',
+      'x-cron-secret', current_setting('app.cron_secret', true)
+    ),
+    body := '{}'
+  ) $$);
+```
+
+Sem agendamento, o botão **"Observar agora"** na página Radar executa a varredura
+manualmente (limitado a 5 execuções por usuário a cada 10 minutos).
+
 ## Testes
 
 O projeto usa **Vitest** + Testing Library. Os testes cobrem a lógica de negócio

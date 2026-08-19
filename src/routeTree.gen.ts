@@ -47,6 +47,7 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as ApiPublicNewsletterRouteImport } from './routes/api/public/newsletter'
 import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
+import { Route as ApiPublicHooksObservadorMercadoRouteImport } from './routes/api/public/hooks/observador-mercado'
 import { Route as ApiPublicStreamCotacoesRouteImport } from './routes/api/public/stream/cotacoes'
 
 const IndexRoute = IndexRouteImport.update({
@@ -250,6 +251,12 @@ const ApiPublicHooksAtualizarPrecosRoute =
     path: '/api/public/hooks/atualizar-precos',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksObservadorMercadoRoute =
+  ApiPublicHooksObservadorMercadoRouteImport.update({
+    id: '/api/public/hooks/observador-mercado',
+    path: '/api/public/hooks/observador-mercado',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicStreamCotacoesRoute = ApiPublicStreamCotacoesRouteImport.update({
   id: '/api/public/stream/cotacoes',
   path: '/api/public/stream/cotacoes',
@@ -294,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
+  '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
 export interface FileRoutesByTo {
@@ -334,6 +342,7 @@ export interface FileRoutesByTo {
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
+  '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
 export interface FileRoutesById {
@@ -376,6 +385,7 @@ export interface FileRoutesById {
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
+  '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
 export interface FileRouteTypes {
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
+    | '/api/public/hooks/observador-mercado'
     | '/api/public/stream/cotacoes'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -458,6 +469,7 @@ export interface FileRouteTypes {
     | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
+    | '/api/public/hooks/observador-mercado'
     | '/api/public/stream/cotacoes'
   id:
     | '__root__'
@@ -499,6 +511,7 @@ export interface FileRouteTypes {
     | '/api/public/newsletter'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
+    | '/api/public/hooks/observador-mercado'
     | '/api/public/stream/cotacoes'
   fileRoutesById: FileRoutesById
 }
@@ -527,6 +540,7 @@ export interface RootRouteChildren {
   ApiPublicNewsletterRoute: typeof ApiPublicNewsletterRoute
   ApiPublicHooksAtualizarCotacoesRoute: typeof ApiPublicHooksAtualizarCotacoesRoute
   ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
+  ApiPublicHooksObservadorMercadoRoute: typeof ApiPublicHooksObservadorMercadoRoute
   ApiPublicStreamCotacoesRoute: typeof ApiPublicStreamCotacoesRoute
 }
 
@@ -798,6 +812,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksAtualizarPrecosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/observador-mercado': {
+      id: '/api/public/hooks/observador-mercado'
+      path: '/api/public/hooks/observador-mercado'
+      fullPath: '/api/public/hooks/observador-mercado'
+      preLoaderRoute: typeof ApiPublicHooksObservadorMercadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stream/cotacoes': {
       id: '/api/public/stream/cotacoes'
       path: '/api/public/stream/cotacoes'
@@ -872,6 +893,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicNewsletterRoute: ApiPublicNewsletterRoute,
   ApiPublicHooksAtualizarCotacoesRoute: ApiPublicHooksAtualizarCotacoesRoute,
   ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
+  ApiPublicHooksObservadorMercadoRoute: ApiPublicHooksObservadorMercadoRoute,
   ApiPublicStreamCotacoesRoute: ApiPublicStreamCotacoesRoute,
 }
 export const routeTree = rootRouteImport

@@ -16,6 +16,7 @@ import { AppShell } from "@/components/app-shell";
 import { TabelaRadar } from "@/components/radar/tabela-radar";
 import { RankingRadar } from "@/components/radar/ranking-radar";
 import { ModalRadar } from "@/components/radar/modal-radar";
+import { ObservadorMercado } from "@/components/radar/observador-mercado";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -475,6 +476,13 @@ function PaginaRadar() {
     >
       <AbasMercado />
       <TopAlertBar />
+
+      <ObservadorMercado
+        aoSelecionar={(ticker) => {
+          const encontrado = visao?.linhas.find((l) => l.ticker === ticker);
+          if (encontrado) setSelecionado(encontrado);
+        }}
+      />
 
       <header className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">

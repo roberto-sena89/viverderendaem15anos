@@ -47,5 +47,8 @@ tests/__snapshots__/
 .DS_Store
 Thumbs.db
 
-# Relatórios de lint/segurança
+# Relatï¿½rios de lint/seguranï¿½a
 eslint-report.json
+
+# Artefatos de build/typecheck
+*.tsbuildinfo
