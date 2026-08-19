@@ -82,7 +82,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     nome: "Cerebras",
     descricao: "Camada gratuita com inferência de altíssima velocidade.",
     baseUrl: "https://api.cerebras.ai/v1",
-    modelos: ["gpt-oss-120b", "zai-glm-4.7", "gemma-4-31b", "llama3.1-70b"],
+    modelos: ["gpt-oss-120b", "gemma-4-31b"],
     urlChave: "https://cloud.cerebras.ai",
   },
   {
