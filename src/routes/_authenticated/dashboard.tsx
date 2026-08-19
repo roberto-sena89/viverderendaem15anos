@@ -352,10 +352,10 @@ function Dashboard() {
                         Ganho de Capital
                       </span>
                       <span className="flex flex-wrap items-baseline gap-2">
-                        <strong className="text-[length:var(--card-metrica)] font-semibold tabular-nums">
+                        <strong className={`text-[length:var(--card-metrica)] font-semibold tabular-nums ${totalGanho >= 0 ? "text-positive" : "text-negative"}`}>
                           {brl(totalGanho, 2)}
                         </strong>
-                        <span className="text-[length:var(--card-legenda)] font-medium tabular-nums">
+                        <span className={`text-[length:var(--card-legenda)] font-medium tabular-nums ${variacao >= 0 ? "text-positive" : "text-negative"}`}>
                           {variacao >= 0 ? "+" : ""}
                           {variacao.toFixed(2).replace(".", ",")}%
                         </span>
