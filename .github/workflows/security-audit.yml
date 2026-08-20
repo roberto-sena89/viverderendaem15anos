@@ -53,6 +53,7 @@ jobs:
         run: npm run lint -- --format=@microsoft/eslint-formatter-sarif --output-file=eslint-report.json || true
 
       - name: Validar relatório SARIF
+        if: hashFiles('eslint-report.json') != ''
         run: node scripts/validate-sarif.mjs eslint-report.json
 
       - name: Upload SARIF para GitHub Code Scanning
