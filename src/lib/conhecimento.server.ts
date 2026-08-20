@@ -35,6 +35,9 @@ export const INTERVALO_MINIMO_MS = 10 * 60 * 1000;
 /** Orçamento de caracteres do trecho de conhecimento injetado no prompt. */
 export const MAX_CONHECIMENTO_CHARS = 1300;
 
+/** Orçamento maior para auditorias e análises profundas. */
+export const MAX_CONHECIMENTO_CHARS_AUDITORIA = 2500;
+
 /** Teto de itens colecionados num scan (após deduplicação). */
 const MAX_ITENS_SCAN = 60;
 
@@ -207,6 +210,88 @@ const BUSCAS_EDUCACIONAIS = [
 ];
 
 /* ------------------------------------------------------------------ *
+ * Busca semântica leve (TF-IDF + similaridade de cosseno)
+ * ------------------------------------------------------------------ */
+
+const SINONIMOS_FINANCAS: Record<string, string[]> = {
+  selic: ["juros", "taxa básica", "copom", "básica", "cdi"],
+  cdi: ["juros", "cdb", "lci", "lca", "taxa"],
+  ipca: ["inflação", "igpm", "preços", "ipca-15"],
+  dolar: ["câmbio", "usd", "dólar comercial", "cambio"],
+  acoes: ["ação", "ações", "bolsa", "b3", "papel", "ibovespa", "ibrx"],
+  fii: ["fundo imobiliário", "fii", "tijolo", "papel", "cri", "shopping", "lajes"],
+  etf: ["etf", "fundos índice", "ivvb11", "bova11"],
+  tesouro: ["selic", "prefixado", "ipca+", "tesouro direto", "renda fixa"],
+  dividendos: ["dividendos", "proventos", "yield", "dy", "rendimentos"],
+  aposentadoria: ["aposentadoria", "independência financeira", "renda passiva", "4%"],
+  risco: ["risco", "volatilidade", "drawdown", "diversificação", "concentração"],
+  carteira: ["carteira", "patrimônio", "alocação", "ativos", "investimentos"],
+  balanco: ["balanço", "resultado trimestral", "lucro", "receita", "ebitda", "cvm"],
+  juros: ["juros", "selic", "copom", "básica", "cdi", "prefixado"],
+  inflacao: ["inflação", "ipca", "igpm", "preços", "ipca-15"],
+};
+
+function tokenizar(texto: string): string[] {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length >= 2);
+}
+
+function expandirTermos(termos: string[]): string[] {
+  const expandidos = new Set<string>(termos);
+  for (const termo of termos) {
+    const sinonimos = SINONIMOS_FINANCAS[termo] ?? [];
+    for (const s of sinonimos) {
+      expandidos.add(s);
+      expandidos.add(...tokenizar(s));
+    }
+  }
+  return Array.from(expandidos);
+}
+
+function calcularTF(termos: string[]): Record<string, number> {
+  const tf: Record<string, number> = {};
+  const total = termos.length || 1;
+  for (const t of termos) {
+    tf[t] = (tf[t] || 0) + 1 / total;
+  }
+  return tf;
+}
+
+function produtoEscalar(a: Record<string, number>, b: Record<string, number>): number {
+  let soma = 0;
+  for (const k in a) {
+    if (b[k]) soma += a[k] * b[k];
+  }
+  return soma;
+}
+
+function magnitude(v: Record<string, number>): number {
+  return Math.sqrt(Object.values(v).reduce((s, x) => s + x * x, 0));
+}
+
+function similaridadeCosseno(a: Record<string, number>, b: Record<string, number>): number {
+  const ma = magnitude(a);
+  const mb = magnitude(b);
+  if (ma === 0 || mb === 0) return 0;
+  return produtoEscalar(a, b) / (ma * mb);
+}
+
+function pontuarItemSemantico(item: ConhecimentoItem, termosPergunta: string[]): number {
+  const textoItem = `${item.titulo} ${item.conteudo} ${item.categoria}`;
+  const termosItem = tokenizar(textoItem);
+  const termosExpandidos = expandirTermos(termosPergunta);
+  const tfPergunta = calcularTF(termosExpandidos);
+  const tfItem = calcularTF(termosItem);
+  const sim = similaridadeCosseno(tfPergunta, tfItem);
+  const bonusRecencia = new Date(item.atualizadoEm).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000 ? 0.1 : 0;
+  return sim + bonusRecencia;
+}
+
+/* ------------------------------------------------------------------ *
  * Painel macro (Banco Central — SGS) e fundamentos reais (CVM)
  * ------------------------------------------------------------------ */
 
@@ -329,12 +414,52 @@ const ROTULOS_SECOES_PAINEL: Record<string, string> = {
   agenda: "Agenda",
 };
 
+function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): ConhecimentoItem | null {
+  const macro = itens.find((i) => i.categoria === "macro");
+  const noticias = itens.filter((i) => i.categoria === "noticias" || i.categoria === "mercado");
+  const empresas = itens.filter((i) => i.categoria === "setor");
+  const educacao = itens.filter((i) => i.categoria === "educacao");
+
+  const secao = (rotulo: string, conteudo: string) => (conteudo ? `- ${rotulo}: ${conteudo}` : null);
+
+  const linhas: string[] = [];
+  if (macro) linhas.push(secao("Visão geral", macro.conteudo.slice(0, 200)) ?? null);
+  if (macro) linhas.push(secao("Macro", macro.conteudo.slice(0, 300)) ?? null);
+  if (noticias.length > 0) {
+    const resumoMercado = noticias.slice(0, 3).map((n) => n.titulo).join("; ");
+    linhas.push(secao("Mercados", resumoMercado) ?? null);
+  }
+  if (empresas.length > 0) {
+    const resumoEmpresas = empresas.slice(0, 3).map((n) => n.titulo).join("; ");
+    linhas.push(secao("Empresas", resumoEmpresas) ?? null);
+  }
+  if (educacao.length > 0) {
+    const destaqueEducacao = educacao[0].titulo;
+    linhas.push(secao("Riscos", `Atenção a: ${destaqueEducacao}`) ?? null);
+  }
+
+  const conteudo = linhas.filter((l): l is string => l !== null).join("\n");
+  if (!conteudo) return null;
+
+  return {
+    categoria: "painel",
+    titulo: "Painel do analista (síntese automática)",
+    conteudo: conteudo.slice(0, 1500),
+    fonte: "Síntese automática do Gestor IA (scanner sem provedor de IA configurado)",
+    atualizadoEm: agora.toISOString(),
+  };
+}
+
 async function sintetizarPainelAnalista(
   itens: ConhecimentoItem[],
   agora = new Date(),
 ): Promise<ConhecimentoItem | null> {
   const ativo = provedorEnvAtivo(process.env);
-  if (!ativo) return null;
+  if (!ativo) {
+    const fallback = montarPainelResiliente(itens, agora);
+    if (fallback) return fallback;
+    return null;
+  }
   const material = itens
     .slice(0, 25)
     .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, 200)}`)
@@ -400,6 +525,8 @@ async function sintetizarPainelAnalista(
       "[conhecimento] falha ao sintetizar painel:",
       e instanceof Error ? e.message : String(e),
     );
+    const fallback = montarPainelResiliente(itens, agora);
+    if (fallback) return fallback;
     return null;
   }
 }
@@ -576,7 +703,8 @@ export async function executarScanComThrottle(agora = new Date()): Promise<BaseC
 
 /**
  * Seleciona os itens de conhecimento mais relevantes para a pergunta,
- * respeitando o orçamento de caracteres. Função pura (testável).
+ * respeitando o orçamento de caracteres. Usa busca semântica leve com
+ * TF-IDF, similaridade de cosseno e sinônimos em português para finanças.
  */
 export function selecionarConhecimento(
   pergunta: string,
@@ -584,52 +712,27 @@ export function selecionarConhecimento(
   maxChars = MAX_CONHECIMENTO_CHARS,
 ): ConhecimentoItem[] {
   if (itens.length === 0) return [];
-  const termos = pergunta
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .split(/[^a-z0-9]+/)
-    .filter(
-      (t) =>
-        t.length >= 3 &&
-        !["para", "como", "qual", "quais", "quanto", "porque", "quando"].includes(t),
-    );
+  const termos = tokenizar(pergunta);
+  const termosExpandidos = expandirTermos(termos);
 
-  const pontuar = (item: ConhecimentoItem): number => {
-    const alvo = `${item.titulo} ${item.conteudo} ${item.categoria}`
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-    let pontos = 0;
-    for (const t of termos) {
-      if (alvo.includes(t)) pontos += t.length;
-    }
-    if (termos.length > 0 && pontos === 0) {
-      const categoria = item.categoria;
-      if (pergunta.toLowerCase().includes("selic") && categoria === "macro") pontos += 3;
-      if (/fii|imobili|papel|tijolo/i.test(pergunta) && categoria === "educacao") pontos += 3;
-    }
-    return pontos;
-  };
+  const comScore = itens.map((item) => ({
+    item,
+    score: pontuarItemSemantico(item, termosExpandidos),
+  }));
 
-  const ordenados = [...itens].sort((a, b) => {
-    const pa = pontuar(a);
-    const pb = pontuar(b);
-    if (pa !== pb) return pb - pa;
-    return new Date(b.atualizadoEm).getTime() - new Date(a.atualizadoEm).getTime();
-  });
+  comScore.sort((a, b) => b.score - a.score);
 
   const escolhidos: ConhecimentoItem[] = [];
   let tamanho = 0;
-  for (const item of ordenados) {
+  for (const { item } of comScore) {
     const bloco = `[${item.categoria}] ${item.titulo}: ${item.conteudo} (${item.fonte})`;
     if (tamanho + bloco.length > maxChars && escolhidos.length > 0) break;
     if (tamanho + bloco.length > maxChars * 2) break;
     escolhidos.push(item);
     tamanho += bloco.length;
   }
-  if (escolhidos.length === 0 && ordenados.length > 0) {
-    escolhidos.push(ordenados[0]);
+  if (escolhidos.length === 0 && comScore.length > 0) {
+    escolhidos.push(comScore[0].item);
   }
   return escolhidos;
 }

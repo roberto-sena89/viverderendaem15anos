@@ -2014,7 +2014,8 @@ export const Route = createFileRoute("/api/chat")({
 
         // Conhecimento de mercado dinâmico (scanner web): o Painel do
         // Analista entra sempre; os demais itens conforme a relevância com
-        // a pergunta, dentro do orçamento de tokens.
+        // a pergunta, dentro do orçamento de tokens. Em auditorias, o
+        // orçamento é maior para dar mais contexto ao assistente.
         let trechoConhecimento = "";
         try {
           const conhecimentoMod = await import("@/lib/conhecimento.server");
@@ -2022,7 +2023,12 @@ export const Route = createFileRoute("/api/chat")({
           const pergunta = textoDaMensagem(ultima) || "";
           const painel = baseConhecimento.itens.find((i) => i.categoria === "painel") ?? null;
           const demais = baseConhecimento.itens.filter((i) => i.categoria !== "painel");
-          const relevantes = conhecimentoMod.selecionarConhecimento(pergunta, demais);
+
+          const ehAuditoria = /analis(e|ar|a)|auditoria|carteira|diversificaca|concentracao|risco|rebalanceamento/i.test(pergunta);
+          const maxChars = ehAuditoria
+            ? conhecimentoMod.MAX_CONHECIMENTO_CHARS_AUDITORIA
+            : conhecimentoMod.MAX_CONHECIMENTO_CHARS;
+          const relevantes = conhecimentoMod.selecionarConhecimento(pergunta, demais, maxChars);
           const blocos: string[] = [];
           if (painel) {
             blocos.push(
