@@ -359,7 +359,10 @@ export async function listarProvedoresBackend(): Promise<ProvedorBackend[]> {
     throw new Error(`Erro ao listar provedores: ${response.status}`);
   }
 
-  return response.json();
+  const dados: unknown = await response.json();
+  if (Array.isArray(dados)) return dados as ProvedorBackend[];
+  const lista = (dados as { provedores?: unknown })?.provedores;
+  return Array.isArray(lista) ? (lista as ProvedorBackend[]) : [];
 }
 // ──────────────────────────────────────────────────────────────────────────
 // Histórico de testes de conexão (localStorage — diagnóstico client-side)
