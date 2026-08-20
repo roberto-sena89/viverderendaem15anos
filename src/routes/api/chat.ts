@@ -561,10 +561,17 @@ export const Route = createFileRoute("/api/chat")({
         }));
 
         // Provedor de IA externo (gratuito) configurado pelo usuário na página do Gestor IA.
-        const iaBaseUrl = request.headers.get("x-ia-base-url")?.trim();
+        const baseUrlBruta = request.headers.get("x-ia-base-url")?.trim();
         const iaModelo = request.headers.get("x-ia-modelo")?.trim();
         const iaChave = request.headers.get("x-ia-chave")?.trim();
+        let iaBaseUrl: string | undefined;
+        if (baseUrlBruta) {
+          const validacaoBase = validarBaseUrlProvedor(baseUrlBruta);
+          if (!validacaoBase.ok) return new Response(validacaoBase.motivo, { status: 400 });
+          iaBaseUrl = validacaoBase.url;
+        }
         const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
+
 
         const iaProvedorHeader = request.headers.get("x-ia-provedor")?.trim() || "";
         const provedorEnvPorId = iaProvedorHeader
