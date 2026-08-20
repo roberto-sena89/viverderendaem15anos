@@ -12,7 +12,7 @@
         "@fontsource-variable/rethink-sans": "^5.3.0",
         "@hookform/resolvers": "^5.2.2",
         "@lovable.dev/cloud-auth-js": "1.1.2",
-        "@lovable.dev/mcp-js": "0.25.1",
+        "@lovable.dev/mcp-js": "0.26.2",
         "@radix-ui/react-accordion": "^1.2.12",
         "@radix-ui/react-alert-dialog": "^1.1.15",
         "@radix-ui/react-aspect-ratio": "^1.1.8",
@@ -111,6 +111,9 @@
         "vitest": "^4.1.11",
       },
     },
+  },
+  "overrides": {
+    "hono": "^4.13.3",
   },
   "packages": {
     "@ai-sdk/gateway": ["@ai-sdk/gateway@4.0.52", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@ai-sdk/gateway/-/gateway-4.0.52.tgz", { "dependencies": { "@ai-sdk/provider": "4.0.7", "@ai-sdk/provider-utils": "5.0.27", "@vercel/oidc": "3.2.0" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-SXUM8jzzuTUJRq+EOgPd5to6DSx0EKslVn+IVZHbUEX6k/3vCPNrvjckbK26HnNxHU/STxm+zTSJteqrO+7Z0w=="],
@@ -279,7 +282,7 @@
 
     "@lovable.dev/cloud-auth-js": ["@lovable.dev/cloud-auth-js@1.1.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@lovable.dev/cloud-auth-js/-/cloud-auth-js-1.1.2.tgz", {}, "sha512-xz8ocewsgwkp8giau272/eWWU3XrchCg5uba4yQPPYtevHTXaVU3sD+fO1JjyPBHacVcOcwhmgUiU9TKHt63cg=="],
 
-    "@lovable.dev/mcp-js": ["@lovable.dev/mcp-js@0.25.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@lovable.dev/mcp-js/-/mcp-js-0.25.1.tgz", { "dependencies": { "@modelcontextprotocol/sdk": "1.28.0", "esbuild": "^0.27.0", "jose": "^6.2.2" }, "peerDependencies": { "vite": ">=5.0.0 <9.0.0", "zod": ">=3.23.0" }, "bin": { "lovable-mcp-extract-manifest": "./dist/cli/extract-manifest.cjs" } }, "sha512-6BNCqobUVRIPYMxDDErHO5EyQ7LFyfgYyXlf23iG4c6RJS6A5bSWCXT6GVvJ9ZiCPMlEu332mtsLGpZOdwVFYg=="],
+    "@lovable.dev/mcp-js": ["@lovable.dev/mcp-js@0.26.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@lovable.dev/mcp-js/-/mcp-js-0.26.2.tgz", { "dependencies": { "@modelcontextprotocol/sdk": "1.28.0", "esbuild": "^0.27.0", "jose": "^6.2.2" }, "peerDependencies": { "vite": ">=5.0.0 <9.0.0", "zod": ">=3.23.0" }, "bin": { "lovable-mcp-extract-manifest": "./dist/cli/extract-manifest.cjs" } }, "sha512-QZwKm+uiKk9sFl/QnhGENEiz3oGz/Ep8/Sp4GzueQi4AbJRaeQGu+EBYnxpmKM1Fv/Tq7wmJaLospI1eUC8qkQ=="],
 
     "@lovable.dev/vite-tanstack-config": ["@lovable.dev/vite-tanstack-config@2.15.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@lovable.dev/vite-tanstack-config/-/vite-tanstack-config-2.15.1.tgz", { "dependencies": { "@tanstack/devtools-vite": "^0.8.1", "lightningcss": "^1.30.0" }, "peerDependencies": { "@tailwindcss/vite": ">=4.0.0", "@tanstack/react-start": ">=1.100.0", "@vitejs/plugin-react": ">=4.0.0", "nitro": ">=3.0.260603-beta", "vite": ">=5.0.0 <9.0.0", "vite-tsconfig-paths": ">=6.0.0" }, "optionalPeers": ["nitro"] }, "sha512-T0pMWw2UZnT050IRjxPINt9w5mnXE5QPYi5HcXURVk7aPQLsbeEpEdYApCmFS7Fzmai8+aoxU9RCdM/uFUxqeA=="],
 
@@ -1249,7 +1252,7 @@
 
     "hastscript": ["hastscript@9.0.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/hastscript/-/hastscript-9.0.1.tgz", { "dependencies": { "@types/hast": "^3.0.0", "comma-separated-tokens": "^2.0.0", "hast-util-parse-selector": "^4.0.0", "property-information": "^7.0.0", "space-separated-tokens": "^2.0.0" } }, "sha512-g7df9rMFX/SPi34tyGCyUBREQoKkapwdY/T04Qn9TDWfHhAYt4/I0gMVirzK5wEzeUqIjEB+LXC/ypb7Aqno5w=="],
 
-    "hono": ["hono@4.12.32", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/hono/-/hono-4.12.32.tgz", {}, "sha512-XcuyW9qE2kJn07PkecMOBd5Vq/hMy7mmGw+idz1yblbg9N17ijJODrvPkn7/dwL3Kulj8LcRJ69DLOWf91dRUg=="],
+    "hono": ["hono@4.13.3", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/hono/-/hono-4.13.3.tgz", {}, "sha512-r8AO2mYHoLxSHkgafNeC/BXyb2vWRxD3jem4Ts+ptav8oTG5FIRifAjuJEmZI4bSvvc2ns0GxmIYiZnHqN3mMw=="],
 
     "hookable": ["hookable@6.1.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/hookable/-/hookable-6.1.1.tgz", {}, "sha512-U9LYDy1CwhMCnprUfeAZWZGByVbhd54hwepegYTK7Pi5NvqEj63ifz5z+xukznehT7i6NIZRu89Ay1AZmRsLEQ=="],
 
