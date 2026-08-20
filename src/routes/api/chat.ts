@@ -29,6 +29,12 @@ import {
   montarBenchmarkGlobal,
   retornoPonderado12m,
 } from "@/lib/analise-carteira";
+import { avaliarParaGestor, type EntradasScoreGestor, type ScoreGestor } from "@/lib/score-gestor";
+import { posicoesParaTickers, contextoMacro } from "@/lib/radar.server";
+import { lerFundamentosCvm } from "@/lib/cvm.server";
+import { gradeAcoesComCache } from "@/lib/acoes.server";
+import { gradeFiisComCache } from "@/lib/fiis.server";
+import { sinalRadar, scoreOportunidade } from "@/lib/radar-base";
 import type { Database } from "@/integrations/supabase/types";
 
 const SISTEMA = `Você é o "Gestor IA", consultor PRO da plataforma Investidor em 15 Anos — um serviço premium de assessoria financeira educativa.
@@ -927,6 +933,108 @@ export const Route = createFileRoute("/api/chat")({
                 atingida: totalAtual >= m.alvo,
               })),
             }),
+          }),
+          avaliarScoreGestor: tool({
+            description:
+              "Avalia um ativo da carteira com o Score Gestor oficial da plataforma: nota 0-100, rating A/B/C/D, veredito (comprar/observar/evitar), componentes ponderados (fundamentos, oportunidade, dividendos, prêmio vs Selic, liquidez, endividamento), alertas e limite de aporte sugerido. Use quando o usuário perguntar sobre a qualidade de um ativo específico ou pedir um parecer de investimento.",
+            inputSchema: z.object({
+              ticker: z.string().describe("Código do ativo (ex.: PETR4, HGLG11)"),
+            }),
+            execute: async ({ ticker }) => {
+              try {
+                const { data: ativos, error } = await supabase
+                  .from("ativos")
+                  .select("ticker, categoria, quantidade, preco_medio, preco_atual, dy")
+                  .eq("user_id", userId)
+                  .ilike("ticker", ticker);
+                if (error || !ativos || ativos.length === 0) {
+                  return { erro: `Ativo ${ticker} não encontrado na carteira do usuário.` };
+                }
+
+                const tickerUpper = ticker.toUpperCase();
+                const categoria = ativos[0].categoria;
+                const [posicoes, macro, fundamentosCvm, gradeAcoes, gradeFiis] = await Promise.all([
+                  posicoesParaTickers([tickerUpper]),
+                  contextoMacro(),
+                  lerFundamentosCvm().catch(() => ({ mapa: {} })),
+                  gradeAcoesComCache().catch(() => ({ linhas: [] })),
+                  gradeFiisComCache().catch(() => ({ linhas: [] })),
+                ]);
+
+                const gradeMap = new Map([
+                  ...gradeAcoes.linhas.map((l: any) => [l.ticker.toUpperCase(), l]),
+                  ...gradeFiis.linhas.map((l: any) => [l.ticker.toUpperCase(), l]),
+                ]);
+
+                const raw = gradeMap.get(tickerUpper);
+                if (!raw) {
+                  return { erro: `Sem dados fundamentalistas disponíveis para ${ticker} no momento.` };
+                }
+
+                const pos = posicoes[tickerUpper];
+                const cvm = fundamentosCvm.mapa[tickerUpper];
+                const dy12 = "dy12" in raw ? raw.dy12 : null;
+                const pl = "pl" in raw ? raw.pl : null;
+                const liquidez = "liquidez" in raw ? raw.liquidez : null;
+                const dividaPatrimonio = "dividaPatrimonio" in raw ? raw.dividaPatrimonio : null;
+                const margemLiquida = "margemLiquida" in raw ? raw.margemLiquida : null;
+                const setor = "setor" in raw ? raw.setor : null;
+                const fundamentos = "pontuacao" in raw ? raw.pontuacao : null;
+
+                const entrada: EntradasScoreGestor = {
+                  ticker: tickerUpper,
+                  fundamentos,
+                  oportunidade: scoreOportunidade({
+                    percentil: pos?.percentil ?? null,
+                    dy12: dy12 ?? null,
+                    drawdownMaximoPct: pos?.drawdownMaximoPct ?? null,
+                    noticiaImpacto: false,
+                  }),
+                  sinal: sinalRadar({
+                    variacaoDia: "variacaoPercent" in raw ? raw.variacaoPercent ?? null : null,
+                    dy12: dy12 ?? null,
+                    pvp: "pvp" in raw ? raw.pvp ?? null : null,
+                    percentil: pos?.percentil ?? null,
+                    noticiaImpacto: false,
+                  }).tipo,
+                  dy12,
+                  pl,
+                  payout: null,
+                  liquidez,
+                  dividaPatrimonio,
+                  margemLiquida,
+                  regime: null,
+                  selic: macro.selic,
+                  setor,
+                  consistenciaDividendos: null,
+                  percentilDistribucional: pos?.percentilDistribucional ?? null,
+                  volatilidadeAnualPct: pos?.volatilidadeAnualPct ?? null,
+                  percentilPlReal: cvm?.percentilPl ?? null,
+                  percentilEvEbitReal: cvm?.percentilEvEbit ?? null,
+                  evEbitReal: cvm?.evEbit ?? null,
+                  dividaLiquidaReal: cvm?.dividaLiquida ?? null,
+                };
+
+                const resultado = avaliarParaGestor(entrada);
+                return {
+                  ticker: resultado.ticker,
+                  nota: resultado.nota,
+                  rating: resultado.rating,
+                  veredito: resultado.veredito,
+                  motivo: resultado.motivo,
+                  componentes: resultado.componentes.map((c) => ({
+                    rotulo: c.rotulo,
+                    nota: c.nota,
+                    peso: c.peso,
+                    detalhe: c.detalhe,
+                  })),
+                  alertas: resultado.alertas,
+                  limite: resultado.limite,
+                };
+              } catch (e) {
+                return { erro: e instanceof Error ? e.message : "Erro ao avaliar Score Gestor." };
+              }
+            },
           }),
           noticiasMercado: tool({
             description:
