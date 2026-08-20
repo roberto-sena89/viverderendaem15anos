@@ -69,6 +69,7 @@ export function DialogoProvedorIA() {
     if (aberto) {
       setRascunho(config);
       setTeste(null);
+      setApenasFree(true);
       setHistorico(lerHistoricoTestes());
       listarProvedoresBackend()
         .then(setProvedoresBackend)
