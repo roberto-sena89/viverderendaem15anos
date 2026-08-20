@@ -122,7 +122,8 @@ export function DialogoProvedorIA() {
   const preset = PRESETS_PROVEDOR.find((p) => p.id === rascunho.preset);
 
   function provedorBackendConfigurado(id: string): ProvedorBackend | undefined {
-    return provedoresBackend.find((p) => p.configurado && (p.id === id || p.nome === id));
+    const lista = Array.isArray(provedoresBackend) ? provedoresBackend : [];
+    return lista.find((p) => p.configurado && (p.id === id || p.nome === id));
   }
 
   const backendConfigurado = provedorBackendConfigurado(rascunho.preset);
