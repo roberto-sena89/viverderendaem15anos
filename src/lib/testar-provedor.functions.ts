@@ -7,9 +7,7 @@ const entrada = z.object({
   preset: z.string().optional().default(""),
 });
 
-const AUTH_HEADER_POR_PRESET: Record<string, string> = {
-  tokenrouter: "x-api-key",
-};
+const AUTH_HEADER_POR_PRESET: Record<string, string> = {};
 
 export interface ResultadoTesteProvedor {
   ok: boolean;

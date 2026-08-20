@@ -1,6 +1,6 @@
 /** Provedor de IA configurável por variável de ambiente no servidor. */
 export interface ProvedorEnv {
-  /** Variável de ambiente que guarda a chave (ex.: TOKEN_ROUTER_API_KEY). */
+  /** Variável de ambiente que guarda a chave (ex.: OPENROUTER_API_KEY). */
   variavel: string;
   nome: string;
   baseUrl: string;
@@ -20,13 +20,6 @@ export interface ProvedorEnv {
  * Ordem de precedência quando mais de uma chave existir: a primeira da lista.
  */
 export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
-  {
-    variavel: "TOKEN_ROUTER_API_KEY",
-    nome: "Token Router",
-    baseUrl: "https://api.tokenrouter.com/v1",
-    modelo: "deepseek/deepseek-v4-pro-0813-free",
-    urlChave: "https://www.tokenrouter.com/dashboard",
-  },
   {
     variavel: "ORCAROUTER_API_KEY",
     nome: "OrcaRouter",

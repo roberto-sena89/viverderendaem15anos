@@ -481,7 +481,7 @@ export const radarAnaliseIA = createServerFn({ method: "GET" })
       if (!envProvedor) {
         return {
           analise: null,
-          erro: "A geração de IA não está configurada neste ambiente. Configure a chave de um provedor gratuito nas variáveis de ambiente (ex.: TOKEN_ROUTER_API_KEY) para o Gestor IA funcionar.",
+          erro: "A geração de IA não está configurada neste ambiente. Configure a chave de um provedor gratuito nas variáveis de ambiente (ex.: OPENROUTER_API_KEY) para o Gestor IA funcionar.",
         };
       }
       try {

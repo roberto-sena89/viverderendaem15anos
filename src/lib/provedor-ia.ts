@@ -72,27 +72,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://openrouter.ai/keys",
   },
-  /* 2. Token Router */
-  {
-    id: "tokenrouter",
-    nome: "Token Router",
-    descricao: "Roteador de modelos compatível com a API OpenAI (tokenrouter.com), com catálogo de 300+ modelos.",
-    baseUrl: "https://api.tokenrouter.com/v1",
-    modelos: [
-      "deepseek/deepseek-v4-pro-0813-free",
-      "deepseek/deepseek-v4-pro",
-      "qwen/qwen3.8-max-free",
-      "qwen/qwen3.8-max",
-      "openai/gpt-5.4-mini",
-      "google/gemini-3.5-flash",
-      "minimax/minimax-m2.5",
-      "z-ai/glm-5",
-      "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
-    ],
-    modelosGratuitos: ["deepseek/deepseek-v4-pro-0813-free", "qwen/qwen3.8-max-free"],
-    urlChave: "https://www.tokenrouter.com/dashboard",
-  },
-  /* 3. OrcaRouter */
+  /* 2. OrcaRouter */
   {
     id: "orcarouter",
     nome: "OrcaRouter (modelos -free)",
@@ -178,11 +158,11 @@ export const CONFIG_IA_NATIVA: ConfigProvedorIA = {
   chavesPorProvedor: {},
 };
 
-/** Configuração padrão do Gestor IA: provedor Token Router (modelo gratuito). */
+/** Configuração padrão do Gestor IA: provedor OrcaRouter (modelo gratuito). */
 export const CONFIG_PADRAO: ConfigProvedorIA = {
-  preset: "tokenrouter",
-  baseUrl: "https://api.tokenrouter.com/v1",
-  modelo: "deepseek/deepseek-v4-pro-0813-free",
+  preset: "orcarouter",
+  baseUrl: "https://api.orcarouter.ai/v1",
+  modelo: "qwen/qwen3.8-27b-free",
   chave: "",
   chavesPorProvedor: {},
 };
@@ -193,7 +173,7 @@ export function lerConfigProvedor(): ConfigProvedorIA {
     const bruto = window.localStorage.getItem(CHAVE_STORAGE);
     if (!bruto) return CONFIG_PADRAO;
     const dados = JSON.parse(bruto) as Partial<ConfigProvedorIA>;
-    const preset = dados.preset ?? "tokenrouter";
+    const preset = dados.preset ?? "orcarouter";
     const chavesPorProvedor =
       dados.chavesPorProvedor && typeof dados.chavesPorProvedor === "object"
         ? { ...dados.chavesPorProvedor }
@@ -260,7 +240,6 @@ export function useProvedorIA() {
 
 /** Cabeçalhos enviados ao /api/chat quando há provedor externo configurado. */
 export const PRESET_PARA_VARIAVEL_BACKEND: Record<string, string> = {
-  tokenrouter: "TOKEN_ROUTER_API_KEY",
   orcarouter: "ORCAROUTER_API_KEY",
   openrouter: "OPENROUTER_API_KEY",
   nvidia: "NVIDIA_API_KEY",

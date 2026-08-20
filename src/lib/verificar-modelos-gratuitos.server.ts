@@ -68,7 +68,7 @@ interface VerificadorProvedor {
   /** true = chave vai na query string (?key=) em vez do header Authorization. */
   chaveViaQuery?: boolean;
   /**
-   * Nome do header de autenticacao (default: "Authorization: Bearer ..."); use "x-api-key" para provedores como Token Router.
+   * Nome do header de autenticacao (default: "Authorization: Bearer ...").
    */
   authHeader?: string;
   /**
@@ -82,21 +82,6 @@ interface VerificadorProvedor {
 }
 
 const VERIFICADORES: readonly VerificadorProvedor[] = [
-  {
-    chave: "openrouter",
-    nome: "OpenRouter",
-    baseUrl: "https://openrouter.ai/api/v1",
-    variavelChave: "OPENROUTER_API_KEY",
-    padroesGratuitos: [/:free$/i],
-  },
-  {
-    chave: "tokenrouter",
-    nome: "Token Router",
-    baseUrl: "https://api.tokenrouter.com/v1",
-    variavelChave: "TOKEN_ROUTER_API_KEY",
-    padroesGratuitos: [/-free$/i],
-    exigeChave: true,
-  },
   {
     chave: "orcarouter",
     nome: "OrcaRouter",
@@ -418,12 +403,12 @@ async function comLimite<T>(
 
 /** Mapeia o nome do provedor nas listas do código para a chave do verificador. */
 const ALIASES_CHAVE: readonly [string, string][] = [
-  ["tokenrouter", "tokenrouter"],
   ["orcarouter", "orcarouter"],
   ["opencodezen", "opencodezen"],
   ["openrouter", "openrouter"],
   ["nvidia", "nvidia"],
   ["groq", "groq"],
+  ["gemini", "gemini"],
 ];
 
 function chavePorNome(nome: string): string | null {
