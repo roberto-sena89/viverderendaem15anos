@@ -259,7 +259,7 @@ export function DialogoProvedorIA() {
                         key={m}
                         type="button"
                         onClick={() => setRascunho({ ...rascunho, modelo: m })}
-                        className={`rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                        className={`max-w-full break-all rounded-full border px-2.5 py-1 text-left font-mono text-[11px] leading-snug transition-colors ${
                           rascunho.modelo === m
                             ? "border-primary/60 bg-primary/10 text-primary"
                             : "border-border text-muted-foreground hover:text-foreground"
