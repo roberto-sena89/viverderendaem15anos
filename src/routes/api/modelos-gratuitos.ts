@@ -15,12 +15,16 @@ export const Route = createFileRoute("/api/modelos-gratuitos")({
   server: {
     handlers: {
       GET: async ({ request }: { request: Request }) => {
-        const forcar = new URL(request.url).searchParams.get("forcar") === "1";
-        if (cache && !forcar && Date.now() - cache.quando < TTL_CACHE_MS) {
+        const url = new URL(request.url);
+        const forcar = url.searchParams.get("forcar") === "1";
+        const sondar = url.searchParams.get("sondar") === "1";
+        if (cache && !forcar && !sondar && Date.now() - cache.quando < TTL_CACHE_MS) {
           return Response.json(cache.relatorio);
         }
         const configurados = modelosConfiguradosDe(PROVEDORES_ENV, PRESETS_PROVEDOR);
-        const relatorio = await verificarModelosGratuitos(process.env, configurados);
+        const relatorio = await verificarModelosGratuitos(process.env, configurados, {
+          sondar,
+        });
         cache = { quando: Date.now(), relatorio };
         return Response.json(relatorio);
       },

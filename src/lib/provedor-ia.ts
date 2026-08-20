@@ -154,8 +154,6 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "openai/gpt-oss-20b",
       "qwen/qwen3.6-27b",
       "allam-2-7b",
-      "canopylabs/orpheus-v1-english",
-      "whisper-large-v3-turbo",
     ],
     modelosGratuitos: [
       "groq/compound",
@@ -164,8 +162,6 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "openai/gpt-oss-20b",
       "qwen/qwen3.6-27b",
       "allam-2-7b",
-      "canopylabs/orpheus-v1-english",
-      "whisper-large-v3-turbo",
     ],
     urlChave: "https://console.groq.com/keys",
   },
@@ -181,12 +177,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "gemini-3.5-flash",
       "gemini-3.5-flash-lite",
     ],
-    modelosGratuitos: [
-      "gemini-3.7-flash",
-      "gemini-3.6-flash",
-      "gemini-3.5-flash",
-      "gemini-3.5-flash-lite",
-    ],
+    modelosGratuitos: [],
     urlChave: "https://aistudio.google.com/apikey",
   },
   /* 9. Cerebras */
@@ -196,7 +187,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     descricao: "Camada gratuita com inferência de altíssima velocidade.",
     baseUrl: "https://api.cerebras.ai/v1",
     modelos: ["gpt-oss-120b", "gemma-4-31b"],
-    modelosGratuitos: ["gpt-oss-120b", "gemma-4-31b"],
+    modelosGratuitos: [],
     urlChave: "https://cloud.cerebras.ai",
   },
   /* 10. Personalizado */
@@ -310,7 +301,6 @@ export const PRESET_PARA_VARIAVEL_BACKEND: Record<string, string> = {
   opencodezen: "OPENCODE_API_KEY",
   groq: "GROQ_API_KEY",
   gemini: "GOOGLE_GENERATIVE_AI_API_KEY",
-  cerebras: "CEREBRAS_API_KEY",
 };
 
 export function cabecalhosProvedor(config: ConfigProvedorIA): Record<string, string> {

@@ -1,0 +1,22 @@
+name: Verificação horária de modelos gratuitos
+
+on:
+  schedule:
+    # A cada hora, no minuto 0 (UTC). Sonda de verdade cada modelo "free"
+    # do catálogo dos provedores e persiste o relatório no cotacoes_cache.
+    - cron: "0 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar o hook de verificação de modelos gratuitos
+        run: |
+          curl -s -X POST \
+            -H "content-type: application/json" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            -d '{}' \
+            https://viverderendaem15anos.lovable.app/api/public/hooks/verificar-modelos-gratuitos
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}

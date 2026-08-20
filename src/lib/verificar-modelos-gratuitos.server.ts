@@ -150,6 +150,7 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     exigeChave: true,
     caminhoModels: "/models",
     chaveViaQuery: true,
+    caminhoChat: "/openai/chat/completions",
   },
   {
     chave: "cerebras",
@@ -189,58 +190,88 @@ async function sondarModelos(
   const modelos = provedor.modelosProbe ?? [];
   if (!chave || modelos.length === 0) return null;
 
-  const resultados: ModeloGratuito[] = [];
-  for (const modelo of modelos) {
-    try {
-      const resposta = await fetch(`${provedor.baseUrl.replace(/\/$/, "")}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "User-Agent": "viverderenda-verificador/1.0",
-          Authorization: `Bearer ${chave}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: modelo,
-          messages: [{ role: "user", content: "ping" }],
-          max_tokens: 1,
-        }),
-        signal: AbortSignal.timeout(20_000),
-      });
-      if (resposta.ok) {
-        resultados.push({
-          id: modelo,
-          ctx: null,
-          nota: "disponível (sondagem de 1 token)",
-        });
-      } else if (resposta.status !== 404) {
-        resultados.push({
-          id: modelo,
-          ctx: null,
-          nota: `falha na sondagem (HTTP ${resposta.status})`,
-        });
-      }
-    } catch (e) {
-      resultados.push({
-        id: modelo,
-        ctx: null,
-        nota: e instanceof Error ? `erro de rede: ${e.message}` : "erro de rede",
-      });
-    }
-  }
+  const resultados = await sondarListaModelos(provedor, chave, modelos);
 
-  const disponiveis = resultados.filter((r) => r.nota?.startsWith("disponível"));
+  const disponiveis = resultados.filter((r) => r.funcionando);
   return {
     chave: provedor.chave,
     nome: provedor.nome,
     status: resultados.length > 0 ? "ok" : "erro",
     mensagem: `${disponiveis.length}/${resultados.length} modelos gratuitos respondendo`,
-    modelosGratuitos: disponiveis,
+    modelosGratuitos: resultados,
   };
+}
+
+/**
+ * Sonda cada modelo com uma chamada real de chat/completions (1 token),
+ * com concorrência limitada para não estourar rate limits dos provedores.
+ * Retorna os modelos com o resultado do teste (funcionando true/false).
+ */
+async function sondarListaModelos(
+  provedor: VerificadorProvedor,
+  chave: string,
+  modelos: readonly string[],
+): Promise<ModeloGratuito[]> {
+  const base = provedor.baseUrl.replace(/\/$/, "");
+  const caminhoChat = provedor.caminhoChat ?? "/chat/completions";
+  const resultados: ModeloGratuito[] = [];
+  let proximo = 0;
+  const trabalhadores = Array.from({ length: Math.min(3, modelos.length) }, async () => {
+    while (proximo < modelos.length) {
+      const id = modelos[proximo++]!;
+      const url = `${base}${caminhoChat}${
+        provedor.chaveViaQuery ? `?key=${encodeURIComponent(chave)}` : ""
+      }`;
+      const headers: Record<string, string> = {
+        "User-Agent": "viverderenda-verificador/1.0",
+        "Content-Type": "application/json",
+      };
+      if (!provedor.chaveViaQuery) {
+        headers[provedor.authHeader ?? "Authorization"] =
+          provedor.authHeader === "x-api-key" ? chave : `Bearer ${chave}`;
+      }
+      try {
+        const resposta = await fetch(url, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            model: id,
+            messages: [{ role: "user", content: "ping" }],
+            max_tokens: 1,
+          }),
+          signal: AbortSignal.timeout(20_000),
+        });
+        if (resposta.ok) {
+          resultados.push({ id, ctx: null, funcionando: true, statusTeste: `HTTP ${resposta.status}` });
+        } else {
+          resultados.push({
+            id,
+            ctx: null,
+            funcionando: false,
+            statusTeste: `HTTP ${resposta.status}`,
+          });
+        }
+      } catch (e) {
+        resultados.push({
+          id,
+          ctx: null,
+          funcionando: false,
+          statusTeste:
+            e instanceof Error && e.name === "TimeoutError"
+              ? "timeout (20s)"
+              : `erro de rede: ${e instanceof Error ? e.message : "desconhecido"}`,
+        });
+      }
+    }
+  });
+  await Promise.all(trabalhadores);
+  return resultados.sort((a, b) => (a.funcionando === b.funcionando ? 0 : a.funcionando ? -1 : 1));
 }
 
 async function buscarCatalogo(
   provedor: VerificadorProvedor,
   env: NodeJS.ProcessEnv,
+  sondar: boolean,
 ): Promise<VerificacaoProvedor> {
   const base = provedor.baseUrl.replace(/\/$/, "");
   const chave = chaveDoProvedor(provedor, env);
@@ -310,7 +341,7 @@ async function buscarCatalogo(
         models?: unknown[];
       };
       const lista = Array.isArray(corpo.data) ? corpo.data : (corpo.models ?? []);
-      const modelos = lista
+      const modelos: ModeloGratuito[] = lista
         .map((item) => {
           const m = item as {
             id?: unknown;
@@ -335,6 +366,30 @@ async function buscarCatalogo(
         .filter((m) => m.id && ehGratuito(provedor, m.id))
         .sort((a, b) => (b.ctx ?? 0) - (a.ctx ?? 0))
         .map((m) => ({ id: m.id, ctx: m.ctx, nota: provedor.nota }));
+
+      if (sondar && chave) {
+        const ids = modelos.map((m) => m.id);
+        if (ids.length > LIMITE_SONDAGEM_POR_PROVEDOR) {
+          ids.length = LIMITE_SONDAGEM_POR_PROVEDOR;
+        }
+        const sondados = await sondarListaModelos(provedor, chave, ids);
+        const porId = new Map(sondados.map((s) => [s.id.toLowerCase(), s]));
+        for (const m of modelos) {
+          const s = porId.get(m.id.toLowerCase());
+          if (s) {
+            m.funcionando = s.funcionando;
+            m.statusTeste = s.statusTeste;
+          }
+        }
+        const funcionando = modelos.filter((m) => m.funcionando).length;
+        return {
+          chave: provedor.chave,
+          nome: provedor.nome,
+          status: "ok",
+          mensagem: `${modelos.length} modelos gratuitos no catálogo · ${funcionando} respondendo`,
+          modelosGratuitos: modelos,
+        };
+      }
 
       return {
         chave: provedor.chave,
@@ -436,12 +491,21 @@ export function modelosConfiguradosDe(
 
 export const LIMITE_SUGESTOES = 15;
 
+/**
+ * Máximo de modelos sondados por provedor a cada execução, para não estourar
+ * rate limits dos provedores gratuitos. Os modelos configurados no código
+ * (presets/provedores-env) têm prioridade na seleção.
+ */
+export const LIMITE_SONDAGEM_POR_PROVEDOR = 20;
+
 /** Consulta o catálogo de todos os provedores e compara com os configurados. */
 export async function verificarModelosGratuitos(
   env: NodeJS.ProcessEnv,
   configurados: readonly ModeloConfigurado[] = [],
+  opcoes: { sondar?: boolean } = {},
 ): Promise<RelatorioVerificacao> {
-  const provedores = await comLimite(VERIFICADORES, 4, (p) => buscarCatalogo(p, env));
+  const { sondar = false } = opcoes;
+  const provedores = await comLimite(VERIFICADORES, 4, (p) => buscarCatalogo(p, env, sondar));
 
   const configuradosPorProvedor = new Map<string, Set<string>>();
   for (const c of configurados) {

@@ -16,7 +16,7 @@ import {
 } from "../src/lib/verificar-modelos-gratuitos.server.ts";
 
 const configurados = modelosConfiguradosDe(PROVEDORES_ENV, PRESETS_PROVEDOR);
-const relatorio = await verificarModelosGratuitos(process.env, configurados);
+const relatorio = await verificarModelosGratuitos(process.env, configurados, { sondar: true });
 
 const pastaDados = new URL("../data/", import.meta.url);
 await mkdir(pastaDados, { recursive: true });
@@ -33,7 +33,8 @@ for (const p of relatorio.provedores) {
   const status = p.status === "ok" ? "OK" : p.status === "sem-chave" ? "SEM CHAVE" : "ERRO";
   console.log(`\n${p.nome} [${status}] ${p.mensagem}`);
   for (const m of p.modelosGratuitos.slice(0, 8)) {
-    console.log(`  - ${m.id}${m.ctx ? ` (${m.ctx.toLocaleString("pt-BR")} tokens)` : ""}`);
+    const sonda = m.funcionando === undefined ? "" : m.funcionando ? " ✅" : ` ❌ (${m.statusTeste ?? ""})`;
+    console.log(`  - ${m.id}${m.ctx ? ` (${m.ctx.toLocaleString("pt-BR")} tokens)` : ""}${sonda}`);
   }
   if (p.modelosGratuitos.length > 8) {
     console.log(`  … e mais ${p.modelosGratuitos.length - 8} modelos gratuitos`);

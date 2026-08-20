@@ -63,20 +63,13 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     urlChave: "https://console.groq.com/keys",
   },
   {
-    variavel: "CEREBRAS_API_KEY",
-    nome: "Cerebras",
-    baseUrl: "https://api.cerebras.ai/v1",
-    modelo: "gpt-oss-120b",
-    urlChave: "https://cerebras.ai/cloud",
-  },
-  {
     variavel: "GOOGLE_GENERATIVE_AI_API_KEY",
     nome: "Google Generative AI",
     baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
-    modelo: "gemini-3.5-flash",
+    modelo: "gemini-2.5-flash",
     urlChave: "https://aistudio.google.com/apikey",
   },
-  ];
+];
 
 /** Encontra o primeiro provedor com chave configurada nas variáveis de ambiente. */
 export function provedorEnvAtivo(
