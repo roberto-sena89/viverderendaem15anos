@@ -201,7 +201,7 @@ export function DialogoProvedorIA() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div className="space-y-2">
             <Label>Provedor</Label>
             <Select value={rascunho.preset} onValueChange={escolherPreset}>
