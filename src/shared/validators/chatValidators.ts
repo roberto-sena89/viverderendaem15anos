@@ -57,7 +57,6 @@ export const ChatMessageFilterSchema = z.object({
 // Clear conversation input
 export const ClearConversationInputSchema = z.object({
   userId: z.string().uuid(),
-  sessionId: z.string().uuid(),
 });
 
 // Type exports
