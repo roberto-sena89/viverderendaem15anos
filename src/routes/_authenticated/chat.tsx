@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { OnboardingGestorIA } from "@/components/ai-elements/onboarding-gestor-ia";
 
-import { Switch } from "@/components/ui/switch";
+
 import {
   Conversation,
   ConversationContent,
