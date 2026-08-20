@@ -98,7 +98,14 @@ if (typeof globalThis.addEventListener === "function") {
 // desconexões são ignoradas; erros reais são logados (e registrados para o
 // normalizeCatastrophicSsrResponse via console.error) sem derrubar o processo.
 if (typeof process !== "undefined" && typeof process.on === "function") {
-  if (typeof process.setUncaughtExceptionCaptureCallback === "function") {
+  const captureCallbackJaAtivo =
+    typeof process.hasUncaughtExceptionCaptureCallback === "function" &&
+    process.hasUncaughtExceptionCaptureCallback();
+
+  if (
+    typeof process.setUncaughtExceptionCaptureCallback === "function" &&
+    !captureCallbackJaAtivo
+  ) {
     process.setUncaughtExceptionCaptureCallback((error) => {
       if (isClientDisconnectError(error)) {
         originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
@@ -106,7 +113,7 @@ if (typeof process !== "undefined" && typeof process.on === "function") {
       }
       originalConsoleError(describeError(error));
     });
-  } else {
+  } else if (typeof process.setUncaughtExceptionCaptureCallback !== "function") {
     process.on("uncaughtException", (error) => {
       if (isClientDisconnectError(error)) {
         originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
