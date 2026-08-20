@@ -189,18 +189,19 @@ export function DialogoProvedorIA() {
           <span className="hidden truncate sm:inline">Provedor IA</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="text-primary size-5" /> Provedores de IA
+      <DialogContent className="max-h-[90dvh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] overflow-y-auto overflow-x-hidden sm:w-full sm:max-w-lg">
+        <DialogHeader className="min-w-0 text-left">
+          <DialogTitle className="flex min-w-0 items-center gap-2">
+            <Sparkles className="text-primary size-5 shrink-0" />
+            <span className="min-w-0 break-words">Provedores de IA</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="break-words">
             Use a IA nativa da plataforma ou conecte um provedor gratuito compatível com a API
             OpenAI. A chave fica salva apenas neste navegador e é usada só nas suas conversas.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div className="space-y-2">
             <Label>Provedor</Label>
             <Select value={rascunho.preset} onValueChange={escolherPreset}>
@@ -258,7 +259,7 @@ export function DialogoProvedorIA() {
                         key={m}
                         type="button"
                         onClick={() => setRascunho({ ...rascunho, modelo: m })}
-                        className={`rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                        className={`max-w-full break-all rounded-full border px-2.5 py-1 text-left font-mono text-[11px] leading-snug transition-colors ${
                           rascunho.modelo === m
                             ? "border-primary/60 bg-primary/10 text-primary"
                             : "border-border text-muted-foreground hover:text-foreground"
@@ -387,13 +388,13 @@ export function DialogoProvedorIA() {
                         Nenhum modelo gratuito encontrado neste provedor.
                       </p>
                     )}
-                    <div className="border-border/60 max-h-48 space-y-1 overflow-y-auto rounded-lg border p-2">
+                    <div className="border-border/60 max-h-48 min-w-0 space-y-1 overflow-y-auto overflow-x-hidden rounded-lg border p-2">
                       {modelosVisiveis.map((m) => {
                         const selecionado = rascunho.modelo === m;
                         return (
                           <div
                             key={m}
-                            className={`flex items-center justify-between gap-2 rounded-md border px-2 py-1 transition-colors ${
+                            className={`grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 rounded-md border px-2 py-1 transition-colors ${
                               selecionado
                                 ? "border-primary/60 bg-primary/10"
                                 : "border-transparent hover:bg-muted/50"
@@ -422,7 +423,8 @@ export function DialogoProvedorIA() {
                               type="button"
                               disabled={selecionado}
                               onClick={() => setRascunho({ ...rascunho, modelo: m })}
-                              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                              title={selecionado ? "Modelo em uso" : "Usar este modelo"}
+                              className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
                                 selecionado
                                   ? "bg-primary/20 text-primary"
                                   : "bg-primary/10 text-primary hover:bg-primary/20"
@@ -430,11 +432,13 @@ export function DialogoProvedorIA() {
                             >
                               {selecionado ? (
                                 <>
-                                  <CheckCircle2 className="size-3" /> Em uso
+                                  <CheckCircle2 className="size-3 shrink-0" /> Em uso
                                 </>
                               ) : (
                                 <>
-                                  <Sparkles className="size-3" /> Usar este modelo
+                                  <Sparkles className="size-3 shrink-0" />
+                                  <span className="hidden sm:inline">Usar este modelo</span>
+                                  <span className="sm:hidden">Usar</span>
                                 </>
                               )}
                             </button>
@@ -471,7 +475,7 @@ export function DialogoProvedorIA() {
                       Nenhum teste registrado ainda. Use “Testar conexão” para começar.
                     </p>
                   ) : (
-                    <ul className="border-border/60 max-h-40 space-y-1 overflow-y-auto rounded-lg border p-2">
+                    <ul className="border-border/60 max-h-40 min-w-0 space-y-1 overflow-y-auto overflow-x-hidden rounded-lg border p-2">
                       {historico.map((r) => (
                         <li
                           key={r.timestamp}
@@ -490,7 +494,7 @@ export function DialogoProvedorIA() {
                             )}
                           </span>
                           <div className="min-w-0 flex-1">
-                            <p className="flex items-center gap-1.5">
+                            <p className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
                               <span className="truncate font-medium">{r.provedor}</span>
                               <span className="text-muted-foreground shrink-0">
                                 {new Date(r.timestamp).toLocaleString("pt-BR", {
@@ -524,9 +528,10 @@ export function DialogoProvedorIA() {
           )}
         </div>
 
-        <DialogFooter className="gap-2 sm:justify-between">
+        <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
           <Button
             variant="ghost"
+            className="w-full sm:w-auto"
             onClick={() => {
               limpar();
               setRascunho({ ...CONFIG_PADRAO });
@@ -536,7 +541,9 @@ export function DialogoProvedorIA() {
           >
             Restaurar padrão
           </Button>
-          <Button onClick={confirmar}>Salvar provedor</Button>
+          <Button className="w-full sm:w-auto" onClick={confirmar}>
+            Salvar provedor
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
