@@ -33,7 +33,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  CONFIG_IA_NATIVA,
   CONFIG_PADRAO,
   PRESETS_PROVEDOR,
   provedorAtivo,
@@ -131,13 +130,7 @@ export function DialogoProvedorIA() {
 
   function escolherPreset(id: string) {
     setRascunho((r) => {
-      const chaves =
-        r.preset !== "lovable" && r.chave.trim()
-          ? { ...r.chavesPorProvedor, [r.preset]: r.chave.trim() }
-          : r.chavesPorProvedor;
-      if (id === "lovable") {
-        return { ...CONFIG_IA_NATIVA, chavesPorProvedor: chaves };
-      }
+      const chaves = r.chave.trim() ? { ...r.chavesPorProvedor, [r.preset]: r.chave.trim() } : r.chavesPorProvedor;
       const alvo = PRESETS_PROVEDOR.find((p) => p.id === id);
       return {
         preset: id,
@@ -150,12 +143,6 @@ export function DialogoProvedorIA() {
   }
 
   function confirmar() {
-    if (rascunho.preset === "lovable") {
-      salvar({ ...CONFIG_IA_NATIVA, chavesPorProvedor: rascunho.chavesPorProvedor });
-      toast.success("Gestor IA voltou a usar a IA nativa da plataforma");
-      setAberto(false);
-      return;
-    }
     const backend = provedorBackendConfigurado(rascunho.preset);
     if (backend) {
       salvar({ ...rascunho, chave: "" });
@@ -197,8 +184,8 @@ export function DialogoProvedorIA() {
             <span className="min-w-0 break-words">Provedores de IA</span>
           </DialogTitle>
           <DialogDescription className="break-words">
-            Use a IA nativa da plataforma ou conecte um provedor gratuito compatível com a API
-            OpenAI. A chave fica salva apenas neste navegador e é usada só nas suas conversas.
+            Conecte um provedor gratuito compatível com a API OpenAI. A chave fica salva
+            apenas neste navegador e é usada só nas suas conversas.
           </DialogDescription>
         </DialogHeader>
 
@@ -210,7 +197,6 @@ export function DialogoProvedorIA() {
                 <SelectValue placeholder="Escolha um provedor" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="lovable">IA nativa da plataforma</SelectItem>
                 {PRESETS_PROVEDOR.map((p) => {
                   const backend = provedorBackendConfigurado(p.id);
                   return (
@@ -222,18 +208,12 @@ export function DialogoProvedorIA() {
                 })}
               </SelectContent>
             </Select>
-            {preset ? (
+            {preset && (
               <p className="text-muted-foreground text-xs">{preset.descricao}</p>
-            ) : (
-              <p className="text-muted-foreground text-xs">
-                Modelo gerenciado pela plataforma, sem chave nem custo extra para você.
-              </p>
             )}
           </div>
 
-          {rascunho.preset !== "lovable" && (
-            <>
-              <div className="space-y-2">
+          <div className="space-y-2">
                 <Label htmlFor="ia-base-url">URL base da API</Label>
                 <Input
                   id="ia-base-url"
@@ -285,10 +265,7 @@ export function DialogoProvedorIA() {
                       setRascunho((r) => ({
                         ...r,
                         chave: e.target.value,
-                        chavesPorProvedor:
-                          r.preset !== "lovable"
-                            ? { ...r.chavesPorProvedor, [r.preset]: e.target.value }
-                            : r.chavesPorProvedor,
+                        chavesPorProvedor: { ...r.chavesPorProvedor, [r.preset]: e.target.value },
                       }))
                     }
                     placeholder={backendConfigurado ? "Configurado no servidor" : "sk-..."}
@@ -525,8 +502,6 @@ export function DialogoProvedorIA() {
                   )}
                 </div>
               </div>
-            </>
-          )}
         </div>
 
         <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">

@@ -149,15 +149,6 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
 
 export const CHAVE_STORAGE = "gestor-ia-provedor";
 
-/** Configuração da IA nativa da plataforma (sem provedor externo). */
-export const CONFIG_IA_NATIVA: ConfigProvedorIA = {
-  preset: "lovable",
-  baseUrl: "",
-  modelo: "",
-  chave: "",
-  chavesPorProvedor: {},
-};
-
 /** Configuração padrão do Gestor IA: provedor OrcaRouter (modelo gratuito). */
 export const CONFIG_PADRAO: ConfigProvedorIA = {
   preset: "orcarouter",
@@ -174,7 +165,7 @@ export function lerConfigProvedor(): ConfigProvedorIA {
     if (!bruto) return CONFIG_PADRAO;
     const dados = JSON.parse(bruto) as Partial<ConfigProvedorIA>;
     const preset = dados.preset ?? "orcarouter";
-    if (preset !== "lovable" && !PRESETS_PROVEDOR.some((p) => p.id === preset)) {
+    if (!PRESETS_PROVEDOR.some((p) => p.id === preset)) {
       window.localStorage.removeItem(CHAVE_STORAGE);
       return CONFIG_PADRAO;
     }
@@ -183,7 +174,7 @@ export function lerConfigProvedor(): ConfigProvedorIA {
         ? { ...dados.chavesPorProvedor }
         : {};
     const chave = dados.chave ?? chavesPorProvedor[preset] ?? "";
-    if (chave && preset !== "lovable") chavesPorProvedor[preset] = chave;
+    if (chave) chavesPorProvedor[preset] = chave;
     return {
       preset,
       baseUrl: dados.baseUrl ?? "",
@@ -199,7 +190,6 @@ export function lerConfigProvedor(): ConfigProvedorIA {
 /** Config válida = provedor externo com URL, modelo e chave preenchidos. */
 export function provedorAtivo(config: ConfigProvedorIA) {
   return Boolean(
-    config.preset !== "lovable" &&
     config.baseUrl.trim() &&
     config.modelo.trim() &&
     config.chave.trim(),
@@ -224,7 +214,7 @@ export function useProvedorIA() {
 
   const salvar = useCallback((novo: ConfigProvedorIA) => {
     const chavesPorProvedor = { ...novo.chavesPorProvedor };
-    if (novo.preset !== "lovable" && novo.chave.trim()) {
+    if (novo.chave.trim()) {
       chavesPorProvedor[novo.preset] = novo.chave.trim();
     }
     const completo: ConfigProvedorIA = { ...novo, chavesPorProvedor };
