@@ -374,13 +374,14 @@ function ChatPage() {
             >
               <BookOpenText className="size-4 shrink-0 sm:mr-1.5" />
               <span className="hidden truncate sm:inline">Citações</span>
-              <Switch
-                checked={citacoes}
-                onCheckedChange={alternarCitacoes}
-                onClick={(e) => e.stopPropagation()}
-                className="ml-1 hidden scale-75 sm:ml-2 sm:block"
+              <span
                 aria-hidden
-              />
+                className={`ml-1 hidden h-4 w-7 shrink-0 rounded-full border transition-colors sm:ml-2 sm:inline-flex sm:items-center ${citacoes ? "border-primary/60 bg-primary/30" : "border-border bg-muted"}`}
+              >
+                <span
+                  className={`size-3 rounded-full bg-current transition-transform ${citacoes ? "translate-x-3.5" : "translate-x-0.5"}`}
+                />
+              </span>
             </Button>
             <DialogoAprendizado />
             <ResumoCarteiraDialog />
