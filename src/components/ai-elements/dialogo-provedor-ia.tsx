@@ -82,7 +82,7 @@ export function DialogoProvedorIA() {
     setTeste(null);
     try {
       const resultado = await executarTeste({
-        data: { baseUrl: rascunho.baseUrl.trim(), chave: rascunho.chave.trim() },
+        data: { baseUrl: rascunho.baseUrl.trim(), chave: rascunho.chave.trim(), preset: rascunho.preset },
       });
       setTeste(resultado);
       const nomeProvedor =

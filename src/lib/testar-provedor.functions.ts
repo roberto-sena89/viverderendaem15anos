@@ -4,7 +4,12 @@ import { z } from "zod";
 const entrada = z.object({
   baseUrl: z.string().min(1),
   chave: z.string().min(1),
+  preset: z.string().optional().default(""),
 });
+
+const AUTH_HEADER_POR_PRESET: Record<string, string> = {
+  tokenrouter: "x-api-key",
+};
 
 export interface ResultadoTesteProvedor {
   ok: boolean;
@@ -18,10 +23,11 @@ export const testarProvedorIA = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => entrada.parse(data))
   .handler(async ({ data }): Promise<ResultadoTesteProvedor> => {
     const base = data.baseUrl.trim().replace(/\/+$/, "");
+    const headerAuth = AUTH_HEADER_POR_PRESET[data.preset] ?? "Authorization";
     try {
       const resposta = await fetch(`${base}/models`, {
         headers: {
-          Authorization: `Bearer ${data.chave.trim()}`,
+          [headerAuth]: headerAuth === "Authorization" ? `Bearer ${data.chave.trim()}` : data.chave.trim(),
           "Content-Type": "application/json",
         },
       });
