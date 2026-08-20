@@ -81,7 +81,7 @@
     "motion": "^13.1.0",
     "nanoid": "^6.0.1",
     "react": "^19",
-    "react-day-picker": "^8.10.1",
+    "react-day-picker": "^9",
     "react-dom": "^19",
     "react-hook-form": "^7.85.0",
     "react-resizable-panels": "^4.12.3",
