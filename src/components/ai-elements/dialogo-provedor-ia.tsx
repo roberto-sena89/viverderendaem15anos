@@ -494,7 +494,7 @@ export function DialogoProvedorIA() {
                             )}
                           </span>
                           <div className="min-w-0 flex-1">
-                            <p className="flex items-center gap-1.5">
+                            <p className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
                               <span className="truncate font-medium">{r.provedor}</span>
                               <span className="text-muted-foreground shrink-0">
                                 {new Date(r.timestamp).toLocaleString("pt-BR", {
