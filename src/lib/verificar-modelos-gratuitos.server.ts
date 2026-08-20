@@ -17,6 +17,14 @@ export interface ModeloGratuito {
   /** Contexto em tokens, quando informado pelo catálogo. */
   ctx: number | null;
   nota?: string;
+  /**
+   * Resultado da sondagem real (chat/completions de 1 token):
+   * true = respondeu, false = falhou (HTTP erro, rede ou timeout).
+   * undefined = não sondado (ex.: sem chave ou limite de sondagens).
+   */
+  funcionando?: boolean;
+  /** Detalhe do teste: HTTP status, "erro de rede" ou "timeout". */
+  statusTeste?: string;
 }
 
 export interface VerificacaoProvedor {
@@ -68,6 +76,8 @@ interface VerificadorProvedor {
    * via chat/completions (pedido mínimo de 1 token) para confirmar se existem.
    */
   modelosProbe?: string[];
+  /** true = o endpoint de chat usa o mesmo caminho do catálogo (Gemini). */
+  caminhoChat?: string;
   nota?: string;
 }
 
