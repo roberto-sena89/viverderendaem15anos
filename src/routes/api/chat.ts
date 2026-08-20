@@ -526,7 +526,7 @@ export const Route = createFileRoute("/api/chat")({
           : null;
         const provedorExternoViaBackend = Boolean(provedorEnvPorId && process.env[provedorEnvPorId.variavel]?.trim());
 
-        if (provedorExternoViaBackend && !process.env[provedorEnvPorId.variavel]?.trim()) {
+        if (provedorExternoViaBackend && !process.env[provedorEnvPorId!.variavel]?.trim()) {
           return new Response(
             "Provedor de ambiente selecionado, mas a variável de ambiente não está preenchida.",
             { status: 503 },
@@ -538,7 +538,6 @@ export const Route = createFileRoute("/api/chat")({
         const provedorPadrao = provedorExternoViaBackend
           ? provedorEnvPorId
           : envProvedor?.provedor ?? null;
-        const provedorAtivo = provedorExterno || provedorPadrao;
 
         if (!provedorExterno && !provedorPadrao) {
           return new Response(
