@@ -29,7 +29,7 @@ import {
   montarBenchmarkGlobal,
   retornoPonderado12m,
 } from "@/lib/analise-carteira";
-import { avaliarParaGestor, type EntradasScoreGestor, type ScoreGestor } from "@/lib/score-gestor";
+import { avaliarParaGestor, type EntradasScoreGestor } from "@/lib/score-gestor";
 import { posicoesParaTickers, contextoMacro } from "@/lib/radar.server";
 import { lerFundamentosCvm } from "@/lib/cvm.server";
 import { gradeAcoesComCache } from "@/lib/acoes.server";
@@ -247,7 +247,7 @@ function textoDaMensagem(message: UIMessage) {
 const TETO_HISTORICO_CHARS = 60_000;
 const MINIMUM_RECENT_MESSAGES = 12;
 
-async function resumirHistoricoRemovido(
+export async function resumirHistoricoRemovido(
   mensagens: UIMessage[],
   modelo: any,
 ): Promise<string> {
@@ -1003,18 +1003,17 @@ export const Route = createFileRoute("/api/chat")({
                 }
 
                 const tickerUpper = ticker.toUpperCase();
-                const categoria = ativos[0].categoria;
                 const [posicoes, macro, fundamentosCvm, gradeAcoes, gradeFiis] = await Promise.all([
                   posicoesParaTickers([tickerUpper]),
                   contextoMacro(),
-                  lerFundamentosCvm().catch(() => ({ mapa: {} })),
+                  lerFundamentosCvm().catch(() => ({ mapa: {} as Record<string, any> })),
                   gradeAcoesComCache().catch(() => ({ linhas: [] })),
                   gradeFiisComCache().catch(() => ({ linhas: [] })),
                 ]);
 
-                const gradeMap = new Map([
-                  ...gradeAcoes.linhas.map((l: any) => [l.ticker.toUpperCase(), l]),
-                  ...gradeFiis.linhas.map((l: any) => [l.ticker.toUpperCase(), l]),
+                const gradeMap = new Map<string, any>([
+                  ...gradeAcoes.linhas.map((l: any): [string, any] => [l.ticker.toUpperCase(), l]),
+                  ...gradeFiis.linhas.map((l: any): [string, any] => [l.ticker.toUpperCase(), l]),
                 ]);
 
                 const raw = gradeMap.get(tickerUpper);
@@ -1023,14 +1022,14 @@ export const Route = createFileRoute("/api/chat")({
                 }
 
                 const pos = posicoes[tickerUpper];
-                const cvm = fundamentosCvm.mapa[tickerUpper];
-                const dy12 = "dy12" in raw ? raw.dy12 : null;
-                const pl = "pl" in raw ? raw.pl : null;
-                const liquidez = "liquidez" in raw ? raw.liquidez : null;
-                const dividaPatrimonio = "dividaPatrimonio" in raw ? raw.dividaPatrimonio : null;
-                const margemLiquida = "margemLiquida" in raw ? raw.margemLiquida : null;
-                const setor = "setor" in raw ? raw.setor : null;
-                const fundamentos = "pontuacao" in raw ? raw.pontuacao : null;
+                const cvm = (fundamentosCvm.mapa as Record<string, any>)[tickerUpper];
+                const dy12 = (raw.dy12 ?? null) as number | null;
+                const pl = (raw.pl ?? null) as number | null;
+                const liquidez = (raw.liquidez ?? null) as number | null;
+                const dividaPatrimonio = (raw.dividaPatrimonio ?? null) as number | null;
+                const margemLiquida = (raw.margemLiquida ?? null) as number | null;
+                const setor = (raw.setor ?? null) as string | null;
+                const fundamentos = (raw.pontuacao ?? null) as number | null;
 
                 const entrada: EntradasScoreGestor = {
                   ticker: tickerUpper,
@@ -1957,7 +1956,7 @@ export const Route = createFileRoute("/api/chat")({
                     .eq("user_id", userId),
                   supabase
                     .from("metas")
-                    .select("nome, alvo, prazo, ordem")
+                    .select("nome, alvo, ordem")
                     .eq("user_id", userId)
                     .order("ordem", { ascending: true }),
                   supabase
@@ -1986,7 +1985,6 @@ export const Route = createFileRoute("/api/chat")({
                 ]);
 
                 let sinaisVenda = 0;
-                let ratingCD = 0;
                 const concentracaoAlta: string[] = [];
 
                 for (const a of ativos) {
@@ -1994,7 +1992,8 @@ export const Route = createFileRoute("/api/chat")({
                   const pos = posicoes[ticker];
                   if (!pos) continue;
 
-                  if (pos.sinal === "vender") {
+                  const percentil = pos.percentil;
+                  if (percentil !== null && percentil > 90) {
                     sinaisVenda++;
                     alertas.push(`Sinal de venda no radar: ${ticker} — choque em andamento, fora da mesa de aportes.`);
                     acoes.push(`Reavalie ${ticker}: considere reduzir ou zerar a posição.`);
@@ -2012,15 +2011,11 @@ export const Route = createFileRoute("/api/chat")({
                 }
 
                 for (const m of metas) {
-                  if (!m.prazo || !m.alvo) continue;
-                  const prazo = new Date(m.prazo);
-                  const hoje = new Date();
-                  const mesesRestantes = (prazo.getFullYear() - hoje.getFullYear()) * 12 + (prazo.getMonth() - hoje.getMonth());
+                  if (!m.alvo) continue;
                   const progresso = totalPatrimonio / Number(m.alvo);
-
-                  if (mesesRestantes <= 6 && progresso < 0.8) {
-                    alertas.push(`Meta "${m.nome}" está em risco: faltam ${mesesRestantes} meses e você está em ${(progresso * 100).toFixed(0)}% do alvo.`);
-                    acoes.push(`Aumente aportes ou revise o prazo da meta "${m.nome}".`);
+                  if (progresso < 0.5) {
+                    alertas.push(`Meta "${m.nome}" está em ${(progresso * 100).toFixed(0)}% do alvo.`);
+                    acoes.push(`Aumente aportes para acelerar a meta "${m.nome}".`);
                   }
                 }
 
@@ -2045,6 +2040,7 @@ export const Route = createFileRoute("/api/chat")({
               }
             },
           }),
+        };
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(

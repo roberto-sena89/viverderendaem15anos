@@ -246,7 +246,7 @@ function expandirTermos(termos: string[]): string[] {
     const sinonimos = SINONIMOS_FINANCAS[termo] ?? [];
     for (const s of sinonimos) {
       expandidos.add(s);
-      expandidos.add(...tokenizar(s));
+      for (const t of tokenizar(s)) expandidos.add(t);
     }
   }
   return Array.from(expandidos);
@@ -422,7 +422,7 @@ function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): Conheci
 
   const secao = (rotulo: string, conteudo: string) => (conteudo ? `- ${rotulo}: ${conteudo}` : null);
 
-  const linhas: string[] = [];
+  const linhas: (string | null)[] = [];
   if (macro) linhas.push(secao("Visão geral", macro.conteudo.slice(0, 200)) ?? null);
   if (macro) linhas.push(secao("Macro", macro.conteudo.slice(0, 300)) ?? null);
   if (noticias.length > 0) {
