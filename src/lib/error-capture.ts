@@ -32,10 +32,6 @@ function safeStringify(value: unknown): string {
   }
 }
 
-function isErrorLike(value: unknown): value is Error {
-  return value instanceof Error;
-}
-
 /**
  * Erros de desconexão do cliente: o navegador (ou proxy) fechou a conexão no
  * meio de um stream/SSR. O Node lança "Error: aborted" (abortIncoming) na
