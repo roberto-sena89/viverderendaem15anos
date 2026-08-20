@@ -123,5 +123,8 @@
     "vite": "^7",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "hono": "^4.13.3"
   }
 }
