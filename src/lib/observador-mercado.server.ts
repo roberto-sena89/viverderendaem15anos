@@ -181,7 +181,7 @@ async function executarVarreduraInterna(agora: Date): Promise<ResultadoVarredura
   const envProvedor = provedorEnvAtivo(process.env);
   if (!envProvedor) {
     return falha(
-      "Nenhum provedor de IA configurado nas variáveis de ambiente (OPENROUTER_API_KEY, NVIDIA_API_KEY, OPENCODE_API_KEY, GROQ_API_KEY ou GOOGLE_GENERATIVE_AI_API_KEY). Configure uma chave no painel do deploy para o Observador funcionar.",
+      "Nenhum provedor de IA configurado nas variáveis de ambiente (KILO_API_KEY, OPENROUTER_API_KEY, NVIDIA_API_KEY, OPENCODE_API_KEY, GROQ_API_KEY ou GOOGLE_GENERATIVE_AI_API_KEY). Configure uma chave no painel do deploy para o Observador funcionar.",
     );
   }
 
@@ -273,7 +273,9 @@ async function executarVarreduraInterna(agora: Date): Promise<ResultadoVarredura
     const modeloIA = createOpenAICompatible({
       name: "observador-mercado",
       baseURL: baseUrlProvedorEnv(envProvedor.provedor, process.env),
-      headers: { Authorization: `Bearer ${envProvedor.chave}` },
+      headers: envProvedor.chave
+        ? { Authorization: `Bearer ${envProvedor.chave}` }
+        : {},
     })(envProvedor.provedor.modelo);
 
     const resultado = await generateText({
