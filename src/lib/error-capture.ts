@@ -49,11 +49,30 @@ function isErrorLike(value: unknown): value is Error {
   return value instanceof Error;
 }
 
+/**
+ * Erros de desconexão do cliente: o navegador (ou proxy) fechou a conexão no
+ * meio de um stream/SSR. O Node lança "Error: aborted" (abortIncoming) na
+ * camada HTTP e não há como entregar a resposta — não é falha do servidor.
+ */
+const PADROES_DESCONEXAO = /aborted|abort error|socket hang up|ECONNRESET|premature close|EPIPE/i;
+
+export function isClientDisconnectError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const { code } = error as { code?: unknown };
+  const texto = `${error.name} ${error.message} ${typeof code === "string" ? code : ""}`;
+  return PADROES_DESCONEXAO.test(texto);
+}
+
 // Wrap console.error so errors logged by any layer — including h3's internal
 // unhandled-error logging, which this file cannot hook directly — are both
 // recorded for consumeLastCapturedError and expanded before serialization.
+// Desconexões do cliente (aborted/ECONNRESET) não são registradas como erro.
 const originalConsoleError = console.error.bind(console);
 console.error = (...args: unknown[]) => {
+  if (args.some(isClientDisconnectError)) {
+    originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
+    return;
+  }
   const expanded = args.map((arg) => {
     if (!isErrorLike(arg)) return arg;
     record(arg);
@@ -65,6 +84,26 @@ console.error = (...args: unknown[]) => {
 if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("error", (event) => record(event.error ?? event));
   globalThis.addEventListener("unhandledrejection", (event) => record(event.reason));
+}
+
+// O Node lança "Error: aborted" como uncaughtException quando o cliente fecha
+// o socket no meio de um stream (abortIncoming em node:_http_server). Sem um
+// listener, o runtime reporta como RUNTIME_ERROR e pode derrubar a instância.
+if (typeof process !== "undefined" && typeof process.on === "function") {
+  process.on("uncaughtException", (error) => {
+    if (isClientDisconnectError(error)) {
+      originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
+      return;
+    }
+    originalConsoleError(describeError(error));
+  });
+  process.on("unhandledRejection", (reason) => {
+    if (isClientDisconnectError(reason)) {
+      originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
+      return;
+    }
+    originalConsoleError(reason instanceof Error ? describeError(reason) : reason);
+  });
 }
 
 export function consumeLastCapturedError(): unknown {

@@ -1,6 +1,6 @@
 import "./lib/error-capture";
 
-import { consumeLastCapturedError } from "./lib/error-capture";
+import { consumeLastCapturedError, isClientDisconnectError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
 type ServerEntry = {
@@ -51,6 +51,12 @@ export default {
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
+      if (isClientDisconnectError(error)) {
+        // Cliente fechou a conexão durante o stream/SSR: não há resposta a
+        // entregar e não é falha do servidor. 499 = cliente desconectado.
+        console.warn("[server] cliente desconectou durante a resposta; ignorado.");
+        return new Response(null, { status: 499 });
+      }
       console.error(error);
       return new Response(renderErrorPage(), {
         status: 500,

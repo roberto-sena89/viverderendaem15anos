@@ -2,11 +2,17 @@ import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/r
 
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
+import { isClientDisconnectError } from "@/lib/error-capture";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
   } catch (error) {
+    if (isClientDisconnectError(error)) {
+      // Cliente fechou a conexão durante um stream (ex.: chat): sem resposta
+      // a entregar e sem falha real no servidor.
+      return new Response(null, { status: 499 });
+    }
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
