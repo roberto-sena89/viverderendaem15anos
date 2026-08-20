@@ -1,6 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { validarBaseUrlProvedor } from "@/lib/url-provedor-ia";
+
 const entrada = z.object({
   baseUrl: z.string().min(1),
   chave: z.string().min(1),
@@ -18,17 +21,25 @@ export interface ResultadoTesteProvedor {
 
 /** Valida a chave do provedor e lista os modelos disponíveis (endpoint /models). */
 export const testarProvedorIA = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => entrada.parse(data))
   .handler(async ({ data }): Promise<ResultadoTesteProvedor> => {
-    const base = data.baseUrl.trim().replace(/\/+$/, "");
+    const validacao = validarBaseUrlProvedor(data.baseUrl);
+    if (!validacao.ok) {
+      return { ok: false, status: 0, mensagem: validacao.motivo, modelos: [] };
+    }
+    const base = validacao.url;
     const headerAuth = AUTH_HEADER_POR_PRESET[data.preset] ?? "Authorization";
     try {
       const resposta = await fetch(`${base}/models`, {
+        redirect: "error",
+        signal: AbortSignal.timeout(15_000),
         headers: {
           [headerAuth]: headerAuth === "Authorization" ? `Bearer ${data.chave.trim()}` : data.chave.trim(),
           "Content-Type": "application/json",
         },
       });
+
       const texto = await resposta.text();
 
       if (!resposta.ok) {
