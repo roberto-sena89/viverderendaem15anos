@@ -175,11 +175,11 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
 
 export const CHAVE_STORAGE = "gestor-ia-provedor";
 
-/** Configuração padrão do Gestor IA: provedor OrcaRouter (modelo gratuito). */
+/** Configuração padrão do Gestor IA: Kilo Code (AI Gateway, modelo gratuito). */
 export const CONFIG_PADRAO: ConfigProvedorIA = {
-  preset: "orcarouter",
-  baseUrl: "https://api.orcarouter.ai/v1",
-  modelo: "qwen/qwen3.8-27b-free",
+  preset: "kilocode",
+  baseUrl: "https://api.kilo.ai/api/gateway",
+  modelo: "stepfun/step-3.7-flash:free",
   chave: "",
   chavesPorProvedor: {},
 };
@@ -190,7 +190,7 @@ export function lerConfigProvedor(): ConfigProvedorIA {
     const bruto = window.localStorage.getItem(CHAVE_STORAGE);
     if (!bruto) return CONFIG_PADRAO;
     const dados = JSON.parse(bruto) as Partial<ConfigProvedorIA>;
-    const preset = dados.preset ?? "orcarouter";
+    const preset = dados.preset ?? "kilocode";
     if (!PRESETS_PROVEDOR.some((p) => p.id === preset)) {
       window.localStorage.removeItem(CHAVE_STORAGE);
       return CONFIG_PADRAO;

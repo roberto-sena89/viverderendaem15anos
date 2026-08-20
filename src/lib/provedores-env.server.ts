@@ -23,6 +23,14 @@ export interface ProvedorEnv {
  */
 export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
   {
+    variavel: "KILO_API_KEY",
+    nome: "Kilo Code",
+    baseUrl: "https://api.kilo.ai/api/gateway",
+    modelo: "stepfun/step-3.7-flash:free",
+    urlChave: "https://kilo.ai",
+    aceitaAnonimo: true,
+  },
+  {
     variavel: "ORCAROUTER_API_KEY",
     nome: "OrcaRouter",
     baseUrl: "https://api.orcarouter.ai/v1",
@@ -56,14 +64,6 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     baseUrl: "https://api.groq.com/openai/v1",
     modelo: "groq/compound",
     urlChave: "https://console.groq.com/keys",
-  },
-  {
-    variavel: "KILO_API_KEY",
-    nome: "Kilo Code",
-    baseUrl: "https://api.kilo.ai/api/gateway",
-    modelo: "stepfun/step-3.7-flash:free",
-    urlChave: "https://kilo.ai",
-    aceitaAnonimo: true,
   },
 ];
 
