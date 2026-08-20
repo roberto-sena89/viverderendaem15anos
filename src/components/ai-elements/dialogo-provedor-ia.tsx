@@ -388,7 +388,7 @@ export function DialogoProvedorIA() {
                         Nenhum modelo gratuito encontrado neste provedor.
                       </p>
                     )}
-                    <div className="border-border/60 max-h-48 space-y-1 overflow-y-auto rounded-lg border p-2">
+                    <div className="border-border/60 max-h-48 min-w-0 space-y-1 overflow-y-auto overflow-x-hidden rounded-lg border p-2">
                       {modelosVisiveis.map((m) => {
                         const selecionado = rascunho.modelo === m;
                         return (
