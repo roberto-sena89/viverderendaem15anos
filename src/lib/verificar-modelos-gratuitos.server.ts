@@ -114,6 +114,15 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     nota: "free tier Groq (limites diários)",
     exigeChave: true,
   },
+  {
+    chave: "kilocode",
+    nome: "Kilo Code",
+    baseUrl: "https://api.kilo.ai/api/gateway",
+    variavelChave: "KILO_API_KEY",
+    padroesGratuitos: [/:free$/i],
+    idsGratuitosAdicionais: ["kilo-auto/free", "openrouter/free"],
+    nota: "Kilo AI Gateway — modelos :free com rate limit (200 req/hora/IP sem chave)",
+  },
 ];
 
 function chaveDoProvedor(provedor: VerificadorProvedor, env: NodeJS.ProcessEnv): string {
@@ -408,6 +417,8 @@ const ALIASES_CHAVE: readonly [string, string][] = [
   ["openrouter", "openrouter"],
   ["nvidia", "nvidia"],
   ["groq", "groq"],
+  ["kilocode", "kilocode"],
+  ["kilo", "kilocode"],
   ["gemini", "gemini"],
 ];
 

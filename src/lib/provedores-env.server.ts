@@ -8,6 +8,8 @@ export interface ProvedorEnv {
   modelo: string;
   /** URL onde gerar a chave (para referência). */
   urlChave: string;
+  /** true = aceita requisições sem chave (ex.: Kilo Gateway com modelos :free anônimos). */
+  aceitaAnonimo?: boolean;
 }
 
 /**
@@ -54,6 +56,14 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     baseUrl: "https://api.groq.com/openai/v1",
     modelo: "groq/compound",
     urlChave: "https://console.groq.com/keys",
+  },
+  {
+    variavel: "KILO_API_KEY",
+    nome: "Kilo Code",
+    baseUrl: "https://api.kilo.ai/api/gateway",
+    modelo: "stepfun/step-3.7-flash:free",
+    urlChave: "https://kilo.ai",
+    aceitaAnonimo: true,
   },
 ];
 

@@ -136,6 +136,32 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://console.groq.com/keys",
   },
+  /* 8. Kilo Code (AI Gateway) */
+  {
+    id: "kilocode",
+    nome: "Kilo Code (modelos :free)",
+    descricao:
+      "AI Gateway da Kilo — modelos gratuitos (:free) com acesso anônimo limitado (200 req/hora/IP) ou com chave grátis.",
+    baseUrl: "https://api.kilo.ai/api/gateway",
+    modelos: [
+      "kilo-auto/free",
+      "stepfun/step-3.7-flash:free",
+      "tencent/hy3:free",
+      "openrouter/free",
+      "poolside/laguna-s-2.1:free",
+      "poolside/laguna-xs-2.1:free",
+      "nvidia/nemotron-3-ultra-550b-a55b:free",
+    ],
+    modelosGratuitos: [
+      "stepfun/step-3.7-flash:free",
+      "tencent/hy3:free",
+      "openrouter/free",
+      "poolside/laguna-s-2.1:free",
+      "poolside/laguna-xs-2.1:free",
+      "nvidia/nemotron-3-ultra-550b-a55b:free",
+    ],
+    urlChave: "https://kilo.ai",
+  },
   /* 9. Personalizado */
   {
     id: "personalizado",
@@ -187,13 +213,17 @@ export function lerConfigProvedor(): ConfigProvedorIA {
   }
 }
 
-/** Config válida = provedor externo com URL, modelo e chave preenchidos. */
+/**
+ * Config válida = provedor com URL e modelo preenchidos, e com chave própria OU
+ * vínculo com uma variável de ambiente do servidor (ex.: Kilo, que aceita
+ * acesso anônimo; a chave então fica no servidor e nunca vai para o navegador).
+ */
 export function provedorAtivo(config: ConfigProvedorIA) {
-  return Boolean(
-    config.baseUrl.trim() &&
-    config.modelo.trim() &&
-    config.chave.trim(),
+  const temChave = Boolean(config.chave.trim());
+  const usaChaveDoServidor = Boolean(
+    PRESET_PARA_VARIAVEL_BACKEND[config.preset] && config.baseUrl.trim() && config.modelo.trim(),
   );
+  return Boolean(config.baseUrl.trim() && config.modelo.trim() && (temChave || usaChaveDoServidor));
 }
 
 const EVENTO = "gestor-ia:provedor";
@@ -239,6 +269,7 @@ export const PRESET_PARA_VARIAVEL_BACKEND: Record<string, string> = {
   nvidia: "NVIDIA_API_KEY",
   opencodezen: "OPENCODE_API_KEY",
   groq: "GROQ_API_KEY",
+  kilocode: "KILO_API_KEY",
 };
 
 export function cabecalhosProvedor(config: ConfigProvedorIA): Record<string, string> {

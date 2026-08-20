@@ -40,7 +40,7 @@ export const Route = createFileRoute("/api/ia/provedores")({
             baseUrl: p.baseUrl,
             modelo: p.modelo,
             urlChave: p.urlChave,
-            configurado: chave.length > 0,
+            configurado: chave.length > 0 || Boolean(p.aceitaAnonimo),
           };
         });
 
