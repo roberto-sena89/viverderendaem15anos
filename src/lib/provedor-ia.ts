@@ -174,6 +174,10 @@ export function lerConfigProvedor(): ConfigProvedorIA {
     if (!bruto) return CONFIG_PADRAO;
     const dados = JSON.parse(bruto) as Partial<ConfigProvedorIA>;
     const preset = dados.preset ?? "orcarouter";
+    if (preset !== "lovable" && !PRESETS_PROVEDOR.some((p) => p.id === preset)) {
+      window.localStorage.removeItem(CHAVE_STORAGE);
+      return CONFIG_PADRAO;
+    }
     const chavesPorProvedor =
       dados.chavesPorProvedor && typeof dados.chavesPorProvedor === "object"
         ? { ...dados.chavesPorProvedor }
