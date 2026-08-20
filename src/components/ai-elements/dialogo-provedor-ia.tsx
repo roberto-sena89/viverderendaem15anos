@@ -189,12 +189,13 @@ export function DialogoProvedorIA() {
           <span className="hidden truncate sm:inline">Provedor IA</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="text-primary size-5" /> Provedores de IA
+      <DialogContent className="max-h-[90dvh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] overflow-y-auto overflow-x-hidden sm:w-full sm:max-w-lg">
+        <DialogHeader className="min-w-0 text-left">
+          <DialogTitle className="flex min-w-0 items-center gap-2">
+            <Sparkles className="text-primary size-5 shrink-0" />
+            <span className="min-w-0 break-words">Provedores de IA</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="break-words">
             Use a IA nativa da plataforma ou conecte um provedor gratuito compatível com a API
             OpenAI. A chave fica salva apenas neste navegador e é usada só nas suas conversas.
           </DialogDescription>
