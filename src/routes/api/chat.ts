@@ -2045,6 +2045,7 @@ export const Route = createFileRoute("/api/chat")({
               }
             },
           }),
+        };
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(
