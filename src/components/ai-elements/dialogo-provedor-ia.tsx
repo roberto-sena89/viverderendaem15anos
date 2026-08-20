@@ -394,7 +394,7 @@ export function DialogoProvedorIA() {
                         return (
                           <div
                             key={m}
-                            className={`flex items-center justify-between gap-2 rounded-md border px-2 py-1 transition-colors ${
+                            className={`grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 rounded-md border px-2 py-1 transition-colors ${
                               selecionado
                                 ? "border-primary/60 bg-primary/10"
                                 : "border-transparent hover:bg-muted/50"
