@@ -247,8 +247,7 @@ function textoDaMensagem(message: UIMessage) {
 const TETO_HISTORICO_CHARS = 60_000;
 const MINIMUM_RECENT_MESSAGES = 12;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function resumirHistoricoRemovido(
+export async function resumirHistoricoRemovido(
   mensagens: UIMessage[],
   modelo: any,
 ): Promise<string> {
