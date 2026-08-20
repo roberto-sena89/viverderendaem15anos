@@ -67,13 +67,21 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
   },
 ];
 
-/** Encontra o primeiro provedor com chave configurada nas variáveis de ambiente. */
+/**
+ * Encontra o provedor de IA a ser usado no servidor:
+ * 1º — o primeiro da lista com chave configurada (o usuário escolheu aquele);
+ * 2º — o primeiro que aceita acesso anônimo (ex.: Kilo Code com modelos :free),
+ *     usado quando nenhuma chave foi configurada, para o app nunca ficar sem IA.
+ */
 export function provedorEnvAtivo(
   env: NodeJS.ProcessEnv,
 ): { provedor: ProvedorEnv; chave: string } | null {
   for (const provedor of PROVEDORES_ENV) {
     const chave = env[provedor.variavel]?.trim();
     if (chave) return { provedor, chave };
+  }
+  for (const provedor of PROVEDORES_ENV) {
+    if (provedor.aceitaAnonimo) return { provedor, chave: "" };
   }
   return null;
 }

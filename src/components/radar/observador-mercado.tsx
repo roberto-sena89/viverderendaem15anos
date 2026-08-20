@@ -1,7 +1,15 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, Eye, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  Eye,
+  Loader2,
+  RefreshCw,
+  Sparkles,
+  Radio,
+  RadioTower,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +60,9 @@ export function ObservadorMercado({ aoSelecionar }: { aoSelecionar?: (ticker: st
     refetchOnWindowFocus: false,
   });
 
+  const [aoVivo, setAoVivo] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const varredura = estado?.atual ?? null;
   const novas = useMemo(
     () =>
@@ -63,6 +74,20 @@ export function ObservadorMercado({ aoSelecionar }: { aoSelecionar?: (ticker: st
         : new Set<string>(),
     [estado],
   );
+
+  useEffect(() => {
+    if (aoVivo) {
+      timerRef.current = setInterval(() => {
+        void refetch();
+      }, 30_000);
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [aoVivo, refetch]);
 
   async function observarAgora() {
     try {
@@ -115,7 +140,31 @@ export function ObservadorMercado({ aoSelecionar }: { aoSelecionar?: (ticker: st
           ) : (
             <Badge variant="secondary">Sem varredura ainda</Badge>
           )}
+          {aoVivo ? (
+            <Badge variant="secondary" className="gap-1 border-sky-600/40 bg-sky-600/10 text-sky-600">
+              <RadioTower className="size-3 animate-pulse" aria-hidden /> Sincronizando com Kilo
+            </Badge>
+          ) : null}
           <div className="ml-auto flex items-center gap-2">
+            <Button
+              type="button"
+              variant={aoVivo ? "default" : "outline"}
+              size="sm"
+              className="h-8 gap-1.5"
+              onClick={() => setAoVivo((v) => !v)}
+              title={
+                aoVivo
+                  ? "Desativar sincronização em tempo real com o Kilo"
+                  : "Ativar sincronização em tempo real com o Kilo"
+              }
+            >
+              {aoVivo ? (
+                <RadioTower className="size-3.5 shrink-0 animate-pulse" aria-hidden />
+              ) : (
+                <Radio className="size-3.5 shrink-0" aria-hidden />
+              )}
+              {aoVivo ? "Ao vivo" : "Sincronizar"}
+            </Button>
             <Button
               type="button"
               variant="outline"
