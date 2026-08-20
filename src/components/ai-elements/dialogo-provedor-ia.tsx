@@ -375,13 +375,13 @@ export function DialogoProvedorIA() {
                         }
                         className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
                           apenasFree
-                            ? "border-primary/60 bg-primary/15 text-primary"
+                            ? "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/30"
                             : "border-border/60 text-muted-foreground hover:bg-muted/50"
                         }`}
                       >
                         <Sparkles className="size-3" />
                         {apenasFree ? "Somente FREE" : "Mostrar todos"}
-                        <span className="opacity-70">({totalFree})</span>
+                        <span className="opacity-90">({totalFree})</span>
                       </button>
                     </div>
                     {apenasFree && modelosVisiveis.length === 0 && (
