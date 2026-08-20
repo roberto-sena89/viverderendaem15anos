@@ -1003,18 +1003,17 @@ export const Route = createFileRoute("/api/chat")({
                 }
 
                 const tickerUpper = ticker.toUpperCase();
-                const categoria = ativos[0].categoria;
                 const [posicoes, macro, fundamentosCvm, gradeAcoes, gradeFiis] = await Promise.all([
                   posicoesParaTickers([tickerUpper]),
                   contextoMacro(),
-                  lerFundamentosCvm().catch(() => ({ mapa: {} })),
+                  lerFundamentosCvm().catch(() => ({ mapa: {} as Record<string, any> })),
                   gradeAcoesComCache().catch(() => ({ linhas: [] })),
                   gradeFiisComCache().catch(() => ({ linhas: [] })),
                 ]);
 
-                const gradeMap = new Map([
-                  ...gradeAcoes.linhas.map((l: any) => [l.ticker.toUpperCase(), l]),
-                  ...gradeFiis.linhas.map((l: any) => [l.ticker.toUpperCase(), l]),
+                const gradeMap = new Map<string, any>([
+                  ...gradeAcoes.linhas.map((l: any): [string, any] => [l.ticker.toUpperCase(), l]),
+                  ...gradeFiis.linhas.map((l: any): [string, any] => [l.ticker.toUpperCase(), l]),
                 ]);
 
                 const raw = gradeMap.get(tickerUpper);
@@ -1023,14 +1022,14 @@ export const Route = createFileRoute("/api/chat")({
                 }
 
                 const pos = posicoes[tickerUpper];
-                const cvm = fundamentosCvm.mapa[tickerUpper];
-                const dy12 = "dy12" in raw ? raw.dy12 : null;
-                const pl = "pl" in raw ? raw.pl : null;
-                const liquidez = "liquidez" in raw ? raw.liquidez : null;
-                const dividaPatrimonio = "dividaPatrimonio" in raw ? raw.dividaPatrimonio : null;
-                const margemLiquida = "margemLiquida" in raw ? raw.margemLiquida : null;
-                const setor = "setor" in raw ? raw.setor : null;
-                const fundamentos = "pontuacao" in raw ? raw.pontuacao : null;
+                const cvm = (fundamentosCvm.mapa as Record<string, any>)[tickerUpper];
+                const dy12 = (raw.dy12 ?? null) as number | null;
+                const pl = (raw.pl ?? null) as number | null;
+                const liquidez = (raw.liquidez ?? null) as number | null;
+                const dividaPatrimonio = (raw.dividaPatrimonio ?? null) as number | null;
+                const margemLiquida = (raw.margemLiquida ?? null) as number | null;
+                const setor = (raw.setor ?? null) as string | null;
+                const fundamentos = (raw.pontuacao ?? null) as number | null;
 
                 const entrada: EntradasScoreGestor = {
                   ticker: tickerUpper,
