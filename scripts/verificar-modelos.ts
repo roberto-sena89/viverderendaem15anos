@@ -33,7 +33,7 @@ for (const p of relatorio.provedores) {
   const status = p.status === "ok" ? "OK" : p.status === "sem-chave" ? "SEM CHAVE" : "ERRO";
   console.log(`\n${p.nome} [${status}] ${p.mensagem}`);
   for (const m of p.modelosGratuitos.slice(0, 8)) {
-    const sonda = m.funcionando === undefined ? "" : m.funcionando ? " ✅" : ` ❌ (${m.statusTeste ?? ""})`;
+    const sonda = m.funcionando === undefined ? " ⏳ (indefinido)" : m.funcionando ? " ✅" : ` ❌ (${m.statusTeste ?? ""})`;
     console.log(`  - ${m.id}${m.ctx ? ` (${m.ctx.toLocaleString("pt-BR")} tokens)` : ""}${sonda}`);
   }
   if (p.modelosGratuitos.length > 8) {

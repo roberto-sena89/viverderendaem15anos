@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { Json } from "@/integrations/supabase/types";
 
 /**
  * Verificação horária dos modelos de IA gratuitos — sonda de verdade cada
@@ -43,7 +44,7 @@ export const Route = createFileRoute("/api/public/hooks/verificar-modelos-gratui
           await supabase.supabaseAdmin.from("cotacoes_cache").upsert(
             {
               categoria: "modelos-gratuitos:relatorio",
-              payload: relatorio as unknown as Record<string, unknown>,
+              payload: JSON.parse(JSON.stringify(relatorio)) as Json,
               parcial: false,
               atualizado_em: new Date().toISOString(),
             },
@@ -56,7 +57,8 @@ export const Route = createFileRoute("/api/public/hooks/verificar-modelos-gratui
           provedor: p.nome,
           status: p.status,
           total: p.modelosGratuitos.length,
-          respondendo: p.modelosGratuitos.filter((m) => m.funcionando).length,
+          respondendo: p.modelosGratuitos.filter((m) => m.funcionando === true).length,
+          rateLimit: p.modelosGratuitos.filter((m) => m.funcionando === undefined).length,
           falhando: p.modelosGratuitos.filter((m) => m.funcionando === false).length,
         }));
         return Response.json({
