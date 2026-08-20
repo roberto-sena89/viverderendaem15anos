@@ -121,16 +121,6 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     padroesGratuitos: [/-free$/i],
   },
   {
-    chave: "cline",
-    nome: "Cline",
-    baseUrl: "https://api.cline.bot/api/v1",
-    variavelChave: "CLINE_API_KEY",
-    padroesGratuitos: [/-free$/i],
-    idsGratuitosAdicionais: ["minimax/minimax-m3", "xiaomi/mimo-v2.5", "deepseek-v4-flash"],
-    exigeChave: true,
-    modelosProbe: ["minimax/minimax-m3", "xiaomi/mimo-v2.5", "deepseek-v4-flash"],
-  },
-  {
     chave: "groq",
     nome: "Groq Cloud",
     baseUrl: "https://api.groq.com/openai/v1",
@@ -150,15 +140,6 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     caminhoModels: "/models",
     chaveViaQuery: true,
     caminhoChat: "/openai/chat/completions",
-  },
-  {
-    chave: "cerebras",
-    nome: "Cerebras",
-    baseUrl: "https://api.cerebras.ai/v1",
-    variavelChave: "CEREBRAS_API_KEY",
-    catalogoInteiroGratuito: true,
-    nota: "free tier Cerebras (limites diários)",
-    exigeChave: true,
   },
 ];
 
@@ -218,17 +199,14 @@ async function sondarListaModelos(
   const trabalhadores = Array.from({ length: Math.min(3, modelos.length) }, async () => {
     while (proximo < modelos.length) {
       const id = modelos[proximo++]!;
-      const url = `${base}${caminhoChat}${
-        provedor.chaveViaQuery ? `?key=${encodeURIComponent(chave)}` : ""
-      }`;
+      const inicio = Date.now();
+      const url = `${base}${caminhoChat}`;
       const headers: Record<string, string> = {
         "User-Agent": "viverderenda-verificador/1.0",
         "Content-Type": "application/json",
       };
-      if (!provedor.chaveViaQuery) {
-        headers[provedor.authHeader ?? "Authorization"] =
-          provedor.authHeader === "x-api-key" ? chave : `Bearer ${chave}`;
-      }
+      headers[provedor.authHeader ?? "Authorization"] =
+        provedor.authHeader === "x-api-key" ? chave : `Bearer ${chave}`;
       try {
         const resposta = await fetch(url, {
           method: "POST",
@@ -242,6 +220,13 @@ async function sondarListaModelos(
         });
         if (resposta.ok) {
           resultados.push({ id, ctx: null, funcionando: true, statusTeste: `HTTP ${resposta.status}` });
+        } else if (resposta.status === 429) {
+          resultados.push({
+            id,
+            ctx: null,
+            funcionando: undefined,
+            statusTeste: "rate limit (429) — não confirma",
+          });
         } else {
           resultados.push({
             id,
@@ -261,6 +246,11 @@ async function sondarListaModelos(
               : `erro de rede: ${e instanceof Error ? e.message : "desconhecido"}`,
         });
       }
+      const gasto = Date.now() - inicio;
+      const espera = Math.max(0, 250 - gasto);
+      if (espera > 0) {
+        await new Promise((resolve) => setTimeout(resolve, espera));
+      }
     }
   });
   await Promise.all(trabalhadores);
@@ -271,6 +261,7 @@ async function buscarCatalogo(
   provedor: VerificadorProvedor,
   env: NodeJS.ProcessEnv,
   sondar: boolean,
+  idsPrioritarios: ReadonlySet<string> = new Set(),
 ): Promise<VerificacaoProvedor> {
   const base = provedor.baseUrl.replace(/\/$/, "");
   const chave = chaveDoProvedor(provedor, env);
@@ -367,9 +358,17 @@ async function buscarCatalogo(
         .map((m) => ({ id: m.id, ctx: m.ctx, nota: provedor.nota }));
 
       if (sondar && chave) {
-        const ids = modelos.map((m) => m.id);
-        if (ids.length > LIMITE_SONDAGEM_POR_PROVEDOR) {
-          ids.length = LIMITE_SONDAGEM_POR_PROVEDOR;
+        let ids = modelos.map((m) => m.id);
+        const foraDoLimite = ids.length - LIMITE_SONDAGEM_POR_PROVEDOR;
+        if (foraDoLimite > 0) {
+          const prioridade = new Set(
+            modelos
+              .filter((m) => idsPrioritarios.has(m.id.toLowerCase()))
+              .map((m) => m.id),
+          );
+          const semPrioridade = ids.filter((id) => !prioridade.has(id));
+          for (const id of prioridade) semPrioridade.unshift(id);
+          ids = semPrioridade.slice(0, LIMITE_SONDAGEM_POR_PROVEDOR);
         }
         const sondados = await sondarListaModelos(provedor, chave, ids);
         const porId = new Map(sondados.map((s) => [s.id.toLowerCase(), s]));
@@ -441,10 +440,8 @@ const ALIASES_CHAVE: readonly [string, string][] = [
   ["opencodezen", "opencodezen"],
   ["openrouter", "openrouter"],
   ["nvidia", "nvidia"],
-  ["cline", "cline"],
   ["groq", "groq"],
   ["gemini", "gemini"],
-  ["cerebras", "cerebras"],
 ];
 
 function chavePorNome(nome: string): string | null {
@@ -504,7 +501,15 @@ export async function verificarModelosGratuitos(
   opcoes: { sondar?: boolean } = {},
 ): Promise<RelatorioVerificacao> {
   const { sondar = false } = opcoes;
-  const provedores = await comLimite(VERIFICADORES, 4, (p) => buscarCatalogo(p, env, sondar));
+  const prioritariosPorProvedor = new Map<string, Set<string>>();
+  for (const c of configurados) {
+    const conjunto = prioritariosPorProvedor.get(c.provedor) ?? new Set<string>();
+    conjunto.add(c.modelo.toLowerCase());
+    prioritariosPorProvedor.set(c.provedor, conjunto);
+  }
+  const provedores = await comLimite(VERIFICADORES, 4, (p) =>
+    buscarCatalogo(p, env, sondar, prioritariosPorProvedor.get(p.chave) ?? new Set()),
+  );
 
   const configuradosPorProvedor = new Map<string, Set<string>>();
   for (const c of configurados) {
@@ -535,7 +540,22 @@ export async function verificarModelosGratuitos(
 
   const totalGratuitos = provedores.reduce((s, p) => s + p.modelosGratuitos.length, 0);
   const comChave = provedores.filter((p) => p.status === "ok").length;
-  const resumo = `${comChave}/${provedores.length} provedores verificados · ${totalGratuitos} modelos gratuitos encontrados · ${desaparecidos.length} modelos configurados sumiram do catálogo · ${novosSugeridos.length} novos gratuitos sugeridos`;
+  const respondendo = provedores.reduce(
+    (s, p) => s + p.modelosGratuitos.filter((m) => m.funcionando === true).length,
+    0,
+  );
+  const limitados = provedores.reduce(
+    (s, p) => s + p.modelosGratuitos.filter((m) => m.funcionando === undefined).length,
+    0,
+  );
+  const falhando = provedores.reduce(
+    (s, p) => s + p.modelosGratuitos.filter((m) => m.funcionando === false).length,
+    0,
+  );
+  const resumo =
+    sondar
+      ? `${comChave}/${provedores.length} provedores verificados · ${totalGratuitos} modelos gratuitos no catálogo · ${respondendo} respondendo · ${limitados} com rate limit · ${falhando} falhando · ${desaparecidos.length} configurados sumiram`
+      : `${comChave}/${provedores.length} provedores verificados · ${totalGratuitos} modelos gratuitos encontrados · ${desaparecidos.length} modelos configurados sumiram do catálogo · ${novosSugeridos.length} novos gratuitos sugeridos`;
 
   return {
     geradoEm: new Date().toISOString(),

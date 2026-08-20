@@ -132,16 +132,6 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     modelosGratuitos: [],
     urlChave: "https://opencode.ai/",
   },
-  /* 6. Cline */
-  {
-    id: "cline",
-    nome: "Cline",
-    descricao: "Camada gratuita do Cline.",
-    baseUrl: "https://api.cline.bot/api/v1",
-    modelos: [],
-    modelosGratuitos: [],
-    urlChave: "https://cline.bot/",
-  },
   /* 7. Groq */
   {
     id: "groq",
@@ -181,17 +171,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     modelosGratuitos: [],
     urlChave: "https://aistudio.google.com/apikey",
   },
-  /* 9. Cerebras */
-  {
-    id: "cerebras",
-    nome: "Cerebras",
-    descricao: "Camada gratuita com inferência de altíssima velocidade.",
-    baseUrl: "https://api.cerebras.ai/v1",
-    modelos: ["gpt-oss-120b", "gemma-4-31b"],
-    modelosGratuitos: [],
-    urlChave: "https://cloud.cerebras.ai",
-  },
-  /* 10. Personalizado */
+  /* 9. Personalizado */
   {
     id: "personalizado",
     nome: "Personalizado (compatível OpenAI)",
