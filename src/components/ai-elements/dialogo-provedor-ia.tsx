@@ -528,9 +528,10 @@ export function DialogoProvedorIA() {
           )}
         </div>
 
-        <DialogFooter className="gap-2 sm:justify-between">
+        <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
           <Button
             variant="ghost"
+            className="w-full sm:w-auto"
             onClick={() => {
               limpar();
               setRascunho({ ...CONFIG_PADRAO });
@@ -540,7 +541,9 @@ export function DialogoProvedorIA() {
           >
             Restaurar padrão
           </Button>
-          <Button onClick={confirmar}>Salvar provedor</Button>
+          <Button className="w-full sm:w-auto" onClick={confirmar}>
+            Salvar provedor
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
