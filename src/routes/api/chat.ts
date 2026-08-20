@@ -245,29 +245,73 @@ function textoDaMensagem(message: UIMessage) {
  * mantendo a mensagem atual do usuário.
  */
 const TETO_HISTORICO_CHARS = 60_000;
+const MINIMUM_RECENT_MESSAGES = 12;
+
+async function resumirHistoricoRemovido(
+  mensagens: UIMessage[],
+  modelo: any,
+): Promise<string> {
+  if (mensagens.length === 0) return "";
+  const texto = mensagens
+    .map((m) => {
+      const papel = m.role === "user" ? "Usuário" : m.role === "assistant" ? "Gestor IA" : m.role;
+      return `[${papel}] ${textoDaMensagem(m).slice(0, 800)}`;
+    })
+    .join("\n\n");
+
+  try {
+    const { generateText } = await import("ai");
+    const resposta = await generateText({
+      model: modelo,
+      system:
+        "Você é um assistente que resume conversas financeiras de forma concisa. Liste os tópicos principais tratados, decisões tomadas, ativos mencionados, números relevantes e conclusões. Máximo 1200 caracteres.",
+      prompt: texto,
+      maxOutputTokens: 300,
+    });
+    return resposta.text.trim().slice(0, 1200);
+  } catch {
+    return "Histórico anterior resumido: conversa anterior sobre finanças e carteira.";
+  }
+}
 
 function apararHistorico(hist: UIMessage[]): UIMessage[] {
+  if (hist.length <= MINIMUM_RECENT_MESSAGES) return hist;
+
   const mantidas = hist.slice();
   let total = mantidas.reduce((s, m) => s + textoDaMensagem(m).length, 0);
-  while (mantidas.length > 1 && total > TETO_HISTORICO_CHARS) {
+
+  if (total <= TETO_HISTORICO_CHARS) return mantidas;
+
+  const removidas: UIMessage[] = [];
+  while (mantidas.length > MINIMUM_RECENT_MESSAGES && total > TETO_HISTORICO_CHARS) {
     const removida = mantidas.shift();
-    if (removida) total -= textoDaMensagem(removida).length;
+    if (removida) {
+      total -= textoDaMensagem(removida).length;
+      removidas.push(removida);
+    }
   }
-  return mantidas.map((m) =>
-    textoDaMensagem(m).length > TETO_HISTORICO_CHARS
-      ? {
-          ...m,
-          parts: m.parts.map((p) =>
-            p.type === "text" && p.text.length > TETO_HISTORICO_CHARS
-              ? {
-                  ...p,
-                  text: `${p.text.slice(0, TETO_HISTORICO_CHARS)}\n… Conteúdo antigo muito longo foi resumido para caber no limite do assistente.`,
-                }
-              : p,
-          ),
-        }
-      : m,
-  );
+
+  if (removidas.length === 0) return mantidas;
+
+  const resumo = removidas
+    .map((m) => {
+      const papel = m.role === "user" ? "Usuário" : m.role === "assistant" ? "Gestor IA" : m.role;
+      return `[${papel}] ${textoDaMensagem(m).slice(0, 500)}`;
+    })
+    .join("\n\n");
+
+  const resumido: UIMessage = {
+    id: "resumo-historico",
+    role: "assistant",
+    parts: [
+      {
+        type: "text",
+        text: `[Resumo da conversa anterior]\n${resumo.slice(0, 1500)}\n… Histórico anterior resumido para manter o contexto do assistente.`,
+      },
+    ],
+  };
+
+  return [resumido, ...mantidas];
 }
 
 function ativosParaModelo(linhas: AtivoLinha[]): Parameters<typeof resumoCarteira>[0] {
