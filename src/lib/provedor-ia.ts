@@ -156,21 +156,6 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://console.groq.com/keys",
   },
-  /* 8. Gemini */
-  {
-    id: "gemini",
-    nome: "Google AI Studio (Gemini)",
-    descricao: "Camada gratuita do Gemini via endpoint compatível com OpenAI.",
-    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
-    modelos: [
-      "gemini-3.7-flash",
-      "gemini-3.6-flash",
-      "gemini-3.5-flash",
-      "gemini-3.5-flash-lite",
-    ],
-    modelosGratuitos: [],
-    urlChave: "https://aistudio.google.com/apikey",
-  },
   /* 9. Personalizado */
   {
     id: "personalizado",
@@ -281,7 +266,6 @@ export const PRESET_PARA_VARIAVEL_BACKEND: Record<string, string> = {
   nvidia: "NVIDIA_API_KEY",
   opencodezen: "OPENCODE_API_KEY",
   groq: "GROQ_API_KEY",
-  gemini: "GOOGLE_GENERATIVE_AI_API_KEY",
 };
 
 export function cabecalhosProvedor(config: ConfigProvedorIA): Record<string, string> {

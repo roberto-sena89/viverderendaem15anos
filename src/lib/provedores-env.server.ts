@@ -62,13 +62,6 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     modelo: "groq/compound",
     urlChave: "https://console.groq.com/keys",
   },
-  {
-    variavel: "GOOGLE_GENERATIVE_AI_API_KEY",
-    nome: "Google Generative AI",
-    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
-    modelo: "gemini-2.5-flash",
-    urlChave: "https://aistudio.google.com/apikey",
-  },
 ];
 
 /** Encontra o primeiro provedor com chave configurada nas variáveis de ambiente. */

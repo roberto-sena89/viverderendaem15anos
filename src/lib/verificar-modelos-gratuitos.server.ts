@@ -129,27 +129,10 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     nota: "free tier Groq (limites diários)",
     exigeChave: true,
   },
-  {
-    chave: "gemini",
-    nome: "Google AI Studio (Gemini)",
-    baseUrl: "https://generativelanguage.googleapis.com/v1beta",
-    variavelChave: "GOOGLE_GENERATIVE_AI_API_KEY",
-    padroesGratuitos: [/flash/i],
-    nota: "modelos Flash da camada gratuita",
-    exigeChave: true,
-    caminhoModels: "/models",
-    chaveViaQuery: true,
-    caminhoChat: "/openai/chat/completions",
-  },
 ];
 
 function chaveDoProvedor(provedor: VerificadorProvedor, env: NodeJS.ProcessEnv): string {
-  const chave = env[provedor.variavelChave]?.trim() ?? "";
-  if (chave) return chave;
-  if (provedor.variavelChave === "GOOGLE_GENERATIVE_AI_API_KEY") {
-    return env.GEMINI_API_KEY?.trim() ?? "";
-  }
-  return "";
+  return env[provedor.variavelChave]?.trim() ?? "";
 }
 
 function ehGratuito(provedor: VerificadorProvedor, id: string): boolean {
@@ -441,7 +424,6 @@ const ALIASES_CHAVE: readonly [string, string][] = [
   ["openrouter", "openrouter"],
   ["nvidia", "nvidia"],
   ["groq", "groq"],
-  ["gemini", "gemini"],
 ];
 
 function chavePorNome(nome: string): string | null {
