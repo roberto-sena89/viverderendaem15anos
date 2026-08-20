@@ -423,7 +423,8 @@ export function DialogoProvedorIA() {
                               type="button"
                               disabled={selecionado}
                               onClick={() => setRascunho({ ...rascunho, modelo: m })}
-                              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                              title={selecionado ? "Modelo em uso" : "Usar este modelo"}
+                              className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
                                 selecionado
                                   ? "bg-primary/20 text-primary"
                                   : "bg-primary/10 text-primary hover:bg-primary/20"
@@ -431,11 +432,13 @@ export function DialogoProvedorIA() {
                             >
                               {selecionado ? (
                                 <>
-                                  <CheckCircle2 className="size-3" /> Em uso
+                                  <CheckCircle2 className="size-3 shrink-0" /> Em uso
                                 </>
                               ) : (
                                 <>
-                                  <Sparkles className="size-3" /> Usar este modelo
+                                  <Sparkles className="size-3 shrink-0" />
+                                  <span className="hidden sm:inline">Usar este modelo</span>
+                                  <span className="sm:hidden">Usar</span>
                                 </>
                               )}
                             </button>
