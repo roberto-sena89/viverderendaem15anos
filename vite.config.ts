@@ -4,8 +4,51 @@
 //     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
+import type { Plugin } from "vite";
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
+
+/**
+ * Evita que desconexões do cliente (navegação/aba fechada durante o SSR ou
+ * stream) virem erro não tratado no servidor Node. Sem um listener de "error"
+ * na requisição bruta, o `abortIncoming` do Node emite `Error: aborted` no
+ * fechamento do socket (`socketOnClose`) e a exceção escapa — interrompendo o
+ * stream de HTML e gerando tela em branco para quem navegou. Isso NÃO captura o
+ * caminho do `fetch` (já tratado em src/server.ts); atua na camada HTTP onde o
+ * `socketOnClose` ocorre fora do `try/catch`.
+ */
+function suppressClientDisconnectErrors(): Plugin {
+  return {
+    name: "suppress-client-disconnect-errors",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const onError = (err: NodeJS.ErrnoException) => {
+          if (!isDisconnectError(err)) {
+            console.error("[server] erro de conexão não tratado:", err);
+          }
+        };
+        req.on("error", onError);
+        res.on("error", onError);
+        next();
+      });
+    },
+  };
+}
+
+function isDisconnectError(err: NodeJS.ErrnoException | null | undefined): boolean {
+  if (!err) return false;
+  const code = err.code;
+  if (
+    code === "ECONNABORTED" ||
+    code === "ECONNRESET" ||
+    code === "EPIPE" ||
+    code === "ENOTCONN" ||
+    code === "ERR_STREAM_PREMATURE_CLOSE"
+  ) {
+    return true;
+  }
+  return (err.message ?? "").toLowerCase().includes("aborted");
+}
 
 export default defineConfig({
   tanstackStart: {
@@ -54,6 +97,6 @@ export default defineConfig({
         ].join("; "),
       },
     },
-    plugins: [mcpPlugin()],
+    plugins: [suppressClientDisconnectErrors(), mcpPlugin()],
   },
 });
