@@ -295,44 +295,39 @@ function proximosEventos(): EventoAgenda[] {
   const agora = new Date();
   const eventos: EventoAgenda[] = [];
 
-  const copom = [
-    "2026-01-28",
-    "2026-03-18",
-    "2026-05-06",
-    "2026-06-17",
-    "2026-08-05",
-    "2026-09-16",
-    "2026-11-04",
-    "2026-12-09",
-  ];
-  const fomc = [
-    "2026-01-28",
-    "2026-03-18",
-    "2026-04-29",
-    "2026-06-17",
-    "2026-07-29",
-    "2026-09-16",
-    "2026-11-04",
-    "2026-12-16",
-  ];
+  const segundaQuarta = (ano: number, mes: number) => {
+    const d = new Date(Date.UTC(ano, mes, 1));
+    while (d.getUTCDay() !== 3) d.setUTCDate(d.getUTCDate() + 1);
+    d.setUTCDate(d.getUTCDate() + 7);
+    return d;
+  };
 
-  for (const data of copom) {
-    eventos.push({
-      id: `copom-${data}`,
-      titulo: "Decisão do Copom",
-      detalhe: "Taxa Selic · Banco Central",
-      quando: `${data}T21:30:00.000Z`,
-      tipo: "Brasil",
-    });
-  }
-  for (const data of fomc) {
-    eventos.push({
-      id: `fomc-${data}`,
-      titulo: "Decisão do Fed (FOMC)",
-      detalhe: "Juros dos EUA",
-      quando: `${data}T19:00:00.000Z`,
-      tipo: "EUA",
-    });
+  const mesesCopom = [0, 2, 4, 5, 7, 8, 10, 11];
+  const mesesFomc = [0, 2, 4, 5, 6, 8, 10, 11];
+
+  for (let a = agora.getUTCFullYear(); a <= agora.getUTCFullYear() + 1; a++) {
+    for (const mes of mesesCopom) {
+      const data = segundaQuarta(a, mes);
+      data.setUTCHours(21, 30);
+      eventos.push({
+        id: `copom-${a}-${mes}`,
+        titulo: "Decisão do Copom",
+        detalhe: "Taxa Selic · Banco Central",
+        quando: data.toISOString(),
+        tipo: "Brasil",
+      });
+    }
+    for (const mes of mesesFomc) {
+      const data = segundaQuarta(a, mes);
+      data.setUTCHours(19, 0);
+      eventos.push({
+        id: `fomc-${a}-${mes}`,
+        titulo: "Decisão do Fed (FOMC)",
+        detalhe: "Juros dos EUA",
+        quando: data.toISOString(),
+        tipo: "EUA",
+      });
+    }
   }
 
   const primeiraSexta = (ano: number, mes: number) => {
