@@ -88,15 +88,33 @@ if (typeof globalThis.addEventListener === "function") {
 
 // O Node lança "Error: aborted" como uncaughtException quando o cliente fecha
 // o socket no meio de um stream (abortIncoming em node:_http_server). Sem um
-// listener, o runtime reporta como RUNTIME_ERROR e pode derrubar a instância.
+// handler, o runtime reporta como RUNTIME_ERROR e pode derrubar a instância.
+//
+// Usamos setUncaughtExceptionCaptureCallback (em vez de process.on) porque o
+// capture callback SUBSTITUI todos os listeners de 'uncaughtException' do
+// processo — inclusive os do runtime da plataforma, que reportariam a
+// desconexão benigna como RUNTIME_ERROR com tela em branco. O callback assume
+// a responsabilidade de decidir o destino de todo erro não capturado:
+// desconexões são ignoradas; erros reais são logados (e registrados para o
+// normalizeCatastrophicSsrResponse via console.error) sem derrubar o processo.
 if (typeof process !== "undefined" && typeof process.on === "function") {
-  process.on("uncaughtException", (error) => {
-    if (isClientDisconnectError(error)) {
-      originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
-      return;
-    }
-    originalConsoleError(describeError(error));
-  });
+  if (typeof process.setUncaughtExceptionCaptureCallback === "function") {
+    process.setUncaughtExceptionCaptureCallback((error) => {
+      if (isClientDisconnectError(error)) {
+        originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
+        return;
+      }
+      originalConsoleError(describeError(error));
+    });
+  } else {
+    process.on("uncaughtException", (error) => {
+      if (isClientDisconnectError(error)) {
+        originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
+        return;
+      }
+      originalConsoleError(describeError(error));
+    });
+  }
   process.on("unhandledRejection", (reason) => {
     if (isClientDisconnectError(reason)) {
       originalConsoleError("[server] cliente desconectou durante a resposta; ignorado.");
