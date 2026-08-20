@@ -138,14 +138,19 @@ function ChatPage() {
   const { messages, sendMessage, setMessages, status } = useChat({
     id: "gestor-ia",
     transport,
-    onError: (error) =>
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes("aborted") || message.includes("AbortError")) {
+        return;
+      }
       toast.error("Não foi possível falar com o Gestor IA", {
-        description: error.message.includes("429")
+        description: message.includes("429")
           ? "Muitas mensagens em sequência. Aguarde alguns instantes."
-          : error.message.includes("402") || /payment required/i.test(error.message)
-            ? "Os créditos de IA do workspace acabaram. Adicione créditos em Configurações → Planos e uso dentro da Lovable."
-            : error.message,
-      }),
+          : message.includes("402") || /payment required/i.test(message)
+            ? "Os créditos de IA do workspace acabaram. Adicite créditos em Configurações → Planos e uso dentro da Lovable."
+            : message,
+      });
+    },
   });
 
   const hidratado = useRef(false);
