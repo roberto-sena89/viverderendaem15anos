@@ -530,9 +530,16 @@ export const Route = createFileRoute("/api/chat")({
         const provedorEnvPorId = iaProvedorHeader
           ? PROVEDORES_ENV.find((p) => p.variavel === iaProvedorHeader || p.nome === iaProvedorHeader)
           : null;
-        const provedorExternoViaBackend = Boolean(provedorEnvPorId && process.env[provedorEnvPorId.variavel]?.trim());
+        const chaveProvedorEnv = provedorEnvPorId
+          ? (process.env[provedorEnvPorId.variavel]?.trim() ?? "")
+          : "";
+        // Provedores como o Kilo Gateway aceitam requisições anônimas para modelos :free
+        // (sem chave, com rate limit por IP) — então podem ser usados mesmo sem chave no servidor.
+        const provedorExternoViaBackend = Boolean(
+          provedorEnvPorId && (chaveProvedorEnv || provedorEnvPorId.aceitaAnonimo),
+        );
 
-        if (provedorExternoViaBackend && !process.env[provedorEnvPorId!.variavel]?.trim()) {
+        if (provedorExternoViaBackend && !chaveProvedorEnv && !provedorEnvPorId!.aceitaAnonimo) {
           return new Response(
             "Provedor de ambiente selecionado, mas a variável de ambiente não está preenchida.",
             { status: 503 },
@@ -577,7 +584,11 @@ export const Route = createFileRoute("/api/chat")({
           : createOpenAICompatible({
               name: "provedor-env",
               baseURL: baseUrlProvedorEnv(provedorPadrao!, process.env),
-              headers: { Authorization: `Bearer ${process.env[provedorPadrao!.variavel]!.trim()}` },
+              headers: provedorExternoViaBackend
+                ? chaveProvedorEnv
+                  ? { Authorization: `Bearer ${chaveProvedorEnv}` }
+                  : {}
+                : { Authorization: `Bearer ${process.env[provedorPadrao!.variavel]!.trim()}` },
             })(modeloEscolhido);
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
@@ -1952,6 +1963,17 @@ export const Route = createFileRoute("/api/chat")({
                       "4. Sempre que houver uma recomendação (comprar/vender/manter/aportar/rebalancear), encerre com uma seção '📌 Dados e critérios usados' em lista, apontando numero, fonte, data e critério aplicado.\n" +
                       "5. Se um dado vier do contexto da carteira do usuário (patrimônio, aportes, metas), identifique a origem (ex.: 'registro de aportes do usuário')."
                   : "",
+              )
+              .concat(
+                `\n\n### Plano financeiro do usuário
+- Idade atual: ${planoConfig.idadeAtual} anos
+- Idade alvo (aposentadoria): ${planoConfig.idadeAposentadoria} anos
+- Patrimônio atual: R$ ${planoConfig.patrimonioAtual.toLocaleString("pt-BR")}
+- Aporte mensal atual: R$ ${planoConfig.aporteMensal.toLocaleString("pt-BR")}
+- Aumento anual dos aportes: ${planoConfig.aumentoAnual}%
+- Rentabilidade esperada: ${planoConfig.rentabilidadeAnual}% a.a.
+- Inflação esperada: ${planoConfig.inflacaoAnual}% a.a.
+- Taxa de retirada na aposentadoria: ${planoConfig.taxaRetirada}%`,
               )
               .concat(
                 `\n\n### Carteira atual do usuário\n${contexto}\n\n### Metas financeiras do usuário\n${contextoMetas}`,
