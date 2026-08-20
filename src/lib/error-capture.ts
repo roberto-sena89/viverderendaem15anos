@@ -54,12 +54,14 @@ function isErrorLike(value: unknown): value is Error {
  * meio de um stream/SSR. O Node lança "Error: aborted" (abortIncoming) na
  * camada HTTP e não há como entregar a resposta — não é falha do servidor.
  */
-const PADROES_DESCONEXAO = /aborted|abort error|socket hang up|ECONNRESET|premature close|EPIPE/i;
+const PADROES_DESCONEXAO =
+  /aborted|abort ?error|operation was aborted|socket hang up|ECONNRESET|premature close|EPIPE|ERR_STREAM_PREMATURE_CLOSE|ABORT_ERR/i;
 
 export function isClientDisconnectError(error: unknown): boolean {
-  if (!(error instanceof Error)) return false;
-  const { code } = error as { code?: unknown };
-  const texto = `${error.name} ${error.message} ${typeof code === "string" ? code : ""}`;
+  if (error == null || (typeof error !== "object" && typeof error !== "string")) return false;
+  if (typeof error === "string") return PADROES_DESCONEXAO.test(error);
+  const { name, message, code } = error as { name?: unknown; message?: unknown; code?: unknown };
+  const texto = [name, message, code].filter((v) => typeof v === "string").join(" ");
   return PADROES_DESCONEXAO.test(texto);
 }
 
