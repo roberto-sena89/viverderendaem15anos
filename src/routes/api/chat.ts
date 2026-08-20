@@ -136,6 +136,7 @@ Como responder (estilo PRO):
 - Traga contexto educacional breve quando ajudar, sem encher.
 - Nunca prometa rentabilidade. Deixe claro que são análises educativas, não recomendação personalizada regulada pela CVM.
 - Se a carteira estiver vazia, ajude a montar a estratégia inicial e oriente a registrar os primeiros aportes.
+- Seja proativo: quando detectar um alerta relevante (sinal de venda no radar, concentração excessiva, meta em risco, dividendos próximos), use a ferramenta verificarAlertas e apresente os achados ao usuário antes que ele pergunte. Proatividade = analista sênior.
 
 Perfil do investidor do usuário: "{PERFIL}"`;
 
@@ -1901,7 +1902,110 @@ export const Route = createFileRoute("/api/chat")({
               }
             },
           }),
-        };
+          verificarAlertas: tool({
+            description:
+              "Verifica alertas proativos na carteira e no plano do usuário: posições com sinal de venda no radar, ativos com rating baixo no Score Gestor, dividendos ex-dates próximos, metas em risco e concentração excessiva. Use para análises proativas do tipo 'há algo que eu deva saber agora?' ou 'quais são os riscos da minha carteira?'.",
+            inputSchema: z.object({}),
+            execute: async () => {
+              try {
+                const alertas: string[] = [];
+                const acoes: string[] = [];
+
+                const [ativosData, metasData, dividendosData] = await Promise.all([
+                  supabase
+                    .from("ativos")
+                    .select("ticker, categoria, quantidade, preco_medio, preco_atual, dy")
+                    .eq("user_id", userId),
+                  supabase
+                    .from("metas")
+                    .select("nome, alvo, prazo, ordem")
+                    .eq("user_id", userId)
+                    .order("ordem", { ascending: true }),
+                  supabase
+                    .from("dividendos")
+                    .select("ticker, data, valor")
+                    .eq("user_id", userId)
+                    .gte("data", new Date().toISOString().slice(0, 10))
+                    .order("data", { ascending: true })
+                    .limit(20),
+                ]);
+
+                const ativos = ativosData.data ?? [];
+                const metas = metasData.data ?? [];
+                const dividendos = dividendosData.data ?? [];
+
+                if (ativos.length === 0) {
+                  return { alertas: ["Carteira vazia — registre aportes para receber alertas personalizados."], acoes: ["Comece cadastrando seus ativos na janela Carteira."] };
+                }
+
+                const totalPatrimonio = ativos.reduce((s, a) => s + Number(a.quantidade) * Number(a.preco_atual), 0);
+
+                const tickers = ativos.map(a => a.ticker.toUpperCase());
+                const [posicoes, macro] = await Promise.all([
+                  posicoesParaTickers(tickers),
+                  contextoMacro(),
+                ]);
+
+                let sinaisVenda = 0;
+                let ratingCD = 0;
+                const concentracaoAlta: string[] = [];
+
+                for (const a of ativos) {
+                  const ticker = a.ticker.toUpperCase();
+                  const pos = posicoes[ticker];
+                  if (!pos) continue;
+
+                  if (pos.sinal === "vender") {
+                    sinaisVenda++;
+                    alertas.push(`Sinal de venda no radar: ${ticker} — choque em andamento, fora da mesa de aportes.`);
+                    acoes.push(`Reavalie ${ticker}: considere reduzir ou zerar a posição.`);
+                  }
+
+                  const peso = totalPatrimonio > 0 ? (Number(a.quantidade) * Number(a.preco_atual) / totalPatrimonio) * 100 : 0;
+                  if (peso > 15) {
+                    concentracaoAlta.push(`${ticker} (${peso.toFixed(1)}% do patrimônio)`);
+                  }
+                }
+
+                if (concentracaoAlta.length > 0) {
+                  alertas.push(`Concentração excessiva em ${concentracaoAlta.length} ativo(s): ${concentracaoAlta.join(", ")}. Nenhuma posição deve ultrapassar ~10-15% do patrimônio.`);
+                  acoes.push("Rebalanceie a carteira para reduzir concentração e diversificar por classe/setor/moeda.");
+                }
+
+                for (const m of metas) {
+                  if (!m.prazo || !m.alvo) continue;
+                  const prazo = new Date(m.prazo);
+                  const hoje = new Date();
+                  const mesesRestantes = (prazo.getFullYear() - hoje.getFullYear()) * 12 + (prazo.getMonth() - hoje.getMonth());
+                  const progresso = totalPatrimonio / Number(m.alvo);
+
+                  if (mesesRestantes <= 6 && progresso < 0.8) {
+                    alertas.push(`Meta "${m.nome}" está em risco: faltam ${mesesRestantes} meses e você está em ${(progresso * 100).toFixed(0)}% do alvo.`);
+                    acoes.push(`Aumente aportes ou revise o prazo da meta "${m.nome}".`);
+                  }
+                }
+
+                if (dividendos.length > 0) {
+                  const proximoEx = dividendos[0];
+                  alertas.push(`Dividendos próximos: ${dividendos.length} pagamento(s) programado(s). Próximo: ${proximoEx.ticker} em ${new Date(proximoEx.data).toLocaleDateString("pt-BR")} — R$ ${Number(proximoEx.valor).toFixed(2)}.`);
+                  acoes.push("Aproveite o calendário de proventos para planejar reinvestimentos ou reserva de oportunidade.");
+                }
+
+                const selic = macro.selic;
+                if (selic !== null && selic > 0) {
+                  alertas.push(`Selic atual: ${selic.toFixed(1)}% a.a. — use como referência para comparar renda fixa e prêmio de risco da renda variável.`);
+                }
+
+                if (alertas.length === 0) {
+                  return { alertas: ["Nenhum alerta crítico no momento. Carteira saudável."], acoes: ["Continue monitorando; revise os alertas após mudanças de mercado ou aportes."] };
+                }
+
+                return { alertas, acoes };
+              } catch (e) {
+                return { alertas: [`Erro ao verificar alertas: ${e instanceof Error ? e.message : "desconhecido"}`], acoes: [] };
+              }
+            },
+          }),
 
         const mensagensAparadas = apararHistorico(messages);
         console.info(
