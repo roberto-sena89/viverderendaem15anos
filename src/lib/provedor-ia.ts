@@ -87,6 +87,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
       "google/gemini-3.5-flash",
       "minimax/minimax-m2.5",
       "z-ai/glm-5",
+      "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
     ],
     modelosGratuitos: ["deepseek/deepseek-v4-pro-0813-free", "qwen/qwen3.8-max-free"],
     urlChave: "https://www.tokenrouter.com/dashboard",

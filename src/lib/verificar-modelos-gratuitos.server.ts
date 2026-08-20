@@ -96,7 +96,6 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     variavelChave: "TOKEN_ROUTER_API_KEY",
     padroesGratuitos: [/-free$/i],
     exigeChave: true,
-    authHeader: "x-api-key",
   },
   {
     chave: "orcarouter",
