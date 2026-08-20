@@ -475,7 +475,7 @@ export function DialogoProvedorIA() {
                       Nenhum teste registrado ainda. Use “Testar conexão” para começar.
                     </p>
                   ) : (
-                    <ul className="border-border/60 max-h-40 space-y-1 overflow-y-auto rounded-lg border p-2">
+                    <ul className="border-border/60 max-h-40 min-w-0 space-y-1 overflow-y-auto overflow-x-hidden rounded-lg border p-2">
                       {historico.map((r) => (
                         <li
                           key={r.timestamp}
