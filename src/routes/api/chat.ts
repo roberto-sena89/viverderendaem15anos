@@ -2212,7 +2212,7 @@ export const Route = createFileRoute("/api/chat")({
             requestId = requestId ?? cab["x-request-id"] ?? cab["x-lovable-aig-run-id"];
 
             const detalhes = [
-              `provedor: ${nomeProvedor}`,
+              `provedor: ${fallbackIA.provedorUsado() || nomeProvedor}`,
               `modelo: ${modeloEscolhido}`,
               `status: ${status ?? "sem status"}`,
               requestId ? `request id: ${requestId}` : null,
