@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Landmark, Loader2, RefreshCcw, Wallet } from "lucide-react";
+import { ExternalLink, Landmark, Loader2, RefreshCcw, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,6 +15,83 @@ import { brl } from "@/lib/portfolio";
 import { usePosicoesMeuPluggy, useSincronizarMeuPluggy } from "@/lib/pluggy";
 
 const Loader = Loader2;
+
+/** Links oficiais do fluxo de configuração do Meu Pluggy + Ágora. */
+const URLS = {
+  agora: "https://agorainvestimentos.com.br",
+  meuPluggy: "https://meu.pluggy.ai",
+  dashboardPluggy: "https://dashboard.pluggy.ai",
+} as const;
+
+/** Link externo estilizado, abre em nova aba. */
+function LinkOficial({
+  href,
+  label,
+  descricao,
+}: {
+  href: string;
+  label: string;
+  descricao: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex flex-col gap-0.5 rounded-lg border border-border/60 bg-card/50 px-3 py-2 transition-colors hover:border-primary/40 hover:bg-accent/40"
+    >
+      <span className="flex items-center gap-1.5 text-xs font-semibold">
+        <ExternalLink className="size-3.5 shrink-0 text-primary" />
+        {label}
+      </span>
+      <span className="text-[11px] leading-tight text-muted-foreground">{descricao}</span>
+    </a>
+  );
+}
+
+/** Bloco de configuração com o passo a passo e os links oficiais. */
+function PassoAPassoConfiguracao() {
+  return (
+    <div className="space-y-2 rounded-xl border border-border/60 bg-muted/20 p-3.5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Como sincronizar com a Ágora Investimentos
+      </p>
+      <ol className="list-decimal space-y-1 pl-5 text-xs text-muted-foreground">
+        <li>
+          Conecte sua conta <span className="font-medium text-foreground">Ágora Investimentos</span>{" "}
+          no Meu Pluggy (Open Finance), autorizando o acesso às suas posições.
+        </li>
+        <li>
+          No Dashboard Pluggy, crie uma aplicação e copie o{" "}
+          <span className="font-medium text-foreground">Client ID</span> e o{" "}
+          <span className="font-medium text-foreground">Client Secret</span>.
+        </li>
+        <li>
+          Preencha as variáveis <code className="text-[10px]">PLUGGY_CLIENT_ID</code> e{" "}
+          <code className="text-[10px]">PLUGGY_CLIENT_SECRET</code> no ambiente do deploy.
+        </li>
+        <li>Volte aqui e clique em "Sincronizar carteira" para buscar as posições.</li>
+      </ol>
+      <div className="grid gap-2 pt-1 sm:grid-cols-3">
+        <LinkOficial
+          href={URLS.agora}
+          label="Ágora Investimentos"
+          descricao="Site oficial do Bradesco para investir"
+        />
+        <LinkOficial
+          href={URLS.meuPluggy}
+          label="Meu Pluggy"
+          descricao="Conecte sua conta Ágora e fique dono dos dados"
+        />
+        <LinkOficial
+          href={URLS.dashboardPluggy}
+          label="Dashboard Pluggy"
+          descricao="Pegue o Client ID e Client Secret da aplicação"
+        />
+      </div>
+    </div>
+  );
+}
 
 /** Botão + diálogo para sincronizar as posições com o Meu Pluggy (Ágora Investimentos). */
 export function DialogMeuPluggy() {
@@ -69,15 +146,42 @@ export function DialogMeuPluggy() {
                 : "Erro desconhecido"}
             </p>
             <p className="text-muted-foreground text-xs">
-              Verifique que configurou PLUGGY_CLIENT_ID e PLUGGY_CLIENT_SECRET e conectou suas
-              contas em meu.pluggy.ai.
+              Verifique que configurou{" "}
+              <code className="text-[10px]">PLUGGY_CLIENT_ID</code> e{" "}
+              <code className="text-[10px]">PLUGGY_CLIENT_SECRET</code> (disponíveis no{" "}
+              <a
+                href={URLS.dashboardPluggy}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary underline underline-offset-2"
+              >
+                Dashboard Pluggy
+              </a>
+              ) e conectou suas contas em{" "}
+              <a
+                href={URLS.meuPluggy}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary underline underline-offset-2"
+              >
+                meu.pluggy.ai
+              </a>
+              .
             </p>
           </div>
         ) : posicoes.length === 0 ? (
-          <p className="text-muted-foreground rounded-lg border border-dashed p-4 text-center text-sm">
-            Nenhuma posição encontrada. Conecte sua conta Ágora no{" "}
-            <span className="font-medium">meu.pluggy.ai</span> para sincronizar seus ativos.
-          </p>
+          <div className="space-y-2 rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+            Nenhuma posição encontrada. Conecte sua conta Ágora Investimentos no{" "}
+            <a
+              href={URLS.meuPluggy}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary underline underline-offset-2"
+            >
+              meu.pluggy.ai
+            </a>{" "}
+            para sincronizar seus ativos.
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-2.5 rounded-xl border border-border/60 bg-card/50 p-3.5">
@@ -135,6 +239,9 @@ export function DialogMeuPluggy() {
             </div>
           </>
         )}
+
+        {/* Passo a passo + links oficiais — sempre visível para configurar/sincronizar. */}
+        <PassoAPassoConfiguracao />
 
         <DialogFooter className="flex-wrap gap-2">
           <Button variant="outline" onClick={refetch} disabled={posicoesQuery.isLoading}>
