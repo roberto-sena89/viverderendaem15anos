@@ -625,21 +625,37 @@ export const Route = createFileRoute("/api/chat")({
           : provedorPadrao
             ? `${provedorPadrao.nome} (servidor)`
             : "";
-        const modeloChat = provedorExterno
-          ? createOpenAICompatible({
-              name: "provedor-usuario",
-              baseURL: iaBaseUrl!.replace(/\/$/, ""),
-              headers: { Authorization: `Bearer ${iaChave}` },
-            })(iaModelo!)
-          : createOpenAICompatible({
-              name: "provedor-env",
-              baseURL: baseUrlProvedorEnv(provedorPadrao!, process.env),
-              headers: provedorExternoViaBackend
-                ? chaveProvedorEnv
-                  ? { Authorization: `Bearer ${chaveProvedorEnv}` }
-                  : {}
-                : { Authorization: `Bearer ${process.env[provedorPadrao!.variavel]!.trim()}` },
-            })(modeloEscolhido);
+        // Cadeia de fallback: quando o provedor gratuito recusa a chamada (capacidade,
+        // cota ou rate limit), a requisição é reenviada ao próximo provedor configurado
+        // e, por último, ao Lovable AI — assim o usuário não recebe erro no chat.
+        const cabecalhosEnv: Record<string, string> = provedorExterno
+          ? { Authorization: `Bearer ${iaChave}` }
+          : provedorExternoViaBackend
+            ? chaveProvedorEnv
+              ? { Authorization: `Bearer ${chaveProvedorEnv}` }
+              : {}
+            : { Authorization: `Bearer ${process.env[provedorPadrao!.variavel]!.trim()}` };
+
+        const candidatosIA = montarCandidatosIA(
+          {
+            nome: nomeProvedor,
+            baseURL: (provedorExterno
+              ? iaBaseUrl!
+              : baseUrlProvedorEnv(provedorPadrao!, process.env)
+            ).replace(/\/$/, ""),
+            modelo: modeloEscolhido,
+            headers: cabecalhosEnv,
+          },
+          process.env,
+        );
+        const fallbackIA = criarFetchComFallbackIA(candidatosIA);
+
+        const modeloChat = createOpenAICompatible({
+          name: provedorExterno ? "provedor-usuario" : "provedor-env",
+          baseURL: candidatosIA[0]!.baseURL,
+          headers: cabecalhosEnv,
+          fetch: fallbackIA.fetch,
+        })(modeloEscolhido);
         const mercado = await import("@/lib/market.server");
         const erro = (e: unknown) => ({
           erro: e instanceof Error ? e.message : "Falha ao consultar a fonte de dados.",
