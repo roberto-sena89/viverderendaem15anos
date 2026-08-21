@@ -42,6 +42,7 @@ type ColunaId =
   | "variacaoDia"
   | "variacao"
   | "rentabilidade"
+  | "investido"
   | "saldo"
   | "participacao"
   | "ideal"
@@ -54,6 +55,7 @@ const PADRAO: Record<ColunaId, boolean> = {
   variacaoDia: true,
   variacao: true,
   rentabilidade: true,
+  investido: true,
   saldo: true,
   participacao: true,
   ideal: true,
@@ -703,6 +705,11 @@ export function CarteiraGrupos({
                             Rent. (R$)
                           </TableHead>
                         )}
+                        {colunas.investido && (
+                          <TableHead className={`w-[5.5rem] text-right sm:w-[7rem] ${colMd}`}>
+                            Valor investido
+                          </TableHead>
+                        )}
                         {colunas.saldo && (
                           <TableHead className="w-[5.5rem] text-right sm:w-[7rem]">Saldo</TableHead>
                         )}
@@ -846,6 +853,11 @@ export function CarteiraGrupos({
                             {colunas.rentabilidade && (
                               <TableCell className={`text-right ${colMd} ${cel}`}>
                                 <Variacao value={saldo - investido} suffix="" />
+                              </TableCell>
+                            )}
+                            {colunas.investido && (
+                              <TableCell className={`text-right tabular-nums ${colMd} ${cel}`}>
+                                {brl(investido, 2)}
                               </TableCell>
                             )}
                             {colunas.saldo && (
