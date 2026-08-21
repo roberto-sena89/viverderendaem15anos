@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { baseUrlProvedorEnv, PROVEDORES_ENV, provedorEnvAtivo } from "@/lib/provedores-env.server";
 import { validarBaseUrlProvedor } from "@/lib/url-provedor-ia";
+import { criarFetchComFallbackIA, montarCandidatosIA } from "@/lib/ia-fallback.server";
 
 import {
   brl,
