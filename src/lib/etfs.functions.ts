@@ -4,7 +4,7 @@ import type { PrecoInternacional } from "@/lib/etfs.server";
 
 /** Grade completa de ETFs (B3 + internacionais) com preço ao vivo e indicadores. */
 export const gradeEtfs = createServerFn({ method: "GET" })
-  .inputValidator((d: { forcar?: boolean } | undefined) => ({ forcar: d?.forcar === true }))
+  .validator((d: { forcar?: boolean } | undefined) => ({ forcar: d?.forcar === true }))
   .handler(async ({ data }): Promise<RespostaEtfs> => {
     const { gradeEtfsComCache } = await import("@/lib/etfs.server");
     return gradeEtfsComCache(data.forcar);
@@ -12,7 +12,7 @@ export const gradeEtfs = createServerFn({ method: "GET" })
 
 /** Cotação dos ETFs internacionais visíveis (lote limitado). */
 export const precosEtfsInternacionais = createServerFn({ method: "GET" })
-  .inputValidator((d: { tickers?: unknown }) => ({
+  .validator((d: { tickers?: unknown }) => ({
     tickers: Array.isArray(d?.tickers) ? d.tickers.map(String).slice(0, 40) : [],
   }))
   .handler(async ({ data }): Promise<PrecoInternacional[]> => {
@@ -23,7 +23,7 @@ export const precosEtfsInternacionais = createServerFn({ method: "GET" })
 
 /** Cotações ao vivo (BRAPI) dos ETFs visíveis na grade. */
 export const precosEtfsBrapi = createServerFn({ method: "GET" })
-  .inputValidator((d: { tickers?: unknown }) => ({
+  .validator((d: { tickers?: unknown }) => ({
     tickers: Array.isArray(d?.tickers)
       ? d.tickers
           .map((t) => String(t).trim().toUpperCase())

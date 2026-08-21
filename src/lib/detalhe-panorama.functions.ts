@@ -25,7 +25,7 @@ export type DetalhePanorama = {
 
 /** Histórico semanal de 5 anos + performance por janela, para o modal de detalhe. */
 export const detalhePanorama = createServerFn({ method: "GET" })
-  .inputValidator((d: { simbolo: string }) => ({ simbolo: String(d.simbolo).slice(0, 24) }))
+  .validator((d: { simbolo: string }) => ({ simbolo: String(d.simbolo).slice(0, 24) }))
   .handler(async ({ data }): Promise<DetalhePanorama> => {
     const { montarDetalhe } = await import("@/lib/detalhe-panorama.server");
     return montarDetalhe(data.simbolo);

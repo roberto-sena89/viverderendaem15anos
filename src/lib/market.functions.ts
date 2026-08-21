@@ -53,7 +53,7 @@ export const fitaMercado = createServerFn({ method: "GET" }).handler(
 );
 
 export const rankingsAtivos = createServerFn({ method: "GET" })
-  .inputValidator((d: { tipo?: "acoes" | "fiis" | "bdrs" }) => ({
+  .validator((d: { tipo?: "acoes" | "fiis" | "bdrs" }) => ({
     tipo: d?.tipo ?? "acoes",
   }))
   .handler(async ({ data }) => {
@@ -102,14 +102,14 @@ export const painelB3 = createServerFn({ method: "GET" }).handler(async (): Prom
 });
 
 export const cotacaoAtivo = createServerFn({ method: "GET" })
-  .inputValidator((d: { simbolo: string }) => ({ simbolo: String(d.simbolo).slice(0, 80) }))
+  .validator((d: { simbolo: string }) => ({ simbolo: String(d.simbolo).slice(0, 80) }))
   .handler(async ({ data }) => {
     const mercado = await import("@/lib/market.server");
     return mercado.buscarCotacao(data.simbolo);
   });
 
 export const historicoAtivo = createServerFn({ method: "GET" })
-  .inputValidator((d: { simbolo: string; periodo?: "1y" | "5y" | "10y" }) => ({
+  .validator((d: { simbolo: string; periodo?: "1y" | "5y" | "10y" }) => ({
     simbolo: String(d.simbolo).slice(0, 80),
     periodo: d.periodo ?? "10y",
   }))
@@ -169,7 +169,7 @@ export const sincronizarPrecos = createServerFn({ method: "POST" })
   });
 
 export const panoramaMercado = createServerFn({ method: "GET" })
-  .inputValidator((d?: { periodo?: string }) => ({
+  .validator((d?: { periodo?: string }) => ({
     periodo: (["1D", "7D", "30D", "6M", "1A", "5A"].includes(String(d?.periodo))
       ? String(d?.periodo)
       : "1D") as "1D" | "7D" | "30D" | "6M" | "1A" | "5A",
@@ -222,7 +222,7 @@ const ETFS_GLOBAIS_B3: Array<{ ticker: string; nome: string }> = [
  * B3 / exterior (Yahoo Finance), filtrados pela categoria escolhida.
  */
 export const procurarAtivos = createServerFn({ method: "GET" })
-  .inputValidator((d: { termo: string; categoria?: string }) => ({
+  .validator((d: { termo: string; categoria?: string }) => ({
     termo: String(d.termo ?? "")
       .trim()
       .slice(0, 40),

@@ -64,7 +64,7 @@ export interface DadosRelatorioAuditoria {
 
 export const gerarRelatorioAuditoria = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((value: unknown) => {
+  .validator((value: unknown) => {
     const schema = z.object({
       perfil: z.enum(["conservador", "moderado", "agressivo"]).optional(),
     });

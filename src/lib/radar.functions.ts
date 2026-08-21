@@ -2,7 +2,7 @@
  * Radar — server functions (TanStack Start). Camada fina que combina as
  * grades vivas, posições históricas, série para gráfico, notícias de alto
  * impacto, contexto macro e a IA. Segue o padrão do app: createServerFn +
- * inputValidator + import lazy.
+ * validator + import lazy.
  */
 
 import { createServerFn } from "@tanstack/react-start";
@@ -106,7 +106,7 @@ export interface RadarDetalhe {
 
 /** Visão completa do radar para uma categoria: linhas + sinais + notícias. */
 export const radarVisao = createServerFn({ method: "GET" })
-  .inputValidator((d: { categoria?: unknown } | undefined) => ({
+  .validator((d: { categoria?: unknown } | undefined) => ({
     categoria: d?.categoria === "fii" ? ("fii" as const) : ("acao" as const),
   }))
   .handler(async ({ data }: { data: { categoria: "acao" | "fii" } }): Promise<RadarVisao> => {
@@ -249,7 +249,7 @@ export const radarVisao = createServerFn({ method: "GET" })
 
 /** Posições históricas dos tickers pedidos — busca só o que falta no cache. */
 export const radarPosicoes = createServerFn({ method: "GET" })
-  .inputValidator((d: { tickers?: unknown } | undefined) => ({
+  .validator((d: { tickers?: unknown } | undefined) => ({
     tickers: Array.isArray(d?.tickers)
       ? [...new Set(d.tickers.map((t) => String(t).trim().toUpperCase()))].slice(0, 120)
       : [],
@@ -273,7 +273,7 @@ export const radarPosicoes = createServerFn({ method: "GET" })
 /** Busca posições históricas em lotes maiores (usado para exportação). */
 export const radarPosicoesLote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { tickers?: unknown } | undefined) => ({
+  .validator((d: { tickers?: unknown } | undefined) => ({
     tickers: Array.isArray(d?.tickers)
       ? [...new Set(d.tickers.map((t) => String(t).trim().toUpperCase()))].slice(0, 1000)
       : [],
@@ -293,7 +293,7 @@ export const radarPosicoesLote = createServerFn({ method: "POST" })
 
 /** Série semanal (desde o início) para o gráfico de um ativo. */
 export const radarSerie = createServerFn({ method: "GET" })
-  .inputValidator((d: { ticker?: unknown } | undefined) => ({
+  .validator((d: { ticker?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
   }))
   .handler(async ({ data }): Promise<PosicaoSerie | null> => {
@@ -394,7 +394,7 @@ function construirFundamentos(
 
 /** Ficha completa de um ativo: fundamentos + série + posição + notícias. */
 export const radarDetalhe = createServerFn({ method: "GET" })
-  .inputValidator((d: { ticker?: unknown } | undefined) => ({
+  .validator((d: { ticker?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
   }))
   .handler(async ({ data }): Promise<RadarDetalhe | null> => {
@@ -452,7 +452,7 @@ export interface ResultadoAnaliseIA {
  *  Autenticado: geração de análise consome cota paga de LLM. */
 export const radarAnaliseIA = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { ticker?: unknown; forcar?: unknown } | undefined) => ({
+  .validator((d: { ticker?: unknown; forcar?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
     forcar: d?.forcar === true,
   }))
@@ -505,7 +505,7 @@ export const radarAnaliseIA = createServerFn({ method: "GET" })
 
 /** Histórico do Gestor IA para um ativo (da mais recente para a mais antiga). */
 export const radarHistoricoIA = createServerFn({ method: "GET" })
-  .inputValidator((d: { ticker?: unknown } | undefined) => ({
+  .validator((d: { ticker?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
   }))
   .handler(async ({ data }): Promise<AnaliseIA[]> => {
@@ -518,7 +518,7 @@ export const radarHistoricoIA = createServerFn({ method: "GET" })
  *  Autenticado + limitado: cada chamada pode disparar até 120 fetches ao Yahoo. */
 export const radarCompletarCache = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { categoria?: unknown; limite?: unknown } | undefined) => ({
+  .validator((d: { categoria?: unknown; limite?: unknown } | undefined) => ({
     categoria: d?.categoria === "fii" ? ("fii" as const) : ("acao" as const),
     limite: Number.isFinite(Number(d?.limite))
       ? Math.min(300, Math.max(1, Math.floor(Number(d?.limite))))
@@ -542,7 +542,7 @@ export const radarCompletarCache = createServerFn({ method: "POST" })
 
 /** Backtest do sinal do radar para um ativo (+ buy-and-hold do Ibovespa via BOVA11). */
 export const radarBacktest = createServerFn({ method: "GET" })
-  .inputValidator((d: { ticker?: unknown } | undefined) => ({
+  .validator((d: { ticker?: unknown } | undefined) => ({
     ticker: typeof d?.ticker === "string" ? d.ticker.trim().toUpperCase().slice(0, 12) : "",
   }))
   .handler(async ({ data }): Promise<RespostaBacktest | null> => {
@@ -557,7 +557,7 @@ export const radarBacktest = createServerFn({ method: "GET" })
  *  quem está sem fundamento ou com mais de 7 dias. */
 export const cvmCompletarCache = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { limite?: unknown } | undefined) => ({
+  .validator((d: { limite?: unknown } | undefined) => ({
     limite: Number.isFinite(Number(d?.limite))
       ? Math.min(60, Math.max(1, Math.floor(Number(d?.limite))))
       : 30,

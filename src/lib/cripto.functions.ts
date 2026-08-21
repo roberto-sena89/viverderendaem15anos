@@ -4,7 +4,7 @@ import type { PontoHistorico } from "@/lib/cripto.server";
 
 /** Grade completa de criptomoedas (preço USD/BRL, variações e capitalização). */
 export const gradeCripto = createServerFn({ method: "GET" })
-  .inputValidator((d: { forcar?: boolean } | undefined) => ({ forcar: d?.forcar === true }))
+  .validator((d: { forcar?: boolean } | undefined) => ({ forcar: d?.forcar === true }))
   .handler(async ({ data }): Promise<RespostaCripto> => {
     const { gradeCriptoComCache } = await import("@/lib/cripto.server");
     return gradeCriptoComCache(data.forcar);
@@ -12,7 +12,7 @@ export const gradeCripto = createServerFn({ method: "GET" })
 
 /** Série histórica de uma criptomoeda para o modal de detalhes. */
 export const historicoMoeda = createServerFn({ method: "GET" })
-  .inputValidator((d: { id?: unknown; dias?: unknown }) => ({
+  .validator((d: { id?: unknown; dias?: unknown }) => ({
     id: String(d?.id ?? "")
       .trim()
       .toLowerCase()

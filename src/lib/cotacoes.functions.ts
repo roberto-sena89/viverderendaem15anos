@@ -12,7 +12,7 @@ export interface RespostaCotacoes {
 /** Cotações em lote dos ativos da carteira (ações, FIIs, ETFs, exterior, Tesouro). */
 export const cotacoesCarteira = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { itens: { ticker: string; categoria: string }[] }) => ({
+  .validator((d: { itens: { ticker: string; categoria: string }[] }) => ({
     itens: (Array.isArray(d?.itens) ? d.itens : [])
       .slice(0, 200)
       .map((i) => ({

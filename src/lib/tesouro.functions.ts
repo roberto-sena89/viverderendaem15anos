@@ -5,7 +5,7 @@ export type { LinhaTesouro, RespostaTesouro };
 
 /** Grade completa dos títulos públicos ofertados (cache compartilhado). */
 export const gradeTesouro = createServerFn({ method: "GET" })
-  .inputValidator((d?: { forcar?: boolean }) => ({ forcar: d?.forcar === true }))
+  .validator((d?: { forcar?: boolean }) => ({ forcar: d?.forcar === true }))
   .handler(async ({ data }): Promise<RespostaTesouro> => {
     const { buscarTesouro } = await import("@/lib/tesouro-grade.server");
     return buscarTesouro(data.forcar);

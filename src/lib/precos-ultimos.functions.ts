@@ -16,7 +16,7 @@ const normalizarLista = (d: { tickers?: unknown }) => ({
 /** Último preço válido salvo no banco para cada ticker pedido. */
 export const lerUltimosPrecos = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(normalizarLista)
+  .validator(normalizarLista)
   .handler(async ({ data }): Promise<PrecoPersistido[]> => {
     if (!data.tickers.length) return [];
     const { lerPrecosPersistidos } = await import("@/lib/precos-ultimos.server");
@@ -33,7 +33,7 @@ export const lerUltimosPrecos = createServerFn({ method: "GET" })
  */
 export const sincronizarUltimosPrecos = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(normalizarLista)
+  .validator(normalizarLista)
   .handler(async ({ data }) => {
     if (!data.tickers.length) return { gravados: 0 };
     const { sincronizarPrecosDeFonte } = await import("@/lib/precos-ultimos.server");

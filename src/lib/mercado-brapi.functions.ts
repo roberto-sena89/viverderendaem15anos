@@ -5,7 +5,7 @@ export type { CotacaoBrapi };
 
 /** Cotação em tempo real de um ativo da B3 via BRAPI (token fica no servidor). */
 export const cotacaoBrapi = createServerFn({ method: "GET" })
-  .inputValidator((d: { symbol?: unknown }) => ({
+  .validator((d: { symbol?: unknown }) => ({
     symbol: String(d?.symbol ?? "")
       .trim()
       .toUpperCase()

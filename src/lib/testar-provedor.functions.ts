@@ -22,7 +22,7 @@ export interface ResultadoTesteProvedor {
 /** Valida a chave do provedor e lista os modelos disponíveis (endpoint /models). */
 export const testarProvedorIA = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => entrada.parse(data))
+  .validator((data: unknown) => entrada.parse(data))
   .handler(async ({ data }): Promise<ResultadoTesteProvedor> => {
     const validacao = validarBaseUrlProvedor(data.baseUrl);
     if (!validacao.ok) {

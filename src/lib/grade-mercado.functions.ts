@@ -16,7 +16,7 @@ const CATEGORIAS: CategoriaMercado[] = [
 
 /** Cotações em lote de uma categoria de mercado (servidas pelo cache compartilhado). */
 export const gradeMercado = createServerFn({ method: "GET" })
-  .inputValidator((d: { categoria: string; forcar?: boolean }) => {
+  .validator((d: { categoria: string; forcar?: boolean }) => {
     const c = String(d?.categoria ?? "acoes") as CategoriaMercado;
     return {
       categoria: CATEGORIAS.includes(c) ? c : ("acoes" as CategoriaMercado),
