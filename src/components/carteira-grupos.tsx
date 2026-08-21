@@ -111,6 +111,29 @@ function variacaoAtivo(a: Ativo): number {
   return ((atual - medio) / medio) * 100;
 }
 
+/** Ticker compacto da B3 (ex.: PETR4, HGLG11, SELIC11) — nunca é título do Tesouro. */
+const pareceTickerB3 = (t: string) => /^[A-Z0-9]{4,8}$/.test(t);
+
+/** Categorias que podem representar títulos públicos do Tesouro. */
+const CATEGORIAS_TESOURO = ["Tesouro Direto", "Tesouro", "Renda Fixa", "Fundos de Investimentos"];
+
+/**
+ * Verdadeiro quando o ativo parece ser um título público do Tesouro.
+ * Replica a regra de roteamento do servidor (src/lib/tesouro.server.ts): o
+ * texto do ticker/nome/categoria decide, evitando falsos positivos como
+ * "SELIC11" (ETF) que casariam apenas com o ticker B3.
+ */
+function ehTituloTesouro(ativo: Ativo): boolean {
+  const texto = `${ativo.ticker} ${ativo.nome} ${ativo.categoria}`.toUpperCase();
+  const pareceTesouro =
+    /TESOURO|(?:SELIC|IPCA|PREFIXADO?|NTN|LTN|LFT)\b/i.test(texto);
+  return (
+    CATEGORIAS_TESOURO.includes(ativo.categoria) ||
+    pareceTesouro ||
+    (!pareceTickerB3(ativo.ticker) && /TESOURO|IPCA|PREFIXADO?|NTN|LTN|LFT|SELIC/i.test(texto))
+  );
+}
+
 /**
  * Exibe um valor com sinal explícito (+/-) e arredondamento consistente (2 casas).
  * O sinal é definido a partir do valor JÁ arredondado, evitando "-0,00".
@@ -154,49 +177,74 @@ export function CarteiraGrupos({
   /** O servidor busca e grava o último preço destes tickers (máx. 1x/min). */
   usePersistirPrecos(tickers);
 
+  /** Tickers que representam títulos do Tesouro Direto (prioridade do provedor Tesouro). */
+  const tickersTesouro = useMemo(
+    () => new Set(ativosBase.filter(ehTituloTesouro).map((a) => chaveTicker(a.ticker))),
+    [ativosBase],
+  );
+
+  /** true quando o ticker é um título do Tesouro Direto. */
+  const ehTesouro = useCallback(
+    (ticker: string) => tickersTesouro.has(chaveTicker(ticker)),
+    [tickersTesouro],
+  );
+
   /** Preços definidos manualmente pelo usuário (têm prioridade sobre as fontes). */
   const [manuais, setManuais] = useState<Record<string, number>>({});
   /** Ticker cuja célula "P. atual" está em edição. */
   const [editando, setEditando] = useState<string | null>(null);
   const salvarAtivo = useSalvarAtivo();
 
-  /** Variação do dia: prioriza o provedor em tempo real, com fallback na BRAPI. */
+  /** Variação do dia: para Tesouro, usa sempre o provedor Tesouro; demais priorizam BRAPI. */
   const variacaoDiaDe = useCallback(
-    (ticker: string): number | null =>
-      cotacoes.get(chaveTicker(ticker))?.variacaoPercent ??
-      brapi.get(chaveBrapi(ticker))?.variacaoPercent ??
-      salvos.get(chavePreco(ticker))?.variacaoPercent ??
-      null,
-    [cotacoes, brapi, salvos],
+    (ticker: string): number | null => {
+      const tesouro = ehTesouro(ticker);
+      const c = cotacoes.get(chaveTicker(ticker))?.variacaoPercent ?? null;
+      const b = brapi.get(chaveBrapi(ticker))?.variacaoPercent ?? null;
+      const s = salvos.get(chavePreco(ticker))?.variacaoPercent ?? null;
+      // Tesouro: o provedor oficial (Tesouro Transparente) é a única fonte válida;
+      // nunca usa a variação da BRAPI, que não cobre títulos públicos corretamente.
+      return tesouro ? (c ?? s) : c ?? b ?? s;
+    },
+    [ehTesouro, cotacoes, brapi, salvos],
   );
 
   /**
-   * Preço atual do ativo: valor definido manualmente vem primeiro; depois BRAPI
-   * (tempo real no pregão, último preço antes do fechamento fora dele); se ela
-   * não tiver o ativo, a cotação da aba "Cotações"; e, por fim, o último preço
-   * válido salvo no banco.
+   * Preço atual do ativo: valor manual vem primeiro. Para TÍTULOS DO TESOURO,
+   * o provedor oficial (Tesouro Transparente via "Cotações") é SEMPRE a fonte
+   * da verdade — vem antes da BRAPI e dos salvos, porque a BRAPI não tem (ou
+   * resolve errado) o preço unitário de um título público. Para os demais
+   * ativos, mantém a ordem: BRAPI (tempo real) → Cotações → último salvo.
    */
   const precoDe = useCallback(
-    (ticker: string) =>
-      manuais[chavePreco(ticker)] ??
-      brapi.get(chaveBrapi(ticker))?.preco ??
-      cotacoes.get(chaveTicker(ticker))?.preco ??
-      salvos.get(chavePreco(ticker))?.preco ??
-      null,
-    [manuais, brapi, cotacoes, salvos],
+    (ticker: string) => {
+      const manual = manuais[chavePreco(ticker)];
+      if (manual !== undefined) return manual;
+      const c = cotacoes.get(chaveTicker(ticker))?.preco ?? null;
+      const b = brapi.get(chaveBrapi(ticker))?.preco ?? null;
+      const s = salvos.get(chavePreco(ticker))?.preco ?? null;
+      return ehTesouro(ticker) ? (c ?? s ?? b) : b ?? c ?? s;
+    },
+    [manuais, ehTesouro, cotacoes, brapi, salvos],
   );
 
   /** Origem do preço exibido, usada no tooltip da coluna "P. atual". */
   const fonteDe = (ticker: string) => {
     if (manuais[chavePreco(ticker)] !== undefined)
       return "Preço informado manualmente · clique duas vezes para editar";
+    const tesouro = ehTesouro(ticker);
+    // Para Tesouro, o provedor oficial é quem deve aparecer no tooltip.
+    const c = cotacoes.get(chaveTicker(ticker));
+    if (c && (tesouro || !brapi.get(chaveBrapi(ticker)))) {
+      const hora = horaCotacao(c.atualizadoEm);
+      return `Cotações: ${c.fonte}${hora ? ` · ${hora}` : ""}${c.erro ? ` · ${c.erro}` : ""}`;
+    }
     const b = brapi.get(chaveBrapi(ticker));
-    if (b) {
+    if (b && !tesouro) {
       const hora = horaCotacao(b.atualizadoEm ?? undefined);
       const rotulo = pregaoAberto ? "BRAPI · tempo real" : "BRAPI · fechamento do último pregão";
       return hora ? `${rotulo} · ${hora}` : rotulo;
     }
-    const c = cotacoes.get(chaveTicker(ticker));
     if (c) {
       const hora = horaCotacao(c.atualizadoEm);
       return `Cotações: ${c.fonte}${hora ? ` · ${hora}` : ""}${c.erro ? ` · ${c.erro}` : ""}`;
