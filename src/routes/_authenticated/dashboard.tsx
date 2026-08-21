@@ -19,6 +19,7 @@ import { AppShell } from "@/components/app-shell";
 import { StatusCotacoes } from "@/components/status-cotacoes";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
+import { DialogMeuPluggy } from "@/components/dialog-meu-pluggy";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { EstadoVazio } from "@/components/estado-vazio";
 import { PainelAnaliseRisco } from "@/components/painel-analise-risco";
@@ -569,6 +570,7 @@ function Dashboard() {
               <span className="hidden sm:inline">{categoriasComAtivos.length} classes · </span>
               {brl(resumo.totalAtual, 2)}
             </p>
+            <DialogMeuPluggy />
             <BotaoExportarCarteira ativos={ativos} dividendos={proventos} />
           </div>
         </header>

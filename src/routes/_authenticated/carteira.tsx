@@ -6,6 +6,7 @@ import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
 import { StatusCotacoes } from "@/components/status-cotacoes";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
+import { DialogMeuPluggy } from "@/components/dialog-meu-pluggy";
 
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
@@ -131,14 +132,17 @@ function CarteiraPage() {
               );
             })}
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="w-full shrink-0 gap-1.5 text-xs font-semibold sm:w-auto"
-          onClick={() => abrir(null)}
-        >
-          <Plus className="size-4" /> Novo ativo
-        </Button>
+        <div className="flex w-full shrink-0 gap-1.5">
+          <DialogMeuPluggy />
+          <Button
+            size="sm"
+            variant="ghost"
+            className="w-full shrink-0 gap-1.5 text-xs font-semibold sm:w-auto"
+            onClick={() => abrir(null)}
+          >
+            <Plus className="size-4" /> Novo ativo
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
