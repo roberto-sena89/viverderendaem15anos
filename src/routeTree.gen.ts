@@ -51,6 +51,7 @@ import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/ap
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
 import { Route as ApiPublicHooksConhecimentoRouteImport } from './routes/api/public/hooks/conhecimento'
 import { Route as ApiPublicHooksObservadorMercadoRouteImport } from './routes/api/public/hooks/observador-mercado'
+import { Route as ApiPublicHooksPluggyWebhookRouteImport } from './routes/api/public/hooks/pluggy-webhook'
 import { Route as ApiPublicHooksVerificarModelosGratuitosRouteImport } from './routes/api/public/hooks/verificar-modelos-gratuitos'
 import { Route as ApiPublicStreamCotacoesRouteImport } from './routes/api/public/stream/cotacoes'
 
@@ -277,6 +278,11 @@ const ApiPublicHooksObservadorMercadoRoute =
     path: '/api/public/hooks/observador-mercado',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksPluggyWebhookRoute = ApiPublicHooksPluggyWebhookRouteImport.update({
+  id: '/api/public/hooks/pluggy-webhook',
+  path: '/api/public/hooks/pluggy-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksVerificarModelosGratuitosRoute =
   ApiPublicHooksVerificarModelosGratuitosRouteImport.update({
     id: '/api/public/hooks/verificar-modelos-gratuitos',
@@ -331,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/hooks/conhecimento': typeof ApiPublicHooksConhecimentoRoute
   '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
+  '/api/public/hooks/pluggy-webhook': typeof ApiPublicHooksPluggyWebhookRoute
   '/api/public/hooks/verificar-modelos-gratuitos': typeof ApiPublicHooksVerificarModelosGratuitosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
@@ -376,6 +383,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/hooks/conhecimento': typeof ApiPublicHooksConhecimentoRoute
   '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
+  '/api/public/hooks/pluggy-webhook': typeof ApiPublicHooksPluggyWebhookRoute
   '/api/public/hooks/verificar-modelos-gratuitos': typeof ApiPublicHooksVerificarModelosGratuitosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
@@ -423,6 +431,7 @@ export interface FileRoutesById {
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/hooks/conhecimento': typeof ApiPublicHooksConhecimentoRoute
   '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
+  '/api/public/hooks/pluggy-webhook': typeof ApiPublicHooksPluggyWebhookRoute
   '/api/public/hooks/verificar-modelos-gratuitos': typeof ApiPublicHooksVerificarModelosGratuitosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
@@ -470,6 +479,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/hooks/conhecimento'
     | '/api/public/hooks/observador-mercado'
+    | '/api/public/hooks/pluggy-webhook'
     | '/api/public/hooks/verificar-modelos-gratuitos'
     | '/api/public/stream/cotacoes'
   fileRoutesByTo: FileRoutesByTo
@@ -515,6 +525,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/hooks/conhecimento'
     | '/api/public/hooks/observador-mercado'
+    | '/api/public/hooks/pluggy-webhook'
     | '/api/public/hooks/verificar-modelos-gratuitos'
     | '/api/public/stream/cotacoes'
   id:
@@ -561,6 +572,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/hooks/conhecimento'
     | '/api/public/hooks/observador-mercado'
+    | '/api/public/hooks/pluggy-webhook'
     | '/api/public/hooks/verificar-modelos-gratuitos'
     | '/api/public/stream/cotacoes'
   fileRoutesById: FileRoutesById
@@ -594,6 +606,7 @@ export interface RootRouteChildren {
   ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
   ApiPublicHooksConhecimentoRoute: typeof ApiPublicHooksConhecimentoRoute
   ApiPublicHooksObservadorMercadoRoute: typeof ApiPublicHooksObservadorMercadoRoute
+  ApiPublicHooksPluggyWebhookRoute: typeof ApiPublicHooksPluggyWebhookRoute
   ApiPublicHooksVerificarModelosGratuitosRoute: typeof ApiPublicHooksVerificarModelosGratuitosRoute
   ApiPublicStreamCotacoesRoute: typeof ApiPublicStreamCotacoesRoute
 }
@@ -894,6 +907,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksObservadorMercadoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/pluggy-webhook': {
+      id: '/api/public/hooks/pluggy-webhook'
+      path: '/api/public/hooks/pluggy-webhook'
+      fullPath: '/api/public/hooks/pluggy-webhook'
+      preLoaderRoute: typeof ApiPublicHooksPluggyWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/verificar-modelos-gratuitos': {
       id: '/api/public/hooks/verificar-modelos-gratuitos'
       path: '/api/public/hooks/verificar-modelos-gratuitos'
@@ -979,6 +999,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
   ApiPublicHooksConhecimentoRoute: ApiPublicHooksConhecimentoRoute,
   ApiPublicHooksObservadorMercadoRoute: ApiPublicHooksObservadorMercadoRoute,
+  ApiPublicHooksPluggyWebhookRoute: ApiPublicHooksPluggyWebhookRoute,
   ApiPublicHooksVerificarModelosGratuitosRoute:
     ApiPublicHooksVerificarModelosGratuitosRoute,
   ApiPublicStreamCotacoesRoute: ApiPublicStreamCotacoesRoute,

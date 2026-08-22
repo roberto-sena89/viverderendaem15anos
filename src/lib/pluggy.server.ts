@@ -204,6 +204,24 @@ export async function listarInvestimentosPluggy(itemId: string): Promise<Investm
   return todos;
 }
 
+/** Detalhe de um item (conexão) — usado pelos webhooks (GET /items/{id}). */
+export interface ItemDetalhePluggy {
+  id: string;
+  clientId: string | null;
+  clientUserId: string | null;
+  status: string | null;
+  connector: { id: number; name: string } | null;
+  webhookUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  lastUpdatedAt: string | null;
+}
+
+/** Busca as informações mais recentes de um item pelo id (recomendado nos webhooks). */
+export async function obterItemPluggy(itemId: string): Promise<ItemDetalhePluggy> {
+  return pluggyGet<ItemDetalhePluggy>(`/items/${encodeURIComponent(itemId)}`);
+}
+
 export interface PosicaoPluggy {
   id: string;
   itemId: string;
