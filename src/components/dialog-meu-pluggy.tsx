@@ -13,6 +13,7 @@ import {
 import { useAtivos } from "@/lib/data";
 import { brl } from "@/lib/portfolio";
 import { usePosicoesMeuPluggy, useSincronizarMeuPluggy } from "@/lib/pluggy";
+import { BotaoConectarPluggy } from "@/components/pluggy-connect-widget";
 
 const Loader = Loader2;
 
@@ -244,6 +245,10 @@ export function DialogMeuPluggy() {
         <PassoAPassoConfiguracao />
 
         <DialogFooter className="flex-wrap gap-2">
+          <BotaoConectarPluggy
+            rotulo="Conectar instituição"
+            onConectado={() => void posicoesQuery.refetch()}
+          />
           <Button variant="outline" onClick={refetch} disabled={posicoesQuery.isLoading}>
             <RefreshCcw className="size-4" /> Atualizar
           </Button>

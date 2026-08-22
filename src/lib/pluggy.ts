@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
+  gerarConnectTokenMeuPluggy,
   listarPosicoesMeuPluggy,
   sincronizarAtivosMeuPluggy,
   type PosicaoPluggy,
@@ -18,6 +19,22 @@ export function usePosicoesMeuPluggy() {
       return (res.posicoes ?? []) as PosicaoPluggy[];
     },
     retry: false,
+  });
+}
+
+/**
+ * Gera um Connect Token (curto, ~30 min) para embutir o widget Pluggy Connect
+ * no fluxo de consentimento Open Finance. Retorna por ref; o componente usa o
+ * valor para abrir o widget.
+ */
+export function useGerarConnectTokenMeuPluggy() {
+  const gerar = useServerFn(gerarConnectTokenMeuPluggy);
+  return useMutation({
+    mutationFn: async () => {
+      const res = await gerar();
+      if (!res.ok) throw new Error(res.mensagem ?? "Falha ao gerar o Connect Token.");
+      return res.accessToken as string;
+    },
   });
 }
 

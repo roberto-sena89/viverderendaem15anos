@@ -24,6 +24,26 @@ export const listarPosicoesMeuPluggy = createServerFn({ method: "GET" })
     },
   );
 
+/**
+ * Gera um connect token para o widget Pluggy Connect (fluxo de consentimento
+ * Open Finance). Protegido por autenticação; o `clientUserId` é o id do usuário
+ * logado, vinculando cada item criado no widget à conta dele.
+ */
+export const gerarConnectTokenMeuPluggy = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(
+    async ({ context }): Promise<{ ok: boolean; accessToken?: string; mensagem?: string }> => {
+      const { criarConnectToken } = await import("@/lib/pluggy.server");
+      try {
+        const accessToken = await criarConnectToken(context.userId);
+        return { ok: true, accessToken };
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Falha ao gerar o Connect Token.";
+        return { ok: false, mensagem: msg };
+      }
+    },
+  );
+
 /** Sincroniza as posições do Meu Pluggy com a tabela `ativos` do usuário. */
 export const sincronizarAtivosMeuPluggy = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

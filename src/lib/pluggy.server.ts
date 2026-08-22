@@ -110,6 +110,44 @@ async function pluggyGet<T>(caminho: string): Promise<T> {
   }
   return (await res.json()) as T;
 }
+
+async function pluggyPost<T>(caminho: string, corpo: unknown): Promise<T> {
+  const apiKey = await obterApiKey();
+  const res = await fetch(`${API_BASE}${caminho}`, {
+    method: "POST",
+    headers: { "X-API-KEY": apiKey, "Content-Type": "application/json" },
+    body: JSON.stringify(corpo),
+  });
+
+  if (res.status === 401 || res.status === 403) {
+    cacheApiKey = null;
+    throw new Error("[Pluggy] Acesso negado. Reautorize a conexão no Meu Pluggy.");
+  }
+  if (!res.ok) {
+    throw new Error(`[Pluggy] Falha na requisição ${caminho} (HTTP ${res.status}).`);
+  }
+  return (await res.json()) as T;
+}
+
+/**
+ * Gera um connect token para embutir o widget Pluggy Connect (fluxo de
+ * consentimento Open Finance). O connectToken é curto (30 min), por isso é
+ * gerado aqui no servidor, sob demanda, e nunca é armazenado.
+ *
+ * - `clientUserId`: vincula cada item criado no widget ao usuário autenticado.
+ * - `avoidDuplicates`: evita criar um novo item se já existir conexão com as
+ *   mesmas credenciais.
+ */
+export async function criarConnectToken(clientUserId: string): Promise<string> {
+  const res = await pluggyPost<{ accessToken: string }>("/connect_token", {
+    options: {
+      clientUserId,
+      avoidDuplicates: true,
+    },
+  });
+  return res.accessToken;
+}
+
 /* ------------------------------------------------------------------ *
  * Tipos de investimento Open Finance → categorias do app
  * ------------------------------------------------------------------ */
