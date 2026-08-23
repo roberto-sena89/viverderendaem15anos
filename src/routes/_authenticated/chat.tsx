@@ -28,6 +28,7 @@ import {
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
+import { SkeletonAnalisando, SkeletonHistorico } from "@/components/ai-elements/skeleton-gestor-ia";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -245,7 +246,16 @@ function ChatPage() {
       title="Gestor IA"
       description="Seu consultor PRO com auditoria de carteira, rebalanceamento, metas, notícias e agenda econômica."
     >
-      <div className="flex h-[calc(100dvh-var(--altura-cabecalho-app,0px)-3rem)] min-h-0 flex-col gap-2.5 sm:h-[calc(100dvh-var(--altura-cabecalho-app,0px)-4rem)]">
+      <a
+        href="#conteudo-gestor"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      >
+        Pular para conversa
+      </a>
+      <div
+        id="conteudo-gestor"
+        className="flex h-[calc(100dvh-var(--altura-cabecalho-app,0px)-3rem)] min-h-0 flex-col gap-2.5 sm:h-[calc(100dvh-var(--altura-cabecalho-app,0px)-4rem)]"
+      >
         {showOnboarding ? (
           <div className="flex flex-1 items-center justify-center p-4">
             <OnboardingGestorIA
@@ -256,18 +266,20 @@ function ChatPage() {
             />
           </div>
         ) : (
-          <Conversation className="min-h-0 flex-1 rounded-xl border border-border/60 bg-card/40">
-            <ConversationContent>
+          <Conversation
+            className="min-h-0 flex-1 rounded-xl border border-border/60 bg-card/40 focus-within:ring-1 focus-within:ring-ring/20"
+            aria-label="Conversa com Gestor IA"
+            aria-busy={historico.isLoading || carregando}
+          >
+            <ConversationContent aria-live="polite" aria-relevant="additions" aria-atomic="false">
               {historico.isLoading ? (
-                <div className="flex h-full items-center justify-center">
-                  <Shimmer>Carregando conversa...</Shimmer>
-                </div>
+                <SkeletonHistorico />
               ) : messages.length === 0 ? (
                 <ConversationEmptyState
                   icon={
                     <img
                       src={logoIA}
-                      alt=""
+                      alt="Gestor IA"
                       width={512}
                       height={512}
                       loading="lazy"
@@ -277,14 +289,25 @@ function ChatPage() {
                   title="Fale com o Gestor IA PRO"
                   description="Ele conhece seus ativos, aportes, dividendos e metas — e usa dados reais de mercado, notícias e agenda econômica."
                 >
-                  <div className="mt-4 grid w-full max-w-xl grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div
+                    role="group"
+                    aria-label="Sugestões rápidas"
+                    className="mt-4 grid w-full max-w-xl grid-cols-1 gap-2 sm:grid-cols-2"
+                  >
                     {SUGESTOES.map((s) => (
                       <Button
                         key={s}
                         variant="outline"
                         size="sm"
                         onClick={() => enviar(s)}
-                        className="h-auto w-full min-w-0 whitespace-normal break-words px-3 py-2 text-left text-xs leading-snug sm:text-sm"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            enviar(s);
+                          }
+                        }}
+                        aria-label={`Enviar sugestão: ${s}`}
+                        className="h-auto w-full min-w-0 whitespace-normal break-words px-3 py-2 text-left text-xs leading-snug focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:text-sm"
                       >
                         {s}
                       </Button>
@@ -292,20 +315,32 @@ function ChatPage() {
                   </div>
                 </ConversationEmptyState>
               ) : (
-                messages.map((message) => {
+                messages.map((message, idx) => {
                   const ferramentas = message.parts
                     .filter((part) => part.type.startsWith("tool-"))
                     .map((part) => part.type.replace("tool-", ""));
                   const texto = message.parts
                     .map((part) => (part.type === "text" ? part.text : ""))
                     .join("");
+                  const ehUsuario = message.role === "user";
                   return (
-                    <Message key={message.id} from={message.role}>
+                    <Message
+                      key={message.id}
+                      from={message.role}
+                      role="article"
+                      aria-label={`${ehUsuario ? "Você" : "Gestor IA"} — mensagem ${idx + 1} de ${messages.length}`}
+                      tabIndex={0}
+                      className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                    >
                       <MessageContent>
                         {ferramentas.length > 0 ? (
-                          <p className="mb-2 text-xs text-muted-foreground">
-                            <LineChart className="mr-1 inline size-3" />
-                            Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}
+                          <p
+                            role="status"
+                            aria-live="polite"
+                            className="mb-2 flex items-center gap-1 text-xs text-muted-foreground"
+                          >
+                            <LineChart className="size-3 shrink-0" aria-hidden="true" />
+                            <span>Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}</span>
                           </p>
                         ) : null}
                         <MessageResponse>{texto}</MessageResponse>
@@ -314,13 +349,18 @@ function ChatPage() {
                   );
                 })
               )}
-              {status === "submitted" ? (
-                <div className="px-2 pt-2">
-                  <Shimmer>Analisando sua carteira...</Shimmer>
+              {status === "submitted" ? <SkeletonAnalisando /> : null}
+              {status === "streaming" ? (
+                <div role="status" aria-live="polite" aria-label="Gestor IA está respondendo" className="px-2">
+                  <span className="sr-only">Gestor IA está respondendo…</span>
+                  <Shimmer aria-hidden="true">Gerando resposta…</Shimmer>
                 </div>
               ) : null}
+              <div aria-live="polite" aria-atomic="true" className="sr-only">
+                {carregando ? "Gestor IA processando" : "Pronto para nova mensagem"}
+              </div>
             </ConversationContent>
-            <ConversationScrollButton />
+            <ConversationScrollButton aria-label="Rolar para última mensagem" />
           </Conversation>
         )}
 
@@ -329,6 +369,7 @@ function ChatPage() {
             event.preventDefault();
             void enviar(message.text ?? input);
           }}
+          aria-label="Enviar mensagem ao Gestor IA"
         >
           <PromptInputTextarea
             ref={textareaRef}
@@ -336,16 +377,29 @@ function ChatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Peça uma auditoria, rebalanceamento, comparação de ativos ou o que está acontecendo no mercado..."
+            aria-label="Mensagem para o Gestor IA"
+            aria-describedby="dica-gestor"
+            onKeyDown={(e) => {
+              if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                e.preventDefault();
+                void enviar(input);
+              }
+            }}
+            className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
           />
+          <span id="dica-gestor" className="sr-only">
+            Pressione Enter para enviar, Shift+Enter para nova linha, Ctrl+Enter para envio rápido
+          </span>
           <PromptInputFooter className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             <Button
               variant="default"
               size="sm"
               onClick={() => enviar("Faça uma auditoria completa da minha carteira")}
               disabled={carregando}
-              className="h-8 shrink-0 rounded-full px-3 shadow-[var(--shadow-lift)]"
+              aria-label="Solicitar auditoria completa da carteira"
+              className="h-8 shrink-0 rounded-full px-3 shadow-[var(--shadow-lift)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              <ShieldCheck className="size-4 shrink-0 sm:mr-1.5" />
+              <ShieldCheck className="size-4 shrink-0 sm:mr-1.5" aria-hidden="true" />
               <span className="hidden truncate sm:inline">Auditoria</span>
             </Button>
             <Button
@@ -353,11 +407,12 @@ function ChatPage() {
               size="sm"
               onClick={gerarRelatorioPdf}
               disabled={gerandoRelatorio || carregando}
-              className="h-8 shrink-0 rounded-full px-3"
+              className="h-8 shrink-0 rounded-full px-3 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               aria-label="Gerar relatório de auditoria em PDF"
+              aria-busy={gerandoRelatorio}
               title="Gerar relatório de auditoria em PDF"
             >
-              <FileText className="size-4 shrink-0 sm:mr-1.5" />
+              <FileText className="size-4 shrink-0 sm:mr-1.5" aria-hidden="true" />
               <span className="hidden truncate sm:inline">
                 {gerandoRelatorio ? "Gerando..." : "Relatório"}
               </span>
@@ -370,9 +425,15 @@ function ChatPage() {
               aria-label="Modo citações e justificativas"
               title="Citações e justificativas: cada recomendação aponta os dados e critérios usados"
               onClick={() => alternarCitacoes(!citacoes)}
-              className={`h-8 shrink-0 rounded-full px-3 ${citacoes ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  alternarCitacoes(!citacoes);
+                }
+              }}
+              className={`h-8 shrink-0 rounded-full px-3 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${citacoes ? "border-primary/60 bg-primary/10 text-primary" : ""}`}
             >
-              <BookOpenText className="size-4 shrink-0 sm:mr-1.5" />
+              <BookOpenText className="size-4 shrink-0 sm:mr-1.5" aria-hidden="true" />
               <span className="hidden truncate sm:inline">Citações</span>
               <span
                 aria-hidden
@@ -388,10 +449,10 @@ function ChatPage() {
             <DialogoProvedorIA />
 
             <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
-              <div className="hidden h-6 w-px bg-border/60 sm:block" />
+              <div className="hidden h-6 w-px bg-border/60 sm:block" aria-hidden="true" />
               <Select value={perfil} onValueChange={(v) => salvar(v as PerfilInvestidor)}>
                 <SelectTrigger
-                  className="h-8 w-28 shrink-0 rounded-full text-xs sm:w-32"
+                  className="h-8 w-28 shrink-0 rounded-full text-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:w-32"
                   aria-label="Perfil de investidor"
                 >
                   <SelectValue placeholder="Perfil" />
@@ -409,13 +470,18 @@ function ChatPage() {
                 size="icon"
                 onClick={limpar}
                 disabled={messages.length === 0 || carregando}
-                className="size-8 shrink-0 rounded-full text-muted-foreground hover:text-destructive"
+                className="size-8 shrink-0 rounded-full text-muted-foreground hover:text-destructive focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label="Limpar conversa"
                 title="Limpar conversa"
               >
-                <Eraser className="size-4 shrink-0" />
+                <Eraser className="size-4 shrink-0" aria-hidden="true" />
               </Button>
-              <PromptInputSubmit status={status} disabled={!input.trim() && !carregando} />
+              <PromptInputSubmit
+                status={status}
+                disabled={!input.trim() && !carregando}
+                aria-label={carregando ? "Gestor IA está respondendo" : "Enviar mensagem"}
+                className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              />
             </div>
           </PromptInputFooter>
         </PromptInput>
