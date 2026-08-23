@@ -154,10 +154,10 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     modelosGratuitos: ["stealth/ox-alpha", "minimax/minimax-m2.5"],
     urlChave: "https://app.cline.bot",
   },
-  /* 9. Kilo Code (AI Gateway) */
+  /* 9. Kilo Code */
   {
     id: "kilocode",
-    nome: "Kilo Code (modelos :free)",
+    nome: "Kilo Code",
     descricao:
       "AI Gateway da Kilo — modelos gratuitos (:free) com acesso anônimo limitado (200 req/hora/IP) ou com chave grátis.",
     baseUrl: "https://api.kilo.ai/api/gateway",
