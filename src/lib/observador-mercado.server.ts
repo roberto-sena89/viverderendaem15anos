@@ -20,7 +20,11 @@ import {
   type LinhaObservador,
   type VarreduraObservador,
 } from "@/lib/observador-mercado-base";
-import { baseUrlProvedorEnv, provedorEnvAtivo } from "@/lib/provedores-env.server";
+import {
+  baseUrlProvedorEnv,
+  PROVEDORES_ENV,
+  provedorEnvAtivo,
+} from "@/lib/provedores-env.server";
 import type { LinhaAcao } from "@/lib/acoes-base";
 import type { LinhaFii } from "@/lib/fiis-base";
 
@@ -178,10 +182,18 @@ async function executarVarreduraInterna(agora: Date): Promise<ResultadoVarredura
     };
   };
 
-  const envProvedor = provedorEnvAtivo(process.env);
+  // Principal: Kilo Code (gratuito, 200 req/h anônimo). Mantém Kilo como
+  // provedor padrão do Observador mesmo quando outras chaves existem,
+  // garantindo custo zero e baixa latência na aba Observador de Mercado.
+  const kilo = PROVEDORES_ENV.find((p) => p.variavel === "KILO_API_KEY") ?? null;
+  const chaveKilo = kilo ? (process.env[kilo.variavel]?.trim() ?? "") : "";
+  const envProvedor =
+    kilo && (chaveKilo || kilo.aceitaAnonimo)
+      ? { provedor: kilo, chave: chaveKilo }
+      : provedorEnvAtivo(process.env);
   if (!envProvedor) {
     return falha(
-      "Nenhum provedor de IA configurado nas variáveis de ambiente (KILO_API_KEY, OPENROUTER_API_KEY, NVIDIA_API_KEY, OPENCODE_API_KEY, GROQ_API_KEY ou GOOGLE_GENERATIVE_AI_API_KEY). Configure uma chave no painel do deploy para o Observador funcionar.",
+      "Nenhum provedor de IA configurado. O Observador usa Kilo Code como principal (KILO_API_KEY em https://kilo.ai) com acesso anônimo liberado (200 req/h). Configure KILO_API_KEY para maior cota ou outra chave (OPENROUTER_API_KEY, NVIDIA_API_KEY, OPENCODE_API_KEY, GROQ_API_KEY, CLINE_API_KEY) no painel do deploy.",
     );
   }
 

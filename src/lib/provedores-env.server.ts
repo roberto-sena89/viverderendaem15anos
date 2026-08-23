@@ -20,6 +20,8 @@ export interface ProvedorEnv {
  * .env.local em desenvolvimento).
  *
  * Ordem de precedência quando mais de uma chave existir: a primeira da lista.
+ * Kilo Code é o principal (topo da lista, aceita anônimo 200 req/h) e é usado
+ * como padrão do Observador de Mercado (aba Radar) mesmo com outras chaves.
  */
 export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
   {
