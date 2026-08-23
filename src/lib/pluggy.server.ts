@@ -267,6 +267,7 @@ export async function listarPosicoesPluggy(): Promise<PosicaoPluggy[]> {
         itemId: item.id,
         itemNome: item.connector?.name ?? item.institution?.name ?? "Meu Pluggy",
         ticker: tickerDePluggy(inv.code, inv.name),
+        tickerReconhecido: tickerConfiavel(inv.code, inv.name),
         nome: inv.name,
         tipo: inv.type,
         categoria: categoriaDePluggy(inv.type, inv.name),
