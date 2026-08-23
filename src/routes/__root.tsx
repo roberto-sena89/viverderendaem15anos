@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import logoIcone from "@/assets/logo-icone.webp";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { isClientDisconnectError } from "../lib/error-capture";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,11 +44,26 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
   const router = useRouter();
+  const desconexao = isClientDisconnectError(error);
+
   useEffect(() => {
+    if (desconexao) {
+      // Um cancelamento durante navegação/HMR é transitório. Revalida a rota em
+      // vez de transformar o cancelamento do transporte em uma tela de erro.
+      const timer = window.setTimeout(() => {
+        router.invalidate().finally(reset);
+      }, 150);
+      return () => window.clearTimeout(timer);
+    }
+
+    console.error(error);
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+  }, [desconexao, error, reset, router]);
+
+  if (desconexao) {
+    return <ReconectandoBackend tentativa={1} total={1} />;
+  }
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">

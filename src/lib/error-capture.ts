@@ -41,10 +41,23 @@ const PADROES_DESCONEXAO =
   /aborted|abort ?error|operation was aborted|socket hang up|ECONNRESET|premature close|EPIPE|ERR_STREAM_PREMATURE_CLOSE|ABORT_ERR/i;
 
 export function isClientDisconnectError(error: unknown): boolean {
-  if (error == null || (typeof error !== "object" && typeof error !== "string")) return false;
-  if (typeof error === "string") return PADROES_DESCONEXAO.test(error);
-  const { name, message, code } = error as { name?: unknown; message?: unknown; code?: unknown };
-  const texto = [name, message, code].filter((v) => typeof v === "string").join(" ");
-  return PADROES_DESCONEXAO.test(texto);
+  let atual: unknown = error;
+
+  for (let profundidade = 0; profundidade < CAUSE_DEPTH_LIMIT && atual != null; profundidade++) {
+    if (typeof atual === "string") return PADROES_DESCONEXAO.test(atual);
+    if (typeof atual !== "object") return false;
+
+    const { name, message, code, cause } = atual as {
+      name?: unknown;
+      message?: unknown;
+      code?: unknown;
+      cause?: unknown;
+    };
+    const texto = [name, message, code].filter((valor) => typeof valor === "string").join(" ");
+    if (PADROES_DESCONEXAO.test(texto)) return true;
+    atual = cause;
+  }
+
+  return false;
 }
 

@@ -1,3 +1,5 @@
+import { isClientDisconnectError } from "./error-capture";
+
 type LovableErrorOptions = {
   mechanism?: "manual" | "onerror" | "unhandledrejection" | "react_error_boundary";
   handled?: boolean;
@@ -25,6 +27,9 @@ declare global {
 
 export function reportLovableError(error: unknown, context: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
+  // Navegação, HMR e fechamento de aba cancelam requisições em andamento.
+  // Isso não é falha da aplicação e não deve abrir o overlay de runtime.
+  if (isClientDisconnectError(error)) return;
   window.__lovableEvents?.captureException?.(
     error,
     {

@@ -1,8 +1,5 @@
 import { isClientDisconnectError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
-import { registrarIgnorarDesconexao } from "./lib/ignorar-desconexao.server";
-
-registrarIgnorarDesconexao();
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -29,10 +26,9 @@ export default {
       return await handler.fetch(request, env, ctx);
     } catch (error) {
       if (isClientDisconnectError(error)) {
-        // Cliente fechou a conexão durante o stream/SSR: não há resposta a
-        // entregar e não é falha do servidor. 499 = cliente desconectado.
-        console.warn("[server] cliente desconectou durante a resposta; ignorado.");
-        return new Response(null, { status: 499 });
+        // Preserve o cancelamento original. Converter em 499 faz o roteador
+        // interpretar uma navegação cancelada como erro de página.
+        throw error;
       }
       console.error(error);
       return new Response(renderErrorPage(), {

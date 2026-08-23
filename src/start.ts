@@ -9,9 +9,9 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     return await next();
   } catch (error) {
     if (isClientDisconnectError(error)) {
-      // Cliente fechou a conexão durante um stream (ex.: chat): sem resposta
-      // a entregar e sem falha real no servidor.
-      return new Response(null, { status: 499 });
+      // Cancelamentos de navegação precisam conservar sua semântica. Uma
+      // resposta 499 vira erro de rota no cliente e pode substituir a página.
+      throw error;
     }
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
