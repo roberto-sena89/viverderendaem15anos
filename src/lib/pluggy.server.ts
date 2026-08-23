@@ -171,11 +171,23 @@ export function categoriaDePluggy(tipo: string, nome = ""): string {
   return "Renda Fixa";
 }
 
+/** Padrão de ticker negociado na B3 (4 letras + dígitos), ex.: B3SA3, HGLG11, AAPL34. */
+const RE_TICKER_B3 = /\b[A-Z]{4}(?:3|4|5|6|11|31|32|33|34|35|39)\b/;
+
 /** Tenta extrair um ticker (ex.: B3SA3, HGBS11) do código/nome do ativo. */
 export function tickerDePluggy(code: string | null, name: string): string {
   const texto = `${code ?? ""} ${name}`.toUpperCase();
-  const candidatos = texto.match(/\b[A-Z]{4}(?:11|3[1-9]|[3-6]|34|35|39)?\b/g) ?? [];
-  return candidatos[0] ?? (code ?? name).trim().toUpperCase().slice(0, 12);
+  const achado = texto.match(RE_TICKER_B3);
+  return achado?.[0] ?? (code ?? name).trim().toUpperCase().slice(0, 12);
+}
+
+/**
+ * Indica se o ticker foi realmente reconhecido como código da B3. Quando falso
+ * (ex.: "CDB BANCO BRADESCO"), o valor é apenas um rótulo e não deve ser usado
+ * para casar/criar linhas na carteira automaticamente.
+ */
+export function tickerConfiavel(code: string | null, name: string): boolean {
+  return RE_TICKER_B3.test(`${code ?? ""} ${name}`.toUpperCase());
 }
 
 /* ------------------------------------------------------------------ *
