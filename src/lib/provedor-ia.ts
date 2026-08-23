@@ -136,12 +136,12 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://console.groq.com/keys",
   },
-  /* 8. Cline — OX Alpha (grátis) */
+  /* 8. CLINE BOT — OX Alpha (grátis) */
   {
     id: "cline",
-    nome: "Cline — OX Alpha (grátis)",
+    nome: "CLINE BOT",
     descricao:
-      "Gateway da Cline (api.cline.bot) — OX Alpha (stealth/ox-alpha) com 1M de contexto, gratuito no preview, além de 100+ modelos (Claude, GPT, Gemini) via chave única.",
+      "Gateway CLINE BOT (api.cline.bot) — OX Alpha (stealth/ox-alpha) com 1M de contexto, gratuito no preview, além de 100+ modelos (Claude, GPT, Gemini) via chave única.",
     baseUrl: "https://api.cline.bot/api/v1",
     modelos: [
       "stealth/ox-alpha",
