@@ -123,12 +123,12 @@ export function DialogoAprendizado() {
           <span className="hidden truncate sm:inline">Aprender</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="font-display text-lg font-bold">
+      <DialogContent className="max-h-[85dvh] w-[calc(100vw-1.5rem)] overflow-y-auto overflow-x-hidden sm:max-w-3xl lg:max-w-4xl p-5 sm:p-6 gap-5 border-border/50 shadow-xl sm:rounded-2xl">
+        <DialogHeader className="space-y-2 pr-6 text-left">
+          <DialogTitle className="font-display text-lg font-bold tracking-tight">
             Aprendizado do Gestor IA
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm leading-relaxed break-words">
             Ensine novas habilidades ao seu consultor: ele passa a segui-las em todas as conversas
             enquanto estiverem ativas. Você pode ligar, desligar ou excluir cada ensino quando
             quiser.
@@ -137,7 +137,7 @@ export function DialogoAprendizado() {
 
         <form
           onSubmit={ensinar}
-          className="grid gap-4 rounded-xl border border-border/60 bg-card/60 p-4"
+          className="grid w-full max-w-full gap-4 rounded-xl border border-border/60 bg-card/60 p-4 overflow-hidden"
         >
           <div className="grid gap-2">
             <Label htmlFor="habilidade-titulo">Nome da habilidade</Label>
@@ -168,85 +168,102 @@ export function DialogoAprendizado() {
           </div>
         </form>
 
-        <div className="grid gap-3">
-          <p className="text-sm font-semibold">
+        <div className="grid w-full max-w-full gap-3 overflow-hidden">
+          <p className="text-sm font-semibold tracking-tight">
             Habilidades aprendidas ({habilidades.data?.length ?? 0})
           </p>
           {habilidades.isLoading ? (
-            <p className="text-sm text-muted-foreground">Carregando habilidades...</p>
+            <div className="rounded-xl border border-border/60 bg-card/40 p-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                Carregando habilidades...
+              </div>
+              <span className="sr-only" role="status" aria-live="polite">
+                Carregando habilidades
+              </span>
+            </div>
           ) : (habilidades.data ?? []).length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="rounded-xl border border-dashed border-border/60 bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground break-words">
               Nenhuma habilidade ainda. Crie uma acima ou adote uma das sugeridas abaixo.
             </p>
           ) : (
-            (habilidades.data ?? []).map((h) => (
-              <div
-                key={h.id}
-                className="flex items-start gap-3 rounded-xl border border-border/60 bg-card/60 p-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-semibold">{h.titulo}</p>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${h.ativo ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}
-                    >
-                      {h.ativo ? "ativa" : "pausada"}
-                    </span>
-                  </div>
-                  <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{h.instrucao}</p>
-                </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  <Switch
-                    checked={h.ativo}
-                    onCheckedChange={(v) =>
-                      alternar
-                        .mutateAsync({ id: h.id, ativo: v })
-                        .then(() =>
-                          toast.success(v ? "Habilidade ativada." : "Habilidade pausada."),
-                        )
-                        .catch(() => toast.error("Não foi possível alterar a habilidade."))
-                    }
-                    aria-label={`Ativar ${h.titulo}`}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 text-muted-foreground hover:text-destructive"
-                    onClick={() =>
-                      excluir
-                        .mutateAsync(h.id)
-                        .then(() => toast.success("Habilidade esquecida."))
-                        .catch(() => toast.error("Não foi possível esquecer a habilidade."))
-                    }
-                    aria-label={`Esquecer ${h.titulo}`}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </div>
+            <div className="grid gap-2 w-full max-w-full">
+              {/* Header estilo tabela - apenas desktop */}
+              <div className="hidden sm:grid grid-cols-[1fr_140px] gap-2 rounded-lg bg-muted/40 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border border-border/40">
+                <span>Habilidade</span>
+                <span className="text-right">Ações</span>
               </div>
-            ))
+              {(habilidades.data ?? []).map((h) => (
+                <div
+                  key={h.id}
+                  className="flex w-full max-w-full items-start gap-3 overflow-hidden rounded-xl border border-border/60 bg-card/60 p-3 shadow-sm transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1"
+                >
+                  <div className="min-w-0 flex-1 overflow-hidden">
+                    <div className="flex flex-wrap items-center gap-2 min-w-0">
+                      <p className="min-w-0 flex-1 truncate text-sm font-semibold break-words">{h.titulo}</p>
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold border ${h.ativo ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-border/50"}`}
+                      >
+                        {h.ativo ? "ativa" : "pausada"}
+                      </span>
+                    </div>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words break-all sm:break-words">{h.instrucao}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <Switch
+                      checked={h.ativo}
+                      onCheckedChange={(v) =>
+                        alternar
+                          .mutateAsync({ id: h.id, ativo: v })
+                          .then(() =>
+                            toast.success(v ? "Habilidade ativada." : "Habilidade pausada."),
+                          )
+                          .catch(() => toast.error("Não foi possível alterar a habilidade."))
+                      }
+                      aria-label={`Ativar ${h.titulo}`}
+                      className="focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 shrink-0 text-muted-foreground hover:text-destructive focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      onClick={() =>
+                        excluir
+                          .mutateAsync(h.id)
+                          .then(() => toast.success("Habilidade esquecida."))
+                          .catch(() => toast.error("Não foi possível esquecer a habilidade."))
+                      }
+                      aria-label={`Esquecer ${h.titulo}`}
+                    >
+                      <Trash2 className="size-4" aria-hidden="true" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
-        <div className="grid gap-3">
-          <p className="text-sm font-semibold">Habilidades sugeridas</p>
-          <div className="grid gap-2">
+        <div className="grid w-full max-w-full gap-3 overflow-hidden">
+          <p className="text-sm font-semibold tracking-tight">Habilidades sugeridas</p>
+          <div className="grid w-full max-w-full gap-2 overflow-hidden">
             {HABILIDADES_SUGERIDAS.map((s) => {
               const conhecida = conhecidas.has(s.nome);
               return (
                 <div
                   key={s.nome}
-                  className="flex items-start gap-3 rounded-xl border border-dashed border-border/70 p-3"
+                  className="flex w-full max-w-full items-start gap-3 overflow-hidden rounded-xl border border-dashed border-border/70 bg-card/30 p-3 transition-colors hover:bg-card/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1"
                 >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold">{s.titulo}</p>
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.instrucao}</p>
+                  <div className="min-w-0 flex-1 overflow-hidden">
+                    <p className="text-sm font-semibold break-words">{s.titulo}</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">{s.instrucao}</p>
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="shrink-0 rounded-full"
+                    className="shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     disabled={conhecida || criar.isPending}
+                    aria-label={conhecida ? `${s.titulo} já adotada` : `Adotar ${s.titulo}`}
                     onClick={() =>
                       criar
                         .mutateAsync({ nome: s.nome, titulo: s.titulo, instrucao: s.instrucao })
@@ -262,66 +279,121 @@ export function DialogoAprendizado() {
           </div>
         </div>
 
-        <div className="grid gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm font-semibold">
+        <div className="grid w-full max-w-full gap-3 overflow-hidden">
+          <div className="flex flex-wrap items-center gap-2 min-w-0 w-full max-w-full">
+            <p className="text-sm font-semibold tracking-tight min-w-0 break-words">
               Conhecimento de mercado ({conhecimento.data?.itens.length ?? 0} itens)
             </p>
             {conhecimento.data?.atualizadoEm ? (
-              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+              <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground border border-border/40">
                 scan {haQuantoTempo(conhecimento.data.atualizadoEm)}
               </span>
             ) : null}
             <Button
               variant="outline"
               size="sm"
-              className="ml-auto shrink-0 rounded-full"
+              className="ml-auto shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               disabled={scan.isPending}
+              aria-label="Scanear conhecimento de mercado"
+              aria-busy={scan.isPending}
               onClick={() => scan.mutate()}
               title="Varre a internet (Banco Central, notícias e Google News) e atualiza a base do Gestor IA"
             >
               {scan.isPending ? (
-                <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden="true" />
               ) : (
-                <ScanSearch className="mr-1.5 size-3.5" />
+                <ScanSearch className="mr-1.5 size-3.5" aria-hidden="true" />
               )}
               Scanear agora
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground leading-relaxed break-words">
             O scanner varre a internet (Banco Central, feeds de notícias e Google News) e estrutura
             o conhecimento que o Gestor IA usa nas conversas — ele escolhe os itens mais relevantes
             para cada pergunta automaticamente.
           </p>
           {conhecimento.isLoading ? (
-            <p className="text-sm text-muted-foreground">Carregando conhecimento...</p>
+            <div className="rounded-xl border border-border/60 bg-card/40 p-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                Carregando conhecimento...
+              </div>
+              <span className="sr-only" role="status" aria-live="polite">
+                Carregando conhecimento de mercado
+              </span>
+            </div>
           ) : (
-            <div className="grid gap-2">
-              {(conhecimento.data?.itens ?? []).slice(0, 12).map((i) => (
-                <div
-                  key={`${i.categoria}-${i.titulo}`}
-                  className="flex items-start gap-3 rounded-xl border border-border/60 bg-card/60 p-3"
-                >
-                  <span
-                    className={`mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${CORES_CATEGORIA[i.categoria]}`}
-                  >
-                    {ROTULO_CATEGORIA[i.categoria]}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold leading-snug">{i.titulo}</p>
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{i.conteudo}</p>
-                    <p className="mt-1 text-[10px] text-muted-foreground/80">
-                      {i.fonte} · {new Date(i.atualizadoEm).toLocaleDateString("pt-BR")}
-                    </p>
-                  </div>
+            <>
+              {/* Tabela responsiva - desktop */}
+              <div className="hidden sm:block w-full max-w-full overflow-hidden rounded-xl border border-border/60 bg-card/20">
+                <div className="overflow-x-auto overscroll-x-contain">
+                  <table className="w-full min-w-[520px] border-collapse text-left text-sm">
+                    <thead className="bg-muted/40 border-b border-border/40">
+                      <tr className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        <th className="px-3 py-2.5 w-[96px]">Categoria</th>
+                        <th className="px-3 py-2.5">Conhecimento</th>
+                        <th className="px-3 py-2.5 w-[140px] text-right">Fonte</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/30">
+                      {(conhecimento.data?.itens ?? []).slice(0, 12).map((i) => (
+                        <tr
+                          key={`${i.categoria}-${i.titulo}`}
+                          className="hover:bg-muted/20 transition-colors focus-within:bg-muted/30"
+                          tabIndex={0}
+                        >
+                          <td className="px-3 py-2.5 align-top">
+                            <span
+                              className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${CORES_CATEGORIA[i.categoria]}`}
+                            >
+                              {ROTULO_CATEGORIA[i.categoria]}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2.5 align-top min-w-0">
+                            <p className="font-semibold leading-snug break-words">{i.titulo}</p>
+                            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">{i.conteudo}</p>
+                          </td>
+                          <td className="px-3 py-2.5 align-top text-right">
+                            <p className="text-[11px] text-muted-foreground/80 break-words">{i.fonte}</p>
+                            <p className="text-[10px] text-muted-foreground/60">{new Date(i.atualizadoEm).toLocaleDateString("pt-BR")}</p>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              ))}
+              </div>
+              {/* Cards - mobile */}
+              <div className="grid gap-2 sm:hidden w-full max-w-full">
+                {(conhecimento.data?.itens ?? []).slice(0, 12).map((i) => (
+                  <div
+                    key={`${i.categoria}-${i.titulo}-m`}
+                    className="flex w-full max-w-full items-start gap-3 overflow-hidden rounded-xl border border-border/60 bg-card/60 p-3 shadow-sm focus-within:ring-2 focus-within:ring-ring"
+                    tabIndex={0}
+                    role="article"
+                    aria-label={`${ROTULO_CATEGORIA[i.categoria]}: ${i.titulo}`}
+                  >
+                    <span
+                      className={`mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${CORES_CATEGORIA[i.categoria]}`}
+                    >
+                      {ROTULO_CATEGORIA[i.categoria]}
+                    </span>
+                    <div className="min-w-0 flex-1 overflow-hidden">
+                      <p className="text-sm font-semibold leading-snug break-words">{i.titulo}</p>
+                      <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">{i.conteudo}</p>
+                      <p className="mt-1 text-[10px] text-muted-foreground/80 break-words">
+                        {i.fonte} · {new Date(i.atualizadoEm).toLocaleDateString("pt-BR")}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
               {(conhecimento.data?.itens.length ?? 0) === 0 && !conhecimento.isLoading ? (
-                <p className="text-sm text-muted-foreground">
+                <p className="rounded-xl border border-dashed border-border/60 bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground break-words">
                   Base vazia. Clique em "Scanear agora" para montar o conhecimento de mercado.
                 </p>
               ) : null}
-            </div>
+            </>
           )}
         </div>
       </DialogContent>
