@@ -274,10 +274,36 @@ export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 
 const streamdownPlugins = { cjk, math };
 
+/**
+ * Estilo das tabelas geradas pelo Gestor IA: cartão centralizado, dentro das
+ * margens da página, com rolagem apenas dentro da própria tabela no mobile.
+ */
+const estiloTabelas = cn(
+  // Container gerado pelo Streamdown ao redor da tabela
+  "[&_div:has(>table)]:my-4 [&_div:has(>table)]:w-full [&_div:has(>table)]:max-w-full",
+  "[&_div:has(>table)]:overflow-x-auto [&_div:has(>table)]:overscroll-x-contain",
+  "[&_div:has(>table)]:rounded-xl [&_div:has(>table)]:border [&_div:has(>table)]:border-border/60",
+  "[&_div:has(>table)]:bg-card/40 [&_div:has(>table)]:shadow-[var(--shadow-lift)]",
+  // Tabela
+  "[&_table]:m-0 [&_table]:w-full [&_table]:border-collapse [&_table]:text-left [&_table]:text-xs sm:[&_table]:text-sm",
+  "[&_thead]:bg-muted/40",
+  "[&_th]:whitespace-nowrap [&_th]:px-3 [&_th]:py-2.5 [&_th]:text-[11px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-wide [&_th]:text-muted-foreground sm:[&_th]:text-xs",
+  "[&_td]:px-3 [&_td]:py-2.5 [&_td]:align-middle [&_td]:break-words",
+  "[&_tbody_tr]:border-t [&_tbody_tr]:border-border/50",
+  "[&_tbody_tr:hover]:bg-muted/30",
+  // Números alinhados à direita a partir da 2ª coluna
+  "[&_th:not(:first-child)]:text-right [&_td:not(:first-child)]:text-right",
+  "[&_td:first-child]:font-medium [&_td:first-child]:text-foreground",
+);
+
 export const MessageResponse = memo(
   ({ className, ...props }: MessageResponseProps) => (
     <Streamdown
-      className={cn("size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0", className)}
+      className={cn(
+        "size-full min-w-0 max-w-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+        estiloTabelas,
+        className,
+      )}
       plugins={streamdownPlugins}
       {...props}
     />
@@ -285,6 +311,7 @@ export const MessageResponse = memo(
   (prevProps, nextProps) =>
     prevProps.children === nextProps.children && nextProps.isAnimating === prevProps.isAnimating,
 );
+
 
 MessageResponse.displayName = "MessageResponse";
 
