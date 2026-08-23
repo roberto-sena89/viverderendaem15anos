@@ -67,7 +67,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
   },
   {
     variavel: "CLINE_API_KEY",
-    nome: "CLINE BOT",
+    nome: "Cline Bot",
     baseUrl: "https://api.cline.bot/api/v1",
     modelo: "stealth/ox-alpha",
     urlChave: "https://app.cline.bot",
