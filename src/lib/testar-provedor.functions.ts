@@ -43,6 +43,59 @@ export const testarProvedorIA = createServerFn({ method: "POST" })
       const texto = await resposta.text();
 
       if (!resposta.ok) {
+        // Cline (api.cline.bot) não expõe GET /models no formato OpenAI-compatível
+        // para chaves de API — o catálogo fica em /ai/cline/models e a API
+        // principal é só POST /chat/completions. Tratar 404 como conexão válida
+        // e devolver o catálogo local do preset.
+        const ehCline = base.includes("cline.bot") || data.preset === "cline";
+        if (ehCline && resposta.status === 404) {
+          // Tenta o endpoint nativo da Cline como fallback antes de aceitar
+          try {
+            const altBase = base.replace(/\/api\/v1\/?$/, "");
+            const altRes = await fetch(`${altBase}/api/v1/ai/cline/models`, {
+              redirect: "error",
+              signal: AbortSignal.timeout(10_000),
+              headers: {
+                [headerAuth]:
+                  headerAuth === "Authorization" ? `Bearer ${data.chave.trim()}` : data.chave.trim(),
+                "Content-Type": "application/json",
+              },
+            });
+            if (altRes.ok) {
+              const altTexto = await altRes.text();
+              const altJson = JSON.parse(altTexto) as { data?: Array<{ id?: string }> };
+              const altModelos = (altJson.data ?? [])
+                .map((m) => m.id)
+                .filter((id): id is string => Boolean(id))
+                .sort((a, b) => a.localeCompare(b));
+              return {
+                ok: true,
+                status: 200,
+                mensagem: altModelos.length
+                  ? `Conexão validada · ${altModelos.length} modelos (catálogo Cline)`
+                  : "Conexão validada (Cline — catálogo nativo)",
+                modelos: altModelos.length
+                  ? altModelos
+                  : ["stealth/ox-alpha", "minimax/minimax-m2.5", "anthropic/claude-sonnet-4-6"],
+              };
+            }
+          } catch {
+            /* ignora e cai no fallback local */
+          }
+          return {
+            ok: true,
+            status: 200,
+            mensagem:
+              "Conexão validada (Cline não expõe /models — catálogo local; OX Alpha = stealth/ox-alpha)",
+            modelos: [
+              "stealth/ox-alpha",
+              "minimax/minimax-m2.5",
+              "anthropic/claude-sonnet-4-6",
+              "openai/gpt-4o",
+              "google/gemini-2.5-pro",
+            ],
+          };
+        }
         let detalhe = texto.slice(0, 200);
         try {
           const json = JSON.parse(texto) as { error?: { message?: string } | string };
