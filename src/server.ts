@@ -1,5 +1,8 @@
 import { isClientDisconnectError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { registrarIgnorarDesconexao } from "./lib/ignorar-desconexao.server";
+
+registrarIgnorarDesconexao();
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
