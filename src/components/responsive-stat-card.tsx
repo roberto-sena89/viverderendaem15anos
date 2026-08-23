@@ -1,6 +1,6 @@
 import { useConfigResponsiva, type ConfigResponsiva } from "@/hooks/use-config-responsiva";
 import type { LucideIcon } from "lucide-react";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import { DeltaChip } from "@/components/panel";
 import {
   ESCALA_CONTEUDO_CARD,
@@ -139,11 +139,16 @@ export function ResponsiveStatCard({
         ? "text-destructive"
         : "text-foreground";
 
-  const Component = onClick ? "button" : "div";
-
   return (
-    <Component
+    <div
       onClick={onClick}
+      onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+        if (!onClick || (event.key !== "Enter" && event.key !== " ")) return;
+        event.preventDefault();
+        onClick();
+      }}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
       aria-label={ariaLabel}
       style={
         {
@@ -179,7 +184,7 @@ export function ResponsiveStatCard({
         {hint ? <p className="t-caption">{hint}</p> : null}
       </div>
       {children}
-    </Component>
+    </div>
   );
 }
 
