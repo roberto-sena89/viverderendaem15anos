@@ -31,6 +31,20 @@ function suppressClientDisconnectErrors(): Plugin {
         res.on("error", onError);
         next();
       });
+      // Evita crash do watcher em .output (Windows UNKNOWN scandir) e silencia aborts
+      const watcher = (server.watcher as unknown as { on?: (ev: string, cb: (e: Error) => void) => void })?.on;
+      if (typeof watcher === "function") {
+        server.watcher.on("error", (err: NodeJS.ErrnoException & { path?: string }) => {
+          if (err?.code === "UNKNOWN" && String(err.path ?? "").includes(".output")) return;
+          if (isDisconnectError(err)) return;
+          console.warn("[watcher] ignorado:", err.message ?? err);
+        });
+      }
+      // srvx aborta a conexão no close do socket fora do fetch — suprime para não gerar blank screen
+      server.httpServer?.on("error", (err: NodeJS.ErrnoException) => {
+        if (isDisconnectError(err)) return;
+        console.error("[http] erro não tratado:", err);
+      });
     },
   };
 }
@@ -76,6 +90,7 @@ export default defineConfig({
   } as never,
   vite: {
     server: {
+      watch: { ignored: ["**/.output/**", "**/node_modules/.vite/**"] },
       allowedHosts: [".monkeycode-ai.live"],
       headers: {
         // SECURITY HEADERS

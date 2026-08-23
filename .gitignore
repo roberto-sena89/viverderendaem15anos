@@ -90,6 +90,7 @@ ntuser.ini
 .cline/
 .local/
 .wrangler/
+.output/
 data/
 playwright-report/
 test-results/
