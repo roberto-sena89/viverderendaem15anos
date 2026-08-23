@@ -16,7 +16,10 @@
     "postinstall": "patch-package",
     "audit:fixes": "bun scripts/check-vuln-fixes.mjs",
     "verificar:modelos": "tsx --env-file-if-exists=.env.local scripts/verificar-modelos.ts",
-    "test:modelos": "tsx src/lib/__tests__/provedor-ia.test.ts"
+    "test:modelos": "tsx src/lib/__tests__/provedor-ia.test.ts",
+    "analisador:faria-lima": "tsx --env-file-if-exists=.env.local scripts/analisador-faria-lima.ts",
+    "analisador:faria-lima:json": "tsx --env-file-if-exists=.env.local scripts/analisador-faria-lima.ts --json",
+    "analisador:faria-lima:md": "tsx --env-file-if-exists=.env.local scripts/analisador-faria-lima.ts --md"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.31",
