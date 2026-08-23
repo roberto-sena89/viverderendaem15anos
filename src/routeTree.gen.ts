@@ -278,11 +278,12 @@ const ApiPublicHooksObservadorMercadoRoute =
     path: '/api/public/hooks/observador-mercado',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicHooksPluggyWebhookRoute = ApiPublicHooksPluggyWebhookRouteImport.update({
-  id: '/api/public/hooks/pluggy-webhook',
-  path: '/api/public/hooks/pluggy-webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const ApiPublicHooksPluggyWebhookRoute =
+  ApiPublicHooksPluggyWebhookRouteImport.update({
+    id: '/api/public/hooks/pluggy-webhook',
+    path: '/api/public/hooks/pluggy-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksVerificarModelosGratuitosRoute =
   ApiPublicHooksVerificarModelosGratuitosRouteImport.update({
     id: '/api/public/hooks/verificar-modelos-gratuitos',
