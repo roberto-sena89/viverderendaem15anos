@@ -65,6 +65,13 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     modelo: "groq/compound",
     urlChave: "https://console.groq.com/keys",
   },
+  {
+    variavel: "CLINE_API_KEY",
+    nome: "Cline",
+    baseUrl: "https://api.cline.bot/api/v1",
+    modelo: "stealth/ox-alpha",
+    urlChave: "https://app.cline.bot",
+  },
 ];
 
 /**

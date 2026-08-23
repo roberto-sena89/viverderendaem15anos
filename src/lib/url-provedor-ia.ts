@@ -5,6 +5,8 @@
  */
 
 const HOSTS_PERMITIDOS = [
+  "api.cline.bot",
+  "cline.bot",
   "openrouter.ai",
   "api.orcarouter.ai",
   "integrate.api.nvidia.com",

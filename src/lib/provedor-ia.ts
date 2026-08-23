@@ -136,7 +136,25 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://console.groq.com/keys",
   },
-  /* 8. Kilo Code (AI Gateway) */
+  /* 8. Cline — OX Alpha (grátis) */
+  {
+    id: "cline",
+    nome: "Cline — OX Alpha (grátis)",
+    descricao:
+      "Gateway da Cline (api.cline.bot) — OX Alpha (stealth/ox-alpha) com 1M de contexto, gratuito no preview, além de 100+ modelos (Claude, GPT, Gemini) via chave única.",
+    baseUrl: "https://api.cline.bot/api/v1",
+    modelos: [
+      "stealth/ox-alpha",
+      "minimax/minimax-m2.5",
+      "anthropic/claude-sonnet-4-6",
+      "openai/gpt-4o",
+      "google/gemini-2.5-pro",
+      "deepseek/deepseek-chat",
+    ],
+    modelosGratuitos: ["stealth/ox-alpha", "minimax/minimax-m2.5"],
+    urlChave: "https://app.cline.bot",
+  },
+  /* 9. Kilo Code (AI Gateway) */
   {
     id: "kilocode",
     nome: "Kilo Code (modelos :free)",
@@ -269,6 +287,7 @@ export const PRESET_PARA_VARIAVEL_BACKEND: Record<string, string> = {
   nvidia: "NVIDIA_API_KEY",
   opencodezen: "OPENCODE_API_KEY",
   groq: "GROQ_API_KEY",
+  cline: "CLINE_API_KEY",
   kilocode: "KILO_API_KEY",
 };
 
