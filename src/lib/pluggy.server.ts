@@ -239,6 +239,8 @@ export interface PosicaoPluggy {
   itemId: string;
   itemNome: string;
   ticker: string;
+  /** true quando o ticker foi reconhecido como código real da B3. */
+  tickerReconhecido: boolean;
   nome: string;
   tipo: string;
   categoria: string;
