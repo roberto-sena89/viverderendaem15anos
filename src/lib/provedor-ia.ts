@@ -31,7 +31,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
   /* 1. OpenRouter */
   {
     id: "openrouter",
-    nome: "OpenRouter (modelos :free)",
+    nome: "OpenRouter",
     descricao: "Catálogo com dezenas de modelos gratuitos (sufixo :free). Chave grátis.",
     baseUrl: "https://openrouter.ai/api/v1",
     modelos: [
@@ -75,7 +75,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
   /* 2. OrcaRouter */
   {
     id: "orcarouter",
-    nome: "OrcaRouter (modelos -free)",
+    nome: "OrcaRouter",
     descricao: "Roteador aberto que conecta OpenAI, Anthropic, Google e DeepSeek a preço de custo, com camada gratuita de modelos DeepSeek V4.",
     baseUrl: "https://api.orcarouter.ai/v1",
     modelos: [
@@ -92,10 +92,10 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://www.orcarouter.ai",
   },
-  /* 4. NVIDIA NIM */
+  /* 4. Nvidia */
   {
     id: "nvidia",
-    nome: "NVIDIA NIM",
+    nome: "Nvidia",
     descricao: "Camada gratuita NVIDIA (build.nvidia.com, com limites de requisição).",
     baseUrl: "https://integrate.api.nvidia.com/v1",
     modelos: [],

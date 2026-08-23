@@ -46,7 +46,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
   },
   {
     variavel: "NVIDIA_API_KEY",
-    nome: "NVIDIA NIM",
+    nome: "Nvidia",
     baseUrl: "https://integrate.api.nvidia.com/v1",
     modelo: "z-ai/glm-5.2",
     urlChave: "https://build.nvidia.com/settings/api-keys",
