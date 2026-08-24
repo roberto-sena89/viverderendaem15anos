@@ -101,4 +101,7 @@ memories/
 dev/
 *.backup
 *.backup.*
+*.backup*
+publicar.bat
+publicar.ps1
 supabase/.temp/
