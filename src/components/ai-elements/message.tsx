@@ -291,9 +291,34 @@ const estiloTabelas = cn(
   "[&_td]:px-2 [&_td]:py-1.5 [&_td]:align-middle [&_td]:break-words sm:[&_td]:px-3 sm:[&_td]:py-2.5",
   "[&_tbody_tr]:border-t [&_tbody_tr]:border-border/50",
   "[&_tbody_tr:hover]:bg-muted/30",
-  // Números alinhados à direita a partir da 2ª coluna (desktop)
+  // NÃºmeros alinhados Ã  direita a partir da 2Âª coluna (desktop)
   "sm:[&_th:not(:first-child)]:text-right sm:[&_td:not(:first-child)]:text-right",
   "[&_td:first-child]:font-medium [&_td:first-child]:text-foreground",
+);
+
+/**
+ * Tipografia editorial do Gestor IA: leitura confortavel, hierarquia clara e
+ * destaques na paleta da marca, sem ruido visual.
+ */
+const estiloTexto = cn(
+  "text-[0.95rem] leading-[1.75] tracking-[-0.005em] text-pretty text-foreground/90",
+  "[&_p]:my-3 [&_p]:max-w-[68ch]",
+  "[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-lg [&_h1]:font-semibold [&_h1]:tracking-tight [&_h1]:text-foreground",
+  "[&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground",
+  "[&_h3]:mt-5 [&_h3]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:uppercase [&_h3]:tracking-[0.12em] [&_h3]:text-muted-foreground",
+  "[&_strong]:font-semibold [&_strong]:text-foreground",
+  "[&_em]:text-foreground/80",
+  "[&_a]:font-medium [&_a]:text-primary [&_a]:underline [&_a]:decoration-primary/40 [&_a]:underline-offset-4 hover:[&_a]:decoration-primary",
+  "[&_ul]:my-3 [&_ul]:list-none [&_ul]:space-y-1.5 [&_ul]:pl-1",
+  "[&_ul>li]:relative [&_ul>li]:pl-5",
+  "[&_ul>li]:before:absolute [&_ul>li]:before:left-0 [&_ul>li]:before:top-[0.65em] [&_ul>li]:before:size-1.5 [&_ul>li]:before:rounded-full [&_ul>li]:before:bg-primary/70",
+  "[&_ol]:my-3 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-5 [&_ol]:marker:font-semibold [&_ol]:marker:text-primary/70",
+  "[&_li]:leading-relaxed",
+  "[&_blockquote]:my-4 [&_blockquote]:rounded-r-lg [&_blockquote]:border-l-2 [&_blockquote]:border-primary/50 [&_blockquote]:bg-primary/5 [&_blockquote]:px-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:text-foreground/80",
+  "[&_hr]:my-6 [&_hr]:border-border/50",
+  "[&_code]:rounded-md [&_code]:border [&_code]:border-border/50 [&_code]:bg-muted/50 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.82em]",
+  "[&_pre]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border/60 [&_pre]:bg-card/60 [&_pre]:p-4",
+  "[&_pre_code]:border-0 [&_pre_code]:bg-transparent [&_pre_code]:p-0",
 );
 
 export const MessageResponse = memo(
@@ -301,6 +326,7 @@ export const MessageResponse = memo(
     <Streamdown
       className={cn(
         "size-full min-w-0 max-w-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+        estiloTexto,
         estiloTabelas,
         className,
       )}
