@@ -36,8 +36,8 @@ export type MessageContentProps = HTMLAttributes<HTMLDivElement>;
 export const MessageContent = ({ children, className, ...props }: MessageContentProps) => (
   <div
     className={cn(
-      "is-user:dark flex w-fit min-w-0 max-w-full flex-col gap-2 overflow-hidden text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      "group-[.is-user]:ml-auto group-[.is-user]:rounded-lg group-[.is-user]:bg-secondary group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-foreground",
+      "is-user:dark flex w-fit min-w-0 max-w-full flex-col gap-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      "group-[.is-user]:ml-auto group-[.is-user]:max-w-[min(95%,38rem)] group-[.is-user]:overflow-hidden group-[.is-user]:rounded-lg group-[.is-user]:bg-secondary group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-foreground",
       "group-[.is-assistant]:w-full group-[.is-assistant]:text-foreground",
       className,
     )}
@@ -275,39 +275,43 @@ export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 const streamdownPlugins = { cjk, math };
 
 /**
- * Estilo das tabelas geradas pelo Gestor IA: cartão que ocupa exatamente a
- * largura do chat (SEM barra de rolagem horizontal), com quebra de linha
- * natural e organizada nas células, colunas proporcionais e leitura fácil.
+ * Estilo das tabelas geradas pelo Gestor IA: cartão que ocupa a largura
+ * total do painel do chat (vaza o padding da mensagem), com fonte confortável
+ * e palavras quebradas apenas em espaços — nunca no meio.
  */
 const estiloTabelas = cn(
   // Container externo (data-streamdown="table-wrapper")
+  // Vaza o padding p-4 do ConversationContent para ocupar a largura total do chat
   "[&_[data-streamdown='table-wrapper']]:my-4",
-  "[&_[data-streamdown='table-wrapper']]:mx-auto",
-  "[&_[data-streamdown='table-wrapper']]:w-full",
-  "[&_[data-streamdown='table-wrapper']]:max-w-full",
+  "[&_[data-streamdown='table-wrapper']]:-mx-4",
+  "[&_[data-streamdown='table-wrapper']]:w-[calc(100%+2rem)]",
+  "[&_[data-streamdown='table-wrapper']]:max-w-[calc(100%+2rem)]",
+  "sm:[&_[data-streamdown='table-wrapper']]:-mx-6",
+  "sm:[&_[data-streamdown='table-wrapper']]:w-[calc(100%+3rem)]",
+  "sm:[&_[data-streamdown='table-wrapper']]:max-w-[calc(100%+3rem)]",
   "[&_[data-streamdown='table-wrapper']]:rounded-xl",
   "[&_[data-streamdown='table-wrapper']]:border",
   "[&_[data-streamdown='table-wrapper']]:border-border/50",
   "[&_[data-streamdown='table-wrapper']]:bg-card/30",
   "[&_[data-streamdown='table-wrapper']]:shadow-[var(--shadow-lift)]",
-  // Área de rolagem interna do Streamdown: REMOVE a rolagem horizontal
-  "[&_[data-streamdown='table-wrapper']>div:last-child]:overflow-x-hidden",
+  // Área de rolagem interna do Streamdown: SEM scroll horizontal, overflow visível
+  "[&_[data-streamdown='table-wrapper']>div:last-child]:overflow-x-visible",
   "[&_[data-streamdown='table-wrapper']>div:last-child]:overflow-y-visible",
-  // Tabela base — largura exata do container (nunca mais larga), colunas proporcionais
+  // Tabela base — largura total do container, colunas proporcionais ao conteúdo
   "[&_table[data-streamdown='table']]:m-0",
   "[&_table[data-streamdown='table']]:w-full",
   "[&_table[data-streamdown='table']]:max-w-full",
   "[&_table[data-streamdown='table']]:table-auto",
   "[&_table[data-streamdown='table']]:border-collapse",
-  "[&_table[data-streamdown='table']]:text-[0.72rem]",
-  "sm:[&_table[data-streamdown='table']]:text-[0.8rem]",
+  "[&_table[data-streamdown='table']]:text-[0.8125rem]",
+  "sm:[&_table[data-streamdown='table']]:text-[0.875rem]",
   // Cabeçalho — fundo escuro, borda inferior, tracking
   "[&_table[data-streamdown='table']>thead]:border-b-2",
   "[&_table[data-streamdown='table']>thead]:border-border/60",
   "[&_table[data-streamdown='table']>thead]:bg-muted/50",
   "[&_table[data-streamdown='table']>thead>tr>th]:px-3",
   "[&_table[data-streamdown='table']>thead>tr>th]:py-2",
-  "[&_table[data-streamdown='table']>thead>tr>th]:text-[0.65rem]",
+  "[&_table[data-streamdown='table']>thead>tr>th]:text-[0.7rem]",
   "[&_table[data-streamdown='table']>thead>tr>th]:font-semibold",
   "[&_table[data-streamdown='table']>thead>tr>th]:uppercase",
   "[&_table[data-streamdown='table']>thead>tr>th]:tracking-[0.06em]",
@@ -315,16 +319,16 @@ const estiloTabelas = cn(
   "[&_table[data-streamdown='table']>thead>tr>th]:whitespace-nowrap",
   "sm:[&_table[data-streamdown='table']>thead>tr>th]:px-4",
   "sm:[&_table[data-streamdown='table']>thead>tr>th]:py-2.5",
-  "sm:[&_table[data-streamdown='table']>thead>tr>th]:text-[0.7rem]",
-  // Células — quebra natural em espaços (nunca no meio da palavra), fonte compacta
-  "[&_table[data-streamdown='table']>tbody>tr>td]:px-2.5",
-  "[&_table[data-streamdown='table']>tbody>tr>td]:py-1.5",
+  "sm:[&_table[data-streamdown='table']>thead>tr>th]:text-[0.75rem]",
+  // Células — quebra natural em espaços, nunca no meio da palavra
+  "[&_table[data-streamdown='table']>tbody>tr>td]:px-3",
+  "[&_table[data-streamdown='table']>tbody>tr>td]:py-2",
   "[&_table[data-streamdown='table']>tbody>tr>td]:align-middle",
   "[&_table[data-streamdown='table']>tbody>tr>td]:whitespace-normal",
   "[&_table[data-streamdown='table']>tbody>tr>td]:[overflow-wrap:normal]",
   "[&_table[data-streamdown='table']>tbody>tr>td]:leading-normal",
-  "sm:[&_table[data-streamdown='table']>tbody>tr>td]:px-3.5",
-  "sm:[&_table[data-streamdown='table']>tbody>tr>td]:py-2",
+  "sm:[&_table[data-streamdown='table']>tbody>tr>td]:px-4",
+  "sm:[&_table[data-streamdown='table']>tbody>tr>td]:py-2.5",
   // Linhas — borda sutil + striped alternado + hover
   "[&_table[data-streamdown='table']>tbody>tr]:border-t",
   "[&_table[data-streamdown='table']>tbody>tr]:border-border/30",
