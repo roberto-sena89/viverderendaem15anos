@@ -275,25 +275,73 @@ export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 const streamdownPlugins = { cjk, math };
 
 /**
- * Estilo das tabelas geradas pelo Gestor IA: cartão centralizado, dentro das
- * margens da página, com rolagem apenas dentro da própria tabela no mobile.
+ * Estilo das tabelas geradas pelo Gestor IA: cartão moderno sem quebra de
+ * linha indesejada, colunas proporcionais, alinhamento limpo, leitura fácil.
  */
 const estiloTabelas = cn(
-  // Container gerado pelo Streamdown ao redor da tabela
-  "[&_div:has(>table)]:my-4 [&_div:has(>table)]:w-full [&_div:has(>table)]:max-w-full",
-  "[&_div:has(>table)]:overflow-x-auto [&_div:has(>table)]:overscroll-x-contain",
-  "[&_div:has(>table)]:rounded-xl [&_div:has(>table)]:border [&_div:has(>table)]:border-border/60",
-  "[&_div:has(>table)]:bg-card/40 [&_div:has(>table)]:shadow-[var(--shadow-lift)]",
-  // Tabela
-  "[&_table]:m-0 [&_table]:w-full [&_table]:border-collapse [&_table]:text-left [&_table]:text-xs sm:[&_table]:text-sm",
-  "[&_thead]:bg-muted/40",
-  "[&_th]:px-2 [&_th]:py-1.5 [&_th]:text-[10px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-wide [&_th]:text-muted-foreground [&_th]:break-words sm:[&_th]:px-3 sm:[&_th]:py-2.5 sm:[&_th]:text-xs",
-  "[&_td]:px-2 [&_td]:py-1.5 [&_td]:align-middle [&_td]:break-words sm:[&_td]:px-3 sm:[&_td]:py-2.5",
-  "[&_tbody_tr]:border-t [&_tbody_tr]:border-border/50",
-  "[&_tbody_tr:hover]:bg-muted/30",
-  // Números alinhados à direita a partir da 2ª coluna (desktop)
-  "sm:[&_th:not(:first-child)]:text-right sm:[&_td:not(:first-child)]:text-right",
-  "[&_td:first-child]:font-medium [&_td:first-child]:text-foreground",
+  // Container externo (data-streamdown="table-wrapper")
+  "[&_[data-streamdown='table-wrapper']]:my-4",
+  "[&_[data-streamdown='table-wrapper']]:mx-auto",
+  "[&_[data-streamdown='table-wrapper']]:w-full",
+  "[&_[data-streamdown='table-wrapper']]:max-w-full",
+  "[&_[data-streamdown='table-wrapper']]:rounded-xl",
+  "[&_[data-streamdown='table-wrapper']]:border",
+  "[&_[data-streamdown='table-wrapper']]:border-border/50",
+  "[&_[data-streamdown='table-wrapper']]:bg-card/30",
+  "[&_[data-streamdown='table-wrapper']]:shadow-[var(--shadow-lift)]",
+  // Área de rolagem interna do Streamdown — esconde barra de rolagem feia
+  "[&_[data-streamdown='table-wrapper']>div:last-child]:scrollbar-none",
+  "[&_[data-streamdown='table-wrapper']>div:last-child]:overscroll-x-contain",
+  // Tabela base — largura total, colunas proporcionais ao conteúdo
+  "[&_table[data-streamdown='table']]:m-0",
+  "[&_table[data-streamdown='table']]:w-full",
+  "[&_table[data-streamdown='table']]:min-w-max",
+  "[&_table[data-streamdown='table']]:table-auto",
+  "[&_table[data-streamdown='table']]:border-collapse",
+  "[&_table[data-streamdown='table']]:text-xs",
+  "sm:[&_table[data-streamdown='table']]:text-sm",
+  // Cabeçalho — fundo escuro, borda inferior, tracking
+  "[&_table[data-streamdown='table']>thead]:border-b-2",
+  "[&_table[data-streamdown='table']>thead]:border-border/60",
+  "[&_table[data-streamdown='table']>thead]:bg-muted/50",
+  "[&_table[data-streamdown='table']>thead>tr>th]:px-3",
+  "[&_table[data-streamdown='table']>thead>tr>th]:py-2.5",
+  "[&_table[data-streamdown='table']>thead>tr>th]:text-[10px]",
+  "[&_table[data-streamdown='table']>thead>tr>th]:font-semibold",
+  "[&_table[data-streamdown='table']>thead>tr>th]:uppercase",
+  "[&_table[data-streamdown='table']>thead>tr>th]:tracking-[0.08em]",
+  "[&_table[data-streamdown='table']>thead>tr>th]:text-muted-foreground",
+  "sm:[&_table[data-streamdown='table']>thead>tr>th]:px-4",
+  "sm:[&_table[data-streamdown='table']>thead>tr>th]:py-3",
+  "sm:[&_table[data-streamdown='table']>thead>tr>th]:text-xs",
+  // Células — padding generoso, SEM QUEBRA DE LINHA
+  "[&_table[data-streamdown='table']>tbody>tr>td]:px-3",
+  "[&_table[data-streamdown='table']>tbody>tr>td]:py-2",
+  "[&_table[data-streamdown='table']>tbody>tr>td]:align-middle",
+  "[&_table[data-streamdown='table']>tbody>tr>td]:whitespace-nowrap",
+  "sm:[&_table[data-streamdown='table']>tbody>tr>td]:px-4",
+  "sm:[&_table[data-streamdown='table']>tbody>tr>td]:py-2.5",
+  // Linhas — borda sutil + striped alternado + hover
+  "[&_table[data-streamdown='table']>tbody>tr]:border-t",
+  "[&_table[data-streamdown='table']>tbody>tr]:border-border/30",
+  "[&_table[data-streamdown='table']>tbody>tr:nth-child(even)]:bg-muted/15",
+  "[&_table[data-streamdown='table']>tbody>tr:hover]:bg-muted/30",
+  // Primeira coluna (nome / ticker) — destaque à esquerda
+  "[&_table[data-streamdown='table']>tbody>tr>td:first-child]:font-medium",
+  "[&_table[data-streamdown='table']>tbody>tr>td:first-child]:text-foreground",
+  "[&_table[data-streamdown='table']>tbody>tr>td:first-child]:text-left",
+  "[&_table[data-streamdown='table']>thead>tr>th:first-child]:text-left",
+  // Última coluna (valores) — alinhada à direita, tabular-nums
+  "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:text-right",
+  "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:font-medium",
+  "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:tabular-nums",
+  "[&_table[data-streamdown='table']>thead>tr>th:last-child]:text-right",
+  // Colunas do meio — centralizadas para grade visual limpa
+  "[&_table[data-streamdown='table']>tbody>tr>td:not(:first-child):not(:last-child)]:text-center",
+  "[&_table[data-streamdown='table']>thead>tr>th:not(:first-child):not(:last-child)]:text-center",
+  // Cor do texto padrão nas células
+  "[&_table[data-streamdown='table']>tbody>tr>td]:text-foreground/85",
+  "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:text-foreground",
 );
 
 /**
