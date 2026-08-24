@@ -125,7 +125,7 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
   },
   {
     chave: "nous",
-    nome: "Hermes Agent",
+    nome: "B.AI",
     baseUrl: "https://api.b.ai/v1",
     variavelChave: "NOUS_API_KEY",
     exigeChave: true,
