@@ -77,15 +77,16 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
   {
     variavel: "NOUS_API_KEY",
     nome: "Hermes Agent",
-    baseUrl: "https://api.b.ai/v1/chat/completions",
-    modelo: "tencent/hy3:free",
-    urlChave: "https://portal.nousresearch.com",
+    baseUrl: "https://api.b.ai/v1",
+    modelo: "gpt-5.4",
+    urlChave: "https://docs.b.ai",
   },
+
 ];
 
 /**
  * Encontra o provedor de IA a ser usado no servidor:
- * 1º — o primeiro da lista com chave configurada (o usuário escolheu aquele);
+ * 1� � o primeiro da lista com chave configurada (o usu�rio escolheu aquele);
  * 2º — o primeiro que aceita acesso anônimo (ex.: Kilo Code com modelos :free),
  *     usado quando nenhuma chave foi configurada, para o app nunca ficar sem IA.
  */
@@ -107,10 +108,4 @@ export function baseUrlProvedorEnv(provedor: ProvedorEnv, env: NodeJS.ProcessEnv
   const prefixo = provedor.variavel.replace(/_API_KEY$/, "");
   return env[`${prefixo}_BASE_URL`]?.trim() || provedor.baseUrl;
 }
-
-
-
-
-
-
 

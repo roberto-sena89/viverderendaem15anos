@@ -126,10 +126,10 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
   {
     chave: "nous",
     nome: "Hermes Agent",
-    baseUrl: "https://api.b.ai/v1/chat/completions",
+    baseUrl: "https://api.b.ai/v1",
     variavelChave: "NOUS_API_KEY",
-    padroesGratuitos: [/:free$/i],
-    idsGratuitosAdicionais: ["tencent/hy3:free", "poolside/laguna-s-2.1:free", "stepfun/step-3.7-flash:free", "poolside/laguna-xs-2.1:free"],
+    exigeChave: true,
+    nota: "B.AI � servi�o pago por cr�dito",
   },
 ];
 
@@ -183,7 +183,7 @@ async function sondarListaModelos(
   let proximo = 0;
   const trabalhadores = Array.from({ length: Math.min(3, modelos.length) }, async () => {
     while (proximo < modelos.length) {
-      const id = modelos[proximo++]!;
+      const id = modelos[proximo++];
       const inicio = Date.now();
       const url = `${base}${caminhoChat}`;
       const headers: Record<string, string> = {
@@ -204,7 +204,12 @@ async function sondarListaModelos(
           signal: AbortSignal.timeout(20_000),
         });
         if (resposta.ok) {
-          resultados.push({ id, ctx: null, funcionando: true, statusTeste: `HTTP ${resposta.status}` });
+          resultados.push({
+            id,
+            ctx: null,
+            funcionando: true,
+            statusTeste: `HTTP ${resposta.status}`,
+          });
         } else if (resposta.status === 429) {
           resultados.push({
             id,
@@ -347,9 +352,7 @@ async function buscarCatalogo(
         const foraDoLimite = ids.length - LIMITE_SONDAGEM_POR_PROVEDOR;
         if (foraDoLimite > 0) {
           const prioridade = new Set(
-            modelos
-              .filter((m) => idsPrioritarios.has(m.id.toLowerCase()))
-              .map((m) => m.id),
+            modelos.filter((m) => idsPrioritarios.has(m.id.toLowerCase())).map((m) => m.id),
           );
           const semPrioridade = ids.filter((id) => !prioridade.has(id));
           for (const id of prioridade) semPrioridade.unshift(id);
@@ -411,7 +414,7 @@ async function comLimite<T>(
   const trabalhadores = Array.from({ length: Math.min(limite, itens.length) }, async () => {
     while (proximo < itens.length) {
       const indice = proximo++;
-      resultados[indice] = await executar(itens[indice]!);
+      resultados[indice] = await executar(itens[indice]);
     }
   });
   await Promise.all(trabalhadores);
@@ -539,10 +542,9 @@ export async function verificarModelosGratuitos(
     (s, p) => s + p.modelosGratuitos.filter((m) => m.funcionando === false).length,
     0,
   );
-  const resumo =
-    sondar
-      ? `${comChave}/${provedores.length} provedores verificados · ${totalGratuitos} modelos gratuitos no catálogo · ${respondendo} respondendo · ${limitados} com rate limit · ${falhando} falhando · ${desaparecidos.length} configurados sumiram`
-      : `${comChave}/${provedores.length} provedores verificados · ${totalGratuitos} modelos gratuitos encontrados · ${desaparecidos.length} modelos configurados sumiram do catálogo · ${novosSugeridos.length} novos gratuitos sugeridos`;
+  const resumo = sondar
+    ? `${comChave}/${provedores.length} provedores verificados · ${totalGratuitos} modelos gratuitos no catálogo · ${respondendo} respondendo · ${limitados} com rate limit · ${falhando} falhando · ${desaparecidos.length} configurados sumiram`
+    : `${comChave}/${provedores.length} provedores verificados · ${totalGratuitos} modelos gratuitos encontrados · ${desaparecidos.length} modelos configurados sumiram do catálogo · ${novosSugeridos.length} novos gratuitos sugeridos`;
 
   return {
     geradoEm: new Date().toISOString(),
@@ -552,8 +554,3 @@ export async function verificarModelosGratuitos(
     resumo,
   };
 }
-
-
-
-
-
