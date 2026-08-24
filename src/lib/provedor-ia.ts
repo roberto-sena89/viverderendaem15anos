@@ -154,10 +154,10 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     modelosGratuitos: ["stealth/ox-alpha", "minimax/minimax-m2.5"],
     urlChave: "https://app.cline.bot",
   },
-  /* Hermes Agent (NousResearch) */
+  /* Hermes Agent */
   {
     id: "nous",
-    nome: "Hermes Agent (NousResearch)",
+    nome: "Hermes Agent",
     descricao: "Nous Portal — 300+ modelos (Claude, GPT, Gemini, DeepSeek, Qwen) com camada gratuita (ex.: tencent/hy3:free, stepfun/step-3.7-flash:free). Chave no Nous Portal.",
     baseUrl: "https://inference-api.nousresearch.com/v1",
     modelos: [

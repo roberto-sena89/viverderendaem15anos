@@ -125,7 +125,7 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
   },
   {
     chave: "nous",
-    nome: "Hermes Agent (NousResearch)",
+    nome: "Hermes Agent",
     baseUrl: "https://inference-api.nousresearch.com/v1",
     variavelChave: "NOUS_API_KEY",
     padroesGratuitos: [/:free$/i],
