@@ -28,7 +28,8 @@ const HOSTS_PERMITIDOS = [
   "api.hyperbolic.xyz",
   "api.novita.ai",
   "openai.inference.de-txl.ionos.com",
-  "inference-api.nousresearch.com",
+  "api.b.ai",
+  "b.ai",
   "ai-gateway.lovable.dev",
 ];
 

@@ -126,7 +126,7 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
   {
     chave: "nous",
     nome: "Hermes Agent",
-    baseUrl: "https://inference-api.nousresearch.com/v1",
+    baseUrl: "https://api.b.ai/v1/chat/completions",
     variavelChave: "NOUS_API_KEY",
     padroesGratuitos: [/:free$/i],
     idsGratuitosAdicionais: ["tencent/hy3:free", "poolside/laguna-s-2.1:free", "stepfun/step-3.7-flash:free", "poolside/laguna-xs-2.1:free"],

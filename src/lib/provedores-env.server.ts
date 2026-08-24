@@ -77,7 +77,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
   {
     variavel: "NOUS_API_KEY",
     nome: "Hermes Agent",
-    baseUrl: "https://inference-api.nousresearch.com/v1",
+    baseUrl: "https://api.b.ai/v1/chat/completions",
     modelo: "tencent/hy3:free",
     urlChave: "https://portal.nousresearch.com",
   },

@@ -159,7 +159,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     id: "nous",
     nome: "Hermes Agent",
     descricao: "Nous Portal — 300+ modelos (Claude, GPT, Gemini, DeepSeek, Qwen) com camada gratuita (ex.: tencent/hy3:free, stepfun/step-3.7-flash:free). Chave no Nous Portal.",
-    baseUrl: "https://inference-api.nousresearch.com/v1",
+    baseUrl: "https://api.b.ai/v1/chat/completions",
     modelos: [
       "tencent/hy3:free",
       "poolside/laguna-s-2.1:free",
