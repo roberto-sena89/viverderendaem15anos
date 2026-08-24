@@ -1556,3 +1556,37 @@ canvas {
     overflow-wrap: anywhere;
   }
 }
+
+/* ---------------------------------------------------------------
+ * Acessibilidade de leitura — tamanhos mínimos e alto contraste.
+ * --------------------------------------------------------------- */
+@media (prefers-contrast: more) {
+  :root,
+  .dark {
+    --muted-foreground: oklch(0.86 0.01 240);
+    --border: oklch(0.62 0.02 240);
+  }
+
+  a,
+  .prose-legivel a {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+}
+
+@media (forced-colors: active) {
+  .panel,
+  [data-streamdown="table-wrapper"],
+  [data-streamdown="table-wrapper"] th,
+  [data-streamdown="table-wrapper"] td {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  mark {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
