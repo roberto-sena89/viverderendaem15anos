@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-/** Configura��o de um provedor de IA compat�vel com a API OpenAI. */
+/** Configuração de um provedor de IA compatível com a API OpenAI. */
 export interface ConfigProvedorIA {
   /** Identificador do preset escolhido (ou "personalizado"). */
   preset: string;
@@ -9,7 +9,7 @@ export interface ConfigProvedorIA {
   baseUrl: string;
   /** Modelo a ser usado (ex.: deepseek/deepseek-chat-v3:free). */
   modelo: string;
-  /** Chave de API do provedor � fica salva apenas neste navegador. */
+  /** Chave de API do provedor — fica salva apenas neste navegador. */
   chave: string;
   /** Chaves guardadas por provedor, para lembrar ao alternar entre eles. */
   chavesPorProvedor: Record<string, string>;
@@ -22,17 +22,17 @@ export interface PresetProvedor {
   baseUrl: string;
   modelos: string[];
   urlChave: string;
-  /** Modelos gratuitos verificados para este provedor (o sufixo -free/:free nem sempre � confi�vel). */
+  /** Modelos gratuitos verificados para este provedor (o sufixo -free/:free nem sempre é confiável). */
   modelosGratuitos?: string[];
 }
 
-/** Provedores com camada gratuita (free tier) compat�veis com a API OpenAI. */
+/** Provedores com camada gratuita (free tier) compatíveis com a API OpenAI. */
 export const PRESETS_PROVEDOR: PresetProvedor[] = [
   /* 1. OpenRouter */
   {
     id: "openrouter",
     nome: "OpenRouter",
-    descricao: "Cat�logo com dezenas de modelos gratuitos (sufixo :free). Chave gr�tis.",
+    descricao: "Catálogo com dezenas de modelos gratuitos (sufixo :free). Chave grátis.",
     baseUrl: "https://openrouter.ai/api/v1",
     modelos: [
       "nvidia/nemotron-3.5-lightning:free",
@@ -77,7 +77,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     id: "orcarouter",
     nome: "OrcaRouter",
     descricao:
-      "Roteador aberto que conecta OpenAI, Anthropic, Google e DeepSeek a pre�o de custo, com camada gratuita de modelos DeepSeek V4.",
+      "Roteador aberto que conecta OpenAI, Anthropic, Google e DeepSeek a preço de custo, com camada gratuita de modelos DeepSeek V4.",
     baseUrl: "https://api.orcarouter.ai/v1",
     modelos: [
       "qwen/qwen3.8-27b-free",
@@ -97,7 +97,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
   {
     id: "nvidia",
     nome: "Nvidia",
-    descricao: "Camada gratuita NVIDIA (build.nvidia.com, com limites de requisi��o).",
+    descricao: "Camada gratuita NVIDIA (build.nvidia.com, com limites de requisição).",
     baseUrl: "https://integrate.api.nvidia.com/v1",
     modelos: [],
     modelosGratuitos: [],
@@ -117,7 +117,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
   {
     id: "groq",
     nome: "Groq Cloud",
-    descricao: "Camada gratuita muito r�pida com modelos Compound, GPT-OSS e Qwen.",
+    descricao: "Camada gratuita muito rápida com modelos Compound, GPT-OSS e Qwen.",
     baseUrl: "https://api.groq.com/openai/v1",
     modelos: [
       "groq/compound",
@@ -137,12 +137,12 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     urlChave: "https://console.groq.com/keys",
   },
-  /* 8. Cline Bot � OX Alpha (gr�tis) */
+  /* 8. Cline Bot — OX Alpha (grátis) */
   {
     id: "cline",
     nome: "Cline Bot",
     descricao:
-      "Gateway Cline Bot (api.cline.bot) � OX Alpha (stealth/ox-alpha) com 1M de contexto, gratuito no preview, al�m de 100+ modelos (Claude, GPT, Gemini) via chave �nica.",
+      "Gateway Cline Bot (api.cline.bot) — OX Alpha (stealth/ox-alpha) com 1M de contexto, gratuito no preview, além de 100+ modelos (Claude, GPT, Gemini) via chave única.",
     baseUrl: "https://api.cline.bot/api/v1",
     modelos: [
       "stealth/ox-alpha",
@@ -160,7 +160,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     id: "nous",
     nome: "B.AI",
     descricao:
-      "B.AI � agrega��o de modelos (Claude, GPT, Gemini, DeepSeek, Kimi, GLM, MiniMax). Servi�o pago por cr�dito.",
+      "B.AI — agregação de modelos (Claude, GPT, Gemini, DeepSeek, Kimi, GLM, MiniMax). Serviço pago por crédito.",
     baseUrl: "https://api.b.ai/v1",
     modelos: [
       "gpt-5.4",
@@ -186,7 +186,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     id: "kilocode",
     nome: "Kilo Code",
     descricao:
-      "AI Gateway da Kilo � modelos gratuitos (:free) com acesso an�nimo limitado (200 req/hora/IP) ou com chave gr�tis.",
+      "AI Gateway da Kilo — modelos gratuitos (:free) com acesso anônimo limitado (200 req/hora/IP) ou com chave grátis.",
     baseUrl: "https://api.kilo.ai/api/gateway",
     modelos: [
       "kilo-auto/free",
@@ -210,8 +210,8 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
   /* 9. Personalizado */
   {
     id: "personalizado",
-    nome: "Personalizado (compat�vel OpenAI)",
-    descricao: "Qualquer endpoint compat�vel com a API OpenAI (Ollama, LM Studio, etc.).",
+    nome: "Personalizado (compatível OpenAI)",
+    descricao: "Qualquer endpoint compatível com a API OpenAI (Ollama, LM Studio, etc.).",
     baseUrl: "",
     modelos: [],
     urlChave: "",
@@ -220,7 +220,7 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
 
 export const CHAVE_STORAGE = "gestor-ia-provedor";
 
-/** Configura��o padr�o do Gestor IA: Kilo Code (AI Gateway, modelo gratuito). */
+/** Configuração padrão do Gestor IA: Kilo Code (AI Gateway, modelo gratuito). */
 export const CONFIG_PADRAO: ConfigProvedorIA = {
   preset: "kilocode",
   baseUrl: "https://api.kilo.ai/api/gateway",
@@ -259,9 +259,9 @@ export function lerConfigProvedor(): ConfigProvedorIA {
 }
 
 /**
- * Config v�lida = provedor com URL e modelo preenchidos, e com chave pr�pria OU
- * v�nculo com uma vari�vel de ambiente do servidor (ex.: Kilo, que aceita
- * acesso an�nimo; a chave ent�o fica no servidor e nunca vai para o navegador).
+ * Config válida = provedor com URL e modelo preenchidos, e com chave própria OU
+ * vínculo com uma variável de ambiente do servidor (ex.: Kilo, que aceita
+ * acesso anônimo; a chave então fica no servidor e nunca vai para o navegador).
  */
 export function provedorAtivo(config: ConfigProvedorIA) {
   const temChave = Boolean(config.chave.trim());
@@ -307,7 +307,7 @@ export function useProvedorIA() {
   return { config, salvar, limpar, ativo: provedorAtivo(config) };
 }
 
-/** Cabe�alhos enviados ao /api/chat quando h� provedor externo configurado. */
+/** Cabeçalhos enviados ao /api/chat quando há provedor externo configurado. */
 export const PRESET_PARA_VARIAVEL_BACKEND: Record<string, string> = {
   orcarouter: "ORCAROUTER_API_KEY",
   openrouter: "OPENROUTER_API_KEY",
@@ -354,7 +354,7 @@ export async function listarProvedoresBackend(): Promise<ProvedorBackend[]> {
     data: { session },
   } = await supabase.auth.getSession();
   if (!session?.access_token) {
-    throw new Error("N�o autenticado");
+    throw new Error("Não autenticado");
   }
 
   const response = await fetch("/api/ia/provedores", {
@@ -373,19 +373,19 @@ export async function listarProvedoresBackend(): Promise<ProvedorBackend[]> {
   return Array.isArray(lista) ? (lista as ProvedorBackend[]) : [];
 }
 // --------------------------------------------------------------------------
-// Hist�rico de testes de conex�o (localStorage � diagn�stico client-side)
+// Histórico de testes de conexão (localStorage — diagnóstico client-side)
 // --------------------------------------------------------------------------
 
 export interface RegistroTesteConexao {
   /** ISO timestamp do teste. */
   timestamp: string;
-  /** Nome amig�vel do provedor testado (ex.: "OpenRouter (modelos :free)"). */
+  /** Nome amigável do provedor testado (ex.: "OpenRouter (modelos :free)"). */
   provedor: string;
   /** true = sucesso, false = falha. */
   ok: boolean;
-  /** C�digo HTTP retornado (0 para erros de rede). */
+  /** Código HTTP retornado (0 para erros de rede). */
   status: number;
-  /** Resumo do resultado (ex.: "Conex�o validada � 42 modelos"). */
+  /** Resumo do resultado (ex.: "Conexão validada — 42 modelos"). */
   resumo: string;
 }
 
@@ -416,7 +416,7 @@ export function lerHistoricoTestes(): RegistroTesteConexao[] {
   }
 }
 
-/** Adiciona um registro ao hist�rico (mant�m os �ltimos 12, mais novos primeiro). */
+/** Adiciona um registro ao histórico (mantém os últimos 12, mais novos primeiro). */
 export function registrarTeste(registro: Omit<RegistroTesteConexao, "timestamp">) {
   if (typeof window === "undefined") return;
   try {
@@ -425,7 +425,7 @@ export function registrarTeste(registro: Omit<RegistroTesteConexao, "timestamp">
     const atualizado = [novo, ...atual].slice(0, LIMITE_HISTORICO);
     window.localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(atualizado));
   } catch {
-    /* ignore � s� diagn�stico client-side */
+    /* ignore — só diagnóstico client-side */
   }
 }
 

@@ -85,7 +85,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
 
 /**
  * Encontra o provedor de IA a ser usado no servidor:
- * 1� � o primeiro da lista com chave configurada (o usu�rio escolheu aquele);
+ * 1º — o primeiro da lista com chave configurada (o usuário escolheu aquele);
  * 2º — o primeiro que aceita acesso anônimo (ex.: Kilo Code com modelos :free),
  *     usado quando nenhuma chave foi configurada, para o app nunca ficar sem IA.
  */
