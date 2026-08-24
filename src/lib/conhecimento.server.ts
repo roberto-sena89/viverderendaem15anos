@@ -231,13 +231,48 @@ const SINONIMOS_FINANCAS: Record<string, string[]> = {
   inflacao: ["inflação", "ipca", "igpm", "preços", "ipca-15"],
 };
 
+/** Stopwords do português — não carregam significado financeiro e poluem a
+ * similaridade (ex.: "de" casando com "distribuições de FIIs"). */
+const STOPWORDS = new Set([
+  "a",
+  "ao",
+  "aos",
+  "as",
+  "com",
+  "como",
+  "da",
+  "das",
+  "de",
+  "do",
+  "dos",
+  "e",
+  "em",
+  "entre",
+  "na",
+  "nas",
+  "no",
+  "nos",
+  "o",
+  "os",
+  "ou",
+  "para",
+  "por",
+  "que",
+  "se",
+  "sem",
+  "sobre",
+  "um",
+  "uma",
+  "é",
+]);
+
 function tokenizar(texto: string): string[] {
   return texto
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .split(/[^a-z0-9]+/)
-    .filter((t) => t.length >= 2);
+    .filter((t) => t.length >= 2 && !STOPWORDS.has(t));
 }
 
 function expandirTermos(termos: string[]): string[] {
@@ -287,7 +322,8 @@ function pontuarItemSemantico(item: ConhecimentoItem, termosPergunta: string[]):
   const tfPergunta = calcularTF(termosExpandidos);
   const tfItem = calcularTF(termosItem);
   const sim = similaridadeCosseno(tfPergunta, tfItem);
-  const bonusRecencia = new Date(item.atualizadoEm).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000 ? 0.1 : 0;
+  const bonusRecencia =
+    new Date(item.atualizadoEm).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000 ? 0.1 : 0;
   return sim + bonusRecencia;
 }
 
@@ -420,17 +456,24 @@ function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): Conheci
   const empresas = itens.filter((i) => i.categoria === "setor");
   const educacao = itens.filter((i) => i.categoria === "educacao");
 
-  const secao = (rotulo: string, conteudo: string) => (conteudo ? `- ${rotulo}: ${conteudo}` : null);
+  const secao = (rotulo: string, conteudo: string) =>
+    conteudo ? `- ${rotulo}: ${conteudo}` : null;
 
   const linhas: (string | null)[] = [];
   if (macro) linhas.push(secao("Visão geral", macro.conteudo.slice(0, 200)) ?? null);
   if (macro) linhas.push(secao("Macro", macro.conteudo.slice(0, 300)) ?? null);
   if (noticias.length > 0) {
-    const resumoMercado = noticias.slice(0, 3).map((n) => n.titulo).join("; ");
+    const resumoMercado = noticias
+      .slice(0, 3)
+      .map((n) => n.titulo)
+      .join("; ");
     linhas.push(secao("Mercados", resumoMercado) ?? null);
   }
   if (empresas.length > 0) {
-    const resumoEmpresas = empresas.slice(0, 3).map((n) => n.titulo).join("; ");
+    const resumoEmpresas = empresas
+      .slice(0, 3)
+      .map((n) => n.titulo)
+      .join("; ");
     linhas.push(secao("Empresas", resumoEmpresas) ?? null);
   }
   if (educacao.length > 0) {
@@ -720,7 +763,13 @@ export function selecionarConhecimento(
     score: pontuarItemSemantico(item, termosExpandidos),
   }));
 
-  comScore.sort((a, b) => b.score - a.score);
+  comScore.sort(
+    (a, b) =>
+      b.score - a.score ||
+      // Desempate: sem termos relevantes (ou scores iguais), o item mais
+      // recente vem primeiro — conhecimento fresco é mais útil.
+      new Date(b.item.atualizadoEm).getTime() - new Date(a.item.atualizadoEm).getTime(),
+  );
 
   const escolhidos: ConhecimentoItem[] = [];
   let tamanho = 0;

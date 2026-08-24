@@ -103,7 +103,10 @@ export function SkeletonAnalisando({
           </span>
           <span className="text-xs font-medium text-primary/80 tracking-wide">{texto}</span>
         </div>
-        <div className="rounded-xl border border-border/60 bg-card/40 p-3 space-y-2.5 shadow-sm" aria-hidden="true">
+        <div
+          className="rounded-xl border border-border/60 bg-card/40 p-3 space-y-2.5 shadow-sm"
+          aria-hidden="true"
+        >
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Skeleton className="size-3 rounded-full" />
             <Skeleton className="h-3 w-56 rounded-full" />

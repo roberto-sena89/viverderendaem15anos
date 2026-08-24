@@ -7,6 +7,8 @@ import { AppShell } from "@/components/app-shell";
 import { StatusCotacoes } from "@/components/status-cotacoes";
 import { CarteiraGrupos } from "@/components/carteira-grupos";
 import { DialogMeuPluggy } from "@/components/dialog-meu-pluggy";
+import { PainelPrejuizoFiscal } from "@/components/painel-prejuizo-fiscal";
+import { CarteiraPublicaCompartilhar } from "@/components/carteira-publica-compartilhar";
 
 import { ResumoKpis } from "@/components/resumo-kpis";
 import { Button } from "@/components/ui/button";
@@ -161,6 +163,26 @@ function CarteiraPage() {
           }
         />
       )}
+
+      {/* Nível 2 — F2: prejuízo fiscal & tax-loss harvesting */}
+      <section className="surface-card p-6">
+        <h2 className="panel-title">Prejuízo Fiscal & Tax-Loss Harvesting</h2>
+        <p className="mt-1 mb-4 text-sm text-muted-foreground">
+          Acompanhe prejuízos acumulados por categoria e veja oportunidades de realizar perdas para
+          compensar ganhos de capital.
+        </p>
+        <PainelPrejuizoFiscal />
+      </section>
+
+      {/* Nível 2 — F6: carteira pública compartilhável */}
+      <section className="surface-card p-6">
+        <h2 className="panel-title">Carteira Pública Compartilhável</h2>
+        <p className="mt-1 mb-4 text-sm text-muted-foreground">
+          Gere um link público com um snapshot da sua carteira para compartilhar sua evolução com
+          amigos, mentor ou redes sociais.
+        </p>
+        <CarteiraPublicaCompartilhar />
+      </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-2xl">

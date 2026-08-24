@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { AppShell } from "@/components/app-shell";
+import { CalendarioProventos } from "@/components/calendario-proventos";
 import { EstadoVazio } from "@/components/estado-vazio";
 import { StatCard } from "@/components/stat-card";
 import { InputNumeroBR } from "@/components/input-numero-br";
@@ -230,6 +231,16 @@ function DividendosPage() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Nível 2 — F1: projeção dos próximos 12 meses a partir das posições atuais */}
+      <div className="surface-card p-6">
+        <p className="panel-title">Calendário futuro de proventos (projeção 12 meses)</p>
+        <p className="mt-1 mb-4 text-sm text-muted-foreground">
+          Estimativa do que a sua carteira atual deve pagar nos próximos 12 meses, com base na média
+          dos proventos recebidos nos últimos 12 meses.
+        </p>
+        <CalendarioProventos />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">

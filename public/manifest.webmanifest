@@ -1,14 +1,40 @@
 {
+  "id": "/?pwa=true",
   "name": "Viver de Renda em 15 Anos",
   "short_name": "Renda 15",
   "description": "Plataforma para controlar investimentos, dividendos e planejar sua independência financeira.",
-  "start_url": "/",
+  "start_url": "/?pwa=true",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "background_color": "#0B0F0D",
   "theme_color": "#006B3C",
   "lang": "pt-BR",
+  "categories": ["finance", "business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Painel",
+      "description": "Resumo do patrimônio, rentabilidade e tempo para independência",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Carteira",
+      "short_name": "Carteira",
+      "description": "Todos os ativos, preço médio, lucro e participação",
+      "url": "/carteira",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Planejador",
+      "short_name": "Planejador",
+      "description": "Simular aposentadoria e projetar independência financeira",
+      "url": "/planejador",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },

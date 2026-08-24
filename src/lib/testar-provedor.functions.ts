@@ -35,7 +35,8 @@ export const testarProvedorIA = createServerFn({ method: "POST" })
         redirect: "error",
         signal: AbortSignal.timeout(15_000),
         headers: {
-          [headerAuth]: headerAuth === "Authorization" ? `Bearer ${data.chave.trim()}` : data.chave.trim(),
+          [headerAuth]:
+            headerAuth === "Authorization" ? `Bearer ${data.chave.trim()}` : data.chave.trim(),
           "Content-Type": "application/json",
         },
       });
@@ -57,7 +58,9 @@ export const testarProvedorIA = createServerFn({ method: "POST" })
               signal: AbortSignal.timeout(10_000),
               headers: {
                 [headerAuth]:
-                  headerAuth === "Authorization" ? `Bearer ${data.chave.trim()}` : data.chave.trim(),
+                  headerAuth === "Authorization"
+                    ? `Bearer ${data.chave.trim()}`
+                    : data.chave.trim(),
                 "Content-Type": "application/json",
               },
             });

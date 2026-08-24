@@ -81,7 +81,11 @@ export function DialogoProvedorIA() {
     setTeste(null);
     try {
       const resultado = await executarTeste({
-        data: { baseUrl: rascunho.baseUrl.trim(), chave: rascunho.chave.trim(), preset: rascunho.preset },
+        data: {
+          baseUrl: rascunho.baseUrl.trim(),
+          chave: rascunho.chave.trim(),
+          preset: rascunho.preset,
+        },
       });
       setTeste(resultado);
       const nomeProvedor =
@@ -130,7 +134,9 @@ export function DialogoProvedorIA() {
 
   function escolherPreset(id: string) {
     setRascunho((r) => {
-      const chaves = r.chave.trim() ? { ...r.chavesPorProvedor, [r.preset]: r.chave.trim() } : r.chavesPorProvedor;
+      const chaves = r.chave.trim()
+        ? { ...r.chavesPorProvedor, [r.preset]: r.chave.trim() }
+        : r.chavesPorProvedor;
       const alvo = PRESETS_PROVEDOR.find((p) => p.id === id);
       return {
         preset: id,
@@ -184,8 +190,8 @@ export function DialogoProvedorIA() {
             <span className="min-w-0 break-words">Provedores de IA</span>
           </DialogTitle>
           <DialogDescription className="break-words">
-            Conecte um provedor gratuito compatível com a API OpenAI. A chave fica salva
-            apenas neste navegador e é usada só nas suas conversas.
+            Conecte um provedor gratuito compatível com a API OpenAI. A chave fica salva apenas
+            neste navegador e é usada só nas suas conversas.
           </DialogDescription>
         </DialogHeader>
 
@@ -208,300 +214,296 @@ export function DialogoProvedorIA() {
                 })}
               </SelectContent>
             </Select>
-            {preset && (
-              <p className="text-muted-foreground text-xs">{preset.descricao}</p>
+            {preset && <p className="text-muted-foreground text-xs">{preset.descricao}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="ia-base-url">URL base da API</Label>
+            <Input
+              id="ia-base-url"
+              value={rascunho.baseUrl}
+              onChange={(e) => setRascunho({ ...rascunho, baseUrl: e.target.value })}
+              placeholder="https://openrouter.ai/api/v1"
+              autoComplete="off"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="ia-modelo">Modelo</Label>
+            <Input
+              id="ia-modelo"
+              value={rascunho.modelo}
+              onChange={(e) => setRascunho({ ...rascunho, modelo: e.target.value })}
+              placeholder="nvidia/nemotron-3-ultra-550b-a55b:free"
+              autoComplete="off"
+            />
+            {(preset?.modelos.length ?? 0) > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {preset?.modelos.map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setRascunho({ ...rascunho, modelo: m })}
+                    className={`max-w-full break-all rounded-full border px-2.5 py-1 text-left font-mono text-[11px] leading-snug transition-colors ${
+                      rascunho.modelo === m
+                        ? "border-primary/60 bg-primary/10 text-primary"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
           <div className="space-y-2">
-                <Label htmlFor="ia-base-url">URL base da API</Label>
-                <Input
-                  id="ia-base-url"
-                  value={rascunho.baseUrl}
-                  onChange={(e) => setRascunho({ ...rascunho, baseUrl: e.target.value })}
-                  placeholder="https://openrouter.ai/api/v1"
-                  autoComplete="off"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="ia-modelo">Modelo</Label>
-                <Input
-                  id="ia-modelo"
-                  value={rascunho.modelo}
-                  onChange={(e) => setRascunho({ ...rascunho, modelo: e.target.value })}
-                  placeholder="nvidia/nemotron-3-ultra-550b-a55b:free"
-                  autoComplete="off"
-                />
-                {(preset?.modelos.length ?? 0) > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {preset?.modelos.map((m) => (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => setRascunho({ ...rascunho, modelo: m })}
-                        className={`max-w-full break-all rounded-full border px-2.5 py-1 text-left font-mono text-[11px] leading-snug transition-colors ${
-                          rascunho.modelo === m
-                            ? "border-primary/60 bg-primary/10 text-primary"
-                            : "border-border text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {m}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="ia-chave">Chave de API</Label>
-                <div className="relative">
-                  <Input
-                    id="ia-chave"
-                    type="password"
-                    value={rascunho.chave}
-                    disabled={Boolean(backendConfigurado)}
-                    onChange={(e) =>
-                      setRascunho((r) => ({
-                        ...r,
-                        chave: e.target.value,
-                        chavesPorProvedor: { ...r.chavesPorProvedor, [r.preset]: e.target.value },
-                      }))
-                    }
-                    placeholder={backendConfigurado ? "Configurado no servidor" : "sk-..."}
-                    autoComplete="off"
-                  />
-                  {backendConfigurado && (
-                    <Lock className="text-muted-foreground absolute right-3 top-1/2 size-4 -translate-y-1/2" />
-                  )}
-                </div>
-                {backendConfigurado ? (
-                  <p className="text-muted-foreground text-xs">
-                    Configurado no servidor • chave não precisa ser digitada
-                  </p>
-                ) : (
-                  preset?.urlChave && (
-                    <a
-                      href={preset.urlChave}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
-                    >
-                      Obter chave gratuita <ExternalLink className="size-3" />
-                    </a>
-                  )
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  disabled={testando || !rascunho.baseUrl.trim() || !rascunho.chave.trim()}
-                  onClick={testarConexao}
+            <Label htmlFor="ia-chave">Chave de API</Label>
+            <div className="relative">
+              <Input
+                id="ia-chave"
+                type="password"
+                value={rascunho.chave}
+                disabled={Boolean(backendConfigurado)}
+                onChange={(e) =>
+                  setRascunho((r) => ({
+                    ...r,
+                    chave: e.target.value,
+                    chavesPorProvedor: { ...r.chavesPorProvedor, [r.preset]: e.target.value },
+                  }))
+                }
+                placeholder={backendConfigurado ? "Configurado no servidor" : "sk-..."}
+                autoComplete="off"
+              />
+              {backendConfigurado && (
+                <Lock className="text-muted-foreground absolute right-3 top-1/2 size-4 -translate-y-1/2" />
+              )}
+            </div>
+            {backendConfigurado ? (
+              <p className="text-muted-foreground text-xs">
+                Configurado no servidor • chave não precisa ser digitada
+              </p>
+            ) : (
+              preset?.urlChave && (
+                <a
+                  href={preset.urlChave}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
                 >
-                  {testando ? (
-                    <Loader2 className="mr-1.5 size-4 animate-spin" />
+                  Obter chave gratuita <ExternalLink className="size-3" />
+                </a>
+              )
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full"
+              disabled={testando || !rascunho.baseUrl.trim() || !rascunho.chave.trim()}
+              onClick={testarConexao}
+            >
+              {testando ? (
+                <Loader2 className="mr-1.5 size-4 animate-spin" />
+              ) : (
+                <PlugZap className="mr-1.5 size-4" />
+              )}
+              Testar conexão
+            </Button>
+
+            {teste && (
+              <div
+                className={`rounded-lg border p-3 text-xs ${
+                  teste.ok
+                    ? "border-positive/40 bg-positive/10 text-positive"
+                    : "border-negative/40 bg-negative/10 text-negative"
+                }`}
+                role="status"
+              >
+                <p className="flex items-start gap-1.5 font-medium">
+                  {teste.ok ? (
+                    <CheckCircle2 className="mt-px size-3.5 shrink-0" />
                   ) : (
-                    <PlugZap className="mr-1.5 size-4" />
+                    <XCircle className="mt-px size-3.5 shrink-0" />
                   )}
-                  Testar conexão
-                </Button>
+                  <span className="break-words">
+                    {teste.mensagem}
+                    {teste.status ? ` (HTTP ${teste.status})` : ""}
+                  </span>
+                </p>
+              </div>
+            )}
 
-                {teste && (
-                  <div
-                    className={`rounded-lg border p-3 text-xs ${
-                      teste.ok
-                        ? "border-positive/40 bg-positive/10 text-positive"
-                        : "border-negative/40 bg-negative/10 text-negative"
+            {teste?.ok && teste.modelos.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-muted-foreground text-xs">
+                    {apenasFree
+                      ? "Modelos gratuitos — clique para usar:"
+                      : "Modelos disponíveis — clique para usar:"}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setApenasFree((v) => !v)}
+                    aria-pressed={apenasFree}
+                    title={
+                      apenasFree ? "Mostrar todos os modelos" : "Mostrar apenas modelos gratuitos"
+                    }
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
+                      apenasFree
+                        ? "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/30"
+                        : "border-border/60 text-muted-foreground hover:bg-muted/50"
                     }`}
-                    role="status"
                   >
-                    <p className="flex items-start gap-1.5 font-medium">
-                      {teste.ok ? (
-                        <CheckCircle2 className="mt-px size-3.5 shrink-0" />
-                      ) : (
-                        <XCircle className="mt-px size-3.5 shrink-0" />
-                      )}
-                      <span className="break-words">
-                        {teste.mensagem}
-                        {teste.status ? ` (HTTP ${teste.status})` : ""}
-                      </span>
-                    </p>
-                  </div>
+                    <Sparkles className="size-3" />
+                    {apenasFree ? "Somente FREE" : "Mostrar todos"}
+                    <span className="opacity-90">({totalFree})</span>
+                  </button>
+                </div>
+                {apenasFree && modelosVisiveis.length === 0 && (
+                  <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-center text-[11px]">
+                    Nenhum modelo gratuito encontrado neste provedor.
+                  </p>
                 )}
-
-                {teste?.ok && teste.modelos.length > 0 && (
-                  <div className="space-y-1.5">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-muted-foreground text-xs">
-                        {apenasFree
-                          ? "Modelos gratuitos — clique para usar:"
-                          : "Modelos disponíveis — clique para usar:"}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setApenasFree((v) => !v)}
-                        aria-pressed={apenasFree}
-                        title={
-                          apenasFree
-                            ? "Mostrar todos os modelos"
-                            : "Mostrar apenas modelos gratuitos"
-                        }
-                        className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
-                          apenasFree
-                            ? "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/30"
-                            : "border-border/60 text-muted-foreground hover:bg-muted/50"
+                <div className="border-border/60 max-h-48 min-w-0 space-y-1 overflow-y-auto overflow-x-hidden rounded-lg border p-2">
+                  {modelosVisiveis.map((m) => {
+                    const selecionado = rascunho.modelo === m;
+                    return (
+                      <div
+                        key={m}
+                        className={`grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 rounded-md border px-2 py-1 transition-colors ${
+                          selecionado
+                            ? "border-primary/60 bg-primary/10"
+                            : "border-transparent hover:bg-muted/50"
                         }`}
                       >
-                        <Sparkles className="size-3" />
-                        {apenasFree ? "Somente FREE" : "Mostrar todos"}
-                        <span className="opacity-90">({totalFree})</span>
-                      </button>
-                    </div>
-                    {apenasFree && modelosVisiveis.length === 0 && (
-                      <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-center text-[11px]">
-                        Nenhum modelo gratuito encontrado neste provedor.
-                      </p>
-                    )}
-                    <div className="border-border/60 max-h-48 min-w-0 space-y-1 overflow-y-auto overflow-x-hidden rounded-lg border p-2">
-                      {modelosVisiveis.map((m) => {
-                        const selecionado = rascunho.modelo === m;
-                        return (
-                          <div
-                            key={m}
-                            className={`grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 rounded-md border px-2 py-1 transition-colors ${
-                              selecionado
-                                ? "border-primary/60 bg-primary/10"
-                                : "border-transparent hover:bg-muted/50"
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => setRascunho({ ...rascunho, modelo: m })}
-                              className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
-                              title="Selecionar modelo"
-                            >
-                              <span
-                                className={`flex h-2 w-2 shrink-0 rounded-full ${
-                                  selecionado ? "bg-primary" : "bg-muted-foreground/40"
-                                }`}
-                              />
-                              <span
-                                className={`truncate font-mono text-[11px] ${
-                                  selecionado ? "text-primary" : "text-muted-foreground"
-                                }`}
-                              >
-                                {m}
-                              </span>
-                            </button>
-                            <button
-                              type="button"
-                              disabled={selecionado}
-                              onClick={() => setRascunho({ ...rascunho, modelo: m })}
-                              title={selecionado ? "Modelo em uso" : "Usar este modelo"}
-                              className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
-                                selecionado
-                                  ? "bg-primary/20 text-primary"
-                                  : "bg-primary/10 text-primary hover:bg-primary/20"
-                              }`}
-                            >
-                              {selecionado ? (
-                                <>
-                                  <CheckCircle2 className="size-3 shrink-0" /> Em uso
-                                </>
-                              ) : (
-                                <>
-                                  <Sparkles className="size-3 shrink-0" />
-                                  <span className="hidden sm:inline">Usar este modelo</span>
-                                  <span className="sm:hidden">Usar</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Histórico de testes de conexão — diagnóstico client-side */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <p className="text-muted-foreground text-xs">
-                      Histórico de testes ({historico.length})
-                    </p>
-                    {historico.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          limparHistoricoTestes();
-                          setHistorico([]);
-                          toast.success("Histórico de testes limpo");
-                        }}
-                        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11px] transition-colors"
-                        title="Limpar histórico de testes"
-                      >
-                        <Trash2 className="size-3" /> Limpar
-                      </button>
-                    )}
-                  </div>
-                  {historico.length === 0 ? (
-                    <p className="text-muted-foreground/70 py-2 text-center text-[11px]">
-                      Nenhum teste registrado ainda. Use “Testar conexão” para começar.
-                    </p>
-                  ) : (
-                    <ul className="border-border/60 max-h-40 min-w-0 space-y-1 overflow-y-auto overflow-x-hidden rounded-lg border p-2">
-                      {historico.map((r) => (
-                        <li
-                          key={r.timestamp}
-                          className="flex items-start gap-2 rounded-md px-1.5 py-1 text-[11px]"
+                        <button
+                          type="button"
+                          onClick={() => setRascunho({ ...rascunho, modelo: m })}
+                          className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+                          title="Selecionar modelo"
                         >
                           <span
-                            className={`mt-0.5 flex size-3.5 shrink-0 items-center justify-center rounded-full ${
-                              r.ok ? "bg-positive/15 text-positive" : "bg-negative/15 text-negative"
+                            className={`flex h-2 w-2 shrink-0 rounded-full ${
+                              selecionado ? "bg-primary" : "bg-muted-foreground/40"
                             }`}
-                            aria-label={r.ok ? "Sucesso" : "Falha"}
+                          />
+                          <span
+                            className={`truncate font-mono text-[11px] ${
+                              selecionado ? "text-primary" : "text-muted-foreground"
+                            }`}
                           >
-                            {r.ok ? (
-                              <CheckCircle2 className="size-2.5" />
-                            ) : (
-                              <XCircle className="size-2.5" />
-                            )}
+                            {m}
                           </span>
-                          <div className="min-w-0 flex-1">
-                            <p className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                              <span className="truncate font-medium">{r.provedor}</span>
-                              <span className="text-muted-foreground shrink-0">
-                                {new Date(r.timestamp).toLocaleString("pt-BR", {
-                                  day: "2-digit",
-                                  month: "2-digit",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                              </span>
-                              {r.status ? (
-                                <span
-                                  className={`shrink-0 rounded px-1 font-mono text-[10px] ${
-                                    r.ok
-                                      ? "bg-positive/10 text-positive"
-                                      : "bg-negative/10 text-negative"
-                                  }`}
-                                >
-                                  {r.status}
-                                </span>
-                              ) : null}
-                            </p>
-                            <p className="text-muted-foreground truncate">{r.resumo}</p>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={selecionado}
+                          onClick={() => setRascunho({ ...rascunho, modelo: m })}
+                          title={selecionado ? "Modelo em uso" : "Usar este modelo"}
+                          className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                            selecionado
+                              ? "bg-primary/20 text-primary"
+                              : "bg-primary/10 text-primary hover:bg-primary/20"
+                          }`}
+                        >
+                          {selecionado ? (
+                            <>
+                              <CheckCircle2 className="size-3 shrink-0" /> Em uso
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="size-3 shrink-0" />
+                              <span className="hidden sm:inline">Usar este modelo</span>
+                              <span className="sm:hidden">Usar</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
+            )}
+
+            {/* Histórico de testes de conexão — diagnóstico client-side */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <p className="text-muted-foreground text-xs">
+                  Histórico de testes ({historico.length})
+                </p>
+                {historico.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      limparHistoricoTestes();
+                      setHistorico([]);
+                      toast.success("Histórico de testes limpo");
+                    }}
+                    className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11px] transition-colors"
+                    title="Limpar histórico de testes"
+                  >
+                    <Trash2 className="size-3" /> Limpar
+                  </button>
+                )}
+              </div>
+              {historico.length === 0 ? (
+                <p className="text-muted-foreground/70 py-2 text-center text-[11px]">
+                  Nenhum teste registrado ainda. Use “Testar conexão” para começar.
+                </p>
+              ) : (
+                <ul className="border-border/60 max-h-40 min-w-0 space-y-1 overflow-y-auto overflow-x-hidden rounded-lg border p-2">
+                  {historico.map((r) => (
+                    <li
+                      key={r.timestamp}
+                      className="flex items-start gap-2 rounded-md px-1.5 py-1 text-[11px]"
+                    >
+                      <span
+                        className={`mt-0.5 flex size-3.5 shrink-0 items-center justify-center rounded-full ${
+                          r.ok ? "bg-positive/15 text-positive" : "bg-negative/15 text-negative"
+                        }`}
+                        aria-label={r.ok ? "Sucesso" : "Falha"}
+                      >
+                        {r.ok ? (
+                          <CheckCircle2 className="size-2.5" />
+                        ) : (
+                          <XCircle className="size-2.5" />
+                        )}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                          <span className="truncate font-medium">{r.provedor}</span>
+                          <span className="text-muted-foreground shrink-0">
+                            {new Date(r.timestamp).toLocaleString("pt-BR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                          {r.status ? (
+                            <span
+                              className={`shrink-0 rounded px-1 font-mono text-[10px] ${
+                                r.ok
+                                  ? "bg-positive/10 text-positive"
+                                  : "bg-negative/10 text-negative"
+                              }`}
+                            >
+                              {r.status}
+                            </span>
+                          ) : null}
+                        </p>
+                        <p className="text-muted-foreground truncate">{r.resumo}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
 
         <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">

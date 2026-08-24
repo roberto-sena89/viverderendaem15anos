@@ -125,8 +125,7 @@ const CATEGORIAS_TESOURO = ["Tesouro Direto", "Tesouro", "Renda Fixa", "Fundos d
  */
 function ehTituloTesouro(ativo: Ativo): boolean {
   const texto = `${ativo.ticker} ${ativo.nome} ${ativo.categoria}`.toUpperCase();
-  const pareceTesouro =
-    /TESOURO|(?:SELIC|IPCA|PREFIXADO?|NTN|LTN|LFT)\b/i.test(texto);
+  const pareceTesouro = /TESOURO|(?:SELIC|IPCA|PREFIXADO?|NTN|LTN|LFT)\b/i.test(texto);
   return (
     CATEGORIAS_TESOURO.includes(ativo.categoria) ||
     pareceTesouro ||
@@ -204,7 +203,7 @@ export function CarteiraGrupos({
       const s = salvos.get(chavePreco(ticker))?.variacaoPercent ?? null;
       // Tesouro: o provedor oficial (Tesouro Transparente) é a única fonte válida;
       // nunca usa a variação da BRAPI, que não cobre títulos públicos corretamente.
-      return tesouro ? (c ?? s) : c ?? b ?? s;
+      return tesouro ? (c ?? s) : (c ?? b ?? s);
     },
     [ehTesouro, cotacoes, brapi, salvos],
   );
@@ -223,7 +222,7 @@ export function CarteiraGrupos({
       const c = cotacoes.get(chaveTicker(ticker))?.preco ?? null;
       const b = brapi.get(chaveBrapi(ticker))?.preco ?? null;
       const s = salvos.get(chavePreco(ticker))?.preco ?? null;
-      return ehTesouro(ticker) ? (c ?? s ?? b) : b ?? c ?? s;
+      return ehTesouro(ticker) ? (c ?? s ?? b) : (b ?? c ?? s);
     },
     [manuais, ehTesouro, cotacoes, brapi, salvos],
   );

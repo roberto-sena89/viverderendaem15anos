@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { OnboardingGestorIA } from "@/components/ai-elements/onboarding-gestor-ia";
 
-
 import {
   Conversation,
   ConversationContent,
@@ -340,7 +339,9 @@ function ChatPage() {
                             className="mb-2 flex items-center gap-1 text-xs text-muted-foreground"
                           >
                             <LineChart className="size-3 shrink-0" aria-hidden="true" />
-                            <span>Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}</span>
+                            <span>
+                              Consultou dados de mercado: {[...new Set(ferramentas)].join(", ")}
+                            </span>
                           </p>
                         ) : null}
                         <MessageResponse>{texto}</MessageResponse>
@@ -351,7 +352,12 @@ function ChatPage() {
               )}
               {status === "submitted" ? <SkeletonAnalisando /> : null}
               {status === "streaming" ? (
-                <div role="status" aria-live="polite" aria-label="Gestor IA está respondendo" className="px-2">
+                <div
+                  role="status"
+                  aria-live="polite"
+                  aria-label="Gestor IA está respondendo"
+                  className="px-2"
+                >
                   <span className="sr-only">Gestor IA está respondendo…</span>
                   <Shimmer aria-hidden="true">Gerando resposta…</Shimmer>
                 </div>

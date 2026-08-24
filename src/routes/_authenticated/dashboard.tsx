@@ -23,6 +23,8 @@ import { DialogMeuPluggy } from "@/components/dialog-meu-pluggy";
 import { DialogTransacao } from "@/components/dialog-transacao";
 import { EstadoVazio } from "@/components/estado-vazio";
 import { PainelAnaliseRisco } from "@/components/painel-analise-risco";
+import { RelatorioSemanal } from "@/components/relatorio-semanal";
+import { ScoreInvestidor } from "@/components/score-investidor";
 import { DetalheEvolucaoMensal } from "@/components/detalhe-evolucao-mensal";
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
@@ -127,6 +129,8 @@ const SECOES = [
   { id: "saude", rotulo: "Saúde" },
   { id: "analise", rotulo: "Análise" },
   { id: "evolucao", rotulo: "Evolução" },
+  { id: "semanal", rotulo: "Semanal" },
+  { id: "score", rotulo: "Score" },
   { id: "ativos", rotulo: "Ativos" },
 ] as const;
 
@@ -355,10 +359,14 @@ function Dashboard() {
                         Ganho de Capital
                       </span>
                       <span className="flex flex-wrap items-baseline gap-2">
-                        <strong className={`text-[length:var(--card-metrica)] font-semibold tabular-nums ${totalGanho >= 0 ? "text-positive" : "text-negative"}`}>
+                        <strong
+                          className={`text-[length:var(--card-metrica)] font-semibold tabular-nums ${totalGanho >= 0 ? "text-positive" : "text-negative"}`}
+                        >
                           {brl(totalGanho, 2)}
                         </strong>
-                        <span className={`text-[length:var(--card-legenda)] font-medium tabular-nums ${variacao >= 0 ? "text-positive" : "text-negative"}`}>
+                        <span
+                          className={`text-[length:var(--card-legenda)] font-medium tabular-nums ${variacao >= 0 ? "text-positive" : "text-negative"}`}
+                        >
                           {variacao >= 0 ? "+" : ""}
                           {variacao.toFixed(2).replace(".", ",")}%
                         </span>
@@ -601,6 +609,26 @@ function Dashboard() {
             <CarteiraGrupos ativos={ativos} minimal />
           </div>
         )}
+      </section>
+
+      {/* Nível 2 — F7: resumo semanal do investidor */}
+      <section
+        id="semanal"
+        className="panel scroll-mt-32 overflow-hidden text-[12px] sm:scroll-mt-40"
+      >
+        <div className="p-4 sm:p-5">
+          <RelatorioSemanal />
+        </div>
+      </section>
+
+      {/* Nível 2 — F8: score do investidor com gamificação */}
+      <section
+        id="score"
+        className="panel scroll-mt-32 overflow-hidden text-[12px] sm:scroll-mt-40"
+      >
+        <div className="p-4 sm:p-5">
+          <ScoreInvestidor />
+        </div>
       </section>
     </AppShell>
   );

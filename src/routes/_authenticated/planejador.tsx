@@ -15,6 +15,8 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { AbasPlanejamento } from "@/components/abas-planejamento";
 import { ComparadorCenarios } from "@/components/comparador-cenarios";
+import { SimuladorWhatIf } from "@/components/simulador-what-if";
+import { ComparadorEstrategias } from "@/components/comparador-estrategias";
 
 import { StatCard } from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
@@ -286,6 +288,26 @@ function Planejador() {
           </div>
 
           <ComparadorCenarios input={input} objetivoRenda={objetivoRenda} />
+
+          {/* Nível 2 — F4: simulador "E se?" */}
+          <div className="surface-card p-6">
+            <h2 className="panel-title">Simulador "E se?"</h2>
+            <p className="mt-1 mb-4 text-xs text-muted-foreground">
+              Mude uma variável do seu plano e veja o impacto na data da independência. Clique num
+              cenário para ver o gráfico comparado.
+            </p>
+            <SimuladorWhatIf />
+          </div>
+
+          {/* Nível 2 — F5: comparador de estratégias */}
+          <div className="surface-card p-6">
+            <h2 className="panel-title">Comparador de estratégias</h2>
+            <p className="mt-1 mb-4 text-xs text-muted-foreground">
+              O mesmo plano de aportes, com alocações diferentes. Veja quem chega primeiro à
+              independência financeira.
+            </p>
+            <ComparadorEstrategias />
+          </div>
 
           <div className="surface-card w-full min-w-0 max-w-full overflow-hidden">
             <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3">

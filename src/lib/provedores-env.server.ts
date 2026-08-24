@@ -50,7 +50,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     variavel: "NVIDIA_API_KEY",
     nome: "Nvidia",
     baseUrl: "https://integrate.api.nvidia.com/v1",
-    modelo: "z-ai/glm-5.2",
+    modelo: "nvidia/nemotron-3-ultra-550b-a55b",
     urlChave: "https://build.nvidia.com/settings/api-keys",
   },
   {

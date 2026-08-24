@@ -154,12 +154,13 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     ],
     modelosGratuitos: ["stealth/ox-alpha", "minimax/minimax-m2.5"],
     urlChave: "https://app.cline.bot",
-      },
-      /* B.AI */
+  },
+  /* B.AI */
   {
     id: "nous",
     nome: "B.AI",
-    descricao: "B.AI � agrega��o de modelos (Claude, GPT, Gemini, DeepSeek, Kimi, GLM, MiniMax). Servi�o pago por cr�dito.",
+    descricao:
+      "B.AI � agrega��o de modelos (Claude, GPT, Gemini, DeepSeek, Kimi, GLM, MiniMax). Servi�o pago por cr�dito.",
     baseUrl: "https://api.b.ai/v1",
     modelos: [
       "gpt-5.4",

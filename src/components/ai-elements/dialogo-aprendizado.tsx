@@ -200,14 +200,18 @@ export function DialogoAprendizado() {
                 >
                   <div className="min-w-0 flex-1 overflow-hidden">
                     <div className="flex flex-wrap items-center gap-2 min-w-0">
-                      <p className="min-w-0 flex-1 truncate text-sm font-semibold break-words">{h.titulo}</p>
+                      <p className="min-w-0 flex-1 truncate text-sm font-semibold break-words">
+                        {h.titulo}
+                      </p>
                       <span
                         className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold border ${h.ativo ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-border/50"}`}
                       >
                         {h.ativo ? "ativa" : "pausada"}
                       </span>
                     </div>
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words break-all sm:break-words">{h.instrucao}</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words break-all sm:break-words">
+                      {h.instrucao}
+                    </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">
                     <Switch
@@ -256,7 +260,9 @@ export function DialogoAprendizado() {
                 >
                   <div className="min-w-0 flex-1 overflow-hidden">
                     <p className="text-sm font-semibold break-words">{s.titulo}</p>
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">{s.instrucao}</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">
+                      {s.instrucao}
+                    </p>
                   </div>
                   <Button
                     variant="outline"
@@ -351,11 +357,17 @@ export function DialogoAprendizado() {
                           </td>
                           <td className="px-3 py-2.5 align-top min-w-0">
                             <p className="font-semibold leading-snug break-words">{i.titulo}</p>
-                            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">{i.conteudo}</p>
+                            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">
+                              {i.conteudo}
+                            </p>
                           </td>
                           <td className="px-3 py-2.5 align-top text-right">
-                            <p className="text-[11px] text-muted-foreground/80 break-words">{i.fonte}</p>
-                            <p className="text-[10px] text-muted-foreground/60">{new Date(i.atualizadoEm).toLocaleDateString("pt-BR")}</p>
+                            <p className="text-[11px] text-muted-foreground/80 break-words">
+                              {i.fonte}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground/60">
+                              {new Date(i.atualizadoEm).toLocaleDateString("pt-BR")}
+                            </p>
                           </td>
                         </tr>
                       ))}
@@ -380,7 +392,9 @@ export function DialogoAprendizado() {
                     </span>
                     <div className="min-w-0 flex-1 overflow-hidden">
                       <p className="text-sm font-semibold leading-snug break-words">{i.titulo}</p>
-                      <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">{i.conteudo}</p>
+                      <p className="mt-1 line-clamp-2 text-xs text-muted-foreground break-words">
+                        {i.conteudo}
+                      </p>
                       <p className="mt-1 text-[10px] text-muted-foreground/80 break-words">
                         {i.fonte} · {new Date(i.atualizadoEm).toLocaleDateString("pt-BR")}
                       </p>

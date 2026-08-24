@@ -160,13 +160,11 @@ const FII = ["REAL_ESTATE", "FII", "FUNDO_IMOBILIARIO"];
 export function categoriaDePluggy(tipo: string, nome = ""): string {
   const t = (tipo || "").toUpperCase();
   const n = (nome || "").toUpperCase();
-  if (t.includes("EQUITY") || t.includes("STOCK") || t.includes("VARIABLE"))
-    return "Ações";
+  if (t.includes("EQUITY") || t.includes("STOCK") || t.includes("VARIABLE")) return "Ações";
   if (FII.some((f) => t.includes(f)) || n.includes("FII") || n.includes("FUNDO IMOBILI"))
     return "FIIS";
   if (t.includes("ETF")) return "ETF Brasil";
-  if (FUNIS.some((f) => t.includes(f)) || n.includes("FUNDO"))
-    return "Fundos de Investimentos";
+  if (FUNIS.some((f) => t.includes(f)) || n.includes("FUNDO")) return "Fundos de Investimentos";
   if (RENDA_FIXA.some((f) => t.includes(f))) return "Renda Fixa";
   return "Renda Fixa";
 }
@@ -282,4 +280,3 @@ export async function listarPosicoesPluggy(): Promise<PosicaoPluggy[]> {
 
   return posicoes;
 }
-

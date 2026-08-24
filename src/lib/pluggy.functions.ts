@@ -114,4 +114,3 @@ export const sincronizarAtivosMeuPluggy = createServerFn({ method: "POST" })
       return { ok: false, mensagem: msg };
     }
   });
-

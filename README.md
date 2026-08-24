@@ -147,6 +147,119 @@ VITE_SUPABASE_ANON_KEY=...
 Opcional:
 
 - `BRAPI_TOKEN` — token do brapi.dev para ampliar os limites de cotações.
+- `VITE_SENTRY_DSN` — DSN do [Sentry](https://sentry.io) para monitoramento de erros
+  do navegador (erros de produção com contexto de rota; sem DSN nada é enviado).
+
+## Nível 2 — Funcionalidades de valor
+
+### 📅 Calendário de Proventos Futuros (12 meses)
+Projeção dos próximos dividendos da carteira: média dos proventos dos últimos 12 meses
+por ativo × posição atual. Gráfico mês a mês e tabela por ativo, com aviso para
+posições sem histórico. Exibido em **Proventos** (`src/lib/proventos-futuros.ts`,
+`src/components/calendario-proventos.tsx`).
+
+### 🧾 Prejuízo Fiscal & Tax-Loss Harvesting
+Apura prejuízos acumulados por categoria (Ações, FIIs, ETFs, BDRs, Stocks, Cripto)
+seguindo as regras da Receita (compensação na mesma regra, isenção por volume) e
+sugere ativos abaixo do preço médio com o potencial de perda realizável. Exibido em
+**Carteira** (`src/lib/prejuizo-fiscal.ts`, `src/components/painel-prejuizo-fiscal.tsx`).
+Vendas são registradas como aportes com quantidade negativa (padrão já usado por
+`tributacao.ts`).
+
+### 🔔 Alertas de Preço (server-side + push)
+Crie alertas "PETR4 acima de R$ 35,00" na página **Cotações**. A tabela
+`alertas_preco` (migration `20260823010000_alertas_preco_carteiras_publicas.sql`) guarda
+os alvos com RLS; o hook `/api/public/hooks/verificar-alertas-preco` (protegido por
+`CRON_SECRET`) verifica os preços e dispara Web Push ao atingir o alvo.
+
+O agendamento usa **GitHub Actions** (`.github/workflows/verificar-alertas.yml`,
+a cada 15 min), o mesmo padrão dos demais hooks do projeto — não depende de pg_cron.
+
+> **Importante:** para qualquer hook agendado funcionar, o secret `CRON_SECRET`
+> precisa existir **nos dois lugares** com o mesmo valor:
+> 1. Env var `CRON_SECRET` no Lovable Cloud (é o que o hook compara);
+> 2. GitHub Secret `CRON_SECRET` (é o que o workflow envia no header
+>    `x-cron-secret`). Configure em Settings → Secrets and variables → Actions
+>    do repositório, ou via `gh secret set CRON_SECRET`.
+
+### 🎛️ Simulador "E se?" (What-If)
+10 cenários de quebra-hipótese sobre o plano atual (aporte dobrado/metade, parar
+aportes, rentabilidade ±3%, inflação +2%, aposentar ±5 anos, retirada 3%/5%).
+Cada um mostra o impacto na data da independência e um gráfico comparado ao plano
+atual. Exibido em **Planejador** (`src/lib/what-if.ts`, `src/components/simulador-what-if.tsx`).
+
+### 📈 Comparador de Estratégias
+Projeta o mesmo plano com 5 alocações (Conservador 8%, Moderado 10%, Agressivo 13%,
+Foco em Dividendos 9%, Selic Alta 15%) e rankeia quem chega primeiro à independência.
+Exibido em **Planejador** (`src/lib/comparador-estrategias.ts`,
+`src/components/comparador-estrategias.tsx`).
+
+### 📤 Carteira Pública Compartilhável
+Gere um link público único (expirável 7/30/90 dias ou nunca) com snapshot da carteira
+(opcionalmente **sem** valores em reais). A rota pública `/compartilhada/[token]`
+renderiza o resumo sem login (lê via `supabaseAdmin` para contornar RLS). Tabela
+`carteiras_compartilhadas` na migration `20260823010000_alertas_preco_carteiras_publicas.sql`.
+Exibido em **Carteira** (`src/lib/carteira-publica.ts`,
+`src/components/carteira-publica-compartilhar.tsx`).
+
+### 📧 Relatório Semanal do Investidor
+Resumo gerado dos dados reais: patrimônio com variação vs. semana anterior (salva em
+localStorage), aportes, proventos da semana, renda mensal estimada e progresso das
+metas. Botão "copiar resumo" para compartilhar. Exibido em **Dashboard**
+(`src/lib/relatorio-semanal.ts`, `src/components/relatorio-semanal.tsx`).
+
+### 🎯 Score do Investidor + Gamificação
+Nota 0-100 com 5 pilares transparentes (disciplina de aportes 30%, diversificação 25%,
+metas 20%, renda passiva 15%, horizonte 10%) e 5 níveis (Iniciante → Lenda do Milhão)
+com conquistas automáticas. Exibido em **Dashboard**
+(`src/lib/score-investidor.ts`, `src/components/score-investidor.tsx`).
+
+### PWA (Progressive Web App)
+
+O app é instalável: em produção o Service Worker (`public/sw.js`) é registrado
+automaticamente e o manifesto (`public/manifest.webmanifest`) oferece instalação
+"adicionar à tela inicial", abrir offline (parcial), atalhos para Dashboard,
+Carteira e Planejador. Em desenvolvimento o SW não é registrado para não
+atrapalhar o HMR.
+
+### Web Push (notificações com o app fechado)
+
+Alertas de preço, radar e resumo podem chegar como notificação nativa mesmo com
+o app fechado. Requer chaves VAPID:
+
+```sh
+npm run gerar:vapid
+```
+
+Isso gera e salva as chaves em `.env`/`.env.local`:
+
+| Variável               | Onde          | Descrição                          |
+| ---------------------- | ------------- | ---------------------------------- |
+| `VITE_VAPID_PUBLIC_KEY`| `.env`        | Chave pública (vai ao navegador)   |
+| `VAPID_PUBLIC_KEY`     | `.env.local`  | Chave pública (servidor)           |
+| `VAPID_PRIVATE_KEY`    | `.env.local`  | Chave privada (NUNCA publicar)     |
+| `VAPID_SUBJECT`        | `.env.local`  | mailto: ou URL de contato          |
+
+A migration `supabase/migrations/20260823000000_push_subscriptions.sql` (tabela
+`push_subscriptions` com RLS) é aplicada automaticamente pelo Lovable no deploy —
+o mesmo vale para `20260823010000_alertas_preco_carteiras_publicas.sql`. O envio é
+feito pelo hook `/api/public/hooks/notificar-push` (protegido por `CRON_SECRET`),
+agendável via GitHub Actions (`.github/workflows/verificar-alertas.yml` segue o
+mesmo padrão dos demais hooks).
+
+### CI/CD (GitHub Actions)
+
+O workflow `.github/workflows/qualidade.yml` roda em todo push/PR:
+
+1. **Lint + Build** — `npm run lint` e `npm run build` (heap ampliado para o SSR).
+2. **E2E (Chromium)** — `npx playwright test --project=chromium` com relatório
+   publicado como artefato em caso de falha.
+
+> 💡 **Lint local no Windows:** o repo usa `endOfLine: "lf"` e o git converte
+> CRLF→LF no commit, então o lint passa no CI. Localmente, se o `npm run lint`
+> acusar centenas de `Delete ␍`, são line endings do checkout Windows — rode
+> `git config core.autocrlf false` e faça checkout limpo, ou ignore-os (só o CI
+> é autoritativo).
 
 ### Provedores de IA (Gestor IA)
 
@@ -195,21 +308,10 @@ Como funciona:
 - **Persistência:** a última e a penúltima varredura ficam em `cotacoes_cache`
   (chave `observador:mercado`), permitindo marcar "NOVO" no que mudou.
 
-**Agendamento automático (opcional):** rode no SQL editor do Supabase, trocando a
-URL pelo endereço do seu deploy e `x-cron-secret` pelo valor da env `CRON_SECRET`
-(configurada no painel):
-
-```sql
-select cron.schedule('observador-mercado', '0,20,40 * * * *', $$
-  select net.http_post(
-    url := 'https://SEU-APP.lovable.app/api/public/hooks/observador-mercado',
-    headers := jsonb_build_object(
-      'content-type', 'application/json',
-      'x-cron-secret', current_setting('app.cron_secret', true)
-    ),
-    body := '{}'
-  ) $$);
-```
+**Agendamento automático:** o GitHub Actions (`.github/workflows/observador.yml`)
+chama o hook a cada 20 minutos — nenhuma configuração no Supabase é necessária.
+O workflow envia o header `x-cron-secret` com o valor do GitHub Secret
+`CRON_SECRET` (que deve ser igual à env `CRON_SECRET` do Lovable Cloud).
 
 Sem agendamento, o botão **"Observar agora"** na página Radar executa a varredura
 manualmente (limitado a 5 execuções por usuário a cada 10 minutos).

@@ -20,11 +20,7 @@ import {
   type LinhaObservador,
   type VarreduraObservador,
 } from "@/lib/observador-mercado-base";
-import {
-  baseUrlProvedorEnv,
-  PROVEDORES_ENV,
-  provedorEnvAtivo,
-} from "@/lib/provedores-env.server";
+import { baseUrlProvedorEnv, PROVEDORES_ENV, provedorEnvAtivo } from "@/lib/provedores-env.server";
 import type { LinhaAcao } from "@/lib/acoes-base";
 import type { LinhaFii } from "@/lib/fiis-base";
 
@@ -285,9 +281,7 @@ async function executarVarreduraInterna(agora: Date): Promise<ResultadoVarredura
     const modeloIA = createOpenAICompatible({
       name: "observador-mercado",
       baseURL: baseUrlProvedorEnv(envProvedor.provedor, process.env),
-      headers: envProvedor.chave
-        ? { Authorization: `Bearer ${envProvedor.chave}` }
-        : {},
+      headers: envProvedor.chave ? { Authorization: `Bearer ${envProvedor.chave}` } : {},
     })(envProvedor.provedor.modelo);
 
     const resultado = await generateText({

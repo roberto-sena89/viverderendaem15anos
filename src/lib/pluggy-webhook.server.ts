@@ -68,10 +68,7 @@ async function sincronizarPosicoesDoUsuario(userId: string): Promise<void> {
     };
 
     if (existente) {
-      const { error } = await supabaseAdmin
-        .from("ativos")
-        .update(payload)
-        .eq("id", existente.id);
+      const { error } = await supabaseAdmin.from("ativos").update(payload).eq("id", existente.id);
       if (error) console.error(`[pluggy-webhook] update ${p.ticker}:`, error.message);
     } else {
       const { error } = await supabaseAdmin.from("ativos").insert({
@@ -93,7 +90,9 @@ async function sincronizarItem(itemId: string): Promise<void> {
     await sincronizarPosicoesDoUsuario(item.clientUserId);
   } else {
     // Sem clientUserId não dá para saber o dono; apenas loga (best-effort).
-    console.warn(`[pluggy-webhook] item ${itemId} sem clientUserId — sincronização manual necessária`);
+    console.warn(
+      `[pluggy-webhook] item ${itemId} sem clientUserId — sincronização manual necessária`,
+    );
   }
 }
 
@@ -121,7 +120,9 @@ export async function processarWebhookPluggy(dados: WebhookPluggyDados): Promise
         break;
 
       default:
-        console.log(`[pluggy-webhook] evento não tratado: ${dados.event} (itemId=${itemId ?? "?"})`);
+        console.log(
+          `[pluggy-webhook] evento não tratado: ${dados.event} (itemId=${itemId ?? "?"})`,
+        );
     }
   } catch (e) {
     // Nunca deixa a exceção alcançar a resposta ao Pluggy.

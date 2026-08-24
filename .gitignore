@@ -94,3 +94,11 @@ ntuser.ini
 data/
 playwright-report/
 test-results/
+
+# Agent/IDE artifacts
+MEMORY.md
+memories/
+dev/
+*.backup
+*.backup.*
+supabase/.temp/

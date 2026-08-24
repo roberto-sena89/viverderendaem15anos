@@ -24,8 +24,7 @@ function autorizado(request: Request): boolean {
     const recebido = request.headers.get("x-webhook-secret") ?? "";
     if (recebido.length !== segredo.length) return false;
     let diff = 0;
-    for (let i = 0; i < segredo.length; i++)
-      diff |= segredo.charCodeAt(i) ^ recebido.charCodeAt(i);
+    for (let i = 0; i < segredo.length; i++) diff |= segredo.charCodeAt(i) ^ recebido.charCodeAt(i);
     return diff === 0;
   }
   return true;
@@ -41,8 +40,7 @@ export const Route = createFileRoute("/api/public/hooks/pluggy-webhook")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
-        if (!autorizado(request))
-          return Response.json({ error: "unauthorized" }, { status: 401 });
+        if (!autorizado(request)) return Response.json({ error: "unauthorized" }, { status: 401 });
 
         const corpo = (await request.json().catch(() => null)) as {
           clientId?: string;

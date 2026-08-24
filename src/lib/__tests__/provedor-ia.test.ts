@@ -1,6 +1,9 @@
 import { describe, expect, it, beforeAll } from "vitest";
 import { PRESETS_PROVEDOR } from "../provedor-ia.ts";
-import { modelosConfiguradosDe, verificarModelosGratuitos } from "../verificar-modelos-gratuitos.server.ts";
+import {
+  modelosConfiguradosDe,
+  verificarModelosGratuitos,
+} from "../verificar-modelos-gratuitos.server.ts";
 import { PROVEDORES_ENV } from "../provedores-env.server.ts";
 
 describe("Validação de Modelos Gratuitos", () => {
@@ -17,8 +20,8 @@ describe("Validação de Modelos Gratuitos", () => {
 
   it("deve validar que todos os modelos marcados como gratuitos são realmente gratuitos", () => {
     // Contadores para o relatório
-    let totalModelosConfigurados = 0;
-    let totalModelosVerificadosComoGratuitos = 0;
+    let _totalModelosConfigurados = 0;
+    let _totalModelosVerificadosComoGratuitos = 0;
     let errosEncontrados = 0;
 
     // Analisa o relatório de verificação
@@ -29,25 +32,26 @@ describe("Validação de Modelos Gratuitos", () => {
       }
 
       const modelosConfigurados = configurados
-        .filter(c => c.provedor === provedor.chave)
-        .map(c => c.modelo);
+        .filter((c) => c.provedor === provedor.chave)
+        .map((c) => c.modelo);
 
       // Filtrar modelos configurados que são placeholders vazios (não devemos validar placeholders)
-      const modelosConfiguradosValidos = modelosConfigurados.filter(modelo => modelo.length > 0);
+      const modelosConfiguradosValidos = modelosConfigurados.filter((modelo) => modelo.length > 0);
 
-      totalModelosConfigurados += modelosConfiguradosValidos.length;
+      _totalModelosConfigurados += modelosConfiguradosValidos.length;
 
-      const modelosGratuitosIds = provedor.modelosGratuitos.map(m => m.id);
-      totalModelosVerificadosComoGratuitos += modelosGratuitosIds.length;
+      const modelosGratuitosIds = provedor.modelosGratuitos.map((m) => m.id);
+      _totalModelosVerificadosComoGratuitos += modelosGratuitosIds.length;
 
       // Verifica se todos os modelos configurados como gratuitos são realmente gratuitos
       const modelosNaoGratuitos = modelosConfiguradosValidos.filter(
-        modelo => !modelosGratuitosIds.includes(modelo)
+        (modelo) => !modelosGratuitosIds.includes(modelo),
       );
 
       // Se houver modelos configurados como gratuitos que não são realmente gratuitos, falha o teste
-      expect(modelosNaoGratuitos.length,
-        `Provedor ${provedor.nome}: ${modelosNaoGratuitos.length} modelo(s) configurado(s) como gratuito(s) não é(são) gratuito(s): ${modelosNaoGratuitos.join(", ")}`
+      expect(
+        modelosNaoGratuitos.length,
+        `Provedor ${provedor.nome}: ${modelosNaoGratuitos.length} modelo(s) configurado(s) como gratuito(s) não é(são) gratuito(s): ${modelosNaoGratuitos.join(", ")}`,
       ).toBe(0);
 
       errosEncontrados += modelosNaoGratuitos.length;
@@ -58,28 +62,28 @@ describe("Validação de Modelos Gratuitos", () => {
   });
 
   it("deve relatar estatísticas dos modelos verificados", () => {
-    // Contadores para o relatório
-    let totalModelosConfigurados = 0;
-    let totalModelosVerificadosComoGratuitos = 0;
-    let errosEncontrados = 0;
+    // Contadores para o relatório (verbose; apenas acumulados)
+    let _totalModelosConfigurados = 0;
+    let _totalModelosVerificadosComoGratuitos = 0;
+    let _errosEncontrados = 0;
 
     // Analisa o relatório de verificação
     for (const provedor of relatorio.provedores) {
       const modelosConfigurados = configurados
-        .filter(c => c.provedor === provedor.chave)
-        .map(c => c.modelo);
+        .filter((c) => c.provedor === provedor.chave)
+        .map((c) => c.modelo);
 
-      totalModelosConfigurados += modelosConfigurados.length;
+      _totalModelosConfigurados += modelosConfigurados.length;
 
-      const modelosGratuitosIds = provedor.modelosGratuitos.map(m => m.id);
-      totalModelosVerificadosComoGratuitos += modelosGratuitosIds.length;
+      const modelosGratuitosIds = provedor.modelosGratuitos.map((m) => m.id);
+      _totalModelosVerificadosComoGratuitos += modelosGratuitosIds.length;
 
       // Verifica se todos os modelos configurados como gratuitos são realmente gratuitos
       const modelosNaoGratuitos = modelosConfigurados.filter(
-        modelo => !modelosGratuitosIds.includes(modelo)
+        (modelo) => !modelosGratuitosIds.includes(modelo),
       );
 
-      errosEncontrados += modelosNaoGratuitos.length;
+      _errosEncontrados += modelosNaoGratuitos.length;
     }
 
     // Este teste sempre passa, apenas para gerar o relatório no modo verbose

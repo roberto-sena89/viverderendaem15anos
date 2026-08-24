@@ -19,10 +19,7 @@ const GATEWAY_LOVABLE = "https://ai.gateway.lovable.dev/v1";
 const MODELO_LOVABLE = "openai/gpt-5.6-sol";
 
 /** Provedor de ambiente → candidato (quando há chave ou aceita anônimo). */
-function candidatoDeProvedor(
-  provedor: ProvedorEnv,
-  env: NodeJS.ProcessEnv,
-): CandidatoIA | null {
+function candidatoDeProvedor(provedor: ProvedorEnv, env: NodeJS.ProcessEnv): CandidatoIA | null {
   const chave = env[provedor.variavel]?.trim();
   if (!chave && !provedor.aceitaAnonimo) return null;
   return {
@@ -37,10 +34,7 @@ function candidatoDeProvedor(
  * Lista de candidatos: o principal primeiro, depois os demais provedores de
  * ambiente utilizáveis e, por fim, o Lovable AI Gateway.
  */
-export function montarCandidatosIA(
-  principal: CandidatoIA,
-  env: NodeJS.ProcessEnv,
-): CandidatoIA[] {
+export function montarCandidatosIA(principal: CandidatoIA, env: NodeJS.ProcessEnv): CandidatoIA[] {
   const candidatos: CandidatoIA[] = [principal];
   const chaveIgual = (c: CandidatoIA) =>
     candidatos.some((x) => x.baseURL === c.baseURL && x.modelo === c.modelo);
@@ -82,11 +76,12 @@ function vaiTentarOutro(status: number, corpo: string): boolean {
  * `model` do corpo e os cabeçalhos de autenticação em cada tentativa.
  */
 export function criarFetchComFallbackIA(candidatos: CandidatoIA[]) {
-  const principal = candidatos[0]!;
+  const principal = candidatos[0];
   let usado = principal.nome;
 
   const executar = async (input: RequestInfo | URL, init?: RequestInit) => {
-    const urlOriginal = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    const urlOriginal =
+      typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     const sufixo = urlOriginal.startsWith(principal.baseURL)
       ? urlOriginal.slice(principal.baseURL.length)
       : new URL(urlOriginal).pathname;
@@ -110,9 +105,7 @@ export function criarFetchComFallbackIA(candidatos: CandidatoIA[]) {
         for (const [k, v] of Object.entries(candidato.headers)) headers.set(k, v);
       }
       const body =
-        i > 0 && corpoBase
-          ? JSON.stringify({ ...corpoBase, model: candidato.modelo })
-          : init?.body;
+        i > 0 && corpoBase ? JSON.stringify({ ...corpoBase, model: candidato.modelo }) : init?.body;
 
       let resposta: Response;
       try {
@@ -131,7 +124,10 @@ export function criarFetchComFallbackIA(candidatos: CandidatoIA[]) {
         return resposta;
       }
 
-      const texto = await resposta.clone().text().catch(() => "");
+      const texto = await resposta
+        .clone()
+        .text()
+        .catch(() => "");
       const ehUltimo = i === candidatos.length - 1;
       if (ehUltimo || !corpoBase || !vaiTentarOutro(resposta.status, texto)) {
         usado = candidato.nome;

@@ -42,16 +42,21 @@ import { Route as AuthenticatedRebalanceamentoRouteImport } from './routes/_auth
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiModelosGratuitosRouteImport } from './routes/api/modelos-gratuitos'
 import { Route as BlogMelhoresLivrosFinancasRouteImport } from './routes/blog.melhores-livros-financas'
+import { Route as CompartilhadaTokenRouteImport } from './routes/compartilhada.$token'
 import { Route as ConteudoSlugRouteImport } from './routes/conteudo/$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiIaProvedoresRouteImport } from './routes/api/ia/provedores'
 import { Route as ApiPublicNewsletterRouteImport } from './routes/api/public/newsletter'
+import { Route as ApiPushDesinscreverRouteImport } from './routes/api/push/desinscrever'
+import { Route as ApiPushInscreverRouteImport } from './routes/api/push/inscrever'
 import { Route as ApiPublicHooksAtualizarCotacoesRouteImport } from './routes/api/public/hooks/atualizar-cotacoes'
 import { Route as ApiPublicHooksAtualizarPrecosRouteImport } from './routes/api/public/hooks/atualizar-precos'
 import { Route as ApiPublicHooksConhecimentoRouteImport } from './routes/api/public/hooks/conhecimento'
+import { Route as ApiPublicHooksNotificarPushRouteImport } from './routes/api/public/hooks/notificar-push'
 import { Route as ApiPublicHooksObservadorMercadoRouteImport } from './routes/api/public/hooks/observador-mercado'
 import { Route as ApiPublicHooksPluggyWebhookRouteImport } from './routes/api/public/hooks/pluggy-webhook'
+import { Route as ApiPublicHooksVerificarAlertasPrecoRouteImport } from './routes/api/public/hooks/verificar-alertas-preco'
 import { Route as ApiPublicHooksVerificarModelosGratuitosRouteImport } from './routes/api/public/hooks/verificar-modelos-gratuitos'
 import { Route as ApiPublicStreamCotacoesRouteImport } from './routes/api/public/stream/cotacoes'
 
@@ -228,6 +233,11 @@ const BlogMelhoresLivrosFinancasRoute =
     path: '/blog/melhores-livros-financas',
     getParentRoute: () => rootRouteImport,
   } as any)
+const CompartilhadaTokenRoute = CompartilhadaTokenRouteImport.update({
+  id: '/compartilhada/$token',
+  path: '/compartilhada/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConteudoSlugRoute = ConteudoSlugRouteImport.update({
   id: '/conteudo/$slug',
   path: '/conteudo/$slug',
@@ -254,6 +264,16 @@ const ApiPublicNewsletterRoute = ApiPublicNewsletterRouteImport.update({
   path: '/api/public/newsletter',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPushDesinscreverRoute = ApiPushDesinscreverRouteImport.update({
+  id: '/api/push/desinscrever',
+  path: '/api/push/desinscrever',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPushInscreverRoute = ApiPushInscreverRouteImport.update({
+  id: '/api/push/inscrever',
+  path: '/api/push/inscrever',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksAtualizarCotacoesRoute =
   ApiPublicHooksAtualizarCotacoesRouteImport.update({
     id: '/api/public/hooks/atualizar-cotacoes',
@@ -272,6 +292,12 @@ const ApiPublicHooksConhecimentoRoute =
     path: '/api/public/hooks/conhecimento',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksNotificarPushRoute =
+  ApiPublicHooksNotificarPushRouteImport.update({
+    id: '/api/public/hooks/notificar-push',
+    path: '/api/public/hooks/notificar-push',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksObservadorMercadoRoute =
   ApiPublicHooksObservadorMercadoRouteImport.update({
     id: '/api/public/hooks/observador-mercado',
@@ -282,6 +308,12 @@ const ApiPublicHooksPluggyWebhookRoute =
   ApiPublicHooksPluggyWebhookRouteImport.update({
     id: '/api/public/hooks/pluggy-webhook',
     path: '/api/public/hooks/pluggy-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksVerificarAlertasPrecoRoute =
+  ApiPublicHooksVerificarAlertasPrecoRouteImport.update({
+    id: '/api/public/hooks/verificar-alertas-preco',
+    path: '/api/public/hooks/verificar-alertas-preco',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicHooksVerificarModelosGratuitosRoute =
@@ -329,16 +361,21 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/api/modelos-gratuitos': typeof ApiModelosGratuitosRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
+  '/compartilhada/$token': typeof CompartilhadaTokenRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/ia/provedores': typeof ApiIaProvedoresRoute
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
+  '/api/push/desinscrever': typeof ApiPushDesinscreverRoute
+  '/api/push/inscrever': typeof ApiPushInscreverRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/hooks/conhecimento': typeof ApiPublicHooksConhecimentoRoute
+  '/api/public/hooks/notificar-push': typeof ApiPublicHooksNotificarPushRoute
   '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
   '/api/public/hooks/pluggy-webhook': typeof ApiPublicHooksPluggyWebhookRoute
+  '/api/public/hooks/verificar-alertas-preco': typeof ApiPublicHooksVerificarAlertasPrecoRoute
   '/api/public/hooks/verificar-modelos-gratuitos': typeof ApiPublicHooksVerificarModelosGratuitosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
@@ -375,16 +412,21 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/api/modelos-gratuitos': typeof ApiModelosGratuitosRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
+  '/compartilhada/$token': typeof CompartilhadaTokenRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/ia/provedores': typeof ApiIaProvedoresRoute
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
+  '/api/push/desinscrever': typeof ApiPushDesinscreverRoute
+  '/api/push/inscrever': typeof ApiPushInscreverRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/hooks/conhecimento': typeof ApiPublicHooksConhecimentoRoute
+  '/api/public/hooks/notificar-push': typeof ApiPublicHooksNotificarPushRoute
   '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
   '/api/public/hooks/pluggy-webhook': typeof ApiPublicHooksPluggyWebhookRoute
+  '/api/public/hooks/verificar-alertas-preco': typeof ApiPublicHooksVerificarAlertasPrecoRoute
   '/api/public/hooks/verificar-modelos-gratuitos': typeof ApiPublicHooksVerificarModelosGratuitosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
@@ -423,16 +465,21 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/api/modelos-gratuitos': typeof ApiModelosGratuitosRoute
   '/blog/melhores-livros-financas': typeof BlogMelhoresLivrosFinancasRoute
+  '/compartilhada/$token': typeof CompartilhadaTokenRoute
   '/conteudo/$slug': typeof ConteudoSlugRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/ia/provedores': typeof ApiIaProvedoresRoute
   '/api/public/newsletter': typeof ApiPublicNewsletterRoute
+  '/api/push/desinscrever': typeof ApiPushDesinscreverRoute
+  '/api/push/inscrever': typeof ApiPushInscreverRoute
   '/api/public/hooks/atualizar-cotacoes': typeof ApiPublicHooksAtualizarCotacoesRoute
   '/api/public/hooks/atualizar-precos': typeof ApiPublicHooksAtualizarPrecosRoute
   '/api/public/hooks/conhecimento': typeof ApiPublicHooksConhecimentoRoute
+  '/api/public/hooks/notificar-push': typeof ApiPublicHooksNotificarPushRoute
   '/api/public/hooks/observador-mercado': typeof ApiPublicHooksObservadorMercadoRoute
   '/api/public/hooks/pluggy-webhook': typeof ApiPublicHooksPluggyWebhookRoute
+  '/api/public/hooks/verificar-alertas-preco': typeof ApiPublicHooksVerificarAlertasPrecoRoute
   '/api/public/hooks/verificar-modelos-gratuitos': typeof ApiPublicHooksVerificarModelosGratuitosRoute
   '/api/public/stream/cotacoes': typeof ApiPublicStreamCotacoesRoute
 }
@@ -471,16 +518,21 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/modelos-gratuitos'
     | '/blog/melhores-livros-financas'
+    | '/compartilhada/$token'
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/ia/provedores'
     | '/api/public/newsletter'
+    | '/api/push/desinscrever'
+    | '/api/push/inscrever'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/hooks/conhecimento'
+    | '/api/public/hooks/notificar-push'
     | '/api/public/hooks/observador-mercado'
     | '/api/public/hooks/pluggy-webhook'
+    | '/api/public/hooks/verificar-alertas-preco'
     | '/api/public/hooks/verificar-modelos-gratuitos'
     | '/api/public/stream/cotacoes'
   fileRoutesByTo: FileRoutesByTo
@@ -517,16 +569,21 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/modelos-gratuitos'
     | '/blog/melhores-livros-financas'
+    | '/compartilhada/$token'
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/ia/provedores'
     | '/api/public/newsletter'
+    | '/api/push/desinscrever'
+    | '/api/push/inscrever'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/hooks/conhecimento'
+    | '/api/public/hooks/notificar-push'
     | '/api/public/hooks/observador-mercado'
     | '/api/public/hooks/pluggy-webhook'
+    | '/api/public/hooks/verificar-alertas-preco'
     | '/api/public/hooks/verificar-modelos-gratuitos'
     | '/api/public/stream/cotacoes'
   id:
@@ -564,16 +621,21 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/modelos-gratuitos'
     | '/blog/melhores-livros-financas'
+    | '/compartilhada/$token'
     | '/conteudo/$slug'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/ia/provedores'
     | '/api/public/newsletter'
+    | '/api/push/desinscrever'
+    | '/api/push/inscrever'
     | '/api/public/hooks/atualizar-cotacoes'
     | '/api/public/hooks/atualizar-precos'
     | '/api/public/hooks/conhecimento'
+    | '/api/public/hooks/notificar-push'
     | '/api/public/hooks/observador-mercado'
     | '/api/public/hooks/pluggy-webhook'
+    | '/api/public/hooks/verificar-alertas-preco'
     | '/api/public/hooks/verificar-modelos-gratuitos'
     | '/api/public/stream/cotacoes'
   fileRoutesById: FileRoutesById
@@ -598,16 +660,21 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   ApiModelosGratuitosRoute: typeof ApiModelosGratuitosRoute
   BlogMelhoresLivrosFinancasRoute: typeof BlogMelhoresLivrosFinancasRoute
+  CompartilhadaTokenRoute: typeof CompartilhadaTokenRoute
   ConteudoSlugRoute: typeof ConteudoSlugRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiIaProvedoresRoute: typeof ApiIaProvedoresRoute
   ApiPublicNewsletterRoute: typeof ApiPublicNewsletterRoute
+  ApiPushDesinscreverRoute: typeof ApiPushDesinscreverRoute
+  ApiPushInscreverRoute: typeof ApiPushInscreverRoute
   ApiPublicHooksAtualizarCotacoesRoute: typeof ApiPublicHooksAtualizarCotacoesRoute
   ApiPublicHooksAtualizarPrecosRoute: typeof ApiPublicHooksAtualizarPrecosRoute
   ApiPublicHooksConhecimentoRoute: typeof ApiPublicHooksConhecimentoRoute
+  ApiPublicHooksNotificarPushRoute: typeof ApiPublicHooksNotificarPushRoute
   ApiPublicHooksObservadorMercadoRoute: typeof ApiPublicHooksObservadorMercadoRoute
   ApiPublicHooksPluggyWebhookRoute: typeof ApiPublicHooksPluggyWebhookRoute
+  ApiPublicHooksVerificarAlertasPrecoRoute: typeof ApiPublicHooksVerificarAlertasPrecoRoute
   ApiPublicHooksVerificarModelosGratuitosRoute: typeof ApiPublicHooksVerificarModelosGratuitosRoute
   ApiPublicStreamCotacoesRoute: typeof ApiPublicStreamCotacoesRoute
 }
@@ -845,6 +912,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogMelhoresLivrosFinancasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compartilhada/$token': {
+      id: '/compartilhada/$token'
+      path: '/compartilhada/$token'
+      fullPath: '/compartilhada/$token'
+      preLoaderRoute: typeof CompartilhadaTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/conteudo/$slug': {
       id: '/conteudo/$slug'
       path: '/conteudo/$slug'
@@ -880,6 +954,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicNewsletterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/push/desinscrever': {
+      id: '/api/push/desinscrever'
+      path: '/api/push/desinscrever'
+      fullPath: '/api/push/desinscrever'
+      preLoaderRoute: typeof ApiPushDesinscreverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/push/inscrever': {
+      id: '/api/push/inscrever'
+      path: '/api/push/inscrever'
+      fullPath: '/api/push/inscrever'
+      preLoaderRoute: typeof ApiPushInscreverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/atualizar-cotacoes': {
       id: '/api/public/hooks/atualizar-cotacoes'
       path: '/api/public/hooks/atualizar-cotacoes'
@@ -901,6 +989,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksConhecimentoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/notificar-push': {
+      id: '/api/public/hooks/notificar-push'
+      path: '/api/public/hooks/notificar-push'
+      fullPath: '/api/public/hooks/notificar-push'
+      preLoaderRoute: typeof ApiPublicHooksNotificarPushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/observador-mercado': {
       id: '/api/public/hooks/observador-mercado'
       path: '/api/public/hooks/observador-mercado'
@@ -913,6 +1008,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/pluggy-webhook'
       fullPath: '/api/public/hooks/pluggy-webhook'
       preLoaderRoute: typeof ApiPublicHooksPluggyWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/verificar-alertas-preco': {
+      id: '/api/public/hooks/verificar-alertas-preco'
+      path: '/api/public/hooks/verificar-alertas-preco'
+      fullPath: '/api/public/hooks/verificar-alertas-preco'
+      preLoaderRoute: typeof ApiPublicHooksVerificarAlertasPrecoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/verificar-modelos-gratuitos': {
@@ -991,16 +1093,22 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   ApiModelosGratuitosRoute: ApiModelosGratuitosRoute,
   BlogMelhoresLivrosFinancasRoute: BlogMelhoresLivrosFinancasRoute,
+  CompartilhadaTokenRoute: CompartilhadaTokenRoute,
   ConteudoSlugRoute: ConteudoSlugRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiIaProvedoresRoute: ApiIaProvedoresRoute,
   ApiPublicNewsletterRoute: ApiPublicNewsletterRoute,
+  ApiPushDesinscreverRoute: ApiPushDesinscreverRoute,
+  ApiPushInscreverRoute: ApiPushInscreverRoute,
   ApiPublicHooksAtualizarCotacoesRoute: ApiPublicHooksAtualizarCotacoesRoute,
   ApiPublicHooksAtualizarPrecosRoute: ApiPublicHooksAtualizarPrecosRoute,
   ApiPublicHooksConhecimentoRoute: ApiPublicHooksConhecimentoRoute,
+  ApiPublicHooksNotificarPushRoute: ApiPublicHooksNotificarPushRoute,
   ApiPublicHooksObservadorMercadoRoute: ApiPublicHooksObservadorMercadoRoute,
   ApiPublicHooksPluggyWebhookRoute: ApiPublicHooksPluggyWebhookRoute,
+  ApiPublicHooksVerificarAlertasPrecoRoute:
+    ApiPublicHooksVerificarAlertasPrecoRoute,
   ApiPublicHooksVerificarModelosGratuitosRoute:
     ApiPublicHooksVerificarModelosGratuitosRoute,
   ApiPublicStreamCotacoesRoute: ApiPublicStreamCotacoesRoute,

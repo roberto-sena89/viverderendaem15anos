@@ -4,7 +4,6 @@ import {
   gerarConnectTokenMeuPluggy,
   listarPosicoesMeuPluggy,
   sincronizarAtivosMeuPluggy,
-  type PosicaoPluggy,
 } from "@/lib/pluggy.functions";
 import { qk } from "@/lib/data";
 
@@ -16,7 +15,7 @@ export function usePosicoesMeuPluggy() {
     queryFn: async () => {
       const res = await buscar();
       if (!res.ok) throw new Error(res.mensagem ?? "Falha ao consultar o Meu Pluggy.");
-      return (res.posicoes ?? []) as PosicaoPluggy[];
+      return res.posicoes ?? [];
     },
     retry: false,
   });
@@ -50,9 +49,10 @@ export function useSincronizarMeuPluggy() {
       return res;
     },
     onSuccess: async () => {
-      await Promise.all(
-        [qc.invalidateQueries({ queryKey: qk.ativos }), qc.invalidateQueries({ queryKey: qk.aportes })],
-      );
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: qk.ativos }),
+        qc.invalidateQueries({ queryKey: qk.aportes }),
+      ]);
     },
   });
 }

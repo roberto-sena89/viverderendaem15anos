@@ -1,6 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
+import {
+  convertToModelMessages,
+  streamText,
+  stepCountIs,
+  tool,
+  type LanguageModel,
+  type UIMessage,
+} from "ai";
 import { z } from "zod";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { baseUrlProvedorEnv, PROVEDORES_ENV, provedorEnvAtivo } from "@/lib/provedores-env.server";
@@ -252,7 +259,7 @@ const MINIMUM_RECENT_MESSAGES = 12;
 
 export async function resumirHistoricoRemovido(
   mensagens: UIMessage[],
-  modelo: any,
+  modelo: LanguageModel,
 ): Promise<string> {
   if (mensagens.length === 0) return "";
   const texto = mensagens
@@ -575,10 +582,11 @@ export const Route = createFileRoute("/api/chat")({
         }
         const provedorExterno = Boolean(iaBaseUrl && iaModelo && iaChave);
 
-
         const iaProvedorHeader = request.headers.get("x-ia-provedor")?.trim() || "";
         const provedorEnvPorId = iaProvedorHeader
-          ? PROVEDORES_ENV.find((p) => p.variavel === iaProvedorHeader || p.nome === iaProvedorHeader)
+          ? PROVEDORES_ENV.find(
+              (p) => p.variavel === iaProvedorHeader || p.nome === iaProvedorHeader,
+            )
           : null;
         const chaveProvedorEnv = provedorEnvPorId
           ? (process.env[provedorEnvPorId.variavel]?.trim() ?? "")
@@ -600,7 +608,7 @@ export const Route = createFileRoute("/api/chat")({
         const envProvedor = provedorEnvAtivo(process.env);
         const provedorPadrao = provedorExternoViaBackend
           ? provedorEnvPorId
-          : envProvedor?.provedor ?? null;
+          : (envProvedor?.provedor ?? null);
 
         if (!provedorExterno && !provedorPadrao) {
           return new Response(
@@ -612,7 +620,9 @@ export const Route = createFileRoute("/api/chat")({
         const modeloEscolhido = provedorExterno
           ? iaModelo!
           : provedorPadrao
-            ? (provedorExternoViaBackend ? provedorEnvPorId!.modelo : envProvedor!.provedor.modelo)
+            ? provedorExternoViaBackend
+              ? provedorEnvPorId!.modelo
+              : envProvedor!.provedor.modelo
             : "";
         const nomeProvedor = provedorExterno
           ? `provedor externo (${(() => {
@@ -652,7 +662,7 @@ export const Route = createFileRoute("/api/chat")({
 
         const modeloChat = createOpenAICompatible({
           name: provedorExterno ? "provedor-usuario" : "provedor-env",
-          baseURL: candidatosIA[0]!.baseURL,
+          baseURL: candidatosIA[0].baseURL,
           headers: cabecalhosEnv,
           fetch: fallbackIA.fetch,
         })(modeloEscolhido);
@@ -1032,23 +1042,32 @@ export const Route = createFileRoute("/api/chat")({
                 const [posicoes, macro, fundamentosCvm, gradeAcoes, gradeFiis] = await Promise.all([
                   posicoesParaTickers([tickerUpper]),
                   contextoMacro(),
-                  lerFundamentosCvm().catch(() => ({ mapa: {} as Record<string, any> })),
+                  lerFundamentosCvm().catch(() => ({ mapa: {} })),
                   gradeAcoesComCache().catch(() => ({ linhas: [] })),
                   gradeFiisComCache().catch(() => ({ linhas: [] })),
                 ]);
 
-                const gradeMap = new Map<string, any>([
-                  ...gradeAcoes.linhas.map((l: any): [string, any] => [l.ticker.toUpperCase(), l]),
-                  ...gradeFiis.linhas.map((l: any): [string, any] => [l.ticker.toUpperCase(), l]),
+                const gradeMap = new Map<string, Record<string, unknown>>([
+                  ...gradeAcoes.linhas.map((l): [string, Record<string, unknown>] => [
+                    l.ticker.toUpperCase(),
+                    l as Record<string, unknown>,
+                  ]),
+                  ...gradeFiis.linhas.map((l): [string, Record<string, unknown>] => [
+                    l.ticker.toUpperCase(),
+                    l as Record<string, unknown>,
+                  ]),
                 ]);
 
                 const raw = gradeMap.get(tickerUpper);
                 if (!raw) {
-                  return { erro: `Sem dados fundamentalistas disponíveis para ${ticker} no momento.` };
+                  return {
+                    erro: `Sem dados fundamentalistas disponíveis para ${ticker} no momento.`,
+                  };
                 }
 
                 const pos = posicoes[tickerUpper];
-                const cvm = (fundamentosCvm.mapa as Record<string, any>)[tickerUpper];
+                const cvm = (fundamentosCvm.mapa as Record<string, unknown>)[tickerUpper] as
+                  Record<string, unknown> | undefined;
                 const dy12 = (raw.dy12 ?? null) as number | null;
                 const pl = (raw.pl ?? null) as number | null;
                 const liquidez = (raw.liquidez ?? null) as number | null;
@@ -1067,9 +1086,12 @@ export const Route = createFileRoute("/api/chat")({
                     noticiaImpacto: false,
                   }),
                   sinal: sinalRadar({
-                    variacaoDia: "variacaoPercent" in raw ? raw.variacaoPercent ?? null : null,
+                    variacaoDia:
+                      "variacaoPercent" in raw
+                        ? ((raw.variacaoPercent as number | null) ?? null)
+                        : null,
                     dy12: dy12 ?? null,
-                    pvp: "pvp" in raw ? raw.pvp ?? null : null,
+                    pvp: "pvp" in raw ? ((raw.pvp as number | null) ?? null) : null,
                     percentil: pos?.percentil ?? null,
                     noticiaImpacto: false,
                   }).tipo,
@@ -1085,10 +1107,10 @@ export const Route = createFileRoute("/api/chat")({
                   consistenciaDividendos: null,
                   percentilDistribucional: pos?.percentilDistribucional ?? null,
                   volatilidadeAnualPct: pos?.volatilidadeAnualPct ?? null,
-                  percentilPlReal: cvm?.percentilPl ?? null,
-                  percentilEvEbitReal: cvm?.percentilEvEbit ?? null,
-                  evEbitReal: cvm?.evEbit ?? null,
-                  dividaLiquidaReal: cvm?.dividaLiquida ?? null,
+                  percentilPlReal: (cvm?.percentilPl as number | null) ?? null,
+                  percentilEvEbitReal: (cvm?.percentilEvEbit as number | null) ?? null,
+                  evEbitReal: (cvm?.evEbit as number | null) ?? null,
+                  dividaLiquidaReal: (cvm?.dividaLiquida as number | null) ?? null,
                 };
 
                 const resultado = avaliarParaGestor(entrada);
@@ -1999,18 +2021,26 @@ export const Route = createFileRoute("/api/chat")({
                 const dividendos = dividendosData.data ?? [];
 
                 if (ativos.length === 0) {
-                  return { alertas: ["Carteira vazia — registre aportes para receber alertas personalizados."], acoes: ["Comece cadastrando seus ativos na janela Carteira."] };
+                  return {
+                    alertas: [
+                      "Carteira vazia — registre aportes para receber alertas personalizados.",
+                    ],
+                    acoes: ["Comece cadastrando seus ativos na janela Carteira."],
+                  };
                 }
 
-                const totalPatrimonio = ativos.reduce((s, a) => s + Number(a.quantidade) * Number(a.preco_atual), 0);
+                const totalPatrimonio = ativos.reduce(
+                  (s, a) => s + Number(a.quantidade) * Number(a.preco_atual),
+                  0,
+                );
 
-                const tickers = ativos.map(a => a.ticker.toUpperCase());
+                const tickers = ativos.map((a) => a.ticker.toUpperCase());
                 const [posicoes, macro] = await Promise.all([
                   posicoesParaTickers(tickers),
                   contextoMacro(),
                 ]);
 
-                let sinaisVenda = 0;
+                let _sinaisVenda = 0;
                 const concentracaoAlta: string[] = [];
 
                 for (const a of ativos) {
@@ -2020,49 +2050,76 @@ export const Route = createFileRoute("/api/chat")({
 
                   const percentil = pos.percentil;
                   if (percentil !== null && percentil > 90) {
-                    sinaisVenda++;
-                    alertas.push(`Sinal de venda no radar: ${ticker} — choque em andamento, fora da mesa de aportes.`);
+                    _sinaisVenda++;
+                    alertas.push(
+                      `Sinal de venda no radar: ${ticker} — choque em andamento, fora da mesa de aportes.`,
+                    );
                     acoes.push(`Reavalie ${ticker}: considere reduzir ou zerar a posição.`);
                   }
 
-                  const peso = totalPatrimonio > 0 ? (Number(a.quantidade) * Number(a.preco_atual) / totalPatrimonio) * 100 : 0;
+                  const peso =
+                    totalPatrimonio > 0
+                      ? ((Number(a.quantidade) * Number(a.preco_atual)) / totalPatrimonio) * 100
+                      : 0;
                   if (peso > 15) {
                     concentracaoAlta.push(`${ticker} (${peso.toFixed(1)}% do patrimônio)`);
                   }
                 }
 
                 if (concentracaoAlta.length > 0) {
-                  alertas.push(`Concentração excessiva em ${concentracaoAlta.length} ativo(s): ${concentracaoAlta.join(", ")}. Nenhuma posição deve ultrapassar ~10-15% do patrimônio.`);
-                  acoes.push("Rebalanceie a carteira para reduzir concentração e diversificar por classe/setor/moeda.");
+                  alertas.push(
+                    `Concentração excessiva em ${concentracaoAlta.length} ativo(s): ${concentracaoAlta.join(", ")}. Nenhuma posição deve ultrapassar ~10-15% do patrimônio.`,
+                  );
+                  acoes.push(
+                    "Rebalanceie a carteira para reduzir concentração e diversificar por classe/setor/moeda.",
+                  );
                 }
 
                 for (const m of metas) {
                   if (!m.alvo) continue;
                   const progresso = totalPatrimonio / Number(m.alvo);
                   if (progresso < 0.5) {
-                    alertas.push(`Meta "${m.nome}" está em ${(progresso * 100).toFixed(0)}% do alvo.`);
+                    alertas.push(
+                      `Meta "${m.nome}" está em ${(progresso * 100).toFixed(0)}% do alvo.`,
+                    );
                     acoes.push(`Aumente aportes para acelerar a meta "${m.nome}".`);
                   }
                 }
 
                 if (dividendos.length > 0) {
                   const proximoEx = dividendos[0];
-                  alertas.push(`Dividendos próximos: ${dividendos.length} pagamento(s) programado(s). Próximo: ${proximoEx.ticker} em ${new Date(proximoEx.data).toLocaleDateString("pt-BR")} — R$ ${Number(proximoEx.valor).toFixed(2)}.`);
-                  acoes.push("Aproveite o calendário de proventos para planejar reinvestimentos ou reserva de oportunidade.");
+                  alertas.push(
+                    `Dividendos próximos: ${dividendos.length} pagamento(s) programado(s). Próximo: ${proximoEx.ticker} em ${new Date(proximoEx.data).toLocaleDateString("pt-BR")} — R$ ${Number(proximoEx.valor).toFixed(2)}.`,
+                  );
+                  acoes.push(
+                    "Aproveite o calendário de proventos para planejar reinvestimentos ou reserva de oportunidade.",
+                  );
                 }
 
                 const selic = macro.selic;
                 if (selic !== null && selic > 0) {
-                  alertas.push(`Selic atual: ${selic.toFixed(1)}% a.a. — use como referência para comparar renda fixa e prêmio de risco da renda variável.`);
+                  alertas.push(
+                    `Selic atual: ${selic.toFixed(1)}% a.a. — use como referência para comparar renda fixa e prêmio de risco da renda variável.`,
+                  );
                 }
 
                 if (alertas.length === 0) {
-                  return { alertas: ["Nenhum alerta crítico no momento. Carteira saudável."], acoes: ["Continue monitorando; revise os alertas após mudanças de mercado ou aportes."] };
+                  return {
+                    alertas: ["Nenhum alerta crítico no momento. Carteira saudável."],
+                    acoes: [
+                      "Continue monitorando; revise os alertas após mudanças de mercado ou aportes.",
+                    ],
+                  };
                 }
 
                 return { alertas, acoes };
               } catch (e) {
-                return { alertas: [`Erro ao verificar alertas: ${e instanceof Error ? e.message : "desconhecido"}`], acoes: [] };
+                return {
+                  alertas: [
+                    `Erro ao verificar alertas: ${e instanceof Error ? e.message : "desconhecido"}`,
+                  ],
+                  acoes: [],
+                };
               }
             },
           }),
@@ -2085,7 +2142,10 @@ export const Route = createFileRoute("/api/chat")({
           const painel = baseConhecimento.itens.find((i) => i.categoria === "painel") ?? null;
           const demais = baseConhecimento.itens.filter((i) => i.categoria !== "painel");
 
-          const ehAuditoria = /analis(e|ar|a)|auditoria|carteira|diversificaca|concentracao|risco|rebalanceamento/i.test(pergunta);
+          const ehAuditoria =
+            /analis(e|ar|a)|auditoria|carteira|diversificaca|concentracao|risco|rebalanceamento/i.test(
+              pergunta,
+            );
           const maxChars = ehAuditoria
             ? conhecimentoMod.MAX_CONHECIMENTO_CHARS_AUDITORIA
             : conhecimentoMod.MAX_CONHECIMENTO_CHARS;

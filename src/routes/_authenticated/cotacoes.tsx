@@ -16,6 +16,7 @@ import { PainelCripto } from "@/components/cripto/painel-cripto";
 import { PainelCommodities } from "@/components/commodities/painel-commodities";
 import { PainelIndices } from "@/components/indices/painel-indices";
 import { PainelTesouro } from "@/components/tesouro/painel-tesouro";
+import { PainelAlertasPreco } from "@/components/painel-alertas-preco";
 import { estadoPregao } from "@/lib/cotacoes-tempo-real";
 import {
   ABAS_COTACOES,
@@ -223,6 +224,11 @@ function Cotacoes() {
               </TabsContent>
             ))}
           </Tabs>
+
+          {/* Nível 2 — F3: alertas de preço server-side (notificação push) */}
+          <div className="mt-6 max-w-3xl">
+            <PainelAlertasPreco />
+          </div>
         </TooltipProvider>
       </div>
     </AppShell>

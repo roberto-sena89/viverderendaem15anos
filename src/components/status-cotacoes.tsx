@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { pedirPermissaoPush, permissaoPush } from "@/lib/alertas-historico";
+import { cancelarPush, inscreverPush, pushAssinaturaSuportada } from "@/lib/push-assinatura";
 import { useCotacoesTempoReal } from "@/lib/cotacoes-tempo-real";
 
 /** Tempo relativo curto ("há 12s", "às 14:32"). */
@@ -189,6 +190,8 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
                   checked={config.pushAtivo && permissao === "granted"}
                   onCheckedChange={async (v) => {
                     if (!v) {
+                      // Desliga também a assinatura Web Push no servidor
+                      await cancelarPush().catch(() => {});
                       salvarConfig({ pushAtivo: false });
                       return;
                     }
@@ -196,7 +199,20 @@ export function StatusCotacoes({ sticky = true }: { sticky?: boolean }) {
                     setPermissao(p);
                     if (p === "granted") {
                       salvarConfig({ pushAtivo: true });
-                      toast.success("Notificações push ativadas neste dispositivo.");
+                      // Assinatura Web Push server-side (alertas com app fechado),
+                      // quando suportada e o usuário está logado. Best-effort.
+                      if (pushAssinaturaSuportada()) {
+                        const resultado = await inscreverPush();
+                        if (!resultado.ok) {
+                          toast.error(resultado.mensagem);
+                          return;
+                        }
+                      }
+                      toast.success(
+                        pushAssinaturaSuportada()
+                          ? "Notificações push ativadas — alertas chegam mesmo com o app fechado."
+                          : "Notificações push ativadas neste dispositivo.",
+                      );
                     } else {
                       salvarConfig({ pushAtivo: false });
                       toast.error("Permissão de notificações bloqueada no navegador.");

@@ -1,0 +1,22 @@
+name: Verificar Alertas de Preço
+
+on:
+  schedule:
+    # A cada 15 minutos (UTC). O hook verifica todos os alertas ativos
+    # contra o preço atual e dispara Web Push para os atingidos.
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar o hook de verificação de alertas
+        run: |
+          curl -s -X POST \
+            -H "content-type: application/json" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            -d '{}' \
+            https://viverderendaem15anos.lovable.app/api/public/hooks/verificar-alertas-preco
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}

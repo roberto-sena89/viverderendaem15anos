@@ -147,8 +147,7 @@ export function DialogMeuPluggy() {
                 : "Erro desconhecido"}
             </p>
             <p className="text-muted-foreground text-xs">
-              Verifique que configurou{" "}
-              <code className="text-[10px]">PLUGGY_CLIENT_ID</code> e{" "}
+              Verifique que configurou <code className="text-[10px]">PLUGGY_CLIENT_ID</code> e{" "}
               <code className="text-[10px]">PLUGGY_CLIENT_SECRET</code> (disponíveis no{" "}
               <a
                 href={URLS.dashboardPluggy}
@@ -272,4 +271,3 @@ export function DialogMeuPluggy() {
     </Dialog>
   );
 }
-

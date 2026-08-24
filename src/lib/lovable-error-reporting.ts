@@ -30,6 +30,7 @@ export function reportLovableError(error: unknown, context: Record<string, unkno
   // Navegação, HMR e fechamento de aba cancelam requisições em andamento.
   // Isso não é falha da aplicação e não deve abrir o overlay de runtime.
   if (isClientDisconnectError(error)) return;
+  void encaminharParaSentry(error, context);
   window.__lovableEvents?.captureException?.(
     error,
     {
@@ -59,4 +60,27 @@ export function reportLovableError(error: unknown, context: Record<string, unkno
     stack: error instanceof Error ? error.stack : undefined,
     filename: window.location.pathname,
   });
+}
+
+/**
+ * Encaminha o erro para o Sentry quando o SDK foi inicializado no client entry
+ * (src/client.tsx, ativado por VITE_SENTRY_DSN). Import dinâmico + flag global:
+ * sem DSN, o custo é zero e o módulo Sentry nunca é carregado neste arquivo.
+ */
+async function encaminharParaSentry(error: unknown, context: Record<string, unknown>) {
+  try {
+    const win = window as unknown as { __sentryIntegrado?: boolean };
+    if (!win.__sentryIntegrado) return;
+    const Sentry = await import("@sentry/react");
+    Sentry.withScope((scope) => {
+      scope.setExtra("route", window.location.pathname);
+      for (const [chave, valor] of Object.entries(context)) {
+        if (valor != null) scope.setExtra(chave, valor);
+      }
+      scope.setTag("mecanismo", "react_error_boundary");
+      Sentry.captureException(error);
+    });
+  } catch {
+    /* nunca deixar o reporting de erros quebrar a aplicação */
+  }
 }
