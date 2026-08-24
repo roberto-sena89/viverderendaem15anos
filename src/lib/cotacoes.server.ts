@@ -62,7 +62,9 @@ type BrapiResposta = {
 async function brapiLote(tickers: string[]): Promise<Map<string, CotacaoLive>> {
   const mapa = new Map<string, CotacaoLive>();
   const token = process.env.BRAPI_TOKEN;
-  const tamanho = token ? 20 : 5;
+  // Sem token a brapi.dev só aceita consultas de UM ticker por vez (batch com
+  // 2+ retorna 401 MISSING_TOKEN). Com token, podemos usar lotes maiores.
+  const tamanho = token ? 20 : 1;
 
   for (let i = 0; i < tickers.length; i += tamanho) {
     const lote = tickers.slice(i, i + tamanho);

@@ -14,6 +14,8 @@ const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 /** Cache curto em memória para aliviar o rate limit das fontes públicas. */
 const cache = new Map<string, { expira: number; valor: unknown }>();
 const TTL_MS = 5 * 60 * 1000;
+/** TTL curto para cotações ao vivo (a carteira re-poll a cada 15-30s). */
+export const TTL_COTACAO_MS = 30 * 1000;
 
 async function buscar(url: string, timeoutMs: number, comUA = false): Promise<Response> {
   const controller = new AbortController();
@@ -32,7 +34,7 @@ async function buscar(url: string, timeoutMs: number, comUA = false): Promise<Re
   }
 }
 
-async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
+async function getJson<T>(url: string, timeoutMs = 15000, ttlMs: number = TTL_MS): Promise<T> {
   const emCache = cache.get(url);
   if (emCache && emCache.expira > Date.now()) return emCache.valor as T;
 
@@ -51,7 +53,7 @@ async function getJson<T>(url: string, timeoutMs = 15000): Promise<T> {
       }
       if (res.ok) {
         const valor = (await res.json()) as T;
-        cache.set(url, { valor, expira: Date.now() + TTL_MS });
+        cache.set(url, { valor, expira: Date.now() + ttlMs });
         return valor;
       }
       ultimoStatus = res.status;
@@ -161,7 +163,7 @@ export async function cotacaoBrapi(simboloEntrada: string): Promise<Cotacao | nu
         fiftyTwoWeekLow?: number;
         regularMarketTime?: string;
       }>;
-    }>(url, 15000);
+    }>(url, 15000, TTL_COTACAO_MS);
     const r = json.results?.[0];
     if (!r?.regularMarketPrice) return null;
     return {
@@ -213,6 +215,8 @@ export async function buscarCotacao(simboloEntrada: string): Promise<Cotacao> {
   try {
     data = await getJson<ChartResponse>(
       `${YAHOO}/v8/finance/chart/${encodeURIComponent(simbolo)}?range=5d&interval=1d`,
+      15000,
+      TTL_COTACAO_MS,
     );
   } catch (err) {
     const alternativa = await cotacaoBrapi(simbolo);
