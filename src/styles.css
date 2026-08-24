@@ -881,7 +881,8 @@ table thead th {
   color: var(--color-muted-foreground);
   background-color: color-mix(in oklab, var(--color-muted) 55%, transparent);
   white-space: normal;
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 table tbody td {
@@ -1536,6 +1537,7 @@ canvas {
     width: 100%;
     max-width: 100%;
     table-layout: auto;
+    font-size: 0.8125rem;
   }
 
   [data-streamdown="table-wrapper"] th,
@@ -1543,6 +1545,10 @@ canvas {
     white-space: normal;
     overflow-wrap: anywhere;
     word-break: break-word;
+  }
+
+  [data-streamdown="table-wrapper"] th {
+    font-size: 0.6875rem;
   }
 
   [data-streamdown="code-block-body"] {

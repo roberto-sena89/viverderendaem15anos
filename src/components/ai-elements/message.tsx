@@ -287,12 +287,12 @@ const estiloTabelas = cn(
   // Tabela
   "[&_table]:m-0 [&_table]:w-full [&_table]:border-collapse [&_table]:text-left [&_table]:text-xs sm:[&_table]:text-sm",
   "[&_thead]:bg-muted/40",
-  "[&_th]:whitespace-nowrap [&_th]:px-3 [&_th]:py-2.5 [&_th]:text-[11px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-wide [&_th]:text-muted-foreground sm:[&_th]:text-xs",
-  "[&_td]:px-3 [&_td]:py-2.5 [&_td]:align-middle [&_td]:break-words",
+  "[&_th]:px-2 [&_th]:py-1.5 [&_th]:text-[10px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-wide [&_th]:text-muted-foreground [&_th]:break-words sm:[&_th]:px-3 sm:[&_th]:py-2.5 sm:[&_th]:text-xs",
+  "[&_td]:px-2 [&_td]:py-1.5 [&_td]:align-middle [&_td]:break-words sm:[&_td]:px-3 sm:[&_td]:py-2.5",
   "[&_tbody_tr]:border-t [&_tbody_tr]:border-border/50",
   "[&_tbody_tr:hover]:bg-muted/30",
-  // NÃºmeros alinhados Ã  direita a partir da 2Âª coluna
-  "[&_th:not(:first-child)]:text-right [&_td:not(:first-child)]:text-right",
+  // Números alinhados à direita a partir da 2ª coluna (desktop)
+  "sm:[&_th:not(:first-child)]:text-right sm:[&_td:not(:first-child)]:text-right",
   "[&_td:first-child]:font-medium [&_td:first-child]:text-foreground",
 );
 
@@ -311,7 +311,6 @@ export const MessageResponse = memo(
   (prevProps, nextProps) =>
     prevProps.children === nextProps.children && nextProps.isAnimating === prevProps.isAnimating,
 );
-
 
 MessageResponse.displayName = "MessageResponse";
 
