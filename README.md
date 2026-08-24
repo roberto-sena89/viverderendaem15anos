@@ -194,6 +194,28 @@ Foco em Dividendos 9%, Selic Alta 15%) e rankeia quem chega primeiro à independ
 Exibido em **Planejador** (`src/lib/comparador-estrategias.ts`,
 `src/components/comparador-estrategias.tsx`).
 
+## Nível 3 — A joia imaginativa
+
+### 🕰️ Relógio da Liberdade
+Não é um gráfico — é um **objeto emocional** no topo do **Dashboard**: um mostrador
+analógico (anel de progresso + ponteiro) que gira conforme sua renda passiva cobre
+a meta de renda mensal. Cada dividendo "compra dias de liberdade".
+
+- **Mostrador analógico SVG** com marcas de hora, anel de progresso e ponteiro que
+  avança suavemente (transição de 1s) conforme os dados mudam.
+- **Cor emocional por estágio**: vermelho (Despertar) → laranja (Impulso) → verde
+  (Acumulação) → dourado (Liberdade), com mensagens motivacionais.
+- **Leituras digitais**: % da meta coberta, renda passiva mensal estimada (DY da
+  carteira), e quantos dias de liberdade o mês já está comprado.
+- **Interação "E se eu parar de aportar?"**: o ponteiro re-projeta sem aportes e
+  mostra em quanto tempo a liberdade chegaria apenas com o patrimônio atual.
+- **Mini-histórico**: últimos 12 meses de proventos convertidos em dias de liberdade
+  comprados, com destaque para o melhor mês.
+- **Meta de renda mensal editável** (persistida em localStorage; padrão R$ 25 mil).
+
+Código: `src/lib/relogio-liberdade.ts` (lógica pura, 6 testes unitários) e
+`src/components/relogio-liberdade.tsx` (mostrador + painel).
+
 ### 📤 Carteira Pública Compartilhável
 Gere um link público único (expirável 7/30/90 dias ou nunca) com snapshot da carteira
 (opcionalmente **sem** valores em reais). A rota pública `/compartilhada/[token]`
