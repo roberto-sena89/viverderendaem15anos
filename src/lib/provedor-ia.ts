@@ -81,13 +81,11 @@ export const PRESETS_PROVEDOR: PresetProvedor[] = [
     baseUrl: "https://api.orcarouter.ai/v1",
     modelos: [
       "qwen/qwen3.8-27b-free",
-      "deepseek/deepseek-v4-pro-free",
       "deepseek/deepseek-v4-flash-free",
       "tencent/hy3-free",
     ],
     modelosGratuitos: [
       "qwen/qwen3.8-27b-free",
-      "deepseek/deepseek-v4-pro-free",
       "deepseek/deepseek-v4-flash-free",
       "tencent/hy3-free",
     ],
