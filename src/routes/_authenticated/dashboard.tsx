@@ -126,14 +126,14 @@ function FiltroSelect({
 }
 
 const SECOES = [
-  { id: "liberdade", rotulo: "Liberdade" },
   { id: "resumo", rotulo: "Resumo" },
   { id: "saude", rotulo: "Saúde" },
   { id: "analise", rotulo: "Análise" },
   { id: "evolucao", rotulo: "Evolução" },
+  { id: "ativos", rotulo: "Ativos" },
+  { id: "liberdade", rotulo: "Liberdade" },
   { id: "semanal", rotulo: "Semanal" },
   { id: "score", rotulo: "Score" },
-  { id: "ativos", rotulo: "Ativos" },
 ] as const;
 
 /** Pílulas de âncora com scrollspy para navegar pela página longa. */
@@ -270,24 +270,6 @@ function Dashboard() {
       <StatusCotacoes />
       <AbasCarteira />
       <NavegacaoSecoes />
-
-      {/* Nível 3 — Relógio da Liberdade */}
-      <section id="liberdade" className="panel scroll-mt-32 overflow-hidden sm:scroll-mt-40">
-        <div className="border-b border-border bg-gradient-to-r from-muted/30 via-background to-muted/30 px-4 py-4 sm:px-6 sm:py-5">
-          <div className="flex items-center gap-2">
-            <span className="flex size-7 items-center justify-center rounded-full bg-amber-500/20 text-amber-500 text-xs font-bold">
-              🕰️
-            </span>
-            <h2 className="panel-title text-lg">Relógio da Liberdade</h2>
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Sua contagem regressiva para viver de renda — cada dividendo compra dias de liberdade.
-          </p>
-        </div>
-        <div className="p-4 sm:p-6">
-          <RelogioLiberdade />
-        </div>
-      </section>
       <section id="resumo" className="scroll-mt-32 sm:scroll-mt-40">
         <ResumoKpis />
         <ResumoCategorias />
@@ -629,6 +611,24 @@ function Dashboard() {
             <CarteiraGrupos ativos={ativos} minimal />
           </div>
         )}
+      </section>
+
+      {/* Nível 3 — Relógio da Liberdade (abaixo de "Meus ativos") */}
+      <section id="liberdade" className="panel scroll-mt-32 overflow-hidden sm:scroll-mt-40">
+        <div className="border-b border-border bg-gradient-to-r from-muted/30 via-background to-muted/30 px-4 py-4 sm:px-6 sm:py-5">
+          <div className="flex items-center gap-2">
+            <span className="flex size-7 items-center justify-center rounded-full bg-amber-500/20 text-amber-500 text-xs font-bold">
+              🕰️
+            </span>
+            <h2 className="panel-title text-lg">Relógio da Liberdade</h2>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Sua contagem regressiva para viver de renda — cada dividendo compra dias de liberdade.
+          </p>
+        </div>
+        <div className="p-4 sm:p-6">
+          <RelogioLiberdade />
+        </div>
       </section>
 
       {/* Nível 2 — F7: resumo semanal do investidor */}
