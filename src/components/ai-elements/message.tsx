@@ -291,7 +291,7 @@ const estiloTabelas = cn(
   "[&_td]:px-2 [&_td]:py-1.5 [&_td]:align-middle [&_td]:break-words sm:[&_td]:px-3 sm:[&_td]:py-2.5",
   "[&_tbody_tr]:border-t [&_tbody_tr]:border-border/50",
   "[&_tbody_tr:hover]:bg-muted/30",
-  // Nmeros alinhados  direita a partir da 2 coluna (desktop)
+  // Números alinhados à direita a partir da 2ª coluna (desktop)
   "sm:[&_th:not(:first-child)]:text-right sm:[&_td:not(:first-child)]:text-right",
   "[&_td:first-child]:font-medium [&_td:first-child]:text-foreground",
 );
