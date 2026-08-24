@@ -298,7 +298,7 @@ const estiloTabelas = cn(
   "[&_table[data-streamdown='table']]:min-w-max",
   "[&_table[data-streamdown='table']]:table-auto",
   "[&_table[data-streamdown='table']]:border-collapse",
-  "[&_table[data-streamdown='table']]:text-xs",
+  "[&_table[data-streamdown='table']]:text-[0.8125rem]",
   "sm:[&_table[data-streamdown='table']]:text-sm",
   // Cabeçalho — fundo escuro, borda inferior, tracking
   "[&_table[data-streamdown='table']>thead]:border-b-2",
