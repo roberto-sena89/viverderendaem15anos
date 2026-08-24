@@ -123,6 +123,14 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     idsGratuitosAdicionais: ["kilo-auto/free", "openrouter/free"],
     nota: "Kilo AI Gateway — modelos :free com rate limit (200 req/hora/IP sem chave)",
   },
+  {
+    chave: "nous",
+    nome: "Hermes Agent (NousResearch)",
+    baseUrl: "https://inference-api.nousresearch.com/v1",
+    variavelChave: "NOUS_API_KEY",
+    padroesGratuitos: [/:free$/i],
+    idsGratuitosAdicionais: ["tencent/hy3:free", "poolside/laguna-s-2.1:free", "stepfun/step-3.7-flash:free", "poolside/laguna-xs-2.1:free"],
+  },
 ];
 
 function chaveDoProvedor(provedor: VerificadorProvedor, env: NodeJS.ProcessEnv): string {
@@ -420,6 +428,7 @@ const ALIASES_CHAVE: readonly [string, string][] = [
   ["kilocode", "kilocode"],
   ["kilo", "kilocode"],
   ["gemini", "gemini"],
+  ["nous", "nous"],
 ];
 
 function chavePorNome(nome: string): string | null {
@@ -543,3 +552,8 @@ export async function verificarModelosGratuitos(
     resumo,
   };
 }
+
+
+
+
+

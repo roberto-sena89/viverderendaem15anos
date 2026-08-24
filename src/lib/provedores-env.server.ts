@@ -74,6 +74,13 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     modelo: "stealth/ox-alpha",
     urlChave: "https://app.cline.bot",
   },
+  {
+    variavel: "NOUS_API_KEY",
+    nome: "Hermes Agent (NousResearch)",
+    baseUrl: "https://inference-api.nousresearch.com/v1",
+    modelo: "tencent/hy3:free",
+    urlChave: "https://portal.nousresearch.com",
+  },
 ];
 
 /**
@@ -100,5 +107,10 @@ export function baseUrlProvedorEnv(provedor: ProvedorEnv, env: NodeJS.ProcessEnv
   const prefixo = provedor.variavel.replace(/_API_KEY$/, "");
   return env[`${prefixo}_BASE_URL`]?.trim() || provedor.baseUrl;
 }
+
+
+
+
+
 
 
