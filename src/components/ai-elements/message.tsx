@@ -349,7 +349,7 @@ const estiloTabelas = cn(
  * destaques na paleta da marca, sem ruido visual.
  */
 const estiloTexto = cn(
-  "text-[0.95rem] leading-[1.75] tracking-[-0.005em] text-pretty text-foreground/90",
+  "prose-legivel text-[1rem] leading-[1.75] tracking-[-0.005em] text-pretty text-foreground",
   "[&_p]:my-3 [&_p]:max-w-[68ch]",
   "[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-lg [&_h1]:font-semibold [&_h1]:tracking-tight [&_h1]:text-foreground",
   "[&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground",
