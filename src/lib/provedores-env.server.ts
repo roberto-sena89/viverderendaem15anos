@@ -75,7 +75,7 @@ export const PROVEDORES_ENV: readonly ProvedorEnv[] = [
     urlChave: "https://app.cline.bot",
   },
   {
-    variavel: "NOUS_API_KEY",
+    variavel: "BAI_API_KEY",
     nome: "B.AI",
     baseUrl: "https://api.b.ai/v1",
     modelo: "gpt-5.4",

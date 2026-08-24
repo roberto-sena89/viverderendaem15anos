@@ -127,7 +127,7 @@ const VERIFICADORES: readonly VerificadorProvedor[] = [
     chave: "nous",
     nome: "B.AI",
     baseUrl: "https://api.b.ai/v1",
-    variavelChave: "NOUS_API_KEY",
+    variavelChave: "BAI_API_KEY",
     exigeChave: true,
     nota: "B.AI — serviço pago por crédito",
   },
