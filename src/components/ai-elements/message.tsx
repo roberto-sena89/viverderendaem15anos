@@ -339,8 +339,8 @@ const estiloTabelas = cn(
   // Colunas do meio — centralizadas para grade visual limpa
   "[&_table[data-streamdown='table']>tbody>tr>td:not(:first-child):not(:last-child)]:text-center",
   "[&_table[data-streamdown='table']>thead>tr>th:not(:first-child):not(:last-child)]:text-center",
-  // Cor do texto padrão nas células
-  "[&_table[data-streamdown='table']>tbody>tr>td]:text-foreground/85",
+  // Cor do texto padrão nas células — contraste AA
+  "[&_table[data-streamdown='table']>tbody>tr>td]:text-foreground",
   "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:text-foreground",
 );
 
