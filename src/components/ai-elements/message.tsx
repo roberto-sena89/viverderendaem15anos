@@ -303,8 +303,8 @@ const estiloTabelas = cn(
   "[&_table[data-streamdown='table']]:max-w-full",
   "[&_table[data-streamdown='table']]:table-auto",
   "[&_table[data-streamdown='table']]:border-collapse",
-  "[&_table[data-streamdown='table']]:text-[0.8125rem]",
-  "sm:[&_table[data-streamdown='table']]:text-[0.875rem]",
+  "[&_table[data-streamdown='table']]:text-[0.7rem]",
+  "sm:[&_table[data-streamdown='table']]:text-[0.78rem]",
   // Cabeçalho — fundo escuro, borda inferior, tracking
   "[&_table[data-streamdown='table']>thead]:border-b-2",
   "[&_table[data-streamdown='table']>thead]:border-border/60",
