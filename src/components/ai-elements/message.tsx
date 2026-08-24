@@ -275,8 +275,9 @@ export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 const streamdownPlugins = { cjk, math };
 
 /**
- * Estilo das tabelas geradas pelo Gestor IA: cartão moderno sem quebra de
- * linha indesejada, colunas proporcionais, alinhamento limpo, leitura fácil.
+ * Estilo das tabelas geradas pelo Gestor IA: cartão que ocupa exatamente a
+ * largura do chat (SEM barra de rolagem horizontal), com quebra de linha
+ * natural e organizada nas células, colunas proporcionais e leitura fácil.
  */
 const estiloTabelas = cn(
   // Container externo (data-streamdown="table-wrapper")
@@ -289,13 +290,13 @@ const estiloTabelas = cn(
   "[&_[data-streamdown='table-wrapper']]:border-border/50",
   "[&_[data-streamdown='table-wrapper']]:bg-card/30",
   "[&_[data-streamdown='table-wrapper']]:shadow-[var(--shadow-lift)]",
-  // Área de rolagem interna do Streamdown — esconde barra de rolagem feia
-  "[&_[data-streamdown='table-wrapper']>div:last-child]:scrollbar-none",
-  "[&_[data-streamdown='table-wrapper']>div:last-child]:overscroll-x-contain",
-  // Tabela base — largura total, colunas proporcionais ao conteúdo
+  // Área de rolagem interna do Streamdown: REMOVE a rolagem horizontal
+  "[&_[data-streamdown='table-wrapper']>div:last-child]:overflow-x-hidden",
+  "[&_[data-streamdown='table-wrapper']>div:last-child]:overflow-y-visible",
+  // Tabela base — largura exata do container (nunca mais larga), colunas proporcionais
   "[&_table[data-streamdown='table']]:m-0",
   "[&_table[data-streamdown='table']]:w-full",
-  "[&_table[data-streamdown='table']]:min-w-max",
+  "[&_table[data-streamdown='table']]:max-w-full",
   "[&_table[data-streamdown='table']]:table-auto",
   "[&_table[data-streamdown='table']]:border-collapse",
   "[&_table[data-streamdown='table']]:text-[0.8125rem]",
@@ -311,14 +312,17 @@ const estiloTabelas = cn(
   "[&_table[data-streamdown='table']>thead>tr>th]:uppercase",
   "[&_table[data-streamdown='table']>thead>tr>th]:tracking-[0.08em]",
   "[&_table[data-streamdown='table']>thead>tr>th]:text-muted-foreground",
+  "[&_table[data-streamdown='table']>thead>tr>th]:whitespace-nowrap",
   "sm:[&_table[data-streamdown='table']>thead>tr>th]:px-4",
   "sm:[&_table[data-streamdown='table']>thead>tr>th]:py-3",
   "sm:[&_table[data-streamdown='table']>thead>tr>th]:text-xs",
-  // Células — padding generoso, SEM QUEBRA DE LINHA
+  // Células — quebra natural de linha, palavras longas quebram como último recurso
   "[&_table[data-streamdown='table']>tbody>tr>td]:px-3",
   "[&_table[data-streamdown='table']>tbody>tr>td]:py-2",
   "[&_table[data-streamdown='table']>tbody>tr>td]:align-middle",
-  "[&_table[data-streamdown='table']>tbody>tr>td]:whitespace-nowrap",
+  "[&_table[data-streamdown='table']>tbody>tr>td]:whitespace-normal",
+  "[&_table[data-streamdown='table']>tbody>tr>td]:break-words",
+  "[&_table[data-streamdown='table']>tbody>tr>td]:leading-snug",
   "sm:[&_table[data-streamdown='table']>tbody>tr>td]:px-4",
   "sm:[&_table[data-streamdown='table']>tbody>tr>td]:py-2.5",
   // Linhas — borda sutil + striped alternado + hover
@@ -335,6 +339,7 @@ const estiloTabelas = cn(
   "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:text-right",
   "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:font-medium",
   "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:tabular-nums",
+  "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:whitespace-nowrap",
   "[&_table[data-streamdown='table']>thead>tr>th:last-child]:text-right",
   // Colunas do meio — centralizadas para grade visual limpa
   "[&_table[data-streamdown='table']>tbody>tr>td:not(:first-child):not(:last-child)]:text-center",
