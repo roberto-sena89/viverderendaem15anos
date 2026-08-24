@@ -298,7 +298,7 @@ const estiloTabelas = cn(
   "[&_table[data-streamdown='table']]:min-w-max",
   "[&_table[data-streamdown='table']]:table-auto",
   "[&_table[data-streamdown='table']]:border-collapse",
-  "[&_table[data-streamdown='table']]:text-xs",
+  "[&_table[data-streamdown='table']]:text-[0.8125rem]",
   "sm:[&_table[data-streamdown='table']]:text-sm",
   // Cabeçalho — fundo escuro, borda inferior, tracking
   "[&_table[data-streamdown='table']>thead]:border-b-2",
@@ -306,7 +306,7 @@ const estiloTabelas = cn(
   "[&_table[data-streamdown='table']>thead]:bg-muted/50",
   "[&_table[data-streamdown='table']>thead>tr>th]:px-3",
   "[&_table[data-streamdown='table']>thead>tr>th]:py-2.5",
-  "[&_table[data-streamdown='table']>thead>tr>th]:text-[10px]",
+  "[&_table[data-streamdown='table']>thead>tr>th]:text-[0.75rem]",
   "[&_table[data-streamdown='table']>thead>tr>th]:font-semibold",
   "[&_table[data-streamdown='table']>thead>tr>th]:uppercase",
   "[&_table[data-streamdown='table']>thead>tr>th]:tracking-[0.08em]",
@@ -339,8 +339,8 @@ const estiloTabelas = cn(
   // Colunas do meio — centralizadas para grade visual limpa
   "[&_table[data-streamdown='table']>tbody>tr>td:not(:first-child):not(:last-child)]:text-center",
   "[&_table[data-streamdown='table']>thead>tr>th:not(:first-child):not(:last-child)]:text-center",
-  // Cor do texto padrão nas células
-  "[&_table[data-streamdown='table']>tbody>tr>td]:text-foreground/85",
+  // Cor do texto padrão nas células — contraste AA
+  "[&_table[data-streamdown='table']>tbody>tr>td]:text-foreground",
   "[&_table[data-streamdown='table']>tbody>tr>td:last-child]:text-foreground",
 );
 
@@ -349,22 +349,23 @@ const estiloTabelas = cn(
  * destaques na paleta da marca, sem ruido visual.
  */
 const estiloTexto = cn(
-  "text-[0.95rem] leading-[1.75] tracking-[-0.005em] text-pretty text-foreground/90",
+  "prose-legivel text-[1rem] leading-[1.75] tracking-[-0.005em] text-pretty text-foreground",
   "[&_p]:my-3 [&_p]:max-w-[68ch]",
   "[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-lg [&_h1]:font-semibold [&_h1]:tracking-tight [&_h1]:text-foreground",
   "[&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground",
-  "[&_h3]:mt-5 [&_h3]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:uppercase [&_h3]:tracking-[0.12em] [&_h3]:text-muted-foreground",
+  "[&_h3]:mt-5 [&_h3]:mb-2 [&_h3]:text-[0.875rem] [&_h3]:font-semibold [&_h3]:uppercase [&_h3]:tracking-[0.12em] [&_h3]:text-foreground",
   "[&_strong]:font-semibold [&_strong]:text-foreground",
-  "[&_em]:text-foreground/80",
-  "[&_a]:font-medium [&_a]:text-primary [&_a]:underline [&_a]:decoration-primary/40 [&_a]:underline-offset-4 hover:[&_a]:decoration-primary",
+  "[&_em]:text-foreground",
+  "[&_small]:text-[0.875rem] [&_sub]:text-[0.75rem] [&_sup]:text-[0.75rem]",
+  "[&_a]:font-medium [&_a]:text-primary [&_a]:underline [&_a]:decoration-primary/70 [&_a]:underline-offset-4 hover:[&_a]:decoration-primary focus-visible:[&_a]:outline-2 focus-visible:[&_a]:outline-offset-2 focus-visible:[&_a]:outline-ring",
   "[&_ul]:my-3 [&_ul]:list-none [&_ul]:space-y-1.5 [&_ul]:pl-1",
   "[&_ul>li]:relative [&_ul>li]:pl-5",
   "[&_ul>li]:before:absolute [&_ul>li]:before:left-0 [&_ul>li]:before:top-[0.65em] [&_ul>li]:before:size-1.5 [&_ul>li]:before:rounded-full [&_ul>li]:before:bg-primary/70",
   "[&_ol]:my-3 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-5 [&_ol]:marker:font-semibold [&_ol]:marker:text-primary/70",
   "[&_li]:leading-relaxed",
-  "[&_blockquote]:my-4 [&_blockquote]:rounded-r-lg [&_blockquote]:border-l-2 [&_blockquote]:border-primary/50 [&_blockquote]:bg-primary/5 [&_blockquote]:px-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:text-foreground/80",
-  "[&_hr]:my-6 [&_hr]:border-border/50",
-  "[&_code]:rounded-md [&_code]:border [&_code]:border-border/50 [&_code]:bg-muted/50 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.82em]",
+  "[&_blockquote]:my-4 [&_blockquote]:rounded-r-lg [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:bg-primary/10 [&_blockquote]:px-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:text-foreground",
+  "[&_hr]:my-6 [&_hr]:border-border",
+  "[&_code]:rounded-md [&_code]:border [&_code]:border-border [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_code]:text-foreground",
   "[&_pre]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border/60 [&_pre]:bg-card/60 [&_pre]:p-4",
   "[&_pre_code]:border-0 [&_pre_code]:bg-transparent [&_pre_code]:p-0",
 );
