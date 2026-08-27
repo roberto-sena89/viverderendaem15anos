@@ -114,20 +114,6 @@ export default defineConfig({
     },
     plugins: [suppressClientDisconnectErrors(), mcpPlugin()],
   },
-  // Vitest: só testes dentro de src/ — specs do Playwright (tests/e2e) e o
-  // worktree .kilo ficam de fora (o default **/*.{test,spec} varre tudo).
-  test: {
-    include: ["src/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
-    exclude: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/.output/**",
-      "**/cypress/**",
-      "**/.{idea,git,cache,output,temp}/**",
-      "**/.kilo/**",
-      "tests/**",
-      "playwright-report/**",
-      "test-results/**",
-    ],
-  } as never,
+  // Config do Vitest fica em vitest.config.ts.
+
 });

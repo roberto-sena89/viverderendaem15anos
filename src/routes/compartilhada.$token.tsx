@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, BadgeCheck, CalendarClock, LinkIcon, Lock, PieChart } from "lucide-react";
-import { lerCarteiraPorToken } from "@/lib/carteira-publica";
+import { lerCarteiraCompartilhada } from "@/lib/carteira-publica.functions";
 import { brl } from "@/lib/portfolio";
 import { CabecalhoPublico } from "@/components/cabecalho-publico";
 import { RodapePublico } from "@/components/rodape-publico";
@@ -26,7 +26,7 @@ function CarteiraCompartilhadaPage() {
 
   const { data: dados, isLoading } = useQuery({
     queryKey: ["carteira-compartilhada", token],
-    queryFn: () => lerCarteiraPorToken(token),
+    queryFn: () => lerCarteiraCompartilhada({ data: { token } }),
     staleTime: 60_000,
   });
 

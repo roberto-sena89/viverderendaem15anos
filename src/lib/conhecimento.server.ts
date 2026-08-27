@@ -510,11 +510,25 @@ async function sintetizarPainelAnalista(
   try {
     const { generateText } = await import("ai");
     const { createOpenAICompatible } = await import("@ai-sdk/openai-compatible");
+    const { criarFetchComFallbackIA, montarCandidatosIA } = await import("@/lib/ia-fallback.server");
+    const baseURL = baseUrlProvedorEnv(ativo.provedor, process.env).replace(/\/$/, "");
+    const candidatos = montarCandidatosIA(
+      {
+        nome: ativo.provedor.nome,
+        baseURL,
+        modelo: ativo.provedor.modelo,
+        headers: ativo.chave ? { Authorization: `Bearer ${ativo.chave}` } : {},
+      },
+      process.env,
+    );
+    const fallbackIA = criarFetchComFallbackIA(candidatos);
     const modeloIA = createOpenAICompatible({
       name: "gestor-ia-painel",
-      baseURL: baseUrlProvedorEnv(ativo.provedor, process.env),
-      headers: { Authorization: `Bearer ${ativo.chave}` },
+      baseURL,
+      headers: ativo.chave ? { Authorization: `Bearer ${ativo.chave}` } : {},
+      fetch: fallbackIA.fetch,
     })(ativo.provedor.modelo);
+
     const resposta = await generateText({
       model: modeloIA,
       system: SISTEMA_PAINEL,
