@@ -68,7 +68,7 @@ export function calcularScoreInvestidor(input: {
     const mesesComAporte = new Set(ordenados.map((a) => a.data.slice(0, 7))).size;
     const constancia = clamp((mesesComAporte / meses) * 100);
     const totalAportado = ordenados.reduce(
-      (s, a) => s + Number(a.valor ?? a.preco * a.quantidade) + Number(a.taxas ?? 0),
+      (s, a) => s + Number(a.preco) * Number(a.quantidade) + Number(a.taxas ?? 0),
       0,
     );
     // Aportes consistentes = bom. R$ 0-500/mês baixo, R$ 5000+/mês alto.

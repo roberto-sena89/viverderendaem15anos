@@ -23,7 +23,7 @@ import { useAtivos, usePlano } from "@/lib/data";
 import { simularQuebra, type ResultadoQuebra } from "@/lib/what-if";
 import { brl, planoPadrao, projetar, resumoCarteira, type PlanoConfig } from "@/lib/portfolio";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const ICONES: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -39,12 +39,12 @@ const ICONES: Record<string, React.ComponentType<{ className?: string }>> = {
 
 interface CartaoCenarioProps {
   resultado: ResultadoQuebra;
-  _base: { anoIndependencia: number | null; patrimonioFinal: number };
+
   selecionado: boolean;
   onClick: () => void;
 }
 
-function CartaoCenario({ resultado, _base, selecionado, onClick }: CartaoCenarioProps) {
+function CartaoCenario({ resultado, selecionado, onClick }: CartaoCenarioProps) {
   const Icone = ICONES[resultado.cenario.icone] ?? TrendingUp;
   const cor =
     resultado.deltaAnos != null
@@ -147,7 +147,6 @@ export function SimuladorWhatIf() {
             <CartaoCenario
               key={r.cenario.id}
               resultado={r}
-              base={base}
               selecionado={selecionado === r.cenario.id}
               onClick={() => setSelecionado(r.cenario.id)}
             />
