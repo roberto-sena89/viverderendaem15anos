@@ -1,6 +1,34 @@
 import { isClientDisconnectError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
+/**
+ * Desconexões do cliente (fechar aba, navegar durante um stream/SSR) chegam ao
+ * Node como "Error: aborted" vindo de `abortIncoming`, fora da cadeia de
+ * middlewares. Sem tratamento viram uncaughtException e derrubam o processo do
+ * servidor de desenvolvimento — o que aparece como tela branca no preview.
+ * Aqui elas são ignoradas; qualquer outro erro segue o fluxo normal.
+ */
+function ignorarDesconexoesDoCliente() {
+  const proc = (globalThis as { process?: NodeJS.Process }).process;
+  if (!proc || typeof proc.on !== "function") return;
+  const marca = "__ignorarDesconexoesDoCliente";
+  const registro = proc as unknown as Record<string, unknown>;
+  if (registro[marca]) return;
+  registro[marca] = true;
+
+  proc.on("uncaughtException", (erro) => {
+    if (isClientDisconnectError(erro)) return;
+    throw erro;
+  });
+  proc.on("unhandledRejection", (motivo) => {
+    if (isClientDisconnectError(motivo)) return;
+    console.error(motivo);
+  });
+}
+
+ignorarDesconexoesDoCliente();
+
+
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
 };
