@@ -170,7 +170,7 @@ export const solicitarAuditoria = createServerFn({ method: "POST" })
       (ativos ?? []).map(async (a) => {
         try {
           const c = await buscarCotacao(a.ticker);
-          return { ticker: a.ticker, preco: c.preco > 0 ? c.preco : null };
+          return { ticker: a.ticker, preco: c.preco != null && c.preco > 0 ? c.preco : null };
         } catch {
           return { ticker: a.ticker, preco: null };
         }
