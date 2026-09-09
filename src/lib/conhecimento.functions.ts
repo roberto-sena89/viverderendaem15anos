@@ -53,7 +53,8 @@ export const recarregarPainelAnalista = createServerFn({ method: "POST" })
         throw new Error("Muitas recargas seguidas. Aguarde alguns minutos e tente novamente.");
       }
       const mod = await import("@/lib/conhecimento.server");
-      const r = await mod.regerarPainelAnalista();
+      const r = await mod.regerarPainelAnalista(new Date(), context.userId);
       return { base: r.base, gerouComIA: r.gerouComIA };
+
     },
   );
