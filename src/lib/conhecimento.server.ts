@@ -502,6 +502,27 @@ function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): Conheci
   };
 }
 
+/**
+ * Extrai as seções de um JSON que veio cortado no meio (resposta truncada).
+ * Aproveita tudo que a IA já escreveu, inclusive a última seção incompleta.
+ */
+function secoesDeJsonParcial(texto: string): Record<string, string> {
+  const secoes: Record<string, string> = {};
+  for (const chave of Object.keys(ROTULOS_SECOES_PAINEL)) {
+    const re = new RegExp(`"${chave}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)`, "i");
+    const m = re.exec(texto);
+    if (!m || !m[1]) continue;
+    const valor = m[1]
+      .replace(/\\n/g, " ")
+      .replace(/\\"/g, '"')
+      .replace(/\\\\/g, "\\")
+      .trim();
+    if (valor) secoes[chave] = valor;
+  }
+  return secoes;
+}
+
+
 async function sintetizarPainelAnalista(
   itens: ConhecimentoItem[],
   agora = new Date(),
@@ -564,6 +585,7 @@ async function sintetizarPainelAnalista(
     }
 
     const provedorUsado = fallbackIA.provedorUsado();
+    const cortada = resposta.finishReason === "length";
     const ini = texto.indexOf("{");
     const fim = texto.lastIndexOf("}");
     let secoesIA: Record<string, unknown> = {};
@@ -581,6 +603,11 @@ async function sintetizarPainelAnalista(
       if (valor) secoesModelo[chave] = valor;
     }
 
+    // JSON truncado: aproveita o que a IA já escreveu antes do corte.
+    if (Object.keys(secoesModelo).length === 0 && texto.includes('"')) {
+      Object.assign(secoesModelo, secoesDeJsonParcial(texto));
+    }
+
     if (Object.keys(secoesModelo).length > 0) {
       // Resposta real do provedor manda; o material varrido só completa lacunas.
       const complemento = secoesResilientes(itens);
@@ -588,10 +615,13 @@ async function sintetizarPainelAnalista(
       const faltantes = Object.keys(ROTULOS_SECOES_PAINEL).filter((c) => !secoesModelo[c]);
       return {
         categoria: "painel",
-        titulo: "Painel do analista (síntese do Gestor IA)",
+        titulo: cortada
+          ? "Painel do analista (síntese parcial do Gestor IA)"
+          : "Painel do analista (síntese do Gestor IA)",
         conteudo: montarLinhasPainel(combinadas).join("\n").slice(0, 1500),
         fonte:
           `Síntese do Gestor IA via ${provedorUsado}` +
+          (cortada ? " (resposta interrompida — texto parcial preservado)" : "") +
           (faltantes.length > 0 ? " (seções sem resposta completadas pelo scanner)" : ""),
         atualizadoEm: agora.toISOString(),
       };
@@ -602,12 +632,17 @@ async function sintetizarPainelAnalista(
       console.warn("[conhecimento] painel: modelo não retornou JSON — usando texto cru.");
       return {
         categoria: "painel",
-        titulo: "Painel do analista (síntese do Gestor IA)",
+        titulo: cortada
+          ? "Painel do analista (síntese parcial do Gestor IA)"
+          : "Painel do analista (síntese do Gestor IA)",
         conteudo: texto.slice(0, 1500),
-        fonte: `Síntese do Gestor IA via ${provedorUsado}`,
+        fonte:
+          `Síntese do Gestor IA via ${provedorUsado}` +
+          (cortada ? " (resposta interrompida — texto parcial preservado)" : ""),
         atualizadoEm: agora.toISOString(),
       };
     }
+
 
     console.error(`[conhecimento] painel: resposta vazia (finish=${resposta.finishReason})`);
     return montarPainelResiliente(itens, agora);
