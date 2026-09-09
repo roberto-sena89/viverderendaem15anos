@@ -2,7 +2,9 @@ import { Bell, BellOff, Bot, Trash2, TrendingDown, TrendingUp, ExternalLink } fr
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAlertasHistorico } from "@/lib/alertas-historico";
+import { useNotificacoes } from "@/lib/notificacoes";
 import { useState } from "react";
+
 
 function quando(ts: number) {
   const d = new Date(ts);
