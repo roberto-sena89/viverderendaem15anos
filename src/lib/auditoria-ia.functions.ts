@@ -163,12 +163,27 @@ export const solicitarAuditoria = createServerFn({ method: "POST" })
         supabase.from("dividendos").select("data, valor"),
       ]);
 
+    // Sincroniza com o card "Rentabilidade" do Dashboard: usa cotações ao
+    // vivo (mesma fonte do useAtivosAoVivo) em vez do preco_atual salvo.
+    const { buscarCotacao } = await import("@/lib/market.server");
+    const cotacoes = await Promise.all(
+      (ativos ?? []).map(async (a) => {
+        try {
+          const c = await buscarCotacao(a.ticker);
+          return { ticker: a.ticker, preco: c.preco != null && c.preco > 0 ? c.preco : null };
+        } catch {
+          return { ticker: a.ticker, preco: null };
+        }
+      }),
+    );
+    const precoAoVivo = new Map(cotacoes.map((c) => [c.ticker, c.preco]));
+
     const linhas: AtivoLinha[] = (ativos ?? []).map((a) => ({
       ticker: a.ticker,
       categoria: a.categoria,
       quantidade: Number(a.quantidade),
       preco_medio: Number(a.preco_medio),
-      preco_atual: Number(a.preco_atual),
+      preco_atual: precoAoVivo.get(a.ticker) ?? Number(a.preco_atual),
       dy: Number(a.dy),
     }));
 
