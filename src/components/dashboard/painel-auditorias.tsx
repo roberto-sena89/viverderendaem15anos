@@ -15,6 +15,7 @@ import {
   listarAuditorias,
   solicitarAuditoria,
   type AuditoriaRegistro,
+  type ValorResumo,
 } from "@/lib/auditoria-ia.functions";
 import { brl } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
@@ -170,6 +171,8 @@ export function PainelAuditorias() {
                       ))}
                     </div>
                   )}
+                  {a.resumo && <BlocoPlanoMetas resumo={a.resumo} score={a.score_diversificacao} />}
+
                   <div className="flex justify-end">
                     <Button
                       variant="ghost"
@@ -187,5 +190,74 @@ export function PainelAuditorias() {
         })}
       </CardContent>
     </Card>
+  );
+}
+
+/** Plano de independência, projeção e progresso das metas salvos na auditoria. */
+function BlocoPlanoMetas({
+  resumo,
+  score,
+}: {
+  resumo: Record<string, ValorResumo>;
+  score: number | null;
+}) {
+  const plano = (resumo["plano"] ?? {}) as Record<string, number>;
+  const projecao = (resumo["projecao_final"] ?? {}) as Record<string, number>;
+  const metas = (resumo["metas"] ?? []) as Array<{
+    nome: string;
+    alvo: number;
+    progresso_pct: number;
+  }>;
+  const num = (v: unknown) => Number(v ?? 0);
+
+  return (
+    <div className="grid gap-3 md:grid-cols-2">
+      <div className="border-border/50 bg-card/60 space-y-2 rounded-lg border p-3">
+        <p className="text-foreground text-xs font-semibold">Score e plano</p>
+        <dl className="space-y-1 text-xs">
+          {[
+            ["Score do investidor", `${Math.round(score ?? 0)}/100`],
+            ["Idade atual → aposentadoria", `${num(plano["idadeAtual"])} → ${num(plano["idadeAposentadoria"])} anos`],
+            ["Aporte mensal", brl(num(plano["aporteMensal"]))],
+            ["Rentabilidade anual", `${num(plano["rentabilidadeAnual"]).toLocaleString("pt-BR")}%`],
+            ["Taxa de retirada", `${num(plano["taxaRetirada"]).toLocaleString("pt-BR")}%`],
+            ["Patrimônio projetado", brl(num(projecao["patrimonio"]))],
+            ["Renda passiva estimada", `${brl(num(projecao["renda_passiva_mensal"]))} /mês`],
+          ].map(([r, v]) => (
+            <div key={r} className="flex items-center justify-between gap-3">
+              <dt className="text-muted-foreground">{r}</dt>
+              <dd className="text-foreground font-semibold">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <div className="border-border/50 bg-card/60 space-y-2 rounded-lg border p-3">
+        <p className="text-foreground text-xs font-semibold">Metas</p>
+        {metas.length === 0 ? (
+          <p className="text-muted-foreground text-xs">Nenhuma meta cadastrada.</p>
+        ) : (
+          <ul className="space-y-2">
+            {metas.map((m) => (
+              <li key={m.nome} className="space-y-1">
+                <div className="flex items-center justify-between gap-3 text-xs">
+                  <span className="text-muted-foreground truncate">{m.nome}</span>
+                  <span className="text-foreground font-semibold">
+                    {brl(m.alvo)} ·{" "}
+                    {m.progresso_pct.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%
+                  </span>
+                </div>
+                <div className="bg-muted/40 h-1.5 overflow-hidden rounded-full">
+                  <div
+                    className="bg-primary h-full rounded-full"
+                    style={{ width: `${Math.min(100, Math.max(0, m.progresso_pct))}%` }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 }
