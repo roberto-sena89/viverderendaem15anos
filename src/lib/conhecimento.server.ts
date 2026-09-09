@@ -538,7 +538,10 @@ async function sintetizarPainelAnalista(
       model: modeloIA,
       system: SISTEMA_PAINEL,
       prompt: `Material varrido em ${agora.toISOString().slice(0, 10)}:\n\n${material}`,
-      maxOutputTokens: 2000,
+      // Modelos gratuitos (Kilo Code/StepFun) consomem boa parte do orçamento
+      // em raciocínio: teto alto evita finish=length com texto vazio.
+      maxOutputTokens: 8000,
+
     });
     const provedorUsado = fallbackIA.provedorUsado();
     const texto = resposta.text.trim();
