@@ -32,12 +32,32 @@ interface Step {
   actionHref: string;
 }
 
+const CHAVE_AUDITORIA = "gestor-ia:auditoria-feita";
+
 export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
   const { data: ativos } = useAtivos();
   const { data: plano } = usePlano();
   const { perfil } = usePerfilInvestidor();
 
+  const [auditoriaFeita, setAuditoriaFeita] = useState(false);
   const [steps, setSteps] = useState<Step[]>([]);
+
+  useEffect(() => {
+    try {
+      setAuditoriaFeita(window.localStorage.getItem(CHAVE_AUDITORIA) === "1");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const marcarAuditoria = () => {
+    try {
+      window.localStorage.setItem(CHAVE_AUDITORIA, "1");
+    } catch {
+      /* ignore */
+    }
+    setAuditoriaFeita(true);
+  };
 
   useEffect(() => {
     const newSteps: Step[] = [
@@ -76,13 +96,13 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
         description:
           "Peça ao Gestor IA uma auditoria completa para identificar gaps na sua estratégia.",
         icon: Sparkles,
-        completed: false, // This will be the final step to trigger
-        actionLabel: "Falar com Gestor",
+        completed: auditoriaFeita,
+        actionLabel: auditoriaFeita ? "" : "Solicitar Auditoria",
         actionHref: "/chat",
       },
     ];
     setSteps(newSteps);
-  }, [ativos, plano, perfil]);
+  }, [ativos, plano, perfil, auditoriaFeita]);
 
   const completedCount = steps.filter((s) => s.completed).length;
   const progress = (completedCount / steps.length) * 100;
