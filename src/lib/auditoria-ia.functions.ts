@@ -304,3 +304,50 @@ export const excluirAuditoria = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/** Grava a resposta escrita pelo usuário e conclui a auditoria. */
+export const responderAuditoria = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((value: unknown) =>
+    z.object({ id: z.string().uuid(), resposta: z.string().trim().min(1).max(4000) }).parse(value),
+  )
+  .handler(async ({ context, data }): Promise<AuditoriaRegistro> => {
+    const db = tabelaRelatorios(context.supabase);
+    const { data: linha, error } = await db
+      .from("relatorios")
+      .update({
+        resposta: data.resposta,
+        respondida_em: new Date().toISOString(),
+        status: "concluida",
+      })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .select("*")
+      .single();
+    if (error || !linha) throw new Error(error?.message ?? "Auditoria não encontrada.");
+    return paraRegistro(linha);
+  });
+
+/** Reabre, cancela ou marca a auditoria como pendente/em andamento. */
+export const atualizarStatusAuditoria = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((value: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.enum(["pendente", "em_andamento", "cancelada", "concluida"]),
+      })
+      .parse(value),
+  )
+  .handler(async ({ context, data }): Promise<AuditoriaRegistro> => {
+    const db = tabelaRelatorios(context.supabase);
+    const { data: linha, error } = await db
+      .from("relatorios")
+      .update({ status: data.status })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .select("*")
+      .single();
+    if (error || !linha) throw new Error(error?.message ?? "Auditoria não encontrada.");
+    return paraRegistro(linha);
+  });
