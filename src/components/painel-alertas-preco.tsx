@@ -1,8 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Bell, BellRing, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Bell, BellRing, History, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { sugerirAlertasIA, verificarMeusAlertas } from "@/lib/alertas-preco.functions";
+import {
+  criarAlertaPreco,
+  listarDisparosAlertas,
+  sugerirAlertasIA,
+  verificarMeusAlertas,
+  type DisparoAlerta,
+} from "@/lib/alertas-preco.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +16,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -26,7 +41,24 @@ interface AlertaPreco {
   ativo: boolean;
   disparado_em: string | null;
   mensagem?: string | null;
+  variacao_percent?: number | null;
+  frequencia?: string | null;
 }
+
+const ROTULO_FREQUENCIA: Record<string, string> = {
+  uma_vez: "Uma vez",
+  diaria: "No máximo 1x por dia",
+  sempre: "Sempre que atingir",
+};
+
+function dataBr(iso: string) {
+  return new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+}
+
+function reais(v: number) {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
 
 /** Painel de alertas de preço — cria, ativa/desativa, exclui. */
 export function PainelAlertasPreco() {
