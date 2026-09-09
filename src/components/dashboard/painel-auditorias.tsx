@@ -170,6 +170,8 @@ export function PainelAuditorias() {
                       ))}
                     </div>
                   )}
+                  {a.resumo && <BlocoPlanoMetas resumo={a.resumo} score={a.score_diversificacao} />}
+
                   <div className="flex justify-end">
                     <Button
                       variant="ghost"
