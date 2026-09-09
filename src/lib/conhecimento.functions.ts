@@ -14,6 +14,12 @@ export interface ResultadoScanConhecimento {
   ignorado: boolean;
 }
 
+export interface ResultadoPainelAnalista {
+  base: BaseConhecimento;
+  gerouComIA: boolean;
+}
+
+
 export const lerConhecimentoMercado = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async (): Promise<BaseConhecimento> => {
