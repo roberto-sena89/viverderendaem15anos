@@ -20,6 +20,7 @@ export type Database = {
           criado_em: string
           disparado_em: string | null
           id: string
+          mensagem: string | null
           ticker: string
           tipo: string
           user_id: string
@@ -30,6 +31,7 @@ export type Database = {
           criado_em?: string
           disparado_em?: string | null
           id?: string
+          mensagem?: string | null
           ticker: string
           tipo: string
           user_id: string
@@ -40,6 +42,7 @@ export type Database = {
           criado_em?: string
           disparado_em?: string | null
           id?: string
+          mensagem?: string | null
           ticker?: string
           tipo?: string
           user_id?: string
@@ -577,34 +580,43 @@ export type Database = {
       }
       relatorios: {
         Row: {
+          analise_ia: string | null
           created_at: string
           id: string
           patrimonio_total: number | null
           perfil: string | null
+          provedor_ia: string | null
           resumo: Json | null
           score_diversificacao: number | null
+          status: string
           tipo: string
           titulo: string
           user_id: string
         }
         Insert: {
+          analise_ia?: string | null
           created_at?: string
           id?: string
           patrimonio_total?: number | null
           perfil?: string | null
+          provedor_ia?: string | null
           resumo?: Json | null
           score_diversificacao?: number | null
+          status?: string
           tipo: string
           titulo: string
           user_id: string
         }
         Update: {
+          analise_ia?: string | null
           created_at?: string
           id?: string
           patrimonio_total?: number | null
           perfil?: string | null
+          provedor_ia?: string | null
           resumo?: Json | null
           score_diversificacao?: number | null
+          status?: string
           tipo?: string
           titulo?: string
           user_id?: string
