@@ -14,39 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      alertas_disparos: {
+        Row: {
+          alerta_id: string | null
+          criado_em: string
+          frequencia: string
+          id: string
+          mensagem: string | null
+          preco: number
+          ticker: string
+          tipo: string
+          user_id: string
+          valor_alvo: number
+          variacao_percent: number | null
+        }
+        Insert: {
+          alerta_id?: string | null
+          criado_em?: string
+          frequencia?: string
+          id?: string
+          mensagem?: string | null
+          preco: number
+          ticker: string
+          tipo: string
+          user_id: string
+          valor_alvo: number
+          variacao_percent?: number | null
+        }
+        Update: {
+          alerta_id?: string | null
+          criado_em?: string
+          frequencia?: string
+          id?: string
+          mensagem?: string | null
+          preco?: number
+          ticker?: string
+          tipo?: string
+          user_id?: string
+          valor_alvo?: number
+          variacao_percent?: number | null
+        }
+        Relationships: []
+      }
       alertas_preco: {
         Row: {
           ativo: boolean
           criado_em: string
           disparado_em: string | null
+          disparos: number
+          frequencia: string
           id: string
           mensagem: string | null
+          preco_referencia: number | null
           ticker: string
           tipo: string
+          ultimo_disparo_em: string | null
           user_id: string
           valor_alvo: number
+          variacao_percent: number | null
         }
         Insert: {
           ativo?: boolean
           criado_em?: string
           disparado_em?: string | null
+          disparos?: number
+          frequencia?: string
           id?: string
           mensagem?: string | null
+          preco_referencia?: number | null
           ticker: string
           tipo: string
+          ultimo_disparo_em?: string | null
           user_id: string
           valor_alvo: number
+          variacao_percent?: number | null
         }
         Update: {
           ativo?: boolean
           criado_em?: string
           disparado_em?: string | null
+          disparos?: number
+          frequencia?: string
           id?: string
           mensagem?: string | null
+          preco_referencia?: number | null
           ticker?: string
           tipo?: string
+          ultimo_disparo_em?: string | null
           user_id?: string
           valor_alvo?: number
+          variacao_percent?: number | null
         }
         Relationships: []
       }

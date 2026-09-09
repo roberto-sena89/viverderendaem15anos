@@ -4,6 +4,7 @@
  * disparando notificações push de verdade.
  */
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export interface SugestaoAlerta {
@@ -104,4 +105,128 @@ export const verificarMeusAlertas = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { verificarAlertas } = await import("@/lib/alertas-preco.server");
     return verificarAlertas(context.supabase);
+  });
+
+export interface DisparoAlerta {
+  id: string;
+  ticker: string;
+  tipo: string;
+  preco: number;
+  valor_alvo: number;
+  variacao_percent: number | null;
+  frequencia: string;
+  mensagem: string | null;
+  criado_em: string;
+}
+
+type CaixaSb = {
+  from: (t: string) => {
+    insert: (v: Record<string, unknown>) => {
+      select: (c: string) => {
+        single: () => Promise<{
+          data: Record<string, unknown> | null;
+          error: { message: string } | null;
+        }>;
+      };
+    };
+    select: (c: string) => {
+      order: (
+        c: string,
+        o: { ascending: boolean },
+      ) => {
+        limit: (n: number) => Promise<{
+          data: Record<string, unknown>[] | null;
+          error: { message: string } | null;
+        }>;
+      };
+    };
+  };
+};
+
+/** Cria um alerta com alvo em reais ou em variação percentual, e frequência. */
+export const criarAlertaPreco = createServerFn({ method: "POST" })
+  .validator((value: unknown) =>
+    z
+      .object({
+        ticker: z.string().trim().min(1).max(12),
+        tipo: z.enum(["acima", "abaixo"]),
+        valor_alvo: z.number().positive().optional(),
+        variacao_percent: z.number().positive().max(90).optional(),
+        frequencia: z.enum(["uma_vez", "diaria", "sempre"]).default("uma_vez"),
+        mensagem: z.string().trim().max(200).optional(),
+      })
+      .refine((v) => v.valor_alvo != null || v.variacao_percent != null, {
+        message: "Informe o preço alvo ou a variação em porcentagem.",
+      })
+      .parse(value),
+  )
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context, data }) => {
+    const ticker = data.ticker.toUpperCase();
+
+    // Preço de referência para alertas por porcentagem
+    let referencia: number | null = null;
+    try {
+      const { lerPrecosPersistidos } = await import("@/lib/precos-ultimos.server");
+      const precos = await lerPrecosPersistidos([ticker]);
+      referencia = precos[0]?.preco ?? null;
+    } catch {
+      referencia = null;
+    }
+    if (data.variacao_percent != null && (referencia == null || referencia <= 0)) {
+      throw new Error(
+        `Ainda não temos a cotação de ${ticker} para calcular a porcentagem. Use o preço alvo em reais.`,
+      );
+    }
+
+    const alvoCalculado =
+      data.valor_alvo ??
+      Math.round(
+        (referencia ?? 0) *
+          (data.tipo === "acima" ? 1 + data.variacao_percent! / 100 : 1 - data.variacao_percent! / 100) *
+          100,
+      ) / 100;
+
+    const caixa = context.supabase as unknown as CaixaSb;
+    const { data: linha, error } = await caixa
+      .from("alertas_preco")
+      .insert({
+        user_id: context.userId,
+        ticker,
+        tipo: data.tipo,
+        valor_alvo: alvoCalculado,
+        variacao_percent: data.variacao_percent ?? null,
+        preco_referencia: referencia,
+        frequencia: data.frequencia,
+        mensagem: data.mensagem ?? null,
+        ativo: true,
+      })
+      .select("*")
+      .single();
+    if (error || !linha) throw new Error(error?.message ?? "Não foi possível criar o alerta.");
+    return { id: String(linha["id"]), ticker, valor_alvo: alvoCalculado, referencia };
+  });
+
+/** Histórico dos alertas que já dispararam. */
+export const listarDisparosAlertas = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<DisparoAlerta[]> => {
+    const caixa = context.supabase as unknown as CaixaSb;
+    const { data, error } = await caixa
+      .from("alertas_disparos")
+      .select("*")
+      .order("criado_em", { ascending: false })
+      .limit(30);
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((l) => ({
+      id: String(l["id"]),
+      ticker: String(l["ticker"]),
+      tipo: String(l["tipo"]),
+      preco: Number(l["preco"]),
+      valor_alvo: Number(l["valor_alvo"]),
+      variacao_percent: l["variacao_percent"] == null ? null : Number(l["variacao_percent"]),
+      frequencia: String(l["frequencia"] ?? "uma_vez"),
+      mensagem: (l["mensagem"] as string | null) ?? null,
+      criado_em: String(l["criado_em"]),
+    }));
   });
