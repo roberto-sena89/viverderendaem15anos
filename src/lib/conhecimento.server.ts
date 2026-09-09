@@ -643,9 +643,10 @@ async function sintetizarPainelAnalista(
         titulo: cortada
           ? "Painel do analista (síntese parcial do Gestor IA)"
           : "Painel do analista (síntese do Gestor IA)",
-        conteudo: montarLinhasPainel(combinadas).join("\n").slice(0, 1500),
+        conteudo: comCarteira(montarLinhasPainel(combinadas).join("\n").slice(0, 1500)),
         fonte:
           `Síntese do Gestor IA via ${provedorUsado}` +
+          (linhasCarteira.length > 0 ? " + dados reais da sua carteira e auditorias" : "") +
           (cortada ? " (resposta interrompida — texto parcial preservado)" : "") +
           (faltantes.length > 0 ? " (seções sem resposta completadas pelo scanner)" : ""),
         atualizadoEm: agora.toISOString(),
@@ -660,9 +661,10 @@ async function sintetizarPainelAnalista(
         titulo: cortada
           ? "Painel do analista (síntese parcial do Gestor IA)"
           : "Painel do analista (síntese do Gestor IA)",
-        conteudo: texto.slice(0, 1500),
+        conteudo: comCarteira(texto.slice(0, 1500)),
         fonte:
           `Síntese do Gestor IA via ${provedorUsado}` +
+          (linhasCarteira.length > 0 ? " + dados reais da sua carteira e auditorias" : "") +
           (cortada ? " (resposta interrompida — texto parcial preservado)" : ""),
         atualizadoEm: agora.toISOString(),
       };
@@ -670,15 +672,18 @@ async function sintetizarPainelAnalista(
 
 
     console.error(`[conhecimento] painel: resposta vazia (finish=${resposta.finishReason})`);
-    return montarPainelResiliente(itens, agora);
+    const resiliente = montarPainelResiliente(itens, agora);
+    return resiliente ? { ...resiliente, conteudo: comCarteira(resiliente.conteudo) } : null;
   } catch (e) {
     console.error(
       "[conhecimento] falha ao sintetizar painel:",
       e instanceof Error ? e.message : String(e),
     );
-    return montarPainelResiliente(itens, agora);
+    const resiliente = montarPainelResiliente(itens, agora);
+    return resiliente ? { ...resiliente, conteudo: comCarteira(resiliente.conteudo) } : null;
   }
 }
+
 
 /**
  * Refaz apenas o "Painel do analista" repetindo o prompt da IA sobre o
