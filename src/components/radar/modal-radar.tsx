@@ -30,6 +30,8 @@ import {
   useRadarHistoricoIA,
 } from "@/lib/radar";
 import { notificarPush, registrarAlerta } from "@/lib/alertas-historico";
+import { useAtivosAoVivo, chaveTicker } from "@/lib/cotacoes-tempo-real";
+import { brl } from "@/lib/formato-numero";
 import type { DetalheFundamentos } from "@/lib/radar.functions";
 import type { LinhaRadarBase } from "@/lib/radar.server";
 
@@ -345,6 +347,24 @@ export function ModalRadar({
     setVersaoIA(0);
   }, [ticker]);
 
+  // Posição do usuário neste ativo: quanto vale hoje e quanto pesa na carteira.
+  const { data: ativosCarteira = [] } = useAtivosAoVivo();
+  const minhaPosicao = useMemo(() => {
+    if (!linha) return null;
+    const alvo = chaveTicker(linha.ticker);
+    const meu = ativosCarteira.find((a) => chaveTicker(a.ticker) === alvo);
+    if (!meu || meu.quantidade <= 0) return null;
+    const preco = linha.preco && linha.preco > 0 ? linha.preco : meu.precoAtual;
+    const valor = meu.quantidade * preco;
+    const total = ativosCarteira.reduce((s, a) => s + a.quantidade * a.precoAtual, 0);
+    return {
+      quantidade: meu.quantidade,
+      valor,
+      peso: total > 0 ? (valor / total) * 100 : 0,
+      precoMedio: meu.precoMedio,
+    };
+  }, [linha, ativosCarteira]);
+
   const serie = detalhe.data?.serie?.pontos ?? [];
   const posicao = detalhe.data?.posicao ?? linha?.posicao ?? null;
   const fundamentos = detalhe.data?.fundamentos ?? null;
@@ -444,6 +464,28 @@ export function ModalRadar({
                 valor={linha.pvp !== null ? linha.pvp.toLocaleString("pt-BR") : "—"}
               />
             </div>
+
+            {minhaPosicao ? (
+              <section className="rounded-lg border border-primary/30 bg-primary/5 p-4">
+                <h3 className="mb-3 text-sm font-semibold">Sua posição neste ativo</h3>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <Campo
+                    rotulo="Quantidade"
+                    valor={minhaPosicao.quantidade.toLocaleString("pt-BR")}
+                  />
+                  <Campo rotulo="Preço médio" valor={brl(minhaPosicao.precoMedio, 2)} />
+                  <Campo rotulo="Valor investido hoje" valor={brl(minhaPosicao.valor, 2)} />
+                  <Campo
+                    rotulo="Peso do patrimônio"
+                    valor={`${minhaPosicao.peso.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 1,
+                      maximumFractionDigits: 1,
+                    })}%`}
+                    destaque="text-primary"
+                  />
+                </div>
+              </section>
+            ) : null}
 
             <section className="rounded-lg border p-4">
               <h3 className="mb-2 text-sm font-semibold">
