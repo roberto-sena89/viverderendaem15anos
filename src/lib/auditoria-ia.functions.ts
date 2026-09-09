@@ -15,6 +15,15 @@ import {
 } from "@/lib/auditoria";
 import { planoPadrao, projetar, type ProjecaoInput } from "@/lib/portfolio";
 
+/** Valor serializável para trafegar no RPC do servidor. */
+export type ValorResumo =
+  | string
+  | number
+  | boolean
+  | null
+  | ValorResumo[]
+  | { [chave: string]: ValorResumo };
+
 export interface AuditoriaRegistro {
   id: string;
   titulo: string;
@@ -24,7 +33,7 @@ export interface AuditoriaRegistro {
   patrimonio_total: number | null;
   analise_ia: string | null;
   provedor_ia: string | null;
-  resumo: Record<string, unknown> | null;
+  resumo: { [chave: string]: ValorResumo } | null;
   created_at: string;
 }
 
@@ -79,7 +88,7 @@ function paraRegistro(l: Linha): AuditoriaRegistro {
     patrimonio_total: l["patrimonio_total"] == null ? null : Number(l["patrimonio_total"]),
     analise_ia: (l["analise_ia"] as string | null) ?? null,
     provedor_ia: (l["provedor_ia"] as string | null) ?? null,
-    resumo: (l["resumo"] as Record<string, unknown> | null) ?? null,
+    resumo: (l["resumo"] as { [chave: string]: ValorResumo } | null) ?? null,
     created_at: String(l["created_at"]),
   };
 }
@@ -165,7 +174,7 @@ export const solicitarAuditoria = createServerFn({ method: "POST" })
           : 0,
     }));
 
-    const resumo = {
+    const resumo: { [chave: string]: ValorResumo } = {
       perfil,
       patrimonio_total: Math.round(auditoria.patrimonio_total),
       total_investido: Math.round(auditoria.total_investido),
@@ -177,7 +186,7 @@ export const solicitarAuditoria = createServerFn({ method: "POST" })
       selo: auditoria.selo,
       concentracao: auditoria.concentracao,
       alocacao_por_classe: auditoria.alocacao_por_classe,
-      rebalanceamento: rebalanceamento.map((r) => ({
+      rebalanceamento: rebalanceamento.por_classe.map((r) => ({
         classe: r.classe,
         pct_atual: r.pct_atual,
         pct_alvo: r.pct_alvo,

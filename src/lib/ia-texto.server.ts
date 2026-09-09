@@ -41,7 +41,9 @@ export async function gerarTextoIA({
   const { criarFetchComFallbackIA, montarCandidatosIA } = await import("@/lib/ia-fallback.server");
 
   const baseURL = baseUrlProvedorEnv(ativo.provedor, process.env).replace(/\/$/, "");
-  const headers = ativo.chave ? { Authorization: `Bearer ${ativo.chave}` } : {};
+  const headers: Record<string, string> = ativo.chave
+    ? { Authorization: `Bearer ${ativo.chave}` }
+    : {};
   const fallbackIA = criarFetchComFallbackIA(
     montarCandidatosIA(
       { nome: ativo.provedor.nome, baseURL, modelo: ativo.provedor.modelo, headers },
