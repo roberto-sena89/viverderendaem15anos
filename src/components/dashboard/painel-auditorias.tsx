@@ -229,7 +229,79 @@ export function PainelAuditorias() {
                   )}
                   {a.resumo && <BlocoPlanoMetas resumo={a.resumo} score={a.score_diversificacao} />}
 
-                  <div className="flex justify-end">
+                  {a.resposta && (
+                    <div className="border-primary/25 bg-primary/5 rounded-lg border p-3">
+                      <p className="text-primary text-xs font-semibold">
+                        Sua resposta
+                        {a.respondida_em ? ` · ${dataBr(a.respondida_em)}` : ""}
+                      </p>
+                      <p className="text-foreground/90 mt-1 text-sm whitespace-pre-line">
+                        {a.resposta}
+                      </p>
+                    </div>
+                  )}
+
+                  {respondendo === a.id && (
+                    <div className="space-y-2">
+                      <Textarea
+                        value={texto}
+                        onChange={(e) => setTexto(e.target.value)}
+                        placeholder="Escreva o que você decidiu fazer com base nesta auditoria…"
+                        rows={4}
+                      />
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setRespondendo(null);
+                            setTexto("");
+                          }}
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          size="sm"
+                          disabled={!texto.trim() || enviarResposta.isPending}
+                          onClick={() => enviarResposta.mutate({ id: a.id, resposta: texto.trim() })}
+                        >
+                          {enviarResposta.isPending && (
+                            <Loader2 className="mr-1 size-3.5 animate-spin" />
+                          )}
+                          Salvar resposta
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setRespondendo(a.id);
+                        setTexto(a.resposta ?? "");
+                      }}
+                    >
+                      <MessageSquarePlus className="mr-1 size-3.5" />
+                      {a.resposta ? "Editar resposta" : "Responder"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={alterarStatus.isPending}
+                      onClick={() => alterarStatus.mutate({ id: a.id, status: "em_andamento" })}
+                    >
+                      <RotateCcw className="mr-1 size-3.5" /> Reabrir
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={a.status === "cancelada" || alterarStatus.isPending}
+                      onClick={() => alterarStatus.mutate({ id: a.id, status: "cancelada" })}
+                    >
+                      <XCircle className="mr-1 size-3.5" /> Cancelar
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -238,6 +310,7 @@ export function PainelAuditorias() {
                     >
                       <Trash2 className="mr-1 size-3.5" /> Excluir
                     </Button>
+
                   </div>
                 </div>
               )}
