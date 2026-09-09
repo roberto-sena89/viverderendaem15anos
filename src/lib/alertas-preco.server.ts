@@ -121,17 +121,35 @@ export async function verificarAlertas(supabase: SupabaseClient): Promise<Result
     const direcao = alerta.tipo === "acima" ? "acima" : "abaixo";
     const titulo = `📊 ${alerta.ticker} ${direcao} do alvo`;
     const corpo =
-      `Cotação: ${brl(preco)} | Alvo: ${brl(alerta.valor_alvo)}` +
+      `Cotação: ${brl(preco)} | Alvo: ${brl(alvo)}` +
       (alerta.mensagem ? ` — ${alerta.mensagem}` : "");
     const url = `/cotacoes?ticker=${alerta.ticker}`;
 
+    const caixa = supabase as unknown as {
+      from: (t: string) => {
+        insert: (v: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
+      };
+    };
+
+    // Histórico de alertas disparados
+    try {
+      await caixa.from("alertas_disparos").insert({
+        user_id: alerta.user_id,
+        alerta_id: alerta.id,
+        ticker: alerta.ticker,
+        tipo: alerta.tipo,
+        preco,
+        valor_alvo: alvo,
+        variacao_percent: alerta.variacao_percent ?? null,
+        frequencia: freq,
+        mensagem: alerta.mensagem ?? null,
+      });
+    } catch {
+      /* histórico é complementar */
+    }
+
     // Notificação dentro do app (sino) — independe de permissão do navegador
     try {
-      const caixa = supabase as unknown as {
-        from: (t: string) => {
-          insert: (v: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
-        };
-      };
       await caixa.from("notificacoes").insert({
         user_id: alerta.user_id,
         tipo: "alerta_preco",
@@ -143,6 +161,7 @@ export async function verificarAlertas(supabase: SupabaseClient): Promise<Result
     } catch {
       erros++;
     }
+
 
     // Push nativo (quando o usuário tiver assinatura registrada)
     try {
