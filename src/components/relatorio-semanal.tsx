@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarRange, Copy, FileText, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { useAtivos, useAportes, useDividendos, useMetas } from "@/lib/data";
+import { useAportes, useDividendos, useMetas } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import {
   gerarRelatorioSemanal,
   lerPatrimonioAnterior,
@@ -14,7 +15,8 @@ import { Badge } from "@/components/ui/badge";
 
 /** Relatório Semanal do Investidor — resumo gerado dos dados reais. */
 export function RelatorioSemanal() {
-  const { data: ativos = [] } = useAtivos();
+  // Mesma fonte do card "Patrimônio Total" do Dashboard: cotações ao vivo.
+  const { data: ativos = [] } = useAtivosAoVivo();
   const { data: aportes = [] } = useAportes();
   const { data: dividendos = [] } = useDividendos();
   const { data: metas = [] } = useMetas();
