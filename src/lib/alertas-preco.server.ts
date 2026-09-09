@@ -69,21 +69,45 @@ export async function verificarAlertas(supabase: SupabaseClient): Promise<Result
 
     disparados++;
 
-    // Dispara push
+    const direcao = alerta.tipo === "acima" ? "acima" : "abaixo";
+    const titulo = `📊 ${alerta.ticker} ${direcao} do alvo`;
+    const corpo =
+      `Cotação: R$ ${preco.toFixed(2)} | Alvo: R$ ${alerta.valor_alvo.toFixed(2)}` +
+      (alerta.mensagem ? ` — ${alerta.mensagem}` : "");
+    const url = `/cotacoes?ticker=${alerta.ticker}`;
+
+    // Notificação dentro do app (sino) — independe de permissão do navegador
     try {
-      const { enviarPushParaUsuario } = await import("@/lib/push-server");
-      const direcao = alerta.tipo === "acima" ? "acima" : "abaixo";
-      await enviarPushParaUsuario(supabase, alerta.user_id, {
-        titulo: `📊 ${alerta.ticker} ${direcao} do alvo`,
-        corpo:
-          `Cotação: R$ ${preco.toFixed(2)} | Alvo: R$ ${alerta.valor_alvo.toFixed(2)}` +
-          (alerta.mensagem ? ` — ${alerta.mensagem}` : ""),
-        url: `/cotacoes?ticker=${alerta.ticker}`,
-        tag: `alerta-${alerta.id}`,
+      const caixa = supabase as unknown as {
+        from: (t: string) => {
+          insert: (v: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
+        };
+      };
+      await caixa.from("notificacoes").insert({
+        user_id: alerta.user_id,
+        tipo: "alerta_preco",
+        titulo,
+        corpo,
+        url,
+        ticker: alerta.ticker,
       });
     } catch {
       erros++;
     }
+
+    // Push nativo (quando o usuário tiver assinatura registrada)
+    try {
+      const { enviarPushParaUsuario } = await import("@/lib/push-server");
+      await enviarPushParaUsuario(supabase, alerta.user_id, {
+        titulo,
+        corpo,
+        url,
+        tag: `alerta-${alerta.id}`,
+      });
+    } catch {
+      /* sem assinatura de push: a notificação no app já foi entregue */
+    }
+
   }
 
   return { verificados: linhas.length, disparados, erros };
