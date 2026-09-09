@@ -24,7 +24,15 @@ export interface ResultadoVerificacao {
  * Linha tipada da tabela nova `alertas_preco` — remova quando o typegen do
  * Supabase incluir a tabela.
  */
-type LinhaAlertaPreco = AlertaPrecoAtivo & { ativo: boolean; mensagem?: string | null };
+type LinhaAlertaPreco = AlertaPrecoAtivo & {
+  ativo: boolean;
+  mensagem?: string | null;
+  variacao_percent?: number | null;
+  preco_referencia?: number | null;
+  frequencia?: string | null;
+  disparos?: number | null;
+  ultimo_disparo_em?: string | null;
+};
 
 /**
  * Busca todos os alertas `ativo = true`, verifica o preço atual de cada ticker
@@ -34,11 +42,34 @@ function brl(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+/** Alvo efetivo: valor em reais ou variação percentual sobre o preço de referência. */
+function alvoEfetivo(a: LinhaAlertaPreco): number | null {
+  const pct = Number(a.variacao_percent);
+  const ref = Number(a.preco_referencia);
+  if (Number.isFinite(pct) && pct > 0 && Number.isFinite(ref) && ref > 0) {
+    const fator = a.tipo === "acima" ? 1 + pct / 100 : 1 - pct / 100;
+    return Math.round(ref * fator * 100) / 100;
+  }
+  const v = Number(a.valor_alvo);
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+
+/** Respeita a frequência escolhida (uma vez, diária, sempre). */
+function podeDisparar(a: LinhaAlertaPreco): boolean {
+  const freq = a.frequencia ?? "uma_vez";
+  if (freq === "sempre") return true;
+  if (!a.ultimo_disparo_em) return true;
+  if (freq === "diaria") {
+    return Date.now() - new Date(a.ultimo_disparo_em).getTime() >= 24 * 60 * 60 * 1000;
+  }
+  return false;
+}
+
 export async function verificarAlertas(supabase: SupabaseClient): Promise<ResultadoVerificacao> {
   // Busca alertas ativos
   const { data: alertas, error } = await supabase
     .from("alertas_preco")
-    .select("id, user_id, ticker, tipo, valor_alvo, mensagem")
+    .select("*")
     .eq("ativo", true);
 
   const linhas = (alertas ?? []) as unknown as LinhaAlertaPreco[];
@@ -60,16 +91,30 @@ export async function verificarAlertas(supabase: SupabaseClient): Promise<Result
       continue;
     }
 
-    const atingiu =
-      alerta.tipo === "acima" ? preco >= alerta.valor_alvo : preco <= alerta.valor_alvo;
+    const alvo = alvoEfetivo(alerta);
+    if (alvo == null) {
+      erros++;
+      continue;
+    }
 
-    if (!atingiu) continue;
+    const atingiu = alerta.tipo === "acima" ? preco >= alvo : preco <= alvo;
 
-    // Marca como disparado
+    if (!atingiu || !podeDisparar(alerta)) continue;
+
+    const agora = new Date().toISOString();
+    const freq = alerta.frequencia ?? "uma_vez";
+
+    // Marca o disparo (mantém ativo quando a frequência é recorrente)
     await supabase
       .from("alertas_preco")
-      .update({ ativo: false, disparado_em: new Date().toISOString() })
+      .update({
+        ativo: freq !== "uma_vez",
+        disparado_em: agora,
+        ultimo_disparo_em: agora,
+        disparos: Number(alerta.disparos ?? 0) + 1,
+      })
       .eq("id", alerta.id);
+
 
     disparados++;
 
