@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { GraduationCap, Loader2, Plus, ScanSearch, Trash2 } from "lucide-react";
+import { GraduationCap, Loader2, Plus, RefreshCw, ScanSearch, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +26,10 @@ import {
 import {
   executarScanMercado,
   lerConhecimentoMercado,
+  recarregarPainelAnalista,
   type ConhecimentoItem,
 } from "@/lib/conhecimento.functions";
+
 
 const CORES_CATEGORIA: Record<ConhecimentoItem["categoria"], string> = {
   macro: "bg-sky-600/10 text-sky-600 border-sky-600/30",
@@ -84,6 +86,43 @@ export function DialogoAprendizado() {
         description: e instanceof Error ? e.message : undefined,
       }),
   });
+
+  const recarregar = useServerFn(recarregarPainelAnalista);
+  const [etapa, setEtapa] = useState("");
+
+  const painelIA = useMutation({
+    mutationFn: async () => {
+      setEtapa("Reunindo o material de mercado já varrido...");
+      const espera = window.setTimeout(
+        () => setEtapa("Pedindo a análise ao Gestor IA — isso pode levar até um minuto..."),
+        1500,
+      );
+      try {
+        return await recarregar({ data: undefined });
+      } finally {
+        window.clearTimeout(espera);
+      }
+    },
+    onSuccess: (r) => {
+      setEtapa("");
+      void queryClient.invalidateQueries({ queryKey: ["gestor-conhecimento"] });
+      if (r.gerouComIA) {
+        toast.success("Análise recarregada com o Gestor IA.");
+      } else {
+        toast.info("A IA não respondeu agora — o painel foi montado com os dados varridos.");
+      }
+    },
+    onError: (e) => {
+      setEtapa("");
+      toast.error("Não foi possível recarregar a análise", {
+        description: e instanceof Error ? e.message : undefined,
+      });
+    },
+  });
+
+  const painel = (conhecimento.data?.itens ?? []).find((i) => i.categoria === "painel") ?? null;
+
+
 
   function haQuantoTempo(iso: string): string {
     const min = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60_000));
@@ -284,6 +323,58 @@ export function DialogoAprendizado() {
             })}
           </div>
         </div>
+
+        <div className="grid w-full max-w-full gap-3 overflow-hidden rounded-xl border border-border/60 bg-card/40 p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="min-w-0 text-sm font-semibold tracking-tight">Painel do analista</p>
+            {painel?.atualizadoEm ? (
+              <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground border border-border/40">
+                {haQuantoTempo(painel.atualizadoEm)}
+              </span>
+            ) : null}
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              disabled={painelIA.isPending}
+              aria-busy={painelIA.isPending}
+              aria-label="Recarregar análise do painel do analista"
+              onClick={() => painelIA.mutate()}
+              title="Repete o pedido de análise ao Gestor IA com o material já varrido"
+            >
+              {painelIA.isPending ? (
+                <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden="true" />
+              ) : (
+                <RefreshCw className="mr-1.5 size-3.5" aria-hidden="true" />
+              )}
+              Recarregar análise
+            </Button>
+          </div>
+
+          {painelIA.isPending ? (
+            <div className="grid gap-2" role="status" aria-live="polite">
+              <p className="text-xs text-muted-foreground break-words">
+                {etapa || "Preparando a análise..."}
+              </p>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full w-1/3 animate-[pulse_1.2s_ease-in-out_infinite] rounded-full bg-primary" />
+              </div>
+            </div>
+          ) : painel ? (
+            <div className="grid gap-1.5">
+              <p className="whitespace-pre-line text-sm leading-relaxed break-words">
+                {painel.conteudo}
+              </p>
+              <p className="text-[11px] text-muted-foreground/80 break-words">{painel.fonte}</p>
+            </div>
+          ) : (
+            <p className="rounded-lg border border-dashed border-border/60 bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground break-words">
+              Ainda sem análise. Clique em "Recarregar análise" para o Gestor IA montar o painel.
+            </p>
+          )}
+        </div>
+
+
 
         <div className="grid w-full max-w-full gap-3 overflow-hidden">
           <div className="flex flex-wrap items-center gap-2 min-w-0 w-full max-w-full">

@@ -620,6 +620,52 @@ async function sintetizarPainelAnalista(
   }
 }
 
+/**
+ * Refaz apenas o "Painel do analista" repetindo o prompt da IA sobre o
+ * material já varrido, sem executar um novo scan da internet. Persiste a base
+ * atualizada e devolve o resultado para a interface.
+ */
+export async function regerarPainelAnalista(agora = new Date()): Promise<{
+  base: BaseConhecimento;
+  painel: ConhecimentoItem | null;
+  gerouComIA: boolean;
+}> {
+  const atual = (await lerDoBanco()) ?? (await lerConhecimento());
+  const materiais = atual.itens.filter((i) => i.categoria !== "painel");
+  const painel = await sintetizarPainelAnalista(materiais, agora).catch(() => null);
+
+  const itens = painel ? [painel, ...materiais] : materiais;
+  const base: BaseConhecimento = {
+    atualizadoEm: atual.atualizadoEm,
+    itens,
+    erro: atual.erro ?? null,
+  };
+
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("cotacoes_cache").upsert(
+      {
+        categoria: CHAVE_CACHE,
+        payload: JSON.parse(JSON.stringify(base)) as Json,
+        parcial: false,
+        atualizado_em: atual.atualizadoEm,
+      },
+      { onConflict: "categoria" },
+    );
+  } catch {
+    /* best-effort: o painel novo continua válido nesta execução */
+  }
+
+  memoria = { valor: base, em: Date.now() };
+  return {
+    base,
+    painel,
+    gerouComIA: Boolean(painel?.fonte.includes("Síntese do Gestor IA via")),
+  };
+}
+
+
+
 
 /* ------------------------------------------------------------------ *
  * Scanner: coleta de macro, órgãos, setores, notícias e educação
