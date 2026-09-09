@@ -54,9 +54,10 @@ export default {
       return await handler.fetch(request, env, ctx);
     } catch (error) {
       if (isClientDisconnectError(error)) {
-        // Preserve o cancelamento original. Converter em 499 faz o roteador
-        // interpretar uma navegação cancelada como erro de página.
-        throw error;
+        // A conexão normalmente já foi encerrada, mas devolver uma resposta
+        // vazia impede que o adaptador HTTP transforme o cancelamento em um
+        // erro 500 não tratado. Nunca relance `abortIncoming` daqui.
+        return new Response(null, { status: 204 });
       }
       console.error(error);
       return new Response(renderErrorPage(), {
