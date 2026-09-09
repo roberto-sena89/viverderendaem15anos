@@ -184,8 +184,8 @@ export const solicitarAuditoria = createServerFn({ method: "POST" })
       proventos_estimados_12m: Math.round(auditoria.dividendos_estimados_12m),
       numero_ativos: auditoria.numero_ativos,
       selo: auditoria.selo,
-      concentracao: auditoria.concentracao,
-      alocacao_por_classe: auditoria.alocacao_por_classe,
+      concentracao: { ...auditoria.concentracao },
+      alocacao_por_classe: auditoria.alocacao_por_classe.map((c) => ({ ...c })),
       rebalanceamento: rebalanceamento.por_classe.map((r) => ({
         classe: r.classe,
         pct_atual: r.pct_atual,
@@ -193,7 +193,7 @@ export const solicitarAuditoria = createServerFn({ method: "POST" })
         status: r.status,
         diferenca: Math.round(r.diferenca),
       })),
-      plano: planoConfig,
+      plano: { ...planoConfig },
       projecao_final: {
         idade: final?.idade ?? planoConfig.idadeAposentadoria,
         patrimonio: Math.round(final?.patrimonio ?? 0),
