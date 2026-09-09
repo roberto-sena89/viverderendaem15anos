@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { GraduationCap, Loader2, Plus, ScanSearch, Trash2 } from "lucide-react";
+import { GraduationCap, Loader2, Plus, RefreshCw, ScanSearch, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
