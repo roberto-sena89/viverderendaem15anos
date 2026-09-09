@@ -509,10 +509,12 @@ async function sintetizarPainelAnalista(
   const ativo = provedorEnvAtivo(process.env);
   if (!ativo) return montarPainelResiliente(itens, agora);
 
-  const material = itens
-    .slice(0, 25)
-    .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, 200)}`)
-    .join("\n");
+  const montarMaterial = (qtd: number, chars: number) =>
+    itens
+      .slice(0, qtd)
+      .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, chars)}`)
+      .join("\n");
+  const material = montarMaterial(25, 200);
   try {
     const { generateText } = await import("ai");
     const { createOpenAICompatible } = await import("@ai-sdk/openai-compatible");
@@ -535,17 +537,32 @@ async function sintetizarPainelAnalista(
       fetch: fallbackIA.fetch,
     })(ativo.provedor.modelo);
 
-    const resposta = await generateText({
-      model: modeloIA,
-      system: SISTEMA_PAINEL,
-      prompt: `Material varrido em ${agora.toISOString().slice(0, 10)}:\n\n${material}`,
-      // Modelos gratuitos (Kilo Code/StepFun) consomem boa parte do orçamento
-      // em raciocínio: teto alto evita finish=length com texto vazio.
-      maxOutputTokens: 8000,
+    // Modelos de raciocínio gastavam todo o orçamento pensando e devolviam
+    // texto vazio (finish=length). Limitamos o raciocínio e, se ainda vier
+    // vazio por tamanho, repetimos com prompt curto e teto maior.
+    const gerar = async (mat: string, tokens: number) =>
+      generateText({
+        model: modeloIA,
+        system: SISTEMA_PAINEL,
+        prompt: `Material varrido em ${agora.toISOString().slice(0, 10)}:\n\n${mat}`,
+        maxOutputTokens: tokens,
+        providerOptions: {
+          "gestor-ia-painel": { reasoning_effort: "low", reasoning: { effort: "low" } },
+        },
+      });
 
-    });
-    const provedorUsado = fallbackIA.provedorUsado();
-    const texto = resposta.text.trim();
+    let resposta = await gerar(material, 8000);
+    let texto = resposta.text.trim();
+    if (!texto && resposta.finishReason === "length") {
+      console.warn("[conhecimento] painel: resposta vazia por tamanho — nova tentativa curta.");
+      resposta = await gerar(montarMaterial(12, 120), 16000);
+      texto = resposta.text.trim();
+    }
+    if (!texto) {
+      // Alguns provedores só entregam o raciocínio; melhor isso que o painel genérico.
+      texto = String((resposta as { reasoningText?: string }).reasoningText ?? "").trim();
+    }
+
     const ini = texto.indexOf("{");
     const fim = texto.lastIndexOf("}");
     let secoesIA: Record<string, unknown> = {};
