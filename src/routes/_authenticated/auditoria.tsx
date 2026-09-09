@@ -10,7 +10,8 @@ import { PainelAuditorias } from "@/components/dashboard/painel-auditorias";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAtivos, usePlano, useSalvarPlano } from "@/lib/data";
+import { usePlano, useSalvarPlano } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { solicitarAuditoria, type AuditoriaRegistro } from "@/lib/auditoria-ia.functions";
 import { brl, planoPadrao, resumoCarteira, type PlanoConfig } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
@@ -49,7 +50,7 @@ type Perfil = (typeof PERFIS)[number]["id"];
 
 function PaginaAuditoria() {
   const queryClient = useQueryClient();
-  const { data: carteira = [] } = useAtivos();
+  const { data: carteira = [] } = useAtivosAoVivo();
   const { data: plano } = usePlano();
   const salvarPlano = useSalvarPlano();
   const solicitar = useServerFn(solicitarAuditoria);
