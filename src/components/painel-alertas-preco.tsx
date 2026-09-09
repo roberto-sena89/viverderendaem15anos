@@ -209,43 +209,118 @@ export function PainelAlertasPreco() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Criar alerta */}
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="min-w-24 flex-1">
-            <Label className="text-xs">Ticker</Label>
-            <Input
-              placeholder="PETR4"
-              value={ticker}
-              onChange={(e) => setTicker(e.target.value.toUpperCase())}
-              maxLength={10}
-            />
-          </div>
-          <div className="min-w-28">
-            <Label className="text-xs">Direção</Label>
-            <Select value={tipo} onValueChange={(v) => setTipo(v as "acima" | "abaixo")}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="acima">Acima de</SelectItem>
-                <SelectItem value="abaixo">Abaixo de</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="min-w-24 flex-1">
-            <Label className="text-xs">Valor alvo (R$)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              min="0.01"
-              placeholder="35,00"
-              value={valor}
-              onChange={(e) => setValor(e.target.value)}
-            />
-          </div>
-          <Button size="sm" onClick={criarAlerta}>
-            <Plus className="mr-1 size-3.5" /> Criar
-          </Button>
-        </div>
+        <Dialog open={abrirNovo} onOpenChange={setAbrirNovo}>
+          <DialogTrigger asChild>
+            <Button size="sm">
+              <Plus className="mr-1 size-3.5" /> Criar alerta de preço
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Novo alerta de preço</DialogTitle>
+              <DialogDescription>
+                Escolha o ativo, o alvo em reais ou em porcentagem e com que frequência você quer
+                ser avisado.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Ticker</Label>
+                  <Input
+                    placeholder="PETR4"
+                    value={ticker}
+                    onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                    maxLength={12}
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Direção</Label>
+                  <Select value={tipo} onValueChange={(v) => setTipo(v as "acima" | "abaixo")}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="acima">Acima de</SelectItem>
+                      <SelectItem value="abaixo">Abaixo de</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-xs">Tipo de alvo</Label>
+                <Select value={modo} onValueChange={(v) => setModo(v as "preco" | "percentual")}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="preco">Preço em reais</SelectItem>
+                    <SelectItem value="percentual">Variação em porcentagem</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {modo === "preco" ? (
+                <div>
+                  <Label className="text-xs">Preço alvo (R$)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    placeholder="35,00"
+                    value={valor}
+                    onChange={(e) => setValor(e.target.value)}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <Label className="text-xs">Variação (%)</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    placeholder="10"
+                    value={percentual}
+                    onChange={(e) => setPercentual(e.target.value)}
+                  />
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Calculamos o preço alvo a partir da cotação atual do ativo.
+                  </p>
+                </div>
+              )}
+
+              <div>
+                <Label className="text-xs">Frequência do aviso</Label>
+                <Select
+                  value={frequencia}
+                  onValueChange={(v) => setFrequencia(v as "uma_vez" | "diaria" | "sempre")}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="uma_vez">Uma vez</SelectItem>
+                    <SelectItem value="diaria">No máximo 1x por dia</SelectItem>
+                    <SelectItem value="sempre">Sempre que atingir</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setAbrirNovo(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={criarAlerta} disabled={ocupado === "criar"}>
+                {ocupado === "criar" && <Loader2 className="mr-1 size-3.5 animate-spin" />}
+                Criar alerta
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
 
         <div className="flex flex-wrap gap-2">
           <Button
