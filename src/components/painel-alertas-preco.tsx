@@ -364,13 +364,22 @@ export function PainelAlertasPreco() {
                   variant={alerta.tipo === "acima" ? "default" : "destructive"}
                   className="text-[10px]"
                 >
-                  {alerta.tipo === "acima" ? "🔼" : "🔽"} R$ {alerta.valor_alvo.toFixed(2)}
+                  {alerta.tipo === "acima" ? "🔼" : "🔽"} {reais(Number(alerta.valor_alvo))}
+                </Badge>
+                {alerta.variacao_percent != null && (
+                  <Badge variant="outline" className="text-[10px]">
+                    {Number(alerta.variacao_percent).toLocaleString("pt-BR")}%
+                  </Badge>
+                )}
+                <Badge variant="outline" className="text-muted-foreground text-[10px]">
+                  {ROTULO_FREQUENCIA[alerta.frequencia ?? "uma_vez"]}
                 </Badge>
                 {alerta.disparado_em && (
                   <Badge variant="outline" className="text-[10px] text-muted-foreground">
                     Disparado
                   </Badge>
                 )}
+
                 {alerta.mensagem && (
                   <span className="text-muted-foreground w-full text-xs sm:w-auto">
                     {alerta.mensagem}
