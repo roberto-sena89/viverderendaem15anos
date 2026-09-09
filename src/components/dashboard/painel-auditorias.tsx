@@ -66,7 +66,12 @@ export function PainelAuditorias() {
   const listar = useServerFn(listarAuditorias);
   const solicitar = useServerFn(solicitarAuditoria);
   const excluir = useServerFn(excluirAuditoria);
+  const responder = useServerFn(responderAuditoria);
+  const mudarStatus = useServerFn(atualizarStatusAuditoria);
   const [aberta, setAberta] = useState<string | null>(null);
+  const [respondendo, setRespondendo] = useState<string | null>(null);
+  const [texto, setTexto] = useState("");
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["auditorias"],
