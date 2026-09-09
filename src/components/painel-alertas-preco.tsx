@@ -63,37 +63,36 @@ function reais(v: number) {
 /** Painel de alertas de preço — cria, ativa/desativa, exclui. */
 export function PainelAlertasPreco() {
   const [alertas, setAlertas] = useState<AlertaPreco[]>([]);
+  const [historico, setHistorico] = useState<DisparoAlerta[]>([]);
+  const listarHistorico = useServerFn(listarDisparosAlertas);
 
-  // Carrega alertas ao montar (tabela nova: tipagem genérica até o typegen)
-  useEffect(() => {
-    let ativo = true;
-    void (async () => {
-      try {
-        const { data } = await supabase
-          .from("alertas_preco")
-          .select("*")
-          .order("criado_em", { ascending: false });
-        if (ativo && data) setAlertas(data as AlertaPreco[]);
-      } catch {
-        /* tabela indisponível */
-      }
-    })();
-    return () => {
-      ativo = false;
-    };
-  }, []);
-
-  const sugerir = useServerFn(sugerirAlertasIA);
-  const verificar = useServerFn(verificarMeusAlertas);
-  const [ocupado, setOcupado] = useState<"" | "sugerir" | "verificar">("");
-
-  async function recarregar() {
+  const recarregar = useCallback(async () => {
     const { data } = await supabase
       .from("alertas_preco")
       .select("*")
       .order("criado_em", { ascending: false });
     if (data) setAlertas(data as AlertaPreco[]);
-  }
+  }, []);
+
+  const recarregarHistorico = useCallback(async () => {
+    try {
+      setHistorico(await listarHistorico({} as never));
+    } catch {
+      /* histórico indisponível */
+    }
+  }, [listarHistorico]);
+
+  // Carrega alertas e histórico ao montar
+  useEffect(() => {
+    void recarregar();
+    void recarregarHistorico();
+  }, [recarregar, recarregarHistorico]);
+
+  const sugerir = useServerFn(sugerirAlertasIA);
+  const verificar = useServerFn(verificarMeusAlertas);
+  const criar = useServerFn(criarAlertaPreco);
+  const [ocupado, setOcupado] = useState<"" | "sugerir" | "verificar" | "criar">("");
+
 
   /** Pede ao Gestor IA alvos de preço com base na carteira real. */
   async function sugerirComIA() {
