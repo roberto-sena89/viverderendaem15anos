@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { AbasCarteira } from "@/components/abas-carteira";
 import { ResumoCategorias } from "@/components/dashboard/resumo-categorias";
+import { PainelAtivosPlano } from "@/components/dashboard/painel-ativos-plano";
 import { AppShell } from "@/components/app-shell";
 import { StatusCotacoes } from "@/components/status-cotacoes";
 import { BotaoExportarCarteira } from "@/components/botao-exportar-carteira";
@@ -275,6 +276,7 @@ function Dashboard() {
       <section id="resumo" className="scroll-mt-32 sm:scroll-mt-40">
         <ResumoKpis />
         <ResumoCategorias />
+        <PainelAtivosPlano />
       </section>
 
       <section id="saude" className="scroll-mt-32 sm:scroll-mt-40">
