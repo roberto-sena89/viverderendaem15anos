@@ -484,11 +484,15 @@ function secoesResilientes(itens: ConhecimentoItem[]): Record<string, string> {
 function montarLinhasPainel(secoes: Record<string, string>): string[] {
   return Object.entries(ROTULOS_SECOES_PAINEL)
     .map(([chave, rotulo]) => {
-      const valor = (secoes[chave] ?? "").trim().slice(0, 300);
+      const valor = (secoes[chave] ?? "").trim().slice(0, 900);
       return valor ? `- ${rotulo}: ${valor}` : null;
     })
     .filter((l): l is string => l !== null);
 }
+
+/** Limites generosos: o painel não deve cortar a análise entregue pela IA. */
+const LIMITE_PAINEL = 6000;
+const LIMITE_PAINEL_COM_CARTEIRA = 9000;
 
 function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): ConhecimentoItem | null {
   const linhas = montarLinhasPainel(secoesResilientes(itens));
@@ -496,7 +500,7 @@ function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): Conheci
   return {
     categoria: "painel",
     titulo: "Painel do analista (síntese automática)",
-    conteudo: linhas.join("\n").slice(0, 1500),
+    conteudo: linhas.join("\n").slice(0, LIMITE_PAINEL),
     fonte: "Síntese automática do Gestor IA (scanner sem provedor de IA configurado)",
     atualizadoEm: agora.toISOString(),
   };
@@ -532,7 +536,7 @@ async function sintetizarPainelAnalista(
   const comCarteira = (conteudo: string) =>
     (linhasCarteira.length > 0 ? `${linhasCarteira.join("\n")}\n${conteudo}` : conteudo).slice(
       0,
-      2200,
+      LIMITE_PAINEL_COM_CARTEIRA,
     );
 
   const ativo = provedorEnvAtivo(process.env);
@@ -543,7 +547,7 @@ async function sintetizarPainelAnalista(
     return {
       categoria: "painel",
       titulo: "Painel do analista (dados da sua carteira)",
-      conteudo: linhasCarteira.join("\n").slice(0, 2200),
+      conteudo: linhasCarteira.join("\n").slice(0, LIMITE_PAINEL_COM_CARTEIRA),
       fonte: "Dados reais da carteira, rentabilidade e auditorias",
       atualizadoEm: agora.toISOString(),
     };
@@ -643,7 +647,7 @@ async function sintetizarPainelAnalista(
         titulo: cortada
           ? "Painel do analista (síntese parcial do Gestor IA)"
           : "Painel do analista (síntese do Gestor IA)",
-        conteudo: comCarteira(montarLinhasPainel(combinadas).join("\n").slice(0, 1500)),
+        conteudo: comCarteira(montarLinhasPainel(combinadas).join("\n").slice(0, LIMITE_PAINEL)),
         fonte:
           `Síntese do Gestor IA via ${provedorUsado}` +
           (linhasCarteira.length > 0 ? " + dados reais da sua carteira e auditorias" : "") +
@@ -661,7 +665,7 @@ async function sintetizarPainelAnalista(
         titulo: cortada
           ? "Painel do analista (síntese parcial do Gestor IA)"
           : "Painel do analista (síntese do Gestor IA)",
-        conteudo: comCarteira(texto.slice(0, 1500)),
+        conteudo: comCarteira(texto.slice(0, LIMITE_PAINEL)),
         fonte:
           `Síntese do Gestor IA via ${provedorUsado}` +
           (linhasCarteira.length > 0 ? " + dados reais da sua carteira e auditorias" : "") +
