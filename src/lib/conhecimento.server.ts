@@ -526,16 +526,41 @@ function secoesDeJsonParcial(texto: string): Record<string, string> {
 async function sintetizarPainelAnalista(
   itens: ConhecimentoItem[],
   agora = new Date(),
+  carteira?: { prompt: string; linhas: string[] } | null,
 ): Promise<ConhecimentoItem | null> {
+  const linhasCarteira = carteira?.linhas ?? [];
+  const comCarteira = (conteudo: string) =>
+    (linhasCarteira.length > 0 ? `${linhasCarteira.join("\n")}\n${conteudo}` : conteudo).slice(
+      0,
+      2200,
+    );
+
   const ativo = provedorEnvAtivo(process.env);
-  if (!ativo) return montarPainelResiliente(itens, agora);
+  if (!ativo) {
+    const base = montarPainelResiliente(itens, agora);
+    if (base) return { ...base, conteudo: comCarteira(base.conteudo) };
+    if (linhasCarteira.length === 0) return null;
+    return {
+      categoria: "painel",
+      titulo: "Painel do analista (dados da sua carteira)",
+      conteudo: linhasCarteira.join("\n").slice(0, 2200),
+      fonte: "Dados reais da carteira, rentabilidade e auditorias",
+      atualizadoEm: agora.toISOString(),
+    };
+  }
 
   const montarMaterial = (qtd: number, chars: number) =>
-    itens
-      .slice(0, qtd)
-      .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, chars)}`)
-      .join("\n");
+    [
+      carteira?.prompt ?? "",
+      itens
+        .slice(0, qtd)
+        .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, chars)}`)
+        .join("\n"),
+    ]
+      .filter(Boolean)
+      .join("\n\n");
   const material = montarMaterial(25, 200);
+
   try {
     const { generateText } = await import("ai");
     const { createOpenAICompatible } = await import("@ai-sdk/openai-compatible");
