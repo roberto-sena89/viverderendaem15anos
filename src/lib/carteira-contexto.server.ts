@@ -49,7 +49,7 @@ export async function montarContextoCarteira(userId: string): Promise<ContextoCa
           if (c && Number.isFinite(Number(c.preco)) && Number(c.preco) > 0) {
             precos.set(a.ticker, {
               preco: Number(c.preco),
-              variacao: c.variacaoPercent == null ? null : Number(c.variacaoPercent),
+              variacao: c.variacaoDiaPercent == null ? null : Number(c.variacaoDiaPercent),
             });
           }
         } catch {
