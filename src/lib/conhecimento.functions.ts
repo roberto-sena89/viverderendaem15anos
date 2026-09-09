@@ -22,10 +22,11 @@ export interface ResultadoPainelAnalista {
 
 export const lerConhecimentoMercado = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async (): Promise<BaseConhecimento> => {
+  .handler(async ({ context }: { context: { userId: string } }): Promise<BaseConhecimento> => {
     const mod = await import("@/lib/conhecimento.server");
-    return mod.lerConhecimento();
+    return mod.lerConhecimentoDoUsuario(context.userId);
   });
+
 
 export const executarScanMercado = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -52,7 +53,8 @@ export const recarregarPainelAnalista = createServerFn({ method: "POST" })
         throw new Error("Muitas recargas seguidas. Aguarde alguns minutos e tente novamente.");
       }
       const mod = await import("@/lib/conhecimento.server");
-      const r = await mod.regerarPainelAnalista();
+      const r = await mod.regerarPainelAnalista(new Date(), context.userId);
       return { base: r.base, gerouComIA: r.gerouComIA };
+
     },
   );

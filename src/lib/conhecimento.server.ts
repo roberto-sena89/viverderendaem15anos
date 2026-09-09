@@ -526,16 +526,41 @@ function secoesDeJsonParcial(texto: string): Record<string, string> {
 async function sintetizarPainelAnalista(
   itens: ConhecimentoItem[],
   agora = new Date(),
+  carteira?: { prompt: string; linhas: string[] } | null,
 ): Promise<ConhecimentoItem | null> {
+  const linhasCarteira = carteira?.linhas ?? [];
+  const comCarteira = (conteudo: string) =>
+    (linhasCarteira.length > 0 ? `${linhasCarteira.join("\n")}\n${conteudo}` : conteudo).slice(
+      0,
+      2200,
+    );
+
   const ativo = provedorEnvAtivo(process.env);
-  if (!ativo) return montarPainelResiliente(itens, agora);
+  if (!ativo) {
+    const base = montarPainelResiliente(itens, agora);
+    if (base) return { ...base, conteudo: comCarteira(base.conteudo) };
+    if (linhasCarteira.length === 0) return null;
+    return {
+      categoria: "painel",
+      titulo: "Painel do analista (dados da sua carteira)",
+      conteudo: linhasCarteira.join("\n").slice(0, 2200),
+      fonte: "Dados reais da carteira, rentabilidade e auditorias",
+      atualizadoEm: agora.toISOString(),
+    };
+  }
 
   const montarMaterial = (qtd: number, chars: number) =>
-    itens
-      .slice(0, qtd)
-      .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, chars)}`)
-      .join("\n");
+    [
+      carteira?.prompt ?? "",
+      itens
+        .slice(0, qtd)
+        .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, chars)}`)
+        .join("\n"),
+    ]
+      .filter(Boolean)
+      .join("\n\n");
   const material = montarMaterial(25, 200);
+
   try {
     const { generateText } = await import("ai");
     const { createOpenAICompatible } = await import("@ai-sdk/openai-compatible");
@@ -618,9 +643,10 @@ async function sintetizarPainelAnalista(
         titulo: cortada
           ? "Painel do analista (síntese parcial do Gestor IA)"
           : "Painel do analista (síntese do Gestor IA)",
-        conteudo: montarLinhasPainel(combinadas).join("\n").slice(0, 1500),
+        conteudo: comCarteira(montarLinhasPainel(combinadas).join("\n").slice(0, 1500)),
         fonte:
           `Síntese do Gestor IA via ${provedorUsado}` +
+          (linhasCarteira.length > 0 ? " + dados reais da sua carteira e auditorias" : "") +
           (cortada ? " (resposta interrompida — texto parcial preservado)" : "") +
           (faltantes.length > 0 ? " (seções sem resposta completadas pelo scanner)" : ""),
         atualizadoEm: agora.toISOString(),
@@ -635,9 +661,10 @@ async function sintetizarPainelAnalista(
         titulo: cortada
           ? "Painel do analista (síntese parcial do Gestor IA)"
           : "Painel do analista (síntese do Gestor IA)",
-        conteudo: texto.slice(0, 1500),
+        conteudo: comCarteira(texto.slice(0, 1500)),
         fonte:
           `Síntese do Gestor IA via ${provedorUsado}` +
+          (linhasCarteira.length > 0 ? " + dados reais da sua carteira e auditorias" : "") +
           (cortada ? " (resposta interrompida — texto parcial preservado)" : ""),
         atualizadoEm: agora.toISOString(),
       };
@@ -645,29 +672,47 @@ async function sintetizarPainelAnalista(
 
 
     console.error(`[conhecimento] painel: resposta vazia (finish=${resposta.finishReason})`);
-    return montarPainelResiliente(itens, agora);
+    const resiliente = montarPainelResiliente(itens, agora);
+    return resiliente ? { ...resiliente, conteudo: comCarteira(resiliente.conteudo) } : null;
   } catch (e) {
     console.error(
       "[conhecimento] falha ao sintetizar painel:",
       e instanceof Error ? e.message : String(e),
     );
-    return montarPainelResiliente(itens, agora);
+    const resiliente = montarPainelResiliente(itens, agora);
+    return resiliente ? { ...resiliente, conteudo: comCarteira(resiliente.conteudo) } : null;
   }
 }
 
+
+/** Chave de cache do painel pessoal (não compartilhado entre usuários). */
+export const chaveCachePainelUsuario = (userId: string) => `${CHAVE_CACHE}:painel:${userId}`;
+
 /**
  * Refaz apenas o "Painel do analista" repetindo o prompt da IA sobre o
- * material já varrido, sem executar um novo scan da internet. Persiste a base
- * atualizada e devolve o resultado para a interface.
+ * material já varrido, sem executar um novo scan da internet. Quando há
+ * usuário, injeta os dados reais da carteira (ativos com cotação ao vivo,
+ * rentabilidade, proventos e auditorias) e persiste o painel só para ele.
  */
-export async function regerarPainelAnalista(agora = new Date()): Promise<{
+export async function regerarPainelAnalista(
+  agora = new Date(),
+  userId?: string,
+): Promise<{
   base: BaseConhecimento;
   painel: ConhecimentoItem | null;
   gerouComIA: boolean;
 }> {
   const atual = (await lerDoBanco()) ?? (await lerConhecimento());
   const materiais = atual.itens.filter((i) => i.categoria !== "painel");
-  const painel = await sintetizarPainelAnalista(materiais, agora).catch(() => null);
+
+  let carteira: { prompt: string; linhas: string[] } | null = null;
+  if (userId) {
+    const { montarContextoCarteira } = await import("@/lib/carteira-contexto.server");
+    const ctx = await montarContextoCarteira(userId).catch(() => null);
+    if (ctx?.temDados) carteira = { prompt: ctx.prompt, linhas: ctx.linhas };
+  }
+
+  const painel = await sintetizarPainelAnalista(materiais, agora, carteira).catch(() => null);
 
   const itens = painel ? [painel, ...materiais] : materiais;
   const base: BaseConhecimento = {
@@ -678,26 +723,64 @@ export async function regerarPainelAnalista(agora = new Date()): Promise<{
 
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("cotacoes_cache").upsert(
-      {
-        categoria: CHAVE_CACHE,
-        payload: JSON.parse(JSON.stringify(base)) as Json,
-        parcial: false,
-        atualizado_em: atual.atualizadoEm,
-      },
-      { onConflict: "categoria" },
-    );
+    if (userId && painel) {
+      // Painel pessoal: guardado por usuário para não vazar dados da carteira.
+      await supabaseAdmin.from("cotacoes_cache").upsert(
+        {
+          categoria: chaveCachePainelUsuario(userId),
+          payload: JSON.parse(JSON.stringify(painel)) as Json,
+          parcial: false,
+          atualizado_em: agora.toISOString(),
+        },
+        { onConflict: "categoria" },
+      );
+    } else {
+      await supabaseAdmin.from("cotacoes_cache").upsert(
+        {
+          categoria: CHAVE_CACHE,
+          payload: JSON.parse(JSON.stringify(base)) as Json,
+          parcial: false,
+          atualizado_em: atual.atualizadoEm,
+        },
+        { onConflict: "categoria" },
+      );
+      memoria = { valor: base, em: Date.now() };
+    }
   } catch {
     /* best-effort: o painel novo continua válido nesta execução */
   }
 
-  memoria = { valor: base, em: Date.now() };
   return {
     base,
     painel,
     gerouComIA: Boolean(painel?.fonte.includes("Síntese do Gestor IA via")),
   };
 }
+
+/** Painel pessoal já gerado para este usuário (se houver). */
+export async function lerPainelUsuario(userId: string): Promise<ConhecimentoItem | null> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("cotacoes_cache")
+      .select("payload")
+      .eq("categoria", chaveCachePainelUsuario(userId))
+      .maybeSingle();
+    const p = data?.payload as unknown as ConhecimentoItem | null;
+    return p && typeof p === "object" && p.categoria === "painel" ? p : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Base com o painel pessoal do usuário no lugar do painel global. */
+export async function lerConhecimentoDoUsuario(userId: string): Promise<BaseConhecimento> {
+  const base = await lerConhecimento();
+  const painel = await lerPainelUsuario(userId);
+  if (!painel) return base;
+  return { ...base, itens: [painel, ...base.itens.filter((i) => i.categoria !== "painel")] };
+}
+
 
 
 
