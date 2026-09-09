@@ -4,7 +4,7 @@ import { Info, Plus, Target } from "lucide-react";
 import { useAtivosAoVivo, useCotacoesTempoReal, chaveTicker } from "@/lib/cotacoes-tempo-real";
 import { useMetas } from "@/lib/data";
 import { useAlocacaoAlvo } from "@/lib/alocacao-alvo";
-import { brl, pct, valorAtual, arredondar } from "@/lib/portfolio";
+import { brl, pct, valorAtual, arredondar, classeDoAtivo } from "@/lib/portfolio";
 import { corCategoria } from "@/lib/cores-ativos";
 import { getIconeCategoria } from "@/lib/icones-categorias";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,12 @@ export function PainelAtivosPlano() {
 
   const linhas = useMemo(() => {
     const totalPatrimonio = ativos.reduce((s, a) => s + valorAtual(a), 0);
+    // Peso atual de cada classe da estratégia (a meta é definida por classe).
+    const porClasse = new Map<string, number>();
+    for (const a of ativos) {
+      const classe = classeDoAtivo(a);
+      porClasse.set(classe, (porClasse.get(classe) ?? 0) + valorAtual(a));
+    }
     return ativos
       .map((a) => {
         const cot = mapa.get(chaveTicker(a.ticker));
@@ -34,16 +40,20 @@ export function PainelAtivosPlano() {
         const peso = totalPatrimonio > 0 ? (valor / totalPatrimonio) * 100 : 0;
         const variacao = cot?.variacaoPercent ?? null;
         const preco = cot?.preco && cot.preco > 0 ? cot.preco : a.precoAtual;
+        const classe = classeDoAtivo(a);
+        const valorClasse = porClasse.get(classe) ?? 0;
         return {
           id: a.id,
           ticker: a.ticker,
           nome: a.nome,
           categoria: a.categoria,
+          classe,
           preco,
           variacao,
           valor,
           peso,
-          metaAlvo: Number(alvo[a.categoria] ?? 0),
+          pesoClasse: totalPatrimonio > 0 ? (valorClasse / totalPatrimonio) * 100 : 0,
+          metaAlvo: Number(alvo[classe] ?? 0),
         };
       })
       .sort((a, b) => {
@@ -148,13 +158,13 @@ export function PainelAtivosPlano() {
               <th className="px-3 py-2 text-right">Preço</th>
               <th className="px-3 py-2 text-right">Variação</th>
               <th className="px-3 py-2 text-right">% Patrimônio</th>
-              <th className="px-3 py-2 text-right">Meta da categoria</th>
+              <th className="px-3 py-2 text-right">Meta da classe</th>
             </tr>
           </thead>
           <tbody>
             {linhas.map((l) => {
               const Icone = getIconeCategoria(l.categoria);
-              const acimaDaMeta = l.peso > l.metaAlvo && l.metaAlvo > 0;
+              const acimaDaMeta = l.pesoClasse > l.metaAlvo && l.metaAlvo > 0;
               return (
                 <tr
                   key={l.id}
@@ -209,20 +219,20 @@ export function PainelAtivosPlano() {
                         )}
                       >
                         {l.metaAlvo > 0
-                          ? `${acimaDaMeta ? "+" : ""}${(l.peso - l.metaAlvo).toFixed(1)} p.p.`
+                          ? `${acimaDaMeta ? "+" : ""}${(l.pesoClasse - l.metaAlvo).toFixed(1)} p.p.`
                           : "sem meta"}
                       </span>
                       <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/5">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{
-                            width: `${Math.min(100, l.metaAlvo > 0 ? (l.peso / l.metaAlvo) * 100 : 0)}%`,
+                            width: `${Math.min(100, l.metaAlvo > 0 ? (l.pesoClasse / l.metaAlvo) * 100 : 0)}%`,
                             backgroundColor: corCategoria(l.categoria),
                           }}
                         />
                       </div>
                       <span className="text-[0.6rem] text-muted-foreground/50">
-                        alvo {pct(l.metaAlvo, 0)}
+                        classe {pct(l.pesoClasse, 1)} · alvo {pct(l.metaAlvo, 0)}
                       </span>
                     </div>
                   </td>
@@ -237,7 +247,7 @@ export function PainelAtivosPlano() {
       <div className="grid grid-cols-1 gap-3 md:hidden">
         {linhas.map((l) => {
           const Icone = getIconeCategoria(l.categoria);
-          const acimaDaMeta = l.peso > l.metaAlvo && l.metaAlvo > 0;
+          const acimaDaMeta = l.pesoClasse > l.metaAlvo && l.metaAlvo > 0;
           return (
             <div
               key={l.id}
@@ -293,7 +303,7 @@ export function PainelAtivosPlano() {
                           : "text-negative",
                     )}
                   >
-                    {l.metaAlvo > 0 ? pct(l.metaAlvo, 0) : "—"}
+                    {l.metaAlvo > 0 ? `${pct(l.pesoClasse, 1)} / ${pct(l.metaAlvo, 0)}` : "—"}
                   </p>
                 </div>
               </div>
@@ -302,7 +312,7 @@ export function PainelAtivosPlano() {
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
-                      width: `${Math.min(100, (l.peso / l.metaAlvo) * 100)}%`,
+                      width: `${Math.min(100, (l.pesoClasse / l.metaAlvo) * 100)}%`,
                       backgroundColor: corCategoria(l.categoria),
                     }}
                   />
