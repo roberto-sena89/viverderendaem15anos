@@ -98,6 +98,32 @@ export function PainelAuditorias() {
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["auditorias"] }),
   });
 
+  const enviarResposta = useMutation({
+    mutationFn: (v: { id: string; resposta: string }) => responder({ data: v }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["auditorias"] });
+      setRespondendo(null);
+      setTexto("");
+      toast.success("Resposta registrada na auditoria.");
+    },
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Não foi possível salvar a resposta."),
+  });
+
+  const alterarStatus = useMutation({
+    mutationFn: (v: { id: string; status: "pendente" | "em_andamento" | "cancelada" | "concluida" }) =>
+      mudarStatus({ data: v }),
+    onSuccess: (registro: AuditoriaRegistro) => {
+      void queryClient.invalidateQueries({ queryKey: ["auditorias"] });
+      toast.success(
+        registro.status === "cancelada" ? "Auditoria cancelada." : "Auditoria reaberta em andamento.",
+      );
+    },
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Não foi possível atualizar o status."),
+  });
+
+
   const auditorias = data ?? [];
 
   return (
