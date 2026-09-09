@@ -24,7 +24,7 @@ export interface ResultadoVerificacao {
  * Linha tipada da tabela nova `alertas_preco` — remova quando o typegen do
  * Supabase incluir a tabela.
  */
-type LinhaAlertaPreco = AlertaPrecoAtivo & { ativo: boolean };
+type LinhaAlertaPreco = AlertaPrecoAtivo & { ativo: boolean; mensagem?: string | null };
 
 /**
  * Busca todos os alertas `ativo = true`, verifica o preço atual de cada ticker
@@ -34,7 +34,7 @@ export async function verificarAlertas(supabase: SupabaseClient): Promise<Result
   // Busca alertas ativos
   const { data: alertas, error } = await supabase
     .from("alertas_preco")
-    .select("id, user_id, ticker, tipo, valor_alvo")
+    .select("id, user_id, ticker, tipo, valor_alvo, mensagem")
     .eq("ativo", true);
 
   const linhas = (alertas ?? []) as unknown as LinhaAlertaPreco[];
@@ -75,7 +75,9 @@ export async function verificarAlertas(supabase: SupabaseClient): Promise<Result
       const direcao = alerta.tipo === "acima" ? "acima" : "abaixo";
       await enviarPushParaUsuario(supabase, alerta.user_id, {
         titulo: `📊 ${alerta.ticker} ${direcao} do alvo`,
-        corpo: `Cotação: R$ ${preco.toFixed(2)} | Alvo: R$ ${alerta.valor_alvo.toFixed(2)}`,
+        corpo:
+          `Cotação: R$ ${preco.toFixed(2)} | Alvo: R$ ${alerta.valor_alvo.toFixed(2)}` +
+          (alerta.mensagem ? ` — ${alerta.mensagem}` : ""),
         url: `/cotacoes?ticker=${alerta.ticker}`,
         tag: `alerta-${alerta.id}`,
       });

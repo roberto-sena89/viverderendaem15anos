@@ -432,6 +432,7 @@ A partir do material varrido abaixo (indicadores do Banco Central, fundamentos r
 - agenda: próximos eventos importantes (Copom, dados de inflação, balanços etc.).
 
 Regras:
+0. Escreva SEMPRE em português do Brasil, com os termos do mercado nacional (Copom, Selic, CDI, IPCA, proventos, dividend yield, FIIs, renda fixa). NUNCA responda em inglês nem misture idiomas.
 1. Números reais: use apenas o que está no material; nunca invente cotações ou datas.
 2. Tom: objetivo, direto, de analista profissional — sem enrolação e sem recomendações formais.
 3. Distinga fato de expectativa; se algo não está no material, não mencione.
