@@ -622,6 +622,8 @@ export type Database = {
           patrimonio_total: number | null
           perfil: string | null
           provedor_ia: string | null
+          respondida_em: string | null
+          resposta: string | null
           resumo: Json | null
           score_diversificacao: number | null
           status: string
@@ -636,6 +638,8 @@ export type Database = {
           patrimonio_total?: number | null
           perfil?: string | null
           provedor_ia?: string | null
+          respondida_em?: string | null
+          resposta?: string | null
           resumo?: Json | null
           score_diversificacao?: number | null
           status?: string
@@ -650,6 +654,8 @@ export type Database = {
           patrimonio_total?: number | null
           perfil?: string | null
           provedor_ia?: string | null
+          respondida_em?: string | null
+          resposta?: string | null
           resumo?: Json | null
           score_diversificacao?: number | null
           status?: string
