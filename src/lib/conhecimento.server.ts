@@ -450,44 +450,52 @@ const ROTULOS_SECOES_PAINEL: Record<string, string> = {
   agenda: "Agenda",
 };
 
-function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): ConhecimentoItem | null {
+/** Seções derivadas do material varrido — usadas só para completar lacunas. */
+function secoesResilientes(itens: ConhecimentoItem[]): Record<string, string> {
   const macro = itens.find((i) => i.categoria === "macro");
   const noticias = itens.filter((i) => i.categoria === "noticias" || i.categoria === "mercado");
   const empresas = itens.filter((i) => i.categoria === "setor");
   const educacao = itens.filter((i) => i.categoria === "educacao");
 
-  const secao = (rotulo: string, conteudo: string) =>
-    conteudo ? `- ${rotulo}: ${conteudo}` : null;
-
-  const linhas: (string | null)[] = [];
-  if (macro) linhas.push(secao("Visão geral", macro.conteudo.slice(0, 200)) ?? null);
-  if (macro) linhas.push(secao("Macro", macro.conteudo.slice(0, 300)) ?? null);
+  const secoes: Record<string, string> = {};
+  if (macro) {
+    secoes["visaoGeral"] = macro.conteudo.slice(0, 200);
+    secoes["macro"] = macro.conteudo.slice(0, 300);
+  }
   if (noticias.length > 0) {
-    const resumoMercado = noticias
+    secoes["mercados"] = noticias
       .slice(0, 3)
       .map((n) => n.titulo)
       .join("; ");
-    linhas.push(secao("Mercados", resumoMercado) ?? null);
   }
   if (empresas.length > 0) {
-    const resumoEmpresas = empresas
+    secoes["empresas"] = empresas
       .slice(0, 3)
       .map((n) => n.titulo)
       .join("; ");
-    linhas.push(secao("Empresas", resumoEmpresas) ?? null);
   }
   if (educacao.length > 0) {
-    const destaqueEducacao = educacao[0].titulo;
-    linhas.push(secao("Riscos", `Atenção a: ${destaqueEducacao}`) ?? null);
+    secoes["riscos"] = `Atenção a: ${educacao[0].titulo}`;
   }
+  return secoes;
+}
 
-  const conteudo = linhas.filter((l): l is string => l !== null).join("\n");
-  if (!conteudo) return null;
+function montarLinhasPainel(secoes: Record<string, string>): string[] {
+  return Object.entries(ROTULOS_SECOES_PAINEL)
+    .map(([chave, rotulo]) => {
+      const valor = (secoes[chave] ?? "").trim().slice(0, 300);
+      return valor ? `- ${rotulo}: ${valor}` : null;
+    })
+    .filter((l): l is string => l !== null);
+}
 
+function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): ConhecimentoItem | null {
+  const linhas = montarLinhasPainel(secoesResilientes(itens));
+  if (linhas.length === 0) return null;
   return {
     categoria: "painel",
     titulo: "Painel do analista (síntese automática)",
-    conteudo: conteudo.slice(0, 1500),
+    conteudo: linhas.join("\n").slice(0, 1500),
     fonte: "Síntese automática do Gestor IA (scanner sem provedor de IA configurado)",
     atualizadoEm: agora.toISOString(),
   };
@@ -498,11 +506,8 @@ async function sintetizarPainelAnalista(
   agora = new Date(),
 ): Promise<ConhecimentoItem | null> {
   const ativo = provedorEnvAtivo(process.env);
-  if (!ativo) {
-    const fallback = montarPainelResiliente(itens, agora);
-    if (fallback) return fallback;
-    return null;
-  }
+  if (!ativo) return montarPainelResiliente(itens, agora);
+
   const material = itens
     .slice(0, 25)
     .map((i) => `- [${i.categoria}] ${i.titulo}: ${i.conteudo.slice(0, 200)}`)
@@ -535,58 +540,64 @@ async function sintetizarPainelAnalista(
       prompt: `Material varrido em ${agora.toISOString().slice(0, 10)}:\n\n${material}`,
       maxOutputTokens: 2000,
     });
+    const provedorUsado = fallbackIA.provedorUsado();
     const texto = resposta.text.trim();
     const ini = texto.indexOf("{");
     const fim = texto.lastIndexOf("}");
-    let secoes: Record<string, unknown> = {};
+    let secoesIA: Record<string, unknown> = {};
     if (ini >= 0 && fim > ini) {
       try {
-        secoes = JSON.parse(texto.slice(ini, fim + 1)) as Record<string, unknown>;
+        secoesIA = JSON.parse(texto.slice(ini, fim + 1)) as Record<string, unknown>;
       } catch {
-        secoes = {};
+        secoesIA = {};
       }
     }
-    const linhas = Object.entries(ROTULOS_SECOES_PAINEL)
-      .map(([chave, rotulo]) => {
-        const valor = String(secoes[chave] ?? "")
-          .trim()
-          .slice(0, 300);
-        return valor ? `- ${rotulo}: ${valor}` : null;
-      })
-      .filter((l): l is string => l !== null);
-    if (linhas.length === 0 && texto) {
-      console.warn(
-        "[conhecimento] painel: modelo não retornou JSON — usando texto cru como fallback.",
-      );
+
+    const secoesModelo: Record<string, string> = {};
+    for (const chave of Object.keys(ROTULOS_SECOES_PAINEL)) {
+      const valor = String(secoesIA[chave] ?? "").trim();
+      if (valor) secoesModelo[chave] = valor;
+    }
+
+    if (Object.keys(secoesModelo).length > 0) {
+      // Resposta real do provedor manda; o material varrido só completa lacunas.
+      const complemento = secoesResilientes(itens);
+      const combinadas: Record<string, string> = { ...complemento, ...secoesModelo };
+      const faltantes = Object.keys(ROTULOS_SECOES_PAINEL).filter((c) => !secoesModelo[c]);
+      return {
+        categoria: "painel",
+        titulo: "Painel do analista (síntese do Gestor IA)",
+        conteudo: montarLinhasPainel(combinadas).join("\n").slice(0, 1500),
+        fonte:
+          `Síntese do Gestor IA via ${provedorUsado}` +
+          (faltantes.length > 0 ? " (seções sem resposta completadas pelo scanner)" : ""),
+        atualizadoEm: agora.toISOString(),
+      };
+    }
+
+    if (texto) {
+      // Sem JSON, mas com texto real do provedor: preserva o conteúdo entregue.
+      console.warn("[conhecimento] painel: modelo não retornou JSON — usando texto cru.");
       return {
         categoria: "painel",
         titulo: "Painel do analista (síntese do Gestor IA)",
         conteudo: texto.slice(0, 1500),
-        fonte: `Síntese do Gestor IA via ${ativo.provedor.nome}`,
+        fonte: `Síntese do Gestor IA via ${provedorUsado}`,
         atualizadoEm: agora.toISOString(),
       };
     }
-    if (linhas.length === 0) {
-      console.error(`[conhecimento] painel: resposta vazia (finish=${resposta.finishReason})`);
-      return null;
-    }
-    return {
-      categoria: "painel",
-      titulo: "Painel do analista (síntese do Gestor IA)",
-      conteudo: linhas.join("\n").slice(0, 1500),
-      fonte: `Síntese do Gestor IA via ${ativo.provedor.nome}`,
-      atualizadoEm: agora.toISOString(),
-    };
+
+    console.error(`[conhecimento] painel: resposta vazia (finish=${resposta.finishReason})`);
+    return montarPainelResiliente(itens, agora);
   } catch (e) {
     console.error(
       "[conhecimento] falha ao sintetizar painel:",
       e instanceof Error ? e.message : String(e),
     );
-    const fallback = montarPainelResiliente(itens, agora);
-    if (fallback) return fallback;
-    return null;
+    return montarPainelResiliente(itens, agora);
   }
 }
+
 
 /* ------------------------------------------------------------------ *
  * Scanner: coleta de macro, órgãos, setores, notícias e educação
