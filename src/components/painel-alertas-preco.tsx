@@ -403,7 +403,53 @@ export function PainelAlertasPreco() {
             </div>
           ))}
         </div>
+
+        {/* Histórico de alertas disparados */}
+        <div className="border-border/60 space-y-2 border-t pt-4">
+          <div className="flex items-center gap-2">
+            <History className="text-primary size-4" />
+            <p className="text-foreground text-sm font-semibold">Histórico de alertas</p>
+          </div>
+          {historico.length === 0 ? (
+            <p className="text-muted-foreground text-xs">
+              Nenhum alerta disparou ainda. Quando um alvo for atingido, o registro aparece aqui com
+              a data, a cotação do momento e o alvo.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {historico.map((d) => (
+                <li
+                  key={d.id}
+                  className="border-border/50 bg-background/40 flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-mono text-sm font-semibold">{d.ticker}</span>
+                      <Badge
+                        variant={d.tipo === "acima" ? "default" : "destructive"}
+                        className="text-[10px]"
+                      >
+                        {d.tipo === "acima" ? "🔼" : "🔽"} {reais(d.valor_alvo)}
+                      </Badge>
+                      {d.variacao_percent != null && (
+                        <Badge variant="outline" className="text-[10px]">
+                          {d.variacao_percent.toLocaleString("pt-BR")}%
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-muted-foreground text-xs">
+                      {dataBr(d.criado_em)} · cotação {reais(d.preco)} ·{" "}
+                      {ROTULO_FREQUENCIA[d.frequencia] ?? d.frequencia}
+                      {d.mensagem ? ` · ${d.mensagem}` : ""}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </CardContent>
+
     </Card>
   );
 }
