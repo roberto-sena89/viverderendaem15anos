@@ -87,6 +87,43 @@ export function DialogoAprendizado() {
       }),
   });
 
+  const recarregar = useServerFn(recarregarPainelAnalista);
+  const [etapa, setEtapa] = useState("");
+
+  const painelIA = useMutation({
+    mutationFn: async () => {
+      setEtapa("Reunindo o material de mercado já varrido...");
+      const espera = window.setTimeout(
+        () => setEtapa("Pedindo a análise ao Gestor IA — isso pode levar até um minuto..."),
+        1500,
+      );
+      try {
+        return await recarregar({ data: undefined });
+      } finally {
+        window.clearTimeout(espera);
+      }
+    },
+    onSuccess: (r) => {
+      setEtapa("");
+      void queryClient.invalidateQueries({ queryKey: ["gestor-conhecimento"] });
+      if (r.gerouComIA) {
+        toast.success("Análise recarregada com o Gestor IA.");
+      } else {
+        toast.info("A IA não respondeu agora — o painel foi montado com os dados varridos.");
+      }
+    },
+    onError: (e) => {
+      setEtapa("");
+      toast.error("Não foi possível recarregar a análise", {
+        description: e instanceof Error ? e.message : undefined,
+      });
+    },
+  });
+
+  const painel = (conhecimento.data?.itens ?? []).find((i) => i.categoria === "painel") ?? null;
+
+
+
   function haQuantoTempo(iso: string): string {
     const min = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 60_000));
     if (min < 1) return "agora";
