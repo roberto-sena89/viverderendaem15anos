@@ -207,7 +207,10 @@ export const solicitarAuditoria = createServerFn({ method: "POST" })
       perfil,
       patrimonio_total: Math.round(auditoria.patrimonio_total),
       total_investido: Math.round(auditoria.total_investido),
-      lucro_total: Math.round(auditoria.lucro_total),
+      // Mesma fórmula do card "Lucro total" do Dashboard: ganho de capital + proventos recebidos.
+      lucro_total: Math.round(auditoria.lucro_total + totalProventos),
+      ganho_capital: Math.round(auditoria.lucro_total),
+      proventos_acumulados: Math.round(totalProventos),
       rentabilidade_pct: auditoria.rentabilidade_pct,
       dy_carteira_pct: auditoria.dy_carteira_pct,
       proventos_estimados_12m: Math.round(auditoria.dividendos_estimados_12m),
