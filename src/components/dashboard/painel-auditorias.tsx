@@ -44,7 +44,7 @@ export function PainelAuditorias() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["auditorias"],
-    queryFn: () => listar({ data: undefined as never }),
+    queryFn: () => listar({} as never),
   });
 
   const nova = useMutation({

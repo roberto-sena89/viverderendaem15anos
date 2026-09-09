@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Bell, Plus, Trash2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Bell, BellRing, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { sugerirAlertasIA, verificarMeusAlertas } from "@/lib/alertas-preco.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,7 @@ interface AlertaPreco {
   valor_alvo: number;
   ativo: boolean;
   disparado_em: string | null;
+  mensagem?: string | null;
 }
 
 /** Painel de alertas de preço — cria, ativa/desativa, exclui. */
@@ -47,6 +50,50 @@ export function PainelAlertasPreco() {
       ativo = false;
     };
   }, []);
+
+  const sugerir = useServerFn(sugerirAlertasIA);
+  const verificar = useServerFn(verificarMeusAlertas);
+  const [ocupado, setOcupado] = useState<"" | "sugerir" | "verificar">("");
+
+  async function recarregar() {
+    const { data } = await supabase
+      .from("alertas_preco")
+      .select("*")
+      .order("criado_em", { ascending: false });
+    if (data) setAlertas(data as AlertaPreco[]);
+  }
+
+  /** Pede ao Gestor IA alvos de preço com base na carteira real. */
+  async function sugerirComIA() {
+    setOcupado("sugerir");
+    try {
+      const r = await sugerir({ data: {} as never });
+      await recarregar();
+      toast.success(`${r.criados.length} alertas sugeridos por ${r.provedor}.`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "O assistente não conseguiu sugerir alertas.");
+    } finally {
+      setOcupado("");
+    }
+  }
+
+  /** Confere agora os preços e dispara as notificações dos alertas atingidos. */
+  async function verificarAgora() {
+    setOcupado("verificar");
+    try {
+      const r = await verificar({ data: {} as never });
+      await recarregar();
+      toast.success(
+        r.disparados > 0
+          ? `${r.disparados} alerta(s) atingido(s) — notificação enviada.`
+          : `Nenhum alvo atingido agora (${r.verificados} alertas conferidos).`,
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível verificar os alertas.");
+    } finally {
+      setOcupado("");
+    }
+  }
 
   const [ticker, setTicker] = useState("");
   const [tipo, setTipo] = useState<"acima" | "abaixo">("acima");
@@ -150,6 +197,30 @@ export function PainelAlertasPreco() {
           </Button>
         </div>
 
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={sugerirComIA}
+            disabled={ocupado !== ""}
+          >
+            {ocupado === "sugerir" ? (
+              <Loader2 className="mr-1 size-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="mr-1 size-3.5" />
+            )}
+            Sugerir alertas com o Gestor IA
+          </Button>
+          <Button size="sm" variant="outline" onClick={verificarAgora} disabled={ocupado !== ""}>
+            {ocupado === "verificar" ? (
+              <Loader2 className="mr-1 size-3.5 animate-spin" />
+            ) : (
+              <BellRing className="mr-1 size-3.5" />
+            )}
+            Verificar agora
+          </Button>
+        </div>
+
         {/* Lista de alertas */}
         {alertas.length === 0 && (
           <p className="py-4 text-center text-sm text-muted-foreground">
@@ -160,9 +231,9 @@ export function PainelAlertasPreco() {
           {alertas.map((alerta) => (
             <div
               key={alerta.id}
-              className="flex items-center justify-between rounded-md border border-border/60 px-3 py-2"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border/60 px-3 py-2"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <span className="font-mono text-sm font-semibold">{alerta.ticker}</span>
                 <Badge
                   variant={alerta.tipo === "acima" ? "default" : "destructive"}
@@ -174,6 +245,11 @@ export function PainelAlertasPreco() {
                   <Badge variant="outline" className="text-[10px] text-muted-foreground">
                     Disparado
                   </Badge>
+                )}
+                {alerta.mensagem && (
+                  <span className="text-muted-foreground w-full text-xs sm:w-auto">
+                    {alerta.mensagem}
+                  </span>
                 )}
               </div>
               <div className="flex items-center gap-2">
