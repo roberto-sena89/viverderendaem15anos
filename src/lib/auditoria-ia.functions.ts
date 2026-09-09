@@ -24,28 +24,58 @@ export type ValorResumo =
   | ValorResumo[]
   | { [chave: string]: ValorResumo };
 
+export type StatusAuditoria =
+  | "concluida"
+  | "parcial"
+  | "falhou"
+  | "pendente"
+  | "em_andamento"
+  | "cancelada";
+
+export const STATUS_AUDITORIA = [
+  "concluida",
+  "parcial",
+  "falhou",
+  "pendente",
+  "em_andamento",
+  "cancelada",
+] as const;
+
 export interface AuditoriaRegistro {
   id: string;
   titulo: string;
-  status: "concluida" | "parcial" | "falhou";
+  status: StatusAuditoria;
   perfil: string | null;
   score_diversificacao: number | null;
   patrimonio_total: number | null;
   analise_ia: string | null;
   provedor_ia: string | null;
+  resposta: string | null;
+  respondida_em: string | null;
   resumo: { [chave: string]: ValorResumo } | null;
   created_at: string;
 }
 
 type Linha = Record<string, unknown>;
 
+type Resultado = Promise<{ data: Linha | null; error: { message: string } | null }>;
+
 /** Shim tipado: a tabela `relatorios` tem colunas novas ainda ausentes no typegen. */
 function tabelaRelatorios(supabase: unknown) {
   return supabase as unknown as {
     from: (t: string) => {
       insert: (v: Linha) => {
-        select: (c: string) => {
-          single: () => Promise<{ data: Linha | null; error: { message: string } | null }>;
+        select: (c: string) => { single: () => Resultado };
+      };
+      update: (v: Linha) => {
+        eq: (
+          col: string,
+          val: string,
+        ) => {
+          eq: (
+            col: string,
+            val: string,
+          ) => { select: (c: string) => { single: () => Resultado } };
         };
       };
       select: (c: string) => {
@@ -59,10 +89,6 @@ function tabelaRelatorios(supabase: unknown) {
           ) => {
             limit: (n: number) => Promise<{ data: Linha[] | null; error: { message: string } | null }>;
           };
-          eq: (
-            col: string,
-            val: string,
-          ) => { select?: never } & Promise<{ error: { message: string } | null }>;
         };
       };
       delete: () => {
@@ -81,17 +107,20 @@ function paraRegistro(l: Linha): AuditoriaRegistro {
   return {
     id: String(l["id"]),
     titulo: String(l["titulo"] ?? "Auditoria da carteira"),
-    status: (String(l["status"] ?? "concluida") as AuditoriaRegistro["status"]) ?? "concluida",
+    status: (String(l["status"] ?? "concluida") as StatusAuditoria) ?? "concluida",
     perfil: (l["perfil"] as string | null) ?? null,
     score_diversificacao:
       l["score_diversificacao"] == null ? null : Number(l["score_diversificacao"]),
     patrimonio_total: l["patrimonio_total"] == null ? null : Number(l["patrimonio_total"]),
     analise_ia: (l["analise_ia"] as string | null) ?? null,
     provedor_ia: (l["provedor_ia"] as string | null) ?? null,
+    resposta: (l["resposta"] as string | null) ?? null,
+    respondida_em: (l["respondida_em"] as string | null) ?? null,
     resumo: (l["resumo"] as { [chave: string]: ValorResumo } | null) ?? null,
     created_at: String(l["created_at"]),
   };
 }
+
 
 const SISTEMA_AUDITORIA = `Você é um analista CNPI brasileiro auditando a carteira de um investidor pessoa física.
 
@@ -274,4 +303,51 @@ export const excluirAuditoria = createServerFn({ method: "POST" })
       .eq("user_id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+/** Grava a resposta escrita pelo usuário e conclui a auditoria. */
+export const responderAuditoria = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((value: unknown) =>
+    z.object({ id: z.string().uuid(), resposta: z.string().trim().min(1).max(4000) }).parse(value),
+  )
+  .handler(async ({ context, data }): Promise<AuditoriaRegistro> => {
+    const db = tabelaRelatorios(context.supabase);
+    const { data: linha, error } = await db
+      .from("relatorios")
+      .update({
+        resposta: data.resposta,
+        respondida_em: new Date().toISOString(),
+        status: "concluida",
+      })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .select("*")
+      .single();
+    if (error || !linha) throw new Error(error?.message ?? "Auditoria não encontrada.");
+    return paraRegistro(linha);
+  });
+
+/** Reabre, cancela ou marca a auditoria como pendente/em andamento. */
+export const atualizarStatusAuditoria = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((value: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.enum(["pendente", "em_andamento", "cancelada", "concluida"]),
+      })
+      .parse(value),
+  )
+  .handler(async ({ context, data }): Promise<AuditoriaRegistro> => {
+    const db = tabelaRelatorios(context.supabase);
+    const { data: linha, error } = await db
+      .from("relatorios")
+      .update({ status: data.status })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .select("*")
+      .single();
+    if (error || !linha) throw new Error(error?.message ?? "Auditoria não encontrada.");
+    return paraRegistro(linha);
   });

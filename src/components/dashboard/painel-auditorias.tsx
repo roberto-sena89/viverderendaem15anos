@@ -5,14 +5,26 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronDown, ClipboardCheck, Loader2, Sparkles, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ClipboardCheck,
+  Loader2,
+  MessageSquarePlus,
+  RotateCcw,
+  Sparkles,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import {
+  atualizarStatusAuditoria,
   excluirAuditoria,
   listarAuditorias,
+  responderAuditoria,
   solicitarAuditoria,
   type AuditoriaRegistro,
   type ValorResumo,
@@ -22,6 +34,18 @@ import { cn } from "@/lib/utils";
 
 const ROTULO_STATUS: Record<string, { texto: string; classe: string }> = {
   concluida: { texto: "Concluída", classe: "bg-primary/15 text-primary border-primary/30" },
+  em_andamento: {
+    texto: "Em andamento",
+    classe: "bg-sky-500/15 text-sky-400 border-sky-500/30",
+  },
+  pendente: {
+    texto: "Pendente",
+    classe: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  },
+  cancelada: {
+    texto: "Cancelada",
+    classe: "bg-muted text-muted-foreground border-border",
+  },
   parcial: {
     texto: "Parcial (sem resposta da IA)",
     classe: "bg-amber-500/15 text-amber-400 border-amber-500/30",
@@ -36,12 +60,18 @@ function dataBr(iso: string) {
   return new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
 
+
 export function PainelAuditorias() {
   const queryClient = useQueryClient();
   const listar = useServerFn(listarAuditorias);
   const solicitar = useServerFn(solicitarAuditoria);
   const excluir = useServerFn(excluirAuditoria);
+  const responder = useServerFn(responderAuditoria);
+  const mudarStatus = useServerFn(atualizarStatusAuditoria);
   const [aberta, setAberta] = useState<string | null>(null);
+  const [respondendo, setRespondendo] = useState<string | null>(null);
+  const [texto, setTexto] = useState("");
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["auditorias"],
@@ -67,6 +97,32 @@ export function PainelAuditorias() {
     mutationFn: (id: string) => excluir({ data: { id } }),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["auditorias"] }),
   });
+
+  const enviarResposta = useMutation({
+    mutationFn: (v: { id: string; resposta: string }) => responder({ data: v }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["auditorias"] });
+      setRespondendo(null);
+      setTexto("");
+      toast.success("Resposta registrada na auditoria.");
+    },
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Não foi possível salvar a resposta."),
+  });
+
+  const alterarStatus = useMutation({
+    mutationFn: (v: { id: string; status: "pendente" | "em_andamento" | "cancelada" | "concluida" }) =>
+      mudarStatus({ data: v }),
+    onSuccess: (registro: AuditoriaRegistro) => {
+      void queryClient.invalidateQueries({ queryKey: ["auditorias"] });
+      toast.success(
+        registro.status === "cancelada" ? "Auditoria cancelada." : "Auditoria reaberta em andamento.",
+      );
+    },
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Não foi possível atualizar o status."),
+  });
+
 
   const auditorias = data ?? [];
 
@@ -173,7 +229,79 @@ export function PainelAuditorias() {
                   )}
                   {a.resumo && <BlocoPlanoMetas resumo={a.resumo} score={a.score_diversificacao} />}
 
-                  <div className="flex justify-end">
+                  {a.resposta && (
+                    <div className="border-primary/25 bg-primary/5 rounded-lg border p-3">
+                      <p className="text-primary text-xs font-semibold">
+                        Sua resposta
+                        {a.respondida_em ? ` · ${dataBr(a.respondida_em)}` : ""}
+                      </p>
+                      <p className="text-foreground/90 mt-1 text-sm whitespace-pre-line">
+                        {a.resposta}
+                      </p>
+                    </div>
+                  )}
+
+                  {respondendo === a.id && (
+                    <div className="space-y-2">
+                      <Textarea
+                        value={texto}
+                        onChange={(e) => setTexto(e.target.value)}
+                        placeholder="Escreva o que você decidiu fazer com base nesta auditoria…"
+                        rows={4}
+                      />
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setRespondendo(null);
+                            setTexto("");
+                          }}
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          size="sm"
+                          disabled={!texto.trim() || enviarResposta.isPending}
+                          onClick={() => enviarResposta.mutate({ id: a.id, resposta: texto.trim() })}
+                        >
+                          {enviarResposta.isPending && (
+                            <Loader2 className="mr-1 size-3.5 animate-spin" />
+                          )}
+                          Salvar resposta
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setRespondendo(a.id);
+                        setTexto(a.resposta ?? "");
+                      }}
+                    >
+                      <MessageSquarePlus className="mr-1 size-3.5" />
+                      {a.resposta ? "Editar resposta" : "Responder"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={alterarStatus.isPending}
+                      onClick={() => alterarStatus.mutate({ id: a.id, status: "em_andamento" })}
+                    >
+                      <RotateCcw className="mr-1 size-3.5" /> Reabrir
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={a.status === "cancelada" || alterarStatus.isPending}
+                      onClick={() => alterarStatus.mutate({ id: a.id, status: "cancelada" })}
+                    >
+                      <XCircle className="mr-1 size-3.5" /> Cancelar
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -182,6 +310,7 @@ export function PainelAuditorias() {
                     >
                       <Trash2 className="mr-1 size-3.5" /> Excluir
                     </Button>
+
                   </div>
                 </div>
               )}
