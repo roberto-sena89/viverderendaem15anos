@@ -114,6 +114,8 @@ export function PainelAlertasPreco() {
     try {
       const r = await verificar({ data: {} as never });
       await recarregar();
+      await recarregarHistorico();
+
       toast.success(
         r.disparados > 0
           ? `${r.disparados} alerta(s) atingido(s) — notificação enviada.`
