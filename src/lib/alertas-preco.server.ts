@@ -30,6 +30,10 @@ type LinhaAlertaPreco = AlertaPrecoAtivo & { ativo: boolean; mensagem?: string |
  * Busca todos os alertas `ativo = true`, verifica o preço atual de cada ticker
  * contra o alvo e dispara push para os que forem atingidos.
  */
+function brl(v: number) {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
 export async function verificarAlertas(supabase: SupabaseClient): Promise<ResultadoVerificacao> {
   // Busca alertas ativos
   const { data: alertas, error } = await supabase
@@ -72,7 +76,7 @@ export async function verificarAlertas(supabase: SupabaseClient): Promise<Result
     const direcao = alerta.tipo === "acima" ? "acima" : "abaixo";
     const titulo = `📊 ${alerta.ticker} ${direcao} do alvo`;
     const corpo =
-      `Cotação: R$ ${preco.toFixed(2)} | Alvo: R$ ${alerta.valor_alvo.toFixed(2)}` +
+      `Cotação: ${brl(preco)} | Alvo: ${brl(alerta.valor_alvo)}` +
       (alerta.mensagem ? ` — ${alerta.mensagem}` : "");
     const url = `/cotacoes?ticker=${alerta.ticker}`;
 
