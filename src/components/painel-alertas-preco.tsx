@@ -126,36 +126,55 @@ export function PainelAlertasPreco() {
     }
   }
 
+  const [abrirNovo, setAbrirNovo] = useState(false);
   const [ticker, setTicker] = useState("");
   const [tipo, setTipo] = useState<"acima" | "abaixo">("acima");
+  const [modo, setModo] = useState<"preco" | "percentual">("preco");
   const [valor, setValor] = useState("");
+  const [percentual, setPercentual] = useState("");
+  const [frequencia, setFrequencia] = useState<"uma_vez" | "diaria" | "sempre">("uma_vez");
 
   async function criarAlerta() {
     const t = ticker.trim().toUpperCase();
-    const v = Number.parseFloat(valor);
-    if (!t || !Number.isFinite(v) || v <= 0) {
-      toast.error("Informe ticker e valor alvo.");
+    const v = Number.parseFloat(valor.replace(",", "."));
+    const p = Number.parseFloat(percentual.replace(",", "."));
+    if (!t) {
+      toast.error("Informe o ticker do ativo.");
       return;
     }
-    const { data: sessao } = await supabase.auth.getSession();
-    if (!sessao.session?.user?.id) {
-      toast.error("Faça login para criar alertas.");
+    if (modo === "preco" && (!Number.isFinite(v) || v <= 0)) {
+      toast.error("Informe o preço alvo em reais.");
       return;
     }
-    const { data, error } = await supabase
-      .from("alertas_preco")
-      .insert({ user_id: sessao.session.user.id, ticker: t, tipo, valor_alvo: v })
-      .select()
-      .single();
-    if (error) {
-      toast.error("Erro ao criar alerta: " + error.message);
+    if (modo === "percentual" && (!Number.isFinite(p) || p <= 0)) {
+      toast.error("Informe a variação em porcentagem.");
       return;
     }
-    setAlertas((prev) => [data as AlertaPreco, ...prev]);
-    setTicker("");
-    setValor("");
-    toast.success(`Alerta criado: ${t} ${tipo === "acima" ? "🔼" : "🔽"} R$ ${v.toFixed(2)}`);
+    setOcupado("criar");
+    try {
+      const r = await criar({
+        data: {
+          ticker: t,
+          tipo,
+          frequencia,
+          ...(modo === "preco" ? { valor_alvo: v } : { variacao_percent: p }),
+        },
+      });
+      await recarregar();
+      setAbrirNovo(false);
+      setTicker("");
+      setValor("");
+      setPercentual("");
+      toast.success(
+        `Alerta criado: ${t} ${tipo === "acima" ? "acima" : "abaixo"} de ${reais(r.valor_alvo)}.`,
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível criar o alerta.");
+    } finally {
+      setOcupado("");
+    }
   }
+
 
   async function toggleAlerta(id: string, ativo: boolean) {
     const { error } = await supabase.from("alertas_preco").update({ ativo }).eq("id", id);
