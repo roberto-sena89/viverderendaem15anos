@@ -685,19 +685,34 @@ async function sintetizarPainelAnalista(
 }
 
 
+/** Chave de cache do painel pessoal (não compartilhado entre usuários). */
+export const chaveCachePainelUsuario = (userId: string) => `${CHAVE_CACHE}:painel:${userId}`;
+
 /**
  * Refaz apenas o "Painel do analista" repetindo o prompt da IA sobre o
- * material já varrido, sem executar um novo scan da internet. Persiste a base
- * atualizada e devolve o resultado para a interface.
+ * material já varrido, sem executar um novo scan da internet. Quando há
+ * usuário, injeta os dados reais da carteira (ativos com cotação ao vivo,
+ * rentabilidade, proventos e auditorias) e persiste o painel só para ele.
  */
-export async function regerarPainelAnalista(agora = new Date()): Promise<{
+export async function regerarPainelAnalista(
+  agora = new Date(),
+  userId?: string,
+): Promise<{
   base: BaseConhecimento;
   painel: ConhecimentoItem | null;
   gerouComIA: boolean;
 }> {
   const atual = (await lerDoBanco()) ?? (await lerConhecimento());
   const materiais = atual.itens.filter((i) => i.categoria !== "painel");
-  const painel = await sintetizarPainelAnalista(materiais, agora).catch(() => null);
+
+  let carteira: { prompt: string; linhas: string[] } | null = null;
+  if (userId) {
+    const { montarContextoCarteira } = await import("@/lib/carteira-contexto.server");
+    const ctx = await montarContextoCarteira(userId).catch(() => null);
+    if (ctx?.temDados) carteira = { prompt: ctx.prompt, linhas: ctx.linhas };
+  }
+
+  const painel = await sintetizarPainelAnalista(materiais, agora, carteira).catch(() => null);
 
   const itens = painel ? [painel, ...materiais] : materiais;
   const base: BaseConhecimento = {
@@ -708,26 +723,64 @@ export async function regerarPainelAnalista(agora = new Date()): Promise<{
 
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("cotacoes_cache").upsert(
-      {
-        categoria: CHAVE_CACHE,
-        payload: JSON.parse(JSON.stringify(base)) as Json,
-        parcial: false,
-        atualizado_em: atual.atualizadoEm,
-      },
-      { onConflict: "categoria" },
-    );
+    if (userId && painel) {
+      // Painel pessoal: guardado por usuário para não vazar dados da carteira.
+      await supabaseAdmin.from("cotacoes_cache").upsert(
+        {
+          categoria: chaveCachePainelUsuario(userId),
+          payload: JSON.parse(JSON.stringify(painel)) as Json,
+          parcial: false,
+          atualizado_em: agora.toISOString(),
+        },
+        { onConflict: "categoria" },
+      );
+    } else {
+      await supabaseAdmin.from("cotacoes_cache").upsert(
+        {
+          categoria: CHAVE_CACHE,
+          payload: JSON.parse(JSON.stringify(base)) as Json,
+          parcial: false,
+          atualizado_em: atual.atualizadoEm,
+        },
+        { onConflict: "categoria" },
+      );
+      memoria = { valor: base, em: Date.now() };
+    }
   } catch {
     /* best-effort: o painel novo continua válido nesta execução */
   }
 
-  memoria = { valor: base, em: Date.now() };
   return {
     base,
     painel,
     gerouComIA: Boolean(painel?.fonte.includes("Síntese do Gestor IA via")),
   };
 }
+
+/** Painel pessoal já gerado para este usuário (se houver). */
+export async function lerPainelUsuario(userId: string): Promise<ConhecimentoItem | null> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("cotacoes_cache")
+      .select("payload")
+      .eq("categoria", chaveCachePainelUsuario(userId))
+      .maybeSingle();
+    const p = data?.payload as unknown as ConhecimentoItem | null;
+    return p && typeof p === "object" && p.categoria === "painel" ? p : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Base com o painel pessoal do usuário no lugar do painel global. */
+export async function lerConhecimentoDoUsuario(userId: string): Promise<BaseConhecimento> {
+  const base = await lerConhecimento();
+  const painel = await lerPainelUsuario(userId);
+  if (!painel) return base;
+  return { ...base, itens: [painel, ...base.itens.filter((i) => i.categoria !== "painel")] };
+}
+
 
 
 
