@@ -156,7 +156,7 @@ function PaginaAuditoria() {
             <div className="space-y-1.5">
               <Label className="text-muted-foreground text-xs">Patrimônio atual</Label>
               <div className="border-border/60 bg-background/40 flex h-9 items-center rounded-md border px-3 text-sm font-semibold">
-                {brl(totalAtual)}
+                {brl(totalAtual, 2)}
               </div>
             </div>
           </div>
