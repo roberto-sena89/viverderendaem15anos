@@ -5,14 +5,26 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronDown, ClipboardCheck, Loader2, Sparkles, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ClipboardCheck,
+  Loader2,
+  MessageSquarePlus,
+  RotateCcw,
+  Sparkles,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import {
+  atualizarStatusAuditoria,
   excluirAuditoria,
   listarAuditorias,
+  responderAuditoria,
   solicitarAuditoria,
   type AuditoriaRegistro,
   type ValorResumo,
@@ -22,6 +34,18 @@ import { cn } from "@/lib/utils";
 
 const ROTULO_STATUS: Record<string, { texto: string; classe: string }> = {
   concluida: { texto: "Concluída", classe: "bg-primary/15 text-primary border-primary/30" },
+  em_andamento: {
+    texto: "Em andamento",
+    classe: "bg-sky-500/15 text-sky-400 border-sky-500/30",
+  },
+  pendente: {
+    texto: "Pendente",
+    classe: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  },
+  cancelada: {
+    texto: "Cancelada",
+    classe: "bg-muted text-muted-foreground border-border",
+  },
   parcial: {
     texto: "Parcial (sem resposta da IA)",
     classe: "bg-amber-500/15 text-amber-400 border-amber-500/30",
@@ -35,6 +59,7 @@ const ROTULO_STATUS: Record<string, { texto: string; classe: string }> = {
 function dataBr(iso: string) {
   return new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
+
 
 export function PainelAuditorias() {
   const queryClient = useQueryClient();
