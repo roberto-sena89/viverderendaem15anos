@@ -1,4 +1,14 @@
-import { Bell, BellOff, Bot, Trash2, TrendingDown, TrendingUp, ExternalLink } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  BellRing,
+  Bot,
+  Trash2,
+  TrendingDown,
+  TrendingUp,
+  ExternalLink,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAlertasHistorico } from "@/lib/alertas-historico";
