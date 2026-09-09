@@ -9,9 +9,9 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     return await next();
   } catch (error) {
     if (isClientDisconnectError(error)) {
-      // Cancelamentos de navegação precisam conservar sua semântica. Uma
-      // resposta 499 vira erro de rota no cliente e pode substituir a página.
-      throw error;
+      // O navegador já abandonou esta navegação. Encerrar sem conteúdo evita
+      // que o adaptador converta o cancelamento em 500 e acione a tela de erro.
+      return new Response(null, { status: 204 });
     }
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
