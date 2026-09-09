@@ -360,21 +360,23 @@ export async function gradeFiisComCache(forcar = false): Promise<RespostaFiis> {
         emAndamento = null;
       });
   }
+  // Referência local: `emAndamento` vira null assim que a promessa resolve.
+  const trabalho = emAndamento;
 
   // SWR real: responde com o último valor conhecido — mesmo desatualizado —
   // e atualiza em segundo plano. Só espera a montagem quando não há nada salvo.
   if (gradeMemoria?.valor?.linhas?.length) {
-    void emAndamento.catch(() => undefined);
+    void trabalho.catch(() => undefined);
     if (!forcar) return gradeMemoria.valor;
   } else {
     const salvo = await lerBanco<RespostaFiis>("fiis:grade");
     if (salvo?.valor?.linhas?.length) {
       gradeMemoria = { valor: salvo.valor, em: Date.parse(salvo.em) };
-      void emAndamento.catch(() => undefined);
+      void trabalho.catch(() => undefined);
       if (!forcar) return salvo.valor;
     }
   }
-  return emAndamento;
+  return trabalho;
 }
 
 /* ------------------------------------------------------------------ *
