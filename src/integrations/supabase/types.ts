@@ -377,6 +377,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notificacoes: {
+        Row: {
+          corpo: string
+          criada_em: string
+          id: string
+          lida: boolean
+          ticker: string | null
+          tipo: string
+          titulo: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          corpo?: string
+          criada_em?: string
+          id?: string
+          lida?: boolean
+          ticker?: string | null
+          tipo?: string
+          titulo: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          corpo?: string
+          criada_em?: string
+          id?: string
+          lida?: boolean
+          ticker?: string | null
+          tipo?: string
+          titulo?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       plano_config: {
         Row: {
           aporte_mensal: number
