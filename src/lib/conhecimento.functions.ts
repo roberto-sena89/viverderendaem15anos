@@ -22,10 +22,11 @@ export interface ResultadoPainelAnalista {
 
 export const lerConhecimentoMercado = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async (): Promise<BaseConhecimento> => {
+  .handler(async ({ context }: { context: { userId: string } }): Promise<BaseConhecimento> => {
     const mod = await import("@/lib/conhecimento.server");
-    return mod.lerConhecimento();
+    return mod.lerConhecimentoDoUsuario(context.userId);
   });
+
 
 export const executarScanMercado = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
