@@ -26,8 +26,10 @@ import {
 import {
   executarScanMercado,
   lerConhecimentoMercado,
+  recarregarPainelAnalista,
   type ConhecimentoItem,
 } from "@/lib/conhecimento.functions";
+
 
 const CORES_CATEGORIA: Record<ConhecimentoItem["categoria"], string> = {
   macro: "bg-sky-600/10 text-sky-600 border-sky-600/30",
