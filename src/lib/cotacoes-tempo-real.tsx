@@ -249,7 +249,9 @@ export function CotacoesTempoRealProvider({ children }: { children: ReactNode })
     queryFn: () => buscar({ data: { itens } }),
     enabled: itens.length > 0,
     refetchInterval: intervalo,
-    refetchIntervalInBackground: false,
+    // Recarrega em segundo plano mesmo com a aba oculta, para o Dashboard
+    // voltar sempre com cotações frescas.
+    refetchIntervalInBackground: true,
     refetchOnWindowFocus: config.automatico,
     staleTime: 10_000,
     gcTime: 60 * 60 * 1000,
