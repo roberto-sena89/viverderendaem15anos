@@ -26,6 +26,8 @@ import { PainelAnaliseRisco } from "@/components/painel-analise-risco";
 import { RelogioLiberdade } from "@/components/relogio-liberdade";
 import { RelatorioSemanal } from "@/components/relatorio-semanal";
 import { ScoreInvestidor } from "@/components/score-investidor";
+import { PainelAuditorias } from "@/components/dashboard/painel-auditorias";
+import { PainelAlertasPreco } from "@/components/painel-alertas-preco";
 import { DetalheEvolucaoMensal } from "@/components/detalhe-evolucao-mensal";
 import { Panel } from "@/components/panel";
 import { ResumoKpis } from "@/components/resumo-kpis";
@@ -649,6 +651,11 @@ function Dashboard() {
         <div className="p-4 sm:p-5">
           <ScoreInvestidor />
         </div>
+      </section>
+
+      <section id="auditorias" className="grid gap-4 scroll-mt-32 lg:grid-cols-2 sm:scroll-mt-40">
+        <PainelAuditorias />
+        <PainelAlertasPreco />
       </section>
     </AppShell>
   );

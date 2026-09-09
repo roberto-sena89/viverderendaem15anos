@@ -9,7 +9,10 @@ import {
   ArrowRight,
   type LucideIcon,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { solicitarAuditoria } from "@/lib/auditoria-ia.functions";
 import {
   Card,
   CardContent,
@@ -40,6 +43,8 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
   const { perfil } = usePerfilInvestidor();
 
   const [auditoriaFeita, setAuditoriaFeita] = useState(false);
+  const [gerando, setGerando] = useState(false);
+  const pedirAuditoria = useServerFn(solicitarAuditoria);
   const [steps, setSteps] = useState<Step[]>([]);
 
   useEffect(() => {
@@ -50,13 +55,27 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
     }
   }, []);
 
-  const marcarAuditoria = () => {
+  /** Gera uma auditoria real no banco com os dados atuais da carteira. */
+  const marcarAuditoria = async () => {
+    setGerando(true);
     try {
-      window.localStorage.setItem(CHAVE_AUDITORIA, "1");
-    } catch {
-      /* ignore */
+      const registro = await pedirAuditoria({ data: { perfil: perfil ?? undefined } });
+      toast.success(
+        registro.status === "concluida"
+          ? `Auditoria criada com análise do ${registro.provedor_ia ?? "Gestor IA"}.`
+          : "Auditoria criada com os números da sua carteira.",
+      );
+      try {
+        window.localStorage.setItem(CHAVE_AUDITORIA, "1");
+      } catch {
+        /* ignore */
+      }
+      setAuditoriaFeita(true);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível gerar a auditoria agora.");
+    } finally {
+      setGerando(false);
     }
-    setAuditoriaFeita(true);
   };
 
   useEffect(() => {
@@ -166,9 +185,10 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
                   variant="ghost"
                   size="sm"
                   className="shrink-0 gap-1"
-                  onClick={marcarAuditoria}
+                  disabled={gerando}
+                  onClick={() => void marcarAuditoria()}
                 >
-                  {step.actionLabel}
+                  {gerando ? "Gerando…" : step.actionLabel}
                   <ArrowRight className="size-3" />
                 </Button>
               )}
