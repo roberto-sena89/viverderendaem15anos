@@ -502,6 +502,27 @@ function montarPainelResiliente(itens: ConhecimentoItem[], agora: Date): Conheci
   };
 }
 
+/**
+ * Extrai as seções de um JSON que veio cortado no meio (resposta truncada).
+ * Aproveita tudo que a IA já escreveu, inclusive a última seção incompleta.
+ */
+function secoesDeJsonParcial(texto: string): Record<string, string> {
+  const secoes: Record<string, string> = {};
+  for (const chave of Object.keys(ROTULOS_SECOES_PAINEL)) {
+    const re = new RegExp(`"${chave}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)`, "i");
+    const m = re.exec(texto);
+    if (!m || !m[1]) continue;
+    const valor = m[1]
+      .replace(/\\n/g, " ")
+      .replace(/\\"/g, '"')
+      .replace(/\\\\/g, "\\")
+      .trim();
+    if (valor) secoes[chave] = valor;
+  }
+  return secoes;
+}
+
+
 async function sintetizarPainelAnalista(
   itens: ConhecimentoItem[],
   agora = new Date(),
