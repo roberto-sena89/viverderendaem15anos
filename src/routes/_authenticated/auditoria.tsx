@@ -10,7 +10,8 @@ import { PainelAuditorias } from "@/components/dashboard/painel-auditorias";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAtivos, usePlano, useSalvarPlano } from "@/lib/data";
+import { usePlano, useSalvarPlano } from "@/lib/data";
+import { useAtivosAoVivo } from "@/lib/cotacoes-tempo-real";
 import { solicitarAuditoria, type AuditoriaRegistro } from "@/lib/auditoria-ia.functions";
 import { brl, planoPadrao, resumoCarteira, type PlanoConfig } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
@@ -49,7 +50,7 @@ type Perfil = (typeof PERFIS)[number]["id"];
 
 function PaginaAuditoria() {
   const queryClient = useQueryClient();
-  const { data: carteira = [] } = useAtivos();
+  const { data: carteira = [] } = useAtivosAoVivo();
   const { data: plano } = usePlano();
   const salvarPlano = useSalvarPlano();
   const solicitar = useServerFn(solicitarAuditoria);
@@ -155,7 +156,7 @@ function PaginaAuditoria() {
             <div className="space-y-1.5">
               <Label className="text-muted-foreground text-xs">Patrimônio atual</Label>
               <div className="border-border/60 bg-background/40 flex h-9 items-center rounded-md border px-3 text-sm font-semibold">
-                {brl(totalAtual)}
+                {brl(totalAtual, 2)}
               </div>
             </div>
           </div>
