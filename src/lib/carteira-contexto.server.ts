@@ -63,6 +63,15 @@ export async function montarContextoCarteira(userId: string): Promise<ContextoCa
     const porCategoria = new Map<string, number>();
     const linhasAtivos: string[] = [];
     const variacoes: { ticker: string; variacao: number }[] = [];
+    const posicoes: {
+      ticker: string;
+      categoria: string;
+      quantidade: number;
+      precoMedio: number;
+      preco: number;
+      variacao: number | null;
+      valor: number;
+    }[] = [];
 
     for (const a of ativos) {
       const qtd = Number(a.quantidade);
@@ -73,6 +82,15 @@ export async function montarContextoCarteira(userId: string): Promise<ContextoCa
       atual += valor;
       porCategoria.set(a.categoria, (porCategoria.get(a.categoria) ?? 0) + valor);
       if (vivo?.variacao != null) variacoes.push({ ticker: a.ticker, variacao: vivo.variacao });
+      posicoes.push({
+        ticker: a.ticker,
+        categoria: a.categoria,
+        quantidade: qtd,
+        precoMedio: Number(a.preco_medio),
+        preco,
+        variacao: vivo?.variacao ?? null,
+        valor,
+      });
       linhasAtivos.push(
         `${a.ticker} (${a.categoria}): ${qtd} cotas, PM ${brl(Number(a.preco_medio), 2)}, atual ${brl(preco, 2)}, posição ${brl(valor, 2)}`,
       );
@@ -82,6 +100,14 @@ export async function montarContextoCarteira(userId: string): Promise<ContextoCa
     const ganhoCapital = atual - custo;
     const lucroTotal = ganhoCapital + proventos;
     const rentabilidade = custo > 0 ? (lucroTotal / custo) * 100 : 0;
+
+    // Painel por ativo: preço, variação do dia e peso no patrimônio.
+    posicoes.sort((a, b) => b.valor - a.valor);
+    const peso = (valor: number) => (atual > 0 ? (valor / atual) * 100 : 0);
+    const linhasPorAtivo = posicoes.map(
+      (p) =>
+        `  • ${p.ticker} (${p.categoria}): ${brl(p.preco, 2)} | ${p.variacao == null ? "s/ variação" : pct(p.variacao)} no dia | ${peso(p.valor).toFixed(1)}% da carteira | ${p.quantidade} x PM ${brl(p.precoMedio, 2)} = ${brl(p.valor, 2)}`,
+    );
 
     const categorias = [...porCategoria.entries()]
       .sort((a, b) => b[1] - a[1])
@@ -102,6 +128,9 @@ export async function montarContextoCarteira(userId: string): Promise<ContextoCa
     const linhas = [
       `- Sua carteira: patrimônio ${brl(atual, 2)} em ${ativos.length} ativos; lucro total ${brl(lucroTotal, 2)} (${pct(rentabilidade)}), sendo ${brl(ganhoCapital, 2)} de ganho de capital e ${brl(proventos, 2)} de proventos.`,
       categorias.length > 0 ? `- Alocação atual: ${categorias.slice(0, 6).join("; ")}.` : null,
+      linhasPorAtivo.length > 0
+        ? `- Painel por ativo (preço | variação do dia | peso no patrimônio):\n${linhasPorAtivo.slice(0, 25).join("\n")}`
+        : null,
       melhores.length > 0 ? `- Destaques do dia: alta ${melhores.join(", ")} | baixa ${piores.join(", ")}.` : null,
       auditorias.length > 0 ? `- Auditorias recentes: ${auditorias.join(" | ")}.` : null,
     ].filter((l): l is string => l !== null);
@@ -110,6 +139,14 @@ export async function montarContextoCarteira(userId: string): Promise<ContextoCa
       "DADOS REAIS DA CARTEIRA DESTE USUÁRIO (use números concretos, não invente valores):",
       `Patrimônio atual: ${brl(atual, 2)} | Custo: ${brl(custo, 2)} | Ganho de capital: ${brl(ganhoCapital, 2)} | Proventos: ${brl(proventos, 2)} | Lucro total: ${brl(lucroTotal, 2)} | Rentabilidade: ${pct(rentabilidade)}`,
       `Alocação: ${categorias.join("; ") || "—"}`,
+      "Painel por ativo (ticker | preço atual | variação do dia | peso no patrimônio | posição):",
+      posicoes
+        .slice(0, 25)
+        .map(
+          (p) =>
+            `${p.ticker} | ${brl(p.preco, 2)} | ${p.variacao == null ? "s/d" : pct(p.variacao)} | ${peso(p.valor).toFixed(1)}% | ${brl(p.valor, 2)}`,
+        )
+        .join("\n"),
       `Posições: ${linhasAtivos.slice(0, 20).join(" | ")}`,
       `Auditorias: ${auditorias.join(" | ") || "nenhuma auditoria registrada"}`,
     ].join("\n");
