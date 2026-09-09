@@ -161,7 +161,18 @@ export function OnboardingGestorIA({ onComplete }: { onComplete: () => void }) {
                 </div>
                 <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
               </div>
-              {!step.completed && (
+              {!step.completed && step.id === "auditoria" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="shrink-0 gap-1"
+                  onClick={marcarAuditoria}
+                >
+                  {step.actionLabel}
+                  <ArrowRight className="size-3" />
+                </Button>
+              )}
+              {!step.completed && step.id !== "auditoria" && (
                 <Button variant="ghost" size="sm" className="shrink-0 gap-1" asChild>
                   <a href={step.actionHref}>
                     {step.actionLabel}
