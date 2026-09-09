@@ -563,6 +563,7 @@ async function sintetizarPainelAnalista(
       texto = String((resposta as { reasoningText?: string }).reasoningText ?? "").trim();
     }
 
+    const provedorUsado = fallbackIA.provedorUsado();
     const ini = texto.indexOf("{");
     const fim = texto.lastIndexOf("}");
     let secoesIA: Record<string, unknown> = {};
