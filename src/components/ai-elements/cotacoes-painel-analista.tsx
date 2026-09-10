@@ -110,8 +110,8 @@ export function CotacoesPainelAnalista() {
             key={l.id}
             className={cn(
               "flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors duration-500",
-              l.flash === "up" && "bg-primary/10",
-              l.flash === "down" && "bg-destructive/10",
+              l.flash === "alta" && "bg-primary/10",
+              l.flash === "baixa" && "bg-destructive/10",
             )}
           >
             <span className="w-16 shrink-0 font-semibold">{l.ticker}</span>
