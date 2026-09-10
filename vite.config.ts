@@ -21,6 +21,38 @@ function suppressClientDisconnectErrors(): Plugin {
   return {
     name: "suppress-client-disconnect-errors",
     configureServer(server) {
+      // O `abortIncoming` do Node emite o erro fora de qualquer try/catch e de
+      // qualquer middleware: sem um guarda no processo ele vira
+      // uncaughtException e derruba o dev server (tela branca no preview).
+      const marca = "__ignorarDesconexoesVite";
+      const registro = process as unknown as Record<string, unknown>;
+      if (!registro[marca]) {
+        registro[marca] = true;
+        process.on("uncaughtException", (err: NodeJS.ErrnoException) => {
+          if (isDisconnectError(err)) return;
+          console.error("[server] uncaughtException:", err);
+        });
+        process.on("unhandledRejection", (motivo) => {
+          if (isDisconnectError(motivo as NodeJS.ErrnoException)) return;
+          console.error("[server] unhandledRejection:", motivo);
+        });
+      }
+
+      // Anexa o listener assim que a requisição chega (antes dos middlewares),
+      // cobrindo streams SSE que são abortados durante a navegação.
+      server.httpServer?.on("request", (req, res) => {
+        const ignorar = (err: NodeJS.ErrnoException) => {
+          if (!isDisconnectError(err)) console.error("[server] erro de conexão:", err);
+        };
+        req.on("error", ignorar);
+        req.on("aborted", () => undefined);
+        res.on("error", ignorar);
+      });
+      server.httpServer?.on("clientError", (err: NodeJS.ErrnoException, socket) => {
+        if (!isDisconnectError(err)) console.error("[server] clientError:", err);
+        socket.destroy();
+      });
+
       server.middlewares.use((req, res, next) => {
         const onError = (err: NodeJS.ErrnoException) => {
           if (!isDisconnectError(err)) {

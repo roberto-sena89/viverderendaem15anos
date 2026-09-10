@@ -18,7 +18,9 @@ function ignorarDesconexoesDoCliente() {
 
   proc.on("uncaughtException", (erro) => {
     if (isClientDisconnectError(erro)) return;
-    throw erro;
+    // Relançar aqui encerraria o processo do servidor (tela branca). Registrar
+    // é suficiente: a requisição afetada já falhou com 500 no seu próprio fluxo.
+    console.error(erro);
   });
   proc.on("unhandledRejection", (motivo) => {
     if (isClientDisconnectError(motivo)) return;
