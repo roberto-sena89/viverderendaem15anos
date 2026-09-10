@@ -351,6 +351,8 @@ export function DialogoAprendizado() {
             </Button>
           </div>
 
+          <CotacoesPainelAnalista />
+
           {painelIA.isPending ? (
             <div className="grid gap-2" role="status" aria-live="polite">
               <p className="text-xs text-muted-foreground break-words">
