@@ -29,6 +29,7 @@ import {
   recarregarPainelAnalista,
   type ConhecimentoItem,
 } from "@/lib/conhecimento.functions";
+import { CotacoesPainelAnalista } from "@/components/ai-elements/cotacoes-painel-analista";
 
 
 const CORES_CATEGORIA: Record<ConhecimentoItem["categoria"], string> = {
