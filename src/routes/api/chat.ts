@@ -524,6 +524,27 @@ export const Route = createFileRoute("/api/chat")({
             .order("criado_em", { ascending: true }),
         ]);
 
+        // Sincroniza os preços com as cotações ao vivo (mesma fonte do card
+        // "Patrimônio Total" do Dashboard/Resumo), para o Gestor IA não citar
+        // valores desatualizados vindos do banco.
+        try {
+          const { buscarCotacao } = await import("@/lib/market.server");
+          await Promise.all(
+            (ativos ?? []).slice(0, 30).map(async (a) => {
+              try {
+                const c = await buscarCotacao(a.ticker);
+                const preco = Number(c?.preco);
+                if (Number.isFinite(preco) && preco > 0) a.preco_atual = preco;
+              } catch {
+                /* mantém o preço armazenado */
+              }
+            }),
+          );
+        } catch {
+          /* fonte de cotações indisponível */
+        }
+
+
         const totalAtual = (ativos ?? []).reduce(
           (s, a) => s + Number(a.quantidade) * Number(a.preco_atual),
           0,
