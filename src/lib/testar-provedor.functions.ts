@@ -32,7 +32,7 @@ export const testarProvedorIA = createServerFn({ method: "POST" })
     const headerAuth = AUTH_HEADER_POR_PRESET[data.preset] ?? "Authorization";
     try {
       const resposta = await fetch(`${base}/models`, {
-        redirect: "error",
+        redirect: "manual",
         signal: AbortSignal.timeout(15_000),
         headers: {
           [headerAuth]:
@@ -41,6 +41,14 @@ export const testarProvedorIA = createServerFn({ method: "POST" })
         },
       });
 
+      if (resposta.status >= 300 && resposta.status < 400) {
+        return {
+          ok: false,
+          status: resposta.status,
+          mensagem: "O provedor redirecionou a requisição; verifique a URL base.",
+          modelos: [],
+        };
+      }
       const texto = await resposta.text();
 
       if (!resposta.ok) {
@@ -54,7 +62,7 @@ export const testarProvedorIA = createServerFn({ method: "POST" })
           try {
             const altBase = base.replace(/\/api\/v1\/?$/, "");
             const altRes = await fetch(`${altBase}/api/v1/ai/cline/models`, {
-              redirect: "error",
+              redirect: "manual",
               signal: AbortSignal.timeout(10_000),
               headers: {
                 [headerAuth]:
