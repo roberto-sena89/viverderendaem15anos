@@ -1092,3 +1092,22 @@ export async function buscarPanoramaMercado(
     cachePanorama.set(periodo, { em: Date.now(), dados: resultado });
   return resultado;
 }
+
+/**
+ * Dividend yield real (12m, Fundamentus) por ticker para ações e FIIs.
+ * ETFs e títulos não têm DY na fonte: ficam fora do mapa (dado indisponível).
+ */
+export async function dyRealPorTicker(tickers: string[]): Promise<Map<string, number>> {
+  const alvo = new Set(tickers.map((t) => t.toUpperCase().trim()));
+  const resultado = new Map<string, number>();
+  const [fiis, acoes] = await Promise.allSettled([indicadoresFiis(), indicadoresAcoes()]);
+  for (const r of [fiis, acoes]) {
+    if (r.status !== "fulfilled") continue;
+    for (const [ticker, ind] of r.value) {
+      if (alvo.has(ticker) && ind.dy != null && !resultado.has(ticker)) {
+        resultado.set(ticker, ind.dy);
+      }
+    }
+  }
+  return resultado;
+}
