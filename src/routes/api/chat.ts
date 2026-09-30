@@ -167,6 +167,7 @@ function textoDaCarteira(
     preco_medio: number;
     preco_atual: number;
     dy: number;
+    variacao_dia?: number | null;
   }[],
   aportes: { data: string; ticker: string; quantidade: number; preco: number }[],
   dividendos: { data: string; ticker: string; valor: number }[],
@@ -175,11 +176,18 @@ function textoDaCarteira(
     return "O usuário ainda não cadastrou ativos nem aportes na plataforma.";
   }
 
+  const totalCarteira = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
   const linhas = ativos.map((a) => {
     const atual = a.quantidade * a.preco_atual;
     const investido = a.quantidade * a.preco_medio;
     const rent = investido > 0 ? ((atual - investido) / investido) * 100 : 0;
-    return `- ${a.ticker} (${a.categoria}): ${a.quantidade} cotas, PM R$ ${a.preco_medio.toFixed(2)}, preço atual R$ ${a.preco_atual.toFixed(2)}, valor R$ ${atual.toFixed(2)}, rentabilidade ${rent.toFixed(1)}%, DY ${a.dy}%`;
+    const peso = totalCarteira > 0 ? (atual / totalCarteira) * 100 : 0;
+    const dy = a.dy > 0 ? `${a.dy.toFixed(2)}% (12m, Fundamentus)` : "não disponível na fonte";
+    const varDia =
+      a.variacao_dia == null
+        ? "variação do dia não disponível"
+        : `variação do dia ${a.variacao_dia >= 0 ? "+" : ""}${a.variacao_dia.toFixed(2)}%`;
+    return `- ${a.ticker} (${a.categoria}): ${a.quantidade} cotas | PM R$ ${a.preco_medio.toFixed(2)} | preço atual R$ ${a.preco_atual.toFixed(2)} | ${varDia} | investido R$ ${investido.toFixed(2)} | valor R$ ${atual.toFixed(2)} | lucro/prejuízo R$ ${(atual - investido).toFixed(2)} (${rent.toFixed(1)}%) | peso ${peso.toFixed(1)}% da carteira | DY ${dy}`;
   });
 
   const totalAtual = ativos.reduce((s, a) => s + a.quantidade * a.preco_atual, 0);
@@ -221,7 +229,7 @@ function textoDaCarteira(
     `Rentabilidade geral: ${totalInvestido > 0 ? (((totalAtual - totalInvestido) / totalInvestido) * 100).toFixed(2) : 0}%`,
     `Proventos registrados (últimos lançamentos): ${brl(proventos)} | DY estimado da carteira: ${dyCarteira.toFixed(2)}%`,
     `Alocação por classe: ${alocacao}`,
-    "Ativos:",
+    "Ativos (dados reais — cite exatamente estes números; se um dado não constar aqui, diga que não está disponível e NUNCA invente valores, DY, P/VP ou cotações):",
     ...linhas,
     aportes.length
       ? `Últimos aportes: ${aportes
@@ -525,25 +533,47 @@ export const Route = createFileRoute("/api/chat")({
         ]);
 
         // Sincroniza os preços com as cotações ao vivo (mesma fonte do card
-        // "Patrimônio Total" do Dashboard/Resumo), para o Gestor IA não citar
-        // valores desatualizados vindos do banco.
+        // "Patrimônio Total" do Dashboard/Resumo) e busca o DY real (12m) de
+        // ações e FIIs, para o Gestor IA citar dados reais de cada ativo.
+        // Tudo com tempo máximo curto: se a fonte demorar, usa o dado salvo.
+        const variacaoDia = new Map<string, number>();
+        const dyReal = new Map<string, number>();
+        const comLimite = <T,>(p: Promise<T>, ms: number) =>
+          Promise.race([p, new Promise<null>((r) => setTimeout(() => r(null), ms))]);
         try {
-          const { buscarCotacao } = await import("@/lib/market.server");
-          await Promise.all(
-            (ativos ?? []).slice(0, 30).map(async (a) => {
+          const { buscarCotacao, dyRealPorTicker } = await import("@/lib/market.server");
+          const lista = (ativos ?? []).slice(0, 30);
+          await Promise.all([
+            ...lista.map(async (a) => {
               try {
-                const c = await buscarCotacao(a.ticker);
+                const c = await comLimite(buscarCotacao(a.ticker), 5000);
                 const preco = Number(c?.preco);
                 if (Number.isFinite(preco) && preco > 0) a.preco_atual = preco;
+                const v = c?.variacaoDiaPercent;
+                if (v != null && Number.isFinite(Number(v))) variacaoDia.set(a.ticker, Number(v));
               } catch {
                 /* mantém o preço armazenado */
               }
             }),
-          );
+            (async () => {
+              try {
+                const mapa = await comLimite(
+                  dyRealPorTicker(lista.map((a) => a.ticker)),
+                  6000,
+                );
+                mapa?.forEach((dy, t) => dyReal.set(t, dy));
+              } catch {
+                /* DY indisponível */
+              }
+            })(),
+          ]);
+          for (const a of ativos ?? []) {
+            const dy = dyReal.get(a.ticker.toUpperCase());
+            if (dy != null) a.dy = dy;
+          }
         } catch {
           /* fonte de cotações indisponível */
         }
-
 
         const totalAtual = (ativos ?? []).reduce(
           (s, a) => s + Number(a.quantidade) * Number(a.preco_atual),
@@ -568,6 +598,7 @@ export const Route = createFileRoute("/api/chat")({
             preco_medio: Number(a.preco_medio),
             preco_atual: Number(a.preco_atual),
             dy: Number(a.dy),
+            variacao_dia: variacaoDia.get(a.ticker) ?? null,
           })),
           (aportes ?? []).map((a) => ({
             data: a.data,
