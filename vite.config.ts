@@ -121,6 +121,18 @@ export default defineConfig({
     },
   } as never,
   vite: {
+    // Pré-empacota dependências que o Vite descobria só em tempo de execução.
+    // Sem isso ele reotimiza no meio da sessão e força um reload completo,
+    // abortando requisições em andamento ("Error: aborted" + tela branca).
+    optimizeDeps: {
+      include: [
+        "@tanstack/router-core",
+        "@tanstack/router-core/isServer",
+        "@tanstack/router-core/ssr/client",
+        "@tanstack/history",
+        "seroval",
+      ],
+    },
     server: {
       watch: { ignored: ["**/.output/**", "**/node_modules/.vite/**"] },
       allowedHosts: [".monkeycode-ai.live"],
