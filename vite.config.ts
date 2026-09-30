@@ -28,6 +28,14 @@ function suppressClientDisconnectErrors(): Plugin {
       const registro = process as unknown as Record<string, unknown>;
       if (!registro[marca]) {
         registro[marca] = true;
+        // O h3/srvx registra via console.error o cancelamento da requisição
+        // (status 500, unhandled) quando o navegador fecha a conexão. Não é
+        // falha do servidor: filtra só esses casos para não gerar tela branca.
+        const erroOriginal = console.error.bind(console);
+        console.error = (...args: unknown[]) => {
+          if (args.some((a) => isDisconnectLike(a))) return;
+          erroOriginal(...args);
+        };
         process.on("uncaughtException", (err: NodeJS.ErrnoException) => {
           if (isDisconnectError(err)) return;
           console.error("[server] uncaughtException:", err);
@@ -81,6 +89,15 @@ function suppressClientDisconnectErrors(): Plugin {
   };
 }
 
+function isDisconnectLike(valor: unknown, profundidade = 0): boolean {
+  if (!valor || profundidade > 4) return false;
+  if (typeof valor === "string") return /^(Abort)?Error: (This operation was )?aborted/i.test(valor);
+  if (typeof valor !== "object") return false;
+  const e = valor as NodeJS.ErrnoException & { cause?: unknown };
+  if (e.name === "AbortError" || isDisconnectError(e)) return true;
+  return isDisconnectLike(e.cause, profundidade + 1);
+}
+
 function isDisconnectError(err: NodeJS.ErrnoException | null | undefined): boolean {
   if (!err) return false;
   const code = err.code;
@@ -121,6 +138,18 @@ export default defineConfig({
     },
   } as never,
   vite: {
+    // Pré-empacota dependências que o Vite descobria só em tempo de execução.
+    // Sem isso ele reotimiza no meio da sessão e força um reload completo,
+    // abortando requisições em andamento ("Error: aborted" + tela branca).
+    optimizeDeps: {
+      include: [
+        "@tanstack/router-core",
+        "@tanstack/router-core/isServer",
+        "@tanstack/router-core/ssr/client",
+        "@tanstack/history",
+        "seroval",
+      ],
+    },
     server: {
       watch: { ignored: ["**/.output/**", "**/node_modules/.vite/**"] },
       allowedHosts: [".monkeycode-ai.live"],
